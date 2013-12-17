@@ -20,7 +20,11 @@ package com.meta.modele;
 /**
  * 
  * @author Thomas LAVOCAT
- *
+ * 
+ * MetaProperty is not storable in data base a a Searchable object.
+ * It define a key value unit. 
+ * I know that a list of MetaProperty act more like an hashMap, but I wanted
+ * to put them out of MetaData.
  */
 public class MetaProperty {
 	

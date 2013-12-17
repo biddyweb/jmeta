@@ -25,7 +25,11 @@ import djondb.BSONObj;
 /**
  * 
  * @author Thomas LAVOCAT
- *
+ * 
+ * This class correspond to a Metadata. A MetaData is describe by a list
+ * of properties. like {name:subtitles, value:vostfr} and a list of results.
+ * 
+ * This class extends Searchable.
  */
 public class MetaData extends Searchable {
 
@@ -102,6 +106,7 @@ public class MetaData extends Searchable {
 
 	public BSONObj toJson() {
 		BSONObj json = super.toJson();
+		//foreach linked data, get his hash and put it in the json
 		BSONArrayObj bsonLinkedData = new BSONArrayObj();
 		for (int i=0; i<linkedData.size(); i++) {
 			Data data = linkedData.get(i);
@@ -110,6 +115,7 @@ public class MetaData extends Searchable {
 			bsonLinkedData.add(bsonData);
 		}
 		json.add("linkedData", bsonLinkedData);
+		//foreach properties, get her value and name and put it in the json
 		BSONArrayObj bsonProperties = new BSONArrayObj();
 		for (int i=0; i< properties.size(); i++) {
 			MetaProperty property = properties.get(i);
@@ -124,6 +130,7 @@ public class MetaData extends Searchable {
 	
 	@Override
 	public ArrayList<Searchable> getChildsToCreate() {
+		//Foreach linked data, check if it has to be created
 		ArrayList<Searchable> lstChildsToCreate =  super.getChildsToCreate();
 		for(Data data : linkedData)
 			if(data.haveToCreate())

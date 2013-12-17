@@ -24,7 +24,8 @@ import djondb.BSONObj;
 /**
  * 
  * @author Thomas LAVOCAT
- *
+ *	
+ * This class correspond to a data on the hard drive. Pointed by a file.
  */
 public class Data extends Searchable {
 

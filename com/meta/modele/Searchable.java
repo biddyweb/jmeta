@@ -24,7 +24,8 @@ import djondb.BSONObj;
 /**
  * 
  * @author Thomas LAVOCAT
- *
+ * This abstract class represent something that can be searchable and storable
+ * in the dataBase
  */
 public abstract class Searchable {
 	
@@ -75,15 +76,27 @@ public abstract class Searchable {
 		this.hashCode = hashCode;
 	}
 
-	
+	/**
+	 * 
+	 * @return true if you have to update false in other case
+	 */
 	public boolean haveToUpdate() {
 		return updateDB;
 	}
 	
+	/**
+	 * 
+	 * @return true if you have to create false in othe case
+	 */
 	public boolean haveToCreate(){
 		return createInDb;		
 	}
 	
+	/**
+	 * 
+	 * @return transform the Searchable object into a JSON that can 
+	 * be storable
+	 */
 	public BSONObj toJson(){
 		BSONObj json = new BSONObj();
 		json.add("hash", this.getHashCode());
@@ -91,16 +104,29 @@ public abstract class Searchable {
 		return json;
 	}
 
+	/**
+	 * return the old json used to load from dataBase
+	 * @return
+	 */
 	public BSONObj getOldJson() {
 		return oldJson;
 	}
 
+	/**
+	 * Set the old json used to load from dataBase
+	 * @param oldJson
+	 */
 	public void setOldJson(BSONObj oldJson) {
+		//put the update flag to true dans create to false,
 		updateDB 	= true;
 		createInDb 	= false;
 		this.oldJson = oldJson;
 	}
 	
+	/**
+	 *
+	 * @return the list of childs to create
+	 */
 	public ArrayList<Searchable> getChildsToCreate(){
 		return new ArrayList<Searchable>();
 	}

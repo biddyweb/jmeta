@@ -35,7 +35,7 @@ import djondb.LibraryException;
 /**
  * 
  * @author Thomas LAVOCAT
- *
+ * 
  */
 public class Controler {
 	

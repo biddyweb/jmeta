@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter
+END
+IdMessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/IdMessageFilter.java
+END
+TypeExcluderMessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/TypeExcluderMessageFilter.java
+END
+MessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/MessageFilter.java
+END
+TypeMessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/TypeMessageFilter.java
+END
+SrcExcluderMessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/SrcExcluderMessageFilter.java
+END
+TagMessageFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/net/filter/TagMessageFilter.java
+END

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/55/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket
+END
+StableBucket.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/53/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/StableBucket.java
+END
+DummyBucket.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/40/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/DummyBucket.java
+END
+KBuckets.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/47/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/KBuckets.java
+END
+SlackBucket.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/40/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/SlackBucket.java
+END
+Bucket.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/40/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/Bucket.java
+END
+KadBuckets.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/55/trunk/openkad/src/il/technion/ewolf/kbr/openkad/bucket/KadBuckets.java
+END

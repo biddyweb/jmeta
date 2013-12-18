@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/59/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers
+END
+AbstractHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/43/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/AbstractHandler.java
+END
+ForwardHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/59/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/ForwardHandler.java
+END
+FindNodeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/43/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/FindNodeHandler.java
+END
+StoreHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/21/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/StoreHandler.java
+END
+PingHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/40/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/PingHandler.java
+END
+KademliaFindNodeHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/59/trunk/openkad/src/il/technion/ewolf/kbr/openkad/handlers/KademliaFindNodeHandler.java
+END

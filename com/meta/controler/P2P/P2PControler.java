@@ -39,9 +39,12 @@ import il.technion.ewolf.kbr.openkad.KadNetModule;
  */
 public class P2PControler implements MessageHandler{
 	
-	private KeybasedRouting kbr;
+	private KeybasedRouting 			kbr				= null;
+	private ArrayList<P2PListenner> 	p2pListenners 	= null;
 
 	public P2PControler() throws IOException, URISyntaxException{
+		p2pListenners = new ArrayList<P2PListenner>();
+		
 		// set kademlia udp port and protocol
 		Properties props = new Properties();
 		Injector injector = Guice.createInjector(new KadNetModule()
@@ -58,20 +61,33 @@ public class P2PControler implements MessageHandler{
 		ArrayList<URI> lstURI = new ArrayList<URI>();
 		lstURI.add(new URI("openkad.udp://1.2.3.4:5555/"));
 		kbr.join(lstURI);
-		
 	}
+
+	/**
+	 * register the hash on the DHT
+	 * @param hash
+	 */
+	public void register(String hash){
+		kbr.register(hash, this);//TODO not this but the TCP singleton ;)
+	}
+	
 	
 	@Override
 	public void onIncomingMessage(Node from, String tag, Serializable content) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public Serializable onIncomingRequest(Node from, String tag,
 			Serializable content) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	/**
+	 * Add a listenner
+	 * @param listenner
+	 */
+	public void addP2PListenner(P2PListenner listenner){
+		p2pListenners.add(listenner);
+	}
 }

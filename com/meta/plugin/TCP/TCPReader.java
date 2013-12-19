@@ -30,19 +30,19 @@ import il.technion.ewolf.kbr.Node;
  */
 public class TCPReader implements MessageHandler {
 
-	private HashMap<String, AMPCommand> mapCommand = null;
+	private HashMap<String, Class<AMPCommand>> mapCommand = null;
 	private static TCPReader instance = new TCPReader();
 	
 	private TCPReader() {
-		mapCommand = new HashMap<String, AMPCommand>();
+		mapCommand = new HashMap<String, Class<AMPCommand>>();
 	}
 	
 	public static TCPReader getInstance() {
 		return instance;
 	}
 	
-	public void registerCommand(AMPCommand command){
-		mapCommand.put(command.getCommandName(), command);
+	public void registerCommand(String commandName, Class<AMPCommand> clazz){
+		mapCommand.put(commandName, clazz);
 	}
 	
 	@Override
@@ -50,16 +50,23 @@ public class TCPReader implements MessageHandler {
 		if(content instanceof AMPCommand){
 			SerializableCommandParameters receivedCommand 
 									= (SerializableCommandParameters) content;
-			AMPCommand command = mapCommand.get(receivedCommand.getName());
-			if(command != null){
-				command.setParameters(receivedCommand);
-				command.setCallingNode(from);
-				command.execute();			
+			Class<AMPCommand> clazz = mapCommand.get(receivedCommand.getName());
+			AMPCommand command;
+			try {
+				command = clazz.newInstance();
 				if(command != null){
 					command.setParameters(receivedCommand);
 					command.setCallingNode(from);
-					command.execute();
+					command.execute();			
+					if(command != null){
+						command.setParameters(receivedCommand);
+						command.setCallingNode(from);
+						command.execute();
+					}
 				}
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}

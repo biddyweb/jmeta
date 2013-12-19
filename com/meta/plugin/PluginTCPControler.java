@@ -1,6 +1,7 @@
 package com.meta.plugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.meta.controler.P2P.P2PControler;
@@ -33,10 +34,10 @@ import com.meta.plugin.TCP.TCPReader;
  */
 public abstract class PluginTCPControler implements P2PListener{
 
-	protected 	P2PControler 			p2pControler 	= 	null;
-	protected  Model 		 			model 			=	null;
-	protected  ArrayList<AMPCommand>	lstCommands		= 	null;
-	private 	TCPReader				reader			= 	null;
+	protected 	P2PControler 						p2pControler 	= 	null;
+	protected  Model 		 						model 			=	null;
+	protected  HashMap<String, Class<AMPCommand>>	lstCommands		= 	null;
+	private 	TCPReader							reader			= 	null;
 	
 	public PluginTCPControler(){
 		reader = TCPReader.getInstance();
@@ -66,8 +67,9 @@ public abstract class PluginTCPControler implements P2PListener{
 	 * register the commands to TCPReader
 	 */
 	private void registerCommandsToTCPReader() {
-		for (Iterator<AMPCommand> i = lstCommands.iterator(); i.hasNext();) {
-			reader.registerCommand(i.next());
+		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
+			String commandName = i.next();
+			reader.registerCommand(commandName, lstCommands.get(commandName));
 		}
 	}
 

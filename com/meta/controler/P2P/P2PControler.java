@@ -1,5 +1,18 @@
 package com.meta.controler.P2P;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.meta.plugin.TCP.TCPReader;
+
+import il.technion.ewolf.kbr.Key;
+import il.technion.ewolf.kbr.KeybasedRouting;
+import il.technion.ewolf.kbr.openkad.KadNetModule;
+
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 Thomas LAVOCAT
@@ -22,6 +35,45 @@ package com.meta.controler.P2P;
  * @author Thomas LAVOCAT
  *
  */
-public class P2PControler {
+public class P2PControler{
+	
+	private KeybasedRouting kbr 	= null;
 
+	public P2PControler() throws IOException, URISyntaxException{
+		// set kademlia udp port and protocol
+		Injector injector = Guice.createInjector(new KadNetModule()
+		    .setProperty("openkad.net.udp.port", "5555"));
+
+		// create
+		kbr = injector.getInstance(KeybasedRouting.class);
+
+		// start listening on local port
+		kbr.create();
+
+		// join the network
+		// format of the uri: [protocol]://[address:port]/
+		ArrayList<URI> lstURI = new ArrayList<URI>();
+		lstURI.add(new URI("openkad.udp://1.2.3.4:5555/"));//TODO
+		kbr.join(lstURI);
+	}
+
+	/**
+	 * register the hash on the DHT
+	 * @param hash
+	 */
+	public void register(String hash){
+		kbr.register(hash, TCPReader.getInstance());//TCP singleton ;)
+	}
+	
+	/**
+	 * Start a search in a new Thread
+	 * @param hash
+	 * @param listener  
+	 */
+	public synchronized void lookForPeer(Key hash, P2PListener listener){
+		ThreadLookForPeers lookForPeers = 
+				new ThreadLookForPeers(kbr, hash, listener);
+		lookForPeers.start();
+	}
+	
 }

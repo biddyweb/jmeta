@@ -5,11 +5,13 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import il.technion.ewolf.kbr.Key;
 import il.technion.ewolf.kbr.KeybasedRouting;
 import il.technion.ewolf.kbr.MessageHandler;
 import il.technion.ewolf.kbr.Node;
@@ -37,14 +39,11 @@ import il.technion.ewolf.kbr.openkad.KadNetModule;
  * @author Thomas LAVOCAT
  *
  */
-public class P2PControler implements MessageHandler{
+public class P2PControler{
 	
-	private KeybasedRouting 			kbr				= null;
-	private ArrayList<P2PListenner> 	p2pListenners 	= null;
+	private KeybasedRouting kbr 	= null;
 
 	public P2PControler() throws IOException, URISyntaxException{
-		p2pListenners = new ArrayList<P2PListenner>();
-		
 		// set kademlia udp port and protocol
 		Properties props = new Properties();
 		Injector injector = Guice.createInjector(new KadNetModule()
@@ -59,7 +58,7 @@ public class P2PControler implements MessageHandler{
 		// join the network
 		// format of the uri: [protocol]://[address:port]/
 		ArrayList<URI> lstURI = new ArrayList<URI>();
-		lstURI.add(new URI("openkad.udp://1.2.3.4:5555/"));
+		lstURI.add(new URI("openkad.udp://1.2.3.4:5555/"));//TODO
 		kbr.join(lstURI);
 	}
 
@@ -68,26 +67,18 @@ public class P2PControler implements MessageHandler{
 	 * @param hash
 	 */
 	public void register(String hash){
-		kbr.register(hash, this);//TODO not this but the TCP singleton ;)
-	}
-	
-	
-	@Override
-	public void onIncomingMessage(Node from, String tag, Serializable content) {
-		
-	}
-
-	@Override
-	public Serializable onIncomingRequest(Node from, String tag,
-			Serializable content) {
-		return null;
+		kbr.register(hash, /*TODO*/);//TCP singleton ;)
 	}
 	
 	/**
-	 * Add a listenner
-	 * @param listenner
+	 * Start a search in a new Thread
+	 * @param hash
+	 * @param listener  
 	 */
-	public void addP2PListenner(P2PListenner listenner){
-		p2pListenners.add(listenner);
+	public synchronized void lookForPeer(Key hash, P2PListener listener){
+		ThreadLookForNodes lookForNodes = 
+				new ThreadLookForNodes(kbr, hash, listener);
+		lookForNodes.start();
 	}
+	
 }

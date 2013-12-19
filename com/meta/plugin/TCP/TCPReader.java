@@ -30,11 +30,13 @@ import il.technion.ewolf.kbr.Node;
  */
 public class TCPReader implements MessageHandler {
 
-	private HashMap<String, Class<AMPCommand>> mapCommand = null;
+	private HashMap<String, Class<AMPCommand>> mapCommand 	= null;
+	private TCPWriter							writer		= null;
 	private static TCPReader instance = new TCPReader();
 	
 	private TCPReader() {
 		mapCommand = new HashMap<String, Class<AMPCommand>>();
+		writer = new TCPWriter();
 	}
 	
 	public static TCPReader getInstance() {
@@ -57,7 +59,9 @@ public class TCPReader implements MessageHandler {
 				if(command != null){
 					command.setParameters(receivedCommand);
 					command.setCallingNode(from);
-					command.execute();			
+					command.setTCPWriter(writer);
+					command.execute();	
+					
 					if(command != null){
 						command.setParameters(receivedCommand);
 						command.setCallingNode(from);

@@ -6,6 +6,7 @@ public abstract class AMPCommand {
 	protected String							commandName =	null;
 	protected SerializableCommandParameters	command		= 	null;
 	protected Node								callingNode	=	null;
+	protected TCPWriter 						tcpWriter   = 	null;
 	
 	public AMPCommand(){}
 	
@@ -32,6 +33,14 @@ public abstract class AMPCommand {
 	 */
 	public void setCallingNode(Node callingNode) {
 		this.callingNode = callingNode;
+	}
+
+	/**
+	 * 
+	 * @param writer
+	 */
+	public  void setTCPWriter(TCPWriter writer) {
+		this.tcpWriter = writer;
 	}
 	
 }

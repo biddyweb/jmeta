@@ -3,6 +3,7 @@ package com.meta.controler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -41,14 +42,23 @@ public class Controler {
 	
 	private Properties 		properties 				= 	null;
 	private Model 			model 					=	null;
-	private String 			pluginsropertiesFile	=	null;
+	private String 			pluginsropertiesFile	=	null;//TODO
 	private P2PControler 	p2pControler 			= 	null;
 	private ArrayList<String>							lstPluginsNames;
 	private HashMap<String, PluginTCPControler> 		mapTCPControler;
 	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler;
 	
-	
-	 public Controler() throws LibraryException, IOException{
+	/**
+	 * 
+	 * @throws LibraryException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	 public Controler() 
+		 throws 	LibraryException, 
+		 			IOException, 
+		 			URISyntaxException
+	{
 		 this.model = new Model();
 		 this.properties = new Properties();
 		 FileInputStream input = new FileInputStream(
@@ -57,7 +67,10 @@ public class Controler {
 		 properties.load(input);
 		 pluginInitialisation();
 	 }
-	 	
+	 
+	 /**
+	  * TODO
+	  */
 	private void pluginInitialisation() {
 		lstPluginsNames			= new ArrayList<String>();
 		mapTCPControler 		= new HashMap<String, PluginTCPControler>();

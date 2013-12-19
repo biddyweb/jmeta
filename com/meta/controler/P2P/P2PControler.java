@@ -1,20 +1,16 @@
 package com.meta.controler.P2P;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.meta.plugin.TCP.TCPReader;
 
 import il.technion.ewolf.kbr.Key;
 import il.technion.ewolf.kbr.KeybasedRouting;
-import il.technion.ewolf.kbr.MessageHandler;
-import il.technion.ewolf.kbr.Node;
 import il.technion.ewolf.kbr.openkad.KadNetModule;
 
 /*
@@ -45,7 +41,6 @@ public class P2PControler{
 
 	public P2PControler() throws IOException, URISyntaxException{
 		// set kademlia udp port and protocol
-		Properties props = new Properties();
 		Injector injector = Guice.createInjector(new KadNetModule()
 		    .setProperty("openkad.net.udp.port", "5555"));
 
@@ -67,7 +62,7 @@ public class P2PControler{
 	 * @param hash
 	 */
 	public void register(String hash){
-		kbr.register(hash, /*TODO*/);//TCP singleton ;)
+		kbr.register(hash, TCPReader.getInstance());//TCP singleton ;)
 	}
 	
 	/**
@@ -76,9 +71,9 @@ public class P2PControler{
 	 * @param listener  
 	 */
 	public synchronized void lookForPeer(Key hash, P2PListener listener){
-		ThreadLookForNodes lookForNodes = 
-				new ThreadLookForNodes(kbr, hash, listener);
-		lookForNodes.start();
+		ThreadLookForPeers lookForPeers = 
+				new ThreadLookForPeers(kbr, hash, listener);
+		lookForPeers.start();
 	}
 	
 }

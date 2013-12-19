@@ -81,23 +81,31 @@ public class Controler {
 			String key = ((String) keys.nextElement());
 			//TODO split sur les points et prendre le dernier élément
 			if(key.contains(".name")){
+				//plugin founded
 				lstPluginsNames.add(properties.getProperty(key));
+				//load TCP class
 				String strTCPClass = properties.getProperty(key+".TCPClass");
+				//load web service class
 				String strWSClass  = properties.getProperty(key+"WSClass");
 				
 				try {
 					Class clazzTCP 	= Class.forName(strTCPClass);
 					Class clazzWS	= Class.forName(strTCPClass);
 					
+					//load TCPControler
 					PluginTCPControler tcpControler = 
 							(PluginTCPControler)   clazzTCP.newInstance();
+					//load webServiceControler
 					PluginWebServiceControler webServiceControler = 
 							(PluginWebServiceControler) clazzWS.newInstance();
 					
+					//Set parameters
 					tcpControler.setP2pControler(p2pControler);
 					tcpControler.setModel(model);
+					//Set parameters
 					webServiceControler.setModel(model);
 					webServiceControler.setTcpControler(tcpControler);
+					//init TCP and WS parts
 					tcpControler.init();
 					webServiceControler.init();
 					

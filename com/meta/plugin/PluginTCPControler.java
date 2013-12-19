@@ -1,7 +1,13 @@
 package com.meta.plugin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.meta.controler.P2P.P2PControler;
+import com.meta.controler.P2P.P2PListener;
 import com.meta.modele.Model;
+import com.meta.plugin.TCP.AMPCommand;
+import com.meta.plugin.TCP.TCPReader;
 
 /*
  *	JMeta - Meta's java implementation
@@ -25,12 +31,21 @@ import com.meta.modele.Model;
  * @author Thomas LAVOCAT
  *
  */
-public abstract class PluginTCPControler {
+public abstract class PluginTCPControler implements P2PListener{
 
-	protected 	P2PControler p2pControler 	= 	null;
-	protected 	Model 		 model 			=	null;
+	protected 	P2PControler 			p2pControler 	= 	null;
+	protected  Model 		 			model 			=	null;
+	protected  ArrayList<AMPCommand>	lstCommands		= 	null;
+	private 	TCPReader				reader			= 	null;
 	
-	public PluginTCPControler(){}
+	public PluginTCPControler(){
+		reader = TCPReader.getInstance();
+	}
+
+	/**
+	 * Fil the lstCommands with all the needed TCP commands.
+	 */
+	protected abstract void initialiseCommands();
 
 	/**
 	 * @param p2pControler the p2pControler to set
@@ -39,9 +54,27 @@ public abstract class PluginTCPControler {
 		this.p2pControler = p2pControler;
 	}
 
+	/**
+	 * initialize the plugin
+	 */
 	public void init() {
+		initialiseCommands();
+		registerCommandsToTCPReader();
 	}
 
+	/**
+	 * register the commands to TCPReader
+	 */
+	private void registerCommandsToTCPReader() {
+		for (Iterator<AMPCommand> i = lstCommands.iterator(); i.hasNext();) {
+			reader.registerCommand(i.next());
+		}
+	}
+
+	/**
+	 * Give the model
+	 * @param model
+	 */
 	public void setModel(Model model) {
 		this.model = model;
 	}

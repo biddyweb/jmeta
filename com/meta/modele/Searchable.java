@@ -130,4 +130,5 @@ public abstract class Searchable {
 	public ArrayList<Searchable> getChildsToCreate(){
 		return new ArrayList<Searchable>();
 	}
+	
 }

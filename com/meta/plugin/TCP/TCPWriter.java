@@ -3,19 +3,17 @@ package com.meta.plugin.TCP;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import il.technion.ewolf.kbr.Node;
-
 public class TCPWriter extends Thread{
 		
-	private HashMap<Node, Serializable> 	mapNodeToServe 	= null;
+	private HashMap<String, Serializable> 	mapNodeToServe 	= null;
 	private boolean 						work			= true;
 	
 	public TCPWriter(){
-		mapNodeToServe = new HashMap<Node, Serializable>();
+		mapNodeToServe = new HashMap<String, Serializable>();
 	}
 	
-	public void addToQueue(Node node, Serializable dataToSend){
-		mapNodeToServe.put(node, dataToSend);
+	public void addToQueue(String ip, Serializable dataToSend){
+		mapNodeToServe.put(ip, dataToSend);
 	}
 	
 	@Override

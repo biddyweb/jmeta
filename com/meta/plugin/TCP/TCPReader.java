@@ -1,10 +1,11 @@
 package com.meta.plugin.TCP;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 
-import il.technion.ewolf.kbr.MessageHandler;
-import il.technion.ewolf.kbr.Node;
 
 /*
  *	JMeta - Meta's java implementation
@@ -28,11 +29,14 @@ import il.technion.ewolf.kbr.Node;
  * @author Thomas LAVOCAT
  *
  */
-public class TCPReader implements MessageHandler {
+public class TCPReader extends Thread {
 
 	private HashMap<String, Class<AMPCommand>> mapCommand 	= null;
-	private TCPWriter							writer		= null;
-	private static TCPReader instance = new TCPReader();
+	private 			TCPWriter		writer			= null;
+	private 			boolean 		work			= true;
+	private static 	TCPReader 		instance 		= new TCPReader();
+	private 			int				port			= 89234;
+	private				ServerSocket 	socket			= null;
 	
 	private TCPReader() {
 		mapCommand = new HashMap<String, Class<AMPCommand>>();
@@ -48,37 +52,20 @@ public class TCPReader implements MessageHandler {
 	}
 	
 	@Override
-	public void onIncomingMessage(Node from, String tag, Serializable content) {
-		if(content instanceof AMPCommand){
-			SerializableCommandParameters receivedCommand 
-									= (SerializableCommandParameters) content;
-			Class<AMPCommand> clazz = mapCommand.get(receivedCommand.getName());
-			AMPCommand command;
-			try {
-				command = clazz.newInstance();
-				if(command != null){
-					command.setParameters(receivedCommand);
-					command.setCallingNode(from);
-					command.setTCPWriter(writer);
-					command.execute();	
-					
-					if(command != null){
-						command.setParameters(receivedCommand);
-						command.setCallingNode(from);
-						command.execute();
-					}
-				}
-			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	public void run() {
+		try {
+			socket = new ServerSocket(port);
+			while(work){
+				Socket client = socket.accept();
+				ClientHandlerThread discussWith = new ClientHandlerThread(client);
+				discussWith.start();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public Serializable onIncomingRequest(Node from, String tag,
-			Serializable content) {		
-		return null;
-	}
+	}	
 	
+	public void kill(){
+		work = false;
+	}
 }

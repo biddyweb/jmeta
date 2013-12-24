@@ -1,11 +1,10 @@
 package com.meta.plugin.TCP;
 
-import il.technion.ewolf.kbr.Node;
 
 public abstract class AMPCommand {
 	protected String							commandName =	null;
 	protected SerializableCommandParameters	command		= 	null;
-	protected Node								callingNode	=	null;
+	protected String							callingIp   =	null;
 	protected TCPWriter 						tcpWriter   = 	null;
 	
 	public AMPCommand(){}
@@ -31,8 +30,8 @@ public abstract class AMPCommand {
 	/**
 	 * @param callingNode the callingNode to set
 	 */
-	public void setCallingNode(Node callingNode) {
-		this.callingNode = callingNode;
+	public void setCallingNode(String ip) {
+		this.callingIp = ip;
 	}
 
 	/**

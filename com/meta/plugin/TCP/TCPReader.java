@@ -1,7 +1,6 @@
 package com.meta.plugin.TCP;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -32,11 +31,11 @@ import java.util.HashMap;
 public class TCPReader extends Thread {
 
 	private HashMap<String, Class<AMPCommand>> mapCommand 	= null;
-	private 			TCPWriter		writer			= null;
-	private 			boolean 		work			= true;
-	private static 	TCPReader 		instance 		= new TCPReader();
-	private 			int				port			= 89234;
-	private				ServerSocket 	socket			= null;
+	private 			TCPWriter		writer		= null;
+	private 			boolean 		work		= true;
+	private static 	TCPReader 		instance 	= new TCPReader();
+	private 			int				port		= 89234;
+	private			ServerSocket 	socket		= null;
 	
 	private TCPReader() {
 		mapCommand = new HashMap<String, Class<AMPCommand>>();
@@ -67,5 +66,10 @@ public class TCPReader extends Thread {
 	
 	public void kill(){
 		work = false;
+	}
+
+	public void initializePortAndRun(int port) {
+		this.port = port;
+		this.start();
 	}
 }

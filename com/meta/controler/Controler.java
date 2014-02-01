@@ -44,9 +44,10 @@ public class Controler {
 	private Model 			model 					=	null;
 	private String 			pluginsropertiesFile	=	null;//TODO
 	private P2PControler 	p2pControler 			= 	null;
-	private ArrayList<String>							lstPluginsNames;
-	private HashMap<String, PluginTCPControler> 		mapTCPControler;
-	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler;
+	private ArrayList<String>							lstPluginsNames			=	null;
+	private HashMap<String, String>						configuration			=	null;
+	private HashMap<String, PluginTCPControler> 		mapTCPControler			=	null;
+	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler	=	null;
 	
 	/**
 	 * 
@@ -59,11 +60,12 @@ public class Controler {
 		 			IOException, 
 		 			URISyntaxException
 	{
+		 //TODO initialize configuration
 		 this.model = new Model();
 		 this.properties = new Properties();
 		 FileInputStream input = new FileInputStream(
 				 					new File(pluginsropertiesFile));
-		 this.p2pControler = new P2PControler();
+		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.get("port")));
 		 properties.load(input);
 		 pluginInitialisation();
 	 }
@@ -90,7 +92,7 @@ public class Controler {
 				
 				try {
 					Class clazzTCP 	= Class.forName(strTCPClass);
-					Class clazzWS	= Class.forName(strTCPClass);
+					Class clazzWS	= Class.forName(strWSClass);
 					
 					//load TCPControler
 					PluginTCPControler tcpControler = 

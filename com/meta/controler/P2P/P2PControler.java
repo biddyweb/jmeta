@@ -4,14 +4,22 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Random;
+
+import net.tomp2p.futures.BaseFuture;
+import net.tomp2p.futures.BaseFutureListener;
+import net.tomp2p.futures.FutureBootstrap;
+import net.tomp2p.futures.FutureDHT;
+import net.tomp2p.futures.FutureDiscover;
+import net.tomp2p.p2p.Peer;
+import net.tomp2p.p2p.PeerMaker;
+import net.tomp2p.peers.Number160;
+import net.tomp2p.storage.Data;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.meta.plugin.TCP.TCPReader;
 
-import il.technion.ewolf.kbr.Key;
-import il.technion.ewolf.kbr.KeybasedRouting;
-import il.technion.ewolf.kbr.openkad.KadNetModule;
 
 /*
  *	JMeta - Meta's java implementation
@@ -35,34 +43,46 @@ import il.technion.ewolf.kbr.openkad.KadNetModule;
  * @author Thomas LAVOCAT
  *
  */
-public class P2PControler{
+public class P2PControler implements BaseFutureListener<BaseFuture>{
 	
-	private KeybasedRouting kbr 	= null;
+	private Peer 	peer 	= 	null;
+	private int 	port	=	0;
+	
+	/**
+	 * Instantiate the P2P controler
+	 * @throws IOException 
+	 */
+	public P2PControler(int port) throws IOException {
+		peer= new PeerMaker(new Number160(new Random())).setPorts(port).makeAndListen();
+		Peer another = new PeerMaker(new Number160(new Random())).setMasterPeer(peer).makeAndListen();
+		FutureBootstrap future = another.bootstrap().setPeerAddress(peer.getPeerAddress()).start();
+		future.addListener(new BaseFutureListener<BaseFuture>() {
 
-	public P2PControler() throws IOException, URISyntaxException{
-		// set kademlia udp port and protocol
-		Injector injector = Guice.createInjector(new KadNetModule()
-		    .setProperty("openkad.net.udp.port", "5555"));
+			@Override
+			public void exceptionCaught(Throwable t) throws Exception {
+				t.printStackTrace();
+				
+			}
 
-		// create
-		kbr = injector.getInstance(KeybasedRouting.class);
-
-		// start listening on local port
-		kbr.create();
-
-		// join the network
-		// format of the uri: [protocol]://[address:port]/
-		ArrayList<URI> lstURI = new ArrayList<URI>();
-		lstURI.add(new URI("openkad.udp://1.2.3.4:5555/"));//TODO
-		kbr.join(lstURI);
+			@Override
+			public void operationComplete(BaseFuture future) throws Exception {
+				if(future.isSuccess()) { // this flag indicates if the future was successful
+					System.out.println("success");
+				} else {
+					System.out.println("failure");
+				}
+			}
+		});
 	}
 
 	/**
 	 * register the hash on the DHT
 	 * @param hash
+	 * @throws IOException 
 	 */
-	public void register(String hash){
-		kbr.register(hash, TCPReader.getInstance());//TCP singleton ;)
+	public void register(Number160 hash) throws IOException{
+		Data data = new Data(peer.getPeerAddress()+":"+port);
+		FutureDHT futureDHT = peer.put(hash).setData(data).start();
 	}
 	
 	/**
@@ -70,10 +90,19 @@ public class P2PControler{
 	 * @param hash
 	 * @param listener  
 	 */
-	public synchronized void lookForPeer(Key hash, P2PListener listener){
-		ThreadLookForPeers lookForPeers = 
-				new ThreadLookForPeers(kbr, hash, listener);
-		lookForPeers.start();
+	public synchronized void lookForPeer(Number160 hash, P2PListener listener){
+		FutureDHT futureDHT = peer.get(hash).start();
+		
+	}
+
+	@Override
+	public void exceptionCaught(Throwable t) throws Exception {
+		System.out.println(t.getLocalizedMessage());
+	}
+
+	@Override
+	public void operationComplete(BaseFuture future) throws Exception {
+		
 	}
 	
 }

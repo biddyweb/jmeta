@@ -1,6 +1,5 @@
 package tests;
 
-import djondb.BSONObj;
 
 public class JsonTest {
 

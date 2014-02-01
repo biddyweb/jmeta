@@ -9,12 +9,7 @@ import com.meta.modele.MetaProperty;
 import com.meta.modele.Model;
 import com.meta.modele.Search;
 
-import djondb.BSONArrayObj;
-import djondb.BSONObj;
-import djondb.DjondbConnection;
-import djondb.DjondbConnectionManager;
 import djondb.LibraryException;
-import djondb.Loader;
 
 public class ModelTest {
 

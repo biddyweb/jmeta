@@ -13,6 +13,7 @@ import com.meta.controler.P2P.P2PControler;
 import com.meta.modele.Model;
 import com.meta.plugin.PluginTCPControler;
 import com.meta.plugin.PluginWebServiceControler;
+import com.meta.plugin.TCP.TCPReader;
 
 import djondb.LibraryException;
 
@@ -40,12 +41,13 @@ import djondb.LibraryException;
  */
 public class Controler {
 	
-	private Properties 		properties 				= 	null;
-	private Model 			model 					=	null;
+	private Properties 		pluginsProperties		= 	null;
+	private Properties			configuration			=	null;
+	private Model 				model 					=	null;
 	private String 			pluginsropertiesFile	=	null;//TODO
-	private P2PControler 	p2pControler 			= 	null;
+	private String 			confPropertiesFile		=	null;//TODO
+	private P2PControler 		p2pControler 			= 	null;
 	private ArrayList<String>							lstPluginsNames			=	null;
-	private HashMap<String, String>						configuration			=	null;
 	private HashMap<String, PluginTCPControler> 		mapTCPControler			=	null;
 	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler	=	null;
 	
@@ -62,11 +64,16 @@ public class Controler {
 	{
 		 //TODO initialize configuration
 		 this.model = new Model();
-		 this.properties = new Properties();
-		 FileInputStream input = new FileInputStream(
+		 FileInputStream pluginInput = new FileInputStream(
 				 					new File(pluginsropertiesFile));
-		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.get("port")));
-		 properties.load(input);
+		 FileInputStream confInput = new FileInputStream(
+				 					new File(confPropertiesFile));
+		 this.pluginsProperties = new Properties();
+		 this.configuration 	= new Properties();
+		 pluginsProperties.load(pluginInput);
+		 configuration.load(confInput);
+		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.getProperty("port")));
+		 TCPReader.getInstance().initializePortAndRun(Integer.parseInt(configuration.getProperty("port")));
 		 pluginInitialisation();
 	 }
 	 
@@ -78,17 +85,17 @@ public class Controler {
 		mapTCPControler 		= new HashMap<String, PluginTCPControler>();
 		mapWebServiceControler	= new HashMap<String, PluginWebServiceControler>();
 		
-		Enumeration<Object> keys = properties.keys();
+		Enumeration<Object> keys = pluginsProperties.keys();
 		while(keys.hasMoreElements()){
 			String key = ((String) keys.nextElement());
 			//TODO split sur les points et prendre le dernier élément
 			if(key.contains(".name")){
 				//plugin founded
-				lstPluginsNames.add(properties.getProperty(key));
+				lstPluginsNames.add(pluginsProperties.getProperty(key));
 				//load TCP class
-				String strTCPClass = properties.getProperty(key+".TCPClass");
+				String strTCPClass = pluginsProperties.getProperty(key+".TCPClass");
 				//load web service class
-				String strWSClass  = properties.getProperty(key+"WSClass");
+				String strWSClass  = pluginsProperties.getProperty(key+"WSClass");
 				
 				try {
 					Class clazzTCP 	= Class.forName(strTCPClass);

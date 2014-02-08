@@ -42,11 +42,11 @@ import djondb.LibraryException;
 public class Controler {
 	
 	private Properties 		pluginsProperties		= 	null;
-	private Properties			configuration			=	null;
-	private Model 				model 					=	null;
+	private Properties		configuration			=	null;
+	private Model 			model 					=	null;
 	private String 			pluginsropertiesFile	=	null;//TODO
 	private String 			confPropertiesFile		=	null;//TODO
-	private P2PControler 		p2pControler 			= 	null;
+	private P2PControler 	p2pControler 			= 	null;
 	private ArrayList<String>							lstPluginsNames			=	null;
 	private HashMap<String, PluginTCPControler> 		mapTCPControler			=	null;
 	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler	=	null;
@@ -98,8 +98,8 @@ public class Controler {
 				String strWSClass  = pluginsProperties.getProperty(key+"WSClass");
 				
 				try {
-					Class clazzTCP 	= Class.forName(strTCPClass);
-					Class clazzWS	= Class.forName(strWSClass);
+					Class<?> clazzTCP 	= Class.forName(strTCPClass);
+					Class<?> clazzWS	= Class.forName(strWSClass);
 					
 					//load TCPControler
 					PluginTCPControler tcpControler = 

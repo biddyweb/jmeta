@@ -1,23 +1,24 @@
 package com.meta.plugin.TCP;
 
 
+import java.util.HashMap;
+
+import com.google.gson.JsonArray;
+
 public abstract class AMPCommand {
-	protected String							commandName =	null;
-	protected SerializableCommandParameters	command		= 	null;
-	protected String							callingIp   =	null;
-	protected TCPWriter 						tcpWriter   = 	null;
+	protected String		commandName =	null;
+	protected String		callingIp   =	null;
 	
 	public AMPCommand(){}
 	
-	public abstract void execute();
+	public abstract Byte[] execute();
 	
 	/**
 	 * 
+	 * @param jsonArray 
 	 * @param command
 	 */
-	public void setParameters(SerializableCommandParameters command){
-		this.command = command;
-	}
+	public abstract void setParameters(HashMap<String, String> parameters);
 	
 	/**
 	 * 
@@ -34,12 +35,4 @@ public abstract class AMPCommand {
 		this.callingIp = ip;
 	}
 
-	/**
-	 * 
-	 * @param writer
-	 */
-	public  void setTCPWriter(TCPWriter writer) {
-		this.tcpWriter = writer;
-	}
-	
 }

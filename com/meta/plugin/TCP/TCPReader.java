@@ -31,15 +31,13 @@ import java.util.HashMap;
 public class TCPReader extends Thread {
 
 	private HashMap<String, Class<AMPCommand>> mapCommand 	= null;
-	private 			TCPWriter		writer		= null;
 	private 			boolean 		work		= true;
-	private static 	TCPReader 		instance 	= new TCPReader();
+	private static 		TCPReader 		instance 	= new TCPReader();
 	private 			int				port		= 89234;
-	private			ServerSocket 	socket		= null;
+	private				ServerSocket 	socket		= null;
 	
 	private TCPReader() {
 		mapCommand = new HashMap<String, Class<AMPCommand>>();
-		writer = new TCPWriter();
 	}
 	
 	public static TCPReader getInstance() {
@@ -48,6 +46,10 @@ public class TCPReader extends Thread {
 	
 	public void registerCommand(String commandName, Class<AMPCommand> clazz){
 		mapCommand.put(commandName, clazz);
+	}
+	
+	public Class<AMPCommand> getCommand(String commandName){
+		return mapCommand.get(commandName);
 	}
 	
 	@Override

@@ -1,24 +1,17 @@
 package com.meta.controler.P2P;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Random;
 
 import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
-import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.meta.plugin.TCP.TCPReader;
 
 
 /*
@@ -92,7 +85,7 @@ public class P2PControler implements BaseFutureListener<BaseFuture>{
 	 */
 	public synchronized void lookForPeer(Number160 hash, P2PListener listener){
 		FutureDHT futureDHT = peer.get(hash).start();
-		
+		futureDHT.addListener(this);
 	}
 
 	@Override

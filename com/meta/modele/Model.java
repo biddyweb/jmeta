@@ -3,7 +3,6 @@ package com.meta.modele;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import djondb.BSONArrayObj;
 import djondb.BSONObj;
@@ -157,7 +156,7 @@ public class Model {
 			BSONObj 	jsonSearcheable	= resultSearch.get(0);
 			String 		className	   	= jsonSearcheable.getString("class");
 			//The class name is used to instantiate an object
-			Class 		clazz			= Class.forName(className);
+			Class<?> 	clazz			= Class.forName(className);
 			searchable 		= (Searchable) clazz.newInstance();
 			//Set his hash code
 			searchable.setHashCode(hash);

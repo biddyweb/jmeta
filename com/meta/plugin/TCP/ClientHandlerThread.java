@@ -12,7 +12,7 @@ import com.meta.plugin.TCP.AMP.AMPAskParser;
 public class ClientHandlerThread extends Thread{
 	
 	private Socket 		client	= null;
-	private TCPReader 	rearder = TCPReader.getInstance();
+	private TCPReader 	reader = TCPReader.getInstance();
 
 	public ClientHandlerThread(Socket client){
 		this.client = client;
@@ -32,16 +32,17 @@ public class ClientHandlerThread extends Thread{
 				input.append((char) octet);
 				octet = inputStream.read();
 			}
+			//TODO root if an ask or a answer
 			//The question as to be a AMP command, if not -> exception
 			AMPAskParser parser = new AMPAskParser(input.toString().getBytes());
 			//Get the _command parameter from the amp command
 			//If not null, it means we speak the same langage, if not
 			//do nothing
-			if(parser.getCommand() != null){
+			if(parser.getCommand() != null){//TODO handle this with an exception
 				//get the AMPCommand from the TCPReader singleton
 				//who know every plugins
 				Class<AMPCommand> classCommand = 
-										this.rearder.getCommand(parser.getCommand());
+										this.reader.getCommand(parser.getCommand());
 				//if the classCommand is null, we d'ont have the requeried
 				//command to execute
 				if(classCommand != null){
@@ -50,7 +51,7 @@ public class ClientHandlerThread extends Thread{
 					//config file;
 					AMPCommand command = (AMPCommand) classCommand.newInstance();
 					//Set the parameters as String[]
-					command.setParameters(parser.getParameters());
+					command.setParameters(parser.getHash());
 					//and execute it
 					Byte[] response = command.execute();
 					//finally, write the output to the client

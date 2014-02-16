@@ -18,15 +18,12 @@ public class AMPAskParserTest {
 			AMPAskParser parser = new AMPAskParser(message);
 			System.out.println(parser.getAsk());
 			System.out.println(parser.getCommand());
-			System.out.println(parser.getParameters());
+			System.out.println(parser.getHash());
 			
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("_ask", "23");
 			map.put("_command", "toto");
-			map.put("valeur1", "(-");
-			map.put("valeur2", "cacahuete");
-			map.put("valeur3", "vladimir");
-			map.put("valeur4", "vaderouskoff");
+			map.put("_hash", "cacahuete");
 			AMPFactory factory = new AMPFactory(map);
 			
 			System.out.println(factory.getMessage());
@@ -35,7 +32,7 @@ public class AMPAskParserTest {
 			
 			System.out.println(parser.getAsk());
 			System.out.println(parser.getCommand());
-			System.out.println(parser.getParameters());
+			System.out.println(parser.getHash());
 			
 		} catch (ParseException e) {
 			e.printStackTrace();

@@ -27,7 +27,7 @@ import djondb.BSONObj;
  *	
  * This class correspond to a data on the hard drive. Pointed by a file.
  */
-public class Data extends Searchable {
+public abstract class Data extends Searchable {
 
 	private File file = null;
 	

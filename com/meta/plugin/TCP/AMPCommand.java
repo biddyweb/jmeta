@@ -13,12 +13,14 @@ public abstract class AMPCommand {
 	
 	public abstract Byte[] execute();
 	
+	
+	
 	/**
 	 * 
 	 * @param jsonArray 
 	 * @param command
 	 */
-	public abstract void setParameters(HashMap<String, String> parameters);
+	public abstract void setParameters(String hash);
 	
 	/**
 	 * 

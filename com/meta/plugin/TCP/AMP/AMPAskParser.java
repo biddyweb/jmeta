@@ -8,9 +8,9 @@ public class AMPAskParser extends AMPParser{
 	
 	//Do not initialize those variables, because it's made by the mumy
 	//in her constructor ;) via the implement method "useContent"
-	private String 					ask			;
-	private String 					command		;
-	private HashMap<String, String>	parameters	;
+	private String 	ask			;
+	private String 	command		;
+	private String	hash		;
 
 	public AMPAskParser(byte[] bs) throws ParseException{
 		super(bs);
@@ -20,11 +20,8 @@ public class AMPAskParser extends AMPParser{
 	protected void useContent(HashMap<String, String> content) {
 		ask 	= content.get("_ask");
 		command = content.get("_command");
-		
-		content.remove("_ask");
-		content.remove("_command");
-		
-		parameters = content;
+		hash 	= content.get("_hash");
+		//TODO if one of them is null throw an exception
 	}
 
 	public String getAsk() {
@@ -35,8 +32,8 @@ public class AMPAskParser extends AMPParser{
 		return command;
 	}
 
-	public HashMap<String, String> getParameters() {
-		return parameters;
+	public String getHash() {
+		return hash;
 	}
 
 

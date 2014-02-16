@@ -17,9 +17,7 @@ public class AMPAnswerParser extends AMPParser{
 	@Override
 	protected void useContent(HashMap<String, String> content) {
 		answer = content.get("_answer");
-		
 		content.remove("_answer");
-		
 		parameters = content;
 	}
 

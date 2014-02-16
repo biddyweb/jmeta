@@ -54,4 +54,5 @@ public abstract class AMPParser {
 	private int parseSize(byte a, byte b) {
 		return ((int)a<<8)+((int)b);
 	}
+	
 }

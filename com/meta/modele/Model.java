@@ -171,21 +171,33 @@ public class Model {
 				extractSearch(searchable);
 			}else if(searchable instanceof MetaData){
 				extractMetaData(searchable);
-			}else if(searchable instanceof Data){
-				extractData(searchable);
+			}else if(searchable instanceof DataFile){
+				extractDataFile(searchable);
+			}else if(searchable instanceof DataString){
+				extractDataString(searchable);
 			}
 		}
 		return searchable;
 	}
 	
 	/**
+	 * 
+	 * @param searchable
+	 */
+	private void extractDataString(Searchable searchable) {
+		DataString data = (DataString) searchable;
+		String string = data.getOldJson().getString("string");
+		data.setString(string);
+	}
+
+	/**
 	 * Extract a data from Searchable object
 	 * @param searchable
 	 * @param jsonSearcheable
 	 */
-	private void extractData(Searchable searchable) 
+	private void extractDataFile(Searchable searchable) 
 	{
-		Data data = (Data) searchable;
+		DataFile data = (DataFile) searchable;
 		File file = new File(data.getOldJson().getString("file"));
 		data.setFile(file);
 	}

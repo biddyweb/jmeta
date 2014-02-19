@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.meta.modele.Data;
+import com.meta.modele.DataFile;
+import com.meta.modele.DataString;
 import com.meta.modele.MetaData;
 import com.meta.modele.MetaProperty;
 import com.meta.modele.Search;
@@ -32,7 +34,7 @@ public class DataBaseTest {
 			 * 
 			 ******************************************************************/
 			// -- Data
-			Data data = new Data(
+			DataFile data = new DataFile(
 					"hashData1", 
 					new File("/home/ecodair/subtitle.txt"));
 			ArrayList<Data> linkedData = new ArrayList<Data>();
@@ -52,7 +54,7 @@ public class DataBaseTest {
 			results.add(metaData);
 			
 			// -- MetaData source
-			Data data2 = new Data(
+			DataFile data2 = new DataFile(
 					"hashData2",
 					new File("/home/ecodair/movie.avi"));
 			

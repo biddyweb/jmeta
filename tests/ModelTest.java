@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.meta.modele.Data;
+import com.meta.modele.DataFile;
 import com.meta.modele.MetaData;
 import com.meta.modele.MetaProperty;
 import com.meta.modele.Model;
@@ -22,7 +23,7 @@ public class ModelTest {
 		 * 
 		 ******************************************************************/
 		// -- Data
-		Data data = new Data(
+		DataFile data = new DataFile(
 				"hashData1", 
 				new File("/home/ecodair/subtitle.txt"));
 		ArrayList<Data> linkedData = new ArrayList<Data>();
@@ -42,7 +43,7 @@ public class ModelTest {
 		results.add(metaData);
 		
 		// -- MetaData source
-		Data data2 = new Data(
+		DataFile data2 = new DataFile(
 				"hashData2",
 				new File("/home/ecodair/movie.avi"));
 		
@@ -85,7 +86,7 @@ public class ModelTest {
 		 * 
 		 ******************************************************************/
 		// -- MetaData source
-		Data data3 = new Data(
+		DataFile data3 = new DataFile(
 				"hashData3",
 				new File("/home/ecodair/movie8.avi"));
 		readSearch.setSource(data3);

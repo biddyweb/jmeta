@@ -29,7 +29,7 @@ import djondb.BSONObj;
  */
 public abstract class Data extends Searchable {
 
-	private File file = null;
+	
 	
 	/**
 	 * needed for java Reflexion
@@ -43,39 +43,16 @@ public abstract class Data extends Searchable {
 	 * @param hashCode
 	 * @param file
 	 */
-	public Data(String hashCode, File file) {
+	public Data(String hashCode) {
 		super(hashCode);
-		this.file = file;
 	}
 
-	/**
-	 * Instantiate a (not) new Data -> use in case of data base loading
-	 * @param hashCode
-	 * @param file
-	 */
-	public Data(String hashCode, File file, BSONObj json) {
+	public Data(String hashCode, BSONObj json){
 		super(hashCode, json);
-		this.file = file;
 	}
 	
-	/**
-	 * @return the file
-	 */
-	public File getFile() {
-		return file;
-	}
-
-	/**
-	 * @param file the file to set
-	 */
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	public BSONObj toJson() {
-		BSONObj json = super.toJson();
-		json.add("file", file.getAbsolutePath());
-		return json;
+	public BSONObj toJson(){
+		return super.toJson();
 	}
 
 }

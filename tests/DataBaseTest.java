@@ -54,9 +54,9 @@ public class DataBaseTest {
 			results.add(metaData);
 			
 			// -- MetaData source
-			DataFile data2 = new DataFile(
+			DataString data2 = new DataString(
 					"hashData2",
-					new File("/home/ecodair/movie.avi"));
+					"Ma super chaine");
 			
 			// -- Search
 			Search search = new Search("hashSearch", data2, results);

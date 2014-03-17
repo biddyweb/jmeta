@@ -32,7 +32,6 @@ public class ClientHandlerThread extends Thread{
 				input.append((char) octet);
 				octet = inputStream.read();
 			}
-			//TODO root if an ask or a answer
 			//The question as to be a AMP command, if not -> exception
 			AMPAskParser parser = new AMPAskParser(input.toString().getBytes());
 			//Get the _command parameter from the amp command

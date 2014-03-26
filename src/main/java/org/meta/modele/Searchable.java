@@ -136,7 +136,14 @@ public abstract class Searchable {
 		HashMap<String, String> fragment = new HashMap<String, String>();
 		fragment.put("_type", getClass()+"");
 		fragment.put("hash", getHashCode());
+		fillFragment(fragment);
 		return fragment;
 	}
+	
+	/**
+	 * Fill the fragment with usefull informations
+	 * @param fragment
+	 */
+	protected abstract void fillFragment(HashMap<String, String> fragment);
 	
 }

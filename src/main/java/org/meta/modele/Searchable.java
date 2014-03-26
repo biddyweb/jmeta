@@ -1,6 +1,7 @@
 package org.meta.modele;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import djondb.BSONObj;
 
@@ -129,6 +130,13 @@ public abstract class Searchable {
 	 */
 	public ArrayList<Searchable> getChildsToCreate(){
 		return new ArrayList<Searchable>();
+	}
+	
+	public HashMap<String, String> getAmpAnswerPart(){
+		HashMap<String, String> fragment = new HashMap<String, String>();
+		fragment.put("_type", getClass()+"");
+		fragment.put("hash", getHashCode());
+		return fragment;
 	}
 	
 }

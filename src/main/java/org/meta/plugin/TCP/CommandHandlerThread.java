@@ -49,7 +49,7 @@ public class CommandHandlerThread extends Thread{
 				//if the classCommand is null, we d'ont have the requeried
 				//command to execute
 				if(classCommand != null){
-					//Make a new instance, is an exception is thwron here
+					//Make a new instance, is an exception is thrown here
 					//it means that maybe here's an error in the plugin
 					//config file;
 					AMPCommand command = (AMPCommand) classCommand.newInstance();

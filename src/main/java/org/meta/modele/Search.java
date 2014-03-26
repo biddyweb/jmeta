@@ -1,6 +1,7 @@
 package org.meta.modele;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import djondb.BSONArrayObj;
 import djondb.BSONObj;
@@ -137,6 +138,18 @@ public class Search extends Searchable {
 			lstChildsToCreate.addAll(metaData.getChildsToCreate());
 		}
 		return lstChildsToCreate;
+	}
+
+	@Override
+	protected void fillFragment(HashMap<String, String> fragment) {
+		//write hash source
+		fragment.put("_source", source.getHashCode());
+		//write every hash results
+		for (int i = 0; i < results.size();i++) {
+			MetaData metaData = results.get(i);
+			fragment.put("_metaData_"+i, metaData.getHashCode());
+		}
+		
 	}
 
 }

@@ -1,10 +1,8 @@
 package javaTests.org.meta;
 
 import java.text.ParseException;
-import java.util.HashMap;
-
+import org.meta.plugin.TCP.AMP.AMPAskFactory;
 import org.meta.plugin.TCP.AMP.AMPAskParser;
-import org.meta.plugin.TCP.AMP.AMPFactory;
 
 public class AMPAskParserTest {
 
@@ -20,11 +18,7 @@ public class AMPAskParserTest {
 			System.out.println(parser.getCommand());
 			System.out.println(parser.getHash());
 			
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("_ask", "23");
-			map.put("_command", "toto");
-			map.put("_hash", "cacahuete");
-			AMPFactory factory = new AMPFactory(map);
+			AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete");
 			
 			System.out.println(factory.getMessage());
 			

@@ -8,7 +8,11 @@ import java.text.ParseException;
 
 import org.meta.plugin.TCP.AMP.AMPAskParser;
 
-
+/**
+ * This thread only listen to AMP Command
+ * @author faquin
+ *
+ */
 public class ClientHandlerThread extends Thread{
 	
 	private Socket 		client	= null;

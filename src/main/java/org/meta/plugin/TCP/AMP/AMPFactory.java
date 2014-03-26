@@ -3,21 +3,9 @@ package org.meta.plugin.TCP.AMP;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class AMPFactory {
+public abstract class AMPFactory {
 	protected byte[]	message     = 	null;
 	
-	/**
-	 * Create a new AMPAskMessage
-	 * @param ask
-	 * @param command
-	 * @param parameters
-	 */
-	public AMPFactory(HashMap<String, String> parameters) 
-	{
-		message = new byte[0];
-		build(parameters);
-	}
-
 	/**
 	 * 
 	 * @param ask
@@ -25,7 +13,7 @@ public class AMPFactory {
 	 * @param parameters
 	 * @return
 	 */
-	private void build(HashMap<String, String> parameters) 
+	protected void build(HashMap<String, String> parameters) 
 	{
 		for(String name : parameters.keySet())
 			addPair(name, parameters.get(name));

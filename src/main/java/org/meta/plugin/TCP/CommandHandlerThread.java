@@ -13,12 +13,12 @@ import org.meta.plugin.TCP.AMP.AMPAskParser;
  * @author faquin
  *
  */
-public class ClientHandlerThread extends Thread{
+public class CommandHandlerThread extends Thread{
 	
 	private Socket 		client	= null;
 	private TCPReader 	reader = TCPReader.getInstance();
 
-	public ClientHandlerThread(Socket client){
+	public CommandHandlerThread(Socket client){
 		this.client = client;
 	}
 	

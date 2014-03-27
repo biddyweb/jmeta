@@ -19,10 +19,10 @@ public class AMPAskParser extends AMPParser{
 	}
 	
 	@Override
-	protected void useContent(HashMap<String, String> content) throws NotAValidAMPAskCommand {
-		ask 	= content.get("_ask");
-		command = content.get("_command");
-		hash 	= content.get("_hash");
+	protected void useContent(HashMap<String, byte[]> content) throws NotAValidAMPAskCommand {
+		ask 	= new String(content.get("_ask"));
+		command = new String(content.get("_command"));
+		hash 	= new String(content.get("_hash"));
 		
 		//If one of those parameters is empty or null, throw an exception
 		if(	ask 	== null || "".equals(ask) 		||

@@ -3,6 +3,8 @@ package org.meta.plugin.TCP.AMP;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+
 public abstract class AMPParser {
 	public AMPParser(byte[] bs) throws ParseException{
 		try {
@@ -49,7 +51,7 @@ public abstract class AMPParser {
 		useContent(content);
 	}
 
-	protected abstract void useContent(HashMap<String, String> content);
+	protected abstract void useContent(HashMap<String, String> content) throws NotAValidAMPCommand;
 
 	private int parseSize(byte a, byte b) {
 		return ((int)a<<8)+((int)b);

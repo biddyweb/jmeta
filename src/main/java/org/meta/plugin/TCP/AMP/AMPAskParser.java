@@ -3,6 +3,8 @@ package org.meta.plugin.TCP.AMP;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPAskCommand;
+
 
 public class AMPAskParser extends AMPParser{
 	
@@ -17,11 +19,18 @@ public class AMPAskParser extends AMPParser{
 	}
 	
 	@Override
-	protected void useContent(HashMap<String, String> content) {
+	protected void useContent(HashMap<String, String> content) throws NotAValidAMPAskCommand {
 		ask 	= content.get("_ask");
 		command = content.get("_command");
 		hash 	= content.get("_hash");
-		//TODO if one of them is null throw an exception
+		
+		//If one of those parameters is empty or null, throw an exception
+		if(	ask 	== null || "".equals(ask) 		||
+			command	== null || "".equals(command)	||
+			hash	== null || "".equals(hash)
+		)
+			throw new NotAValidAMPAskCommand(ask, command, hash);
+		
 	}
 
 	public String getAsk() {
@@ -35,7 +44,4 @@ public class AMPAskParser extends AMPParser{
 	public String getHash() {
 		return hash;
 	}
-
-
-	
 }

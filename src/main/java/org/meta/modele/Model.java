@@ -334,4 +334,9 @@ public class Model {
 	public void releaseConnection(){
 		DjondbConnectionManager.releaseConnection(connection);
 	}
+
+	public static String hash(byte[] bloc) {
+		// TODO create this method further
+		return null;
+	}
 }

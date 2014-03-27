@@ -26,13 +26,13 @@ public abstract class AMPFactory {
 	 * 
 	 * @param ask
 	 * @param command
-	 * @param parameters
+	 * @param map
 	 * @return
 	 */
-	protected void build(HashMap<String, String> parameters) 
+	protected void build(HashMap<String, byte[]> map) 
 	{
-		for(String name : parameters.keySet())
-			addPair(name, parameters.get(name));
+		for(String name : map.keySet())
+			addPair(name, map.get(name));
 		
 		closeMessage();
 	}
@@ -50,15 +50,15 @@ public abstract class AMPFactory {
 	/**
 	 * Add the pair key value to the current message
 	 * @param key
-	 * @param message
+	 * @param bs
 	 */
-	private void addPair(String key, String message) {
+	private void addPair(String key, byte[] bs) {
 		int 	offSet			= 0;
 		//lenght of the key
 		int 	keyLength 		= key.length();// TODO Auto-generated method stub
 		
 		//length of the message
-		int 	messageLength 	= message.length();
+		int 	messageLength 	= bs.length;
 		
 		//Size of the message all message Key length + message length + 4 bytes 
 		byte[] 	subMessage 		= new byte[4+keyLength+messageLength];
@@ -85,12 +85,12 @@ public abstract class AMPFactory {
 		offSet += 2;
 		
 		//for each char of the message, add in the message
-		for(int i=offSet; (i-offSet)< message.length(); i++){
-			subMessage[i] = message.getBytes()[i-offSet];
+		for(int i=offSet; (i-offSet)< bs.length; i++){
+			subMessage[i] = bs[i-offSet];
 		}
 		
 		//add the message length to the offset counter
-		offSet += message.length();
+		offSet += bs.length;
 		
 		//add the submessage to the global Amp message
 		//original size

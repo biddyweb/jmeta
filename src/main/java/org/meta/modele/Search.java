@@ -141,13 +141,13 @@ public class Search extends Searchable {
 	}
 
 	@Override
-	protected void fillFragment(HashMap<String, String> fragment) {
+	protected void fillFragment(HashMap<String, byte[]> fragment) {
 		//write hash source
-		fragment.put("_source", source.getHashCode());
+		fragment.put("_source", source.getHashCode().getBytes());
 		//write every hash results
 		for (int i = 0; i < results.size();i++) {
 			MetaData metaData = results.get(i);
-			fragment.put("_metaData_"+i, metaData.getHashCode());
+			fragment.put("_metaData_"+i, metaData.getHashCode().getBytes());
 		}
 		
 	}

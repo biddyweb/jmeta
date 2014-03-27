@@ -1,6 +1,8 @@
 package org.meta.modele;
 
 
+import java.util.HashMap;
+
 import djondb.BSONObj;
 
 /*
@@ -75,6 +77,12 @@ public class DataString extends Data {
 		BSONObj json = super.toJson();
 		json.add("string", string);
 		return json;
+	}
+
+	@Override
+	protected void fillFragment(HashMap<String, byte[]> fragment) {
+		//write the file name
+		//TODO
 	}
 
 }

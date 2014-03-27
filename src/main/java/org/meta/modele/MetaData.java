@@ -140,17 +140,17 @@ public class MetaData extends Searchable {
 	}
 
 	@Override
-	protected void fillFragment(HashMap<String, String> fragment) {
+	protected void fillFragment(HashMap<String, byte[]> fragment) {
 		//write every properties
 		for (int i = 0; i < properties.size();i++) {
 			MetaProperty property = properties.get(i);
-			fragment.put("_property_"+i, property.getValue());
-			fragment.put("_property_"+i, property.getName());
+			fragment.put("_property_"+i, property.getValue().getBytes());
+			fragment.put("_property_"+i, property.getName().getBytes());
 		}
 		//write every data's hash
 		for (int i = 0; i < linkedData.size();i++) {
 			Data data = linkedData.get(i);
-			fragment.put("_data_"+i, data.getHashCode());
+			fragment.put("_data_"+i, data.getHashCode().getBytes());
 		}
 	}
 }

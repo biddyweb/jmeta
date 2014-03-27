@@ -132,10 +132,10 @@ public abstract class Searchable {
 		return new ArrayList<Searchable>();
 	}
 	
-	public HashMap<String, String> getAmpAnswerPart(){
-		HashMap<String, String> fragment = new HashMap<String, String>();
-		fragment.put("_type", getClass()+"");
-		fragment.put("hash", getHashCode());
+	public HashMap<String, byte[]> getAmpAnswerPart(){
+		HashMap<String, byte[]> fragment = new HashMap<String, byte[]>();
+		fragment.put("_type", (getClass()+"").getBytes());
+		fragment.put("hash", getHashCode().getBytes());
 		fillFragment(fragment);
 		return fragment;
 	}
@@ -144,6 +144,6 @@ public abstract class Searchable {
 	 * Fill the fragment with usefull informations
 	 * @param fragment
 	 */
-	protected abstract void fillFragment(HashMap<String, String> fragment);
+	protected abstract void fillFragment(HashMap<String, byte[]> fragment);
 	
 }

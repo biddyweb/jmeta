@@ -1,6 +1,10 @@
 package org.meta.modele;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
 
 import djondb.BSONObj;
 
@@ -76,6 +80,56 @@ public class DataFile extends Data {
 		BSONObj json = super.toJson();
 		json.add("file", file.getAbsolutePath());
 		return json;
+	}
+	
+	@Override
+	protected void fillFragment(HashMap<String, byte[]> fragment) {
+		//write hash source
+		fragment.put("_fileName", file.getName().getBytes());
+		//Send the file, it will surrely be bigger than 65 536o
+		
+		long size	= file.length();
+		long count	= size / 65536;  
+		
+		//set size
+		fragment.put("_size", (size+"").getBytes());
+		//set count
+		fragment.put("_count", (count+"").getBytes());
+		
+		FileInputStream stream;
+		try {
+			stream = new FileInputStream(file);
+			//write every hash results
+			for (int i = 1; i <= count;i++) {
+				int offset = (i-1)*65536;
+				
+				//size to read in the file
+				int sizeToRead = (int) (i < count ? 65536 : size-i*65536);
+
+				//the byte arry where to put the data
+				byte[] bloc 	= new byte[sizeToRead];
+				
+				//read the bytes from the stream
+				stream.read(bloc, offset, sizeToRead);
+				
+				//Make the hash from the bloc
+				String blocHash = Model.hash(bloc);
+				
+				//write informations to the fragment
+				//bloc number
+				fragment.put("_i", ((i-1)+"").getBytes());
+				//hash
+				fragment.put("_blocHash", blocHash.getBytes());
+				//bloc
+				fragment.put("_contentPart", bloc);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO do something here
+			e.printStackTrace();
+		}catch (IOException e) {
+			// TODO do something here
+			e.printStackTrace();
+		}
 	}
 
 }

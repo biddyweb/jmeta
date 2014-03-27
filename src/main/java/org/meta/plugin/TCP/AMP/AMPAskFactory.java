@@ -18,10 +18,10 @@ public class AMPAskFactory extends AMPFactory{
 	 * @param hash
 	 */
 	public AMPAskFactory(String ask, String command, String hash) {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("_ask", "23");
-		map.put("_command", "toto");
-		map.put("_hash", "cacahuete");
+		HashMap<String, byte[]> map = new HashMap<String, byte[]>();
+		map.put("_ask", ask.getBytes());
+		map.put("_command", command.getBytes());
+		map.put("_hash", hash.getBytes());
 		build(map);
 	}
 

@@ -18,13 +18,13 @@ public class AMPAnswerFactory extends AMPFactory {
 	 * @param datas the Searchable objects to send back
 	 */
 	public AMPAnswerFactory(String answer, ArrayList<Searchable> datas){
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("_answer", answer);
-		map.put("_nbDatas", datas.size()+"");
+		HashMap<String, byte[]> map = new HashMap<String, byte[]>();
+		map.put("_answer", answer.getBytes());
+		map.put("_nbDatas", Integer.toString(datas.size()).getBytes());
 		
 		for (Iterator<Searchable> i = datas.iterator(); i.hasNext();) {
 			Searchable searchable = (Searchable) i.next();
-			HashMap<String, String> fragment = searchable.getAmpAnswerPart();
+			HashMap<String, byte[]> fragment = searchable.getAmpAnswerPart();
 			map.putAll(fragment);
 		}
 		

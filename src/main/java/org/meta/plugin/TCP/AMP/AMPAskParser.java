@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPAskCommand;
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
 
 public class AMPAskParser extends AMPParser{
@@ -14,15 +15,15 @@ public class AMPAskParser extends AMPParser{
 	private String 	command		;
 	private String	hash		;
 
-	public AMPAskParser(byte[] bs) throws ParseException{
+	public AMPAskParser(byte[] bs) throws NotAValidAMPCommand{
 		super(bs);
 	}
 	
 	@Override
 	protected void useContent(HashMap<String, byte[]> content) throws NotAValidAMPAskCommand {
-		ask 	= new String(content.get("_ask"));
-		command = new String(content.get("_command"));
-		hash 	= new String(content.get("_hash"));
+		ask 	= content.get("_ask") != null ? new String(content.get("_ask")) : null;
+		command = content.get("_command") != null ?new String(content.get("_command")) : null;
+		hash 	= content.get("_hash") != null ? new String(content.get("_hash")) : null;
 		
 		//If one of those parameters is empty or null, throw an exception
 		if(	ask 	== null || "".equals(ask) 		||

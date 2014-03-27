@@ -1,24 +1,20 @@
 package org.meta.plugin.TCP.AMP;
 
-import java.text.ParseException;
 import java.util.HashMap;
 
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
 public abstract class AMPParser {
-	public AMPParser(byte[] bs) throws ParseException{
-		try {
+	
+	public AMPParser(byte[] bs) throws NotAValidAMPCommand{
 			parse(bs);
-		} catch (Exception e) {
-			throw new ParseException(bs + "is not a valide AMP command", -1);
-		}
 	}
 	
 	/**
 	 * parse an byte[] as describe in the AMP Protocol
 	 * @param bs
 	 */
-	private void parse(byte[] bs) throws Exception{
+	private void parse(byte[] bs) throws NotAValidAMPCommand{
 		HashMap<String, byte[]> content = new HashMap<String, byte[]>();
 		int readIndex = 0;
 		

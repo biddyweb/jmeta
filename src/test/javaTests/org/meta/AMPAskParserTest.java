@@ -1,8 +1,10 @@
 package javaTests.org.meta;
 
 import java.text.ParseException;
+
 import org.meta.plugin.TCP.AMP.AMPAskFactory;
 import org.meta.plugin.TCP.AMP.AMPAskParser;
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
 public class AMPAskParserTest {
 
@@ -12,25 +14,34 @@ public class AMPAskParserTest {
 							0x00,0x03,0x53,0x75,0x6D,0x00,0x01,0x61,0x00,0x02,
 							0x31,0x33,0x00,0x01,0x62,0x00,0x02,0x38,0x31,0x00,
 							0x00};
-		try {
-			AMPAskParser parser = new AMPAskParser(message);
-			System.out.println(parser.getAsk());
-			System.out.println(parser.getCommand());
-			System.out.println(parser.getHash());
+			AMPAskParser parser;
+			try {
+				parser = new AMPAskParser(message);
+				System.out.println(parser.getAsk());
+				System.out.println(parser.getCommand());
+				System.out.println(parser.getHash());
+			} catch (NotAValidAMPCommand e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			
 			AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete");
 			
 			System.out.println(factory.getMessage());
 			
-			parser = new AMPAskParser(factory.getMessage());
+			try {
+				parser = new AMPAskParser(factory.getMessage());
+				System.out.println(parser.getAsk());
+				System.out.println(parser.getCommand());
+				System.out.println(parser.getHash());
+			} catch (NotAValidAMPCommand e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			System.out.println(parser.getAsk());
-			System.out.println(parser.getCommand());
-			System.out.println(parser.getHash());
-			
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+
+
 	}
 
 }

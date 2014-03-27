@@ -31,6 +31,7 @@ public abstract class AMPFactory {
 	 */
 	protected void build(HashMap<String, byte[]> map) 
 	{
+		message = new byte[0];
 		for(String name : map.keySet())
 			addPair(name, map.get(name));
 		

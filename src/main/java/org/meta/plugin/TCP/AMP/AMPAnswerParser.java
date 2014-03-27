@@ -3,6 +3,8 @@ package org.meta.plugin.TCP.AMP;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+
 public class AMPAnswerParser extends AMPParser{
 
 	//Do not initialize those variables, because it's made by the mumy
@@ -10,7 +12,7 @@ public class AMPAnswerParser extends AMPParser{
 	private String 					answer		;
 	private HashMap<String, byte[]>	parameters	;
 	
-	public AMPAnswerParser(byte[] bs) throws ParseException {
+	public AMPAnswerParser(byte[] bs) throws NotAValidAMPCommand {
 		super(bs);
 	}
 

@@ -13,16 +13,17 @@ public class AMPAskFactory extends AMPFactory{
 	 * 
 	 * Create a new AMP Ask command
 	 * 
-	 * @param ask
-	 * @param command
-	 * @param hash
+	 * @param ask the number for the question
+	 * @param command the command to execute to the other pair
+	 * @param hash the hash of the request
 	 */
 	public AMPAskFactory(String ask, String command, String hash) {
 		HashMap<String, byte[]> map = new HashMap<String, byte[]>();
 		map.put("_ask", ask.getBytes());
 		map.put("_command", command.getBytes());
 		map.put("_hash", hash.getBytes());
-		build(map);
+		//build the message
+		super.build(map);
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.meta.modele;
 
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import djondb.BSONObj;
@@ -62,7 +63,7 @@ public class DataString extends Data {
 	/**
 	 * @return the file
 	 */
-	public String getFile() {
+	public String getString() {
 		return string;
 	}
 
@@ -81,8 +82,74 @@ public class DataString extends Data {
 
 	@Override
 	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
-		//write the file name
-		//TODO
+		byte[] totalString = string.getBytes();
+		
+		//Send the file, it will surrely be bigger than 65 536o
+		
+		long size	= totalString.length;
+		long count	= size / 65536;  
+		
+		if(count<1)
+			count=1;
+		
+		//set size
+		fragment.put("_size", (size+"").getBytes());
+		//set count
+		fragment.put("_count", (count+"").getBytes());
+		
+		//write every hash results
+		for (int i = 1; i <= count;i++) {
+			int offset = (i-1)*65536;
+			
+			//size to read in the file
+			
+			int sizeToRead = -1;
+			if(i<count){
+				sizeToRead = 65536;
+			}else if(count > 1){
+				size = size-i*65536;
+			}else{
+				sizeToRead = (int)size;
+			}
+	
+			//the byte arry where to put the data
+			byte[] bloc = Arrays.copyOfRange(totalString, offset, sizeToRead);
+			
+			//Make the hash from the bloc
+			String blocHash = Model.hash(bloc);
+			
+			//write informations to the fragment
+			//bloc number
+			fragment.put("_i"+i+"_i", ((i-1)+"").getBytes());
+			//hash
+			fragment.put("_i"+i+"_blocHash", blocHash.getBytes());
+			//bloc
+			fragment.put("_i"+i+"_contentPart", bloc);
+		}
+
+	}
+
+	@Override
+	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+		long size	= Long.parseLong(new String(fragment.get("_size")));
+		long count	= Long.parseLong(new String(fragment.get("_count")));
+		fragment.remove("_size");
+		fragment.remove("_count");
+		
+		StringBuilder sb = new StringBuilder();
+		//write every hash results
+		for (int i = 1; i <= count;i++) {
+			String hash = new String(fragment.get("_i"+i+"_blocHash"));
+			fragment.remove("_i"+i+"_blocHash");
+			byte[] bloc = fragment.get("_i"+i+"_contentPart");
+			if(Model.checkHash(hash, bloc)){
+				sb.append(new String(bloc));
+			}else{
+				//TODO write here the code needed to ask unCorrect blocs.
+			}
+		}
+		//TODO final size check 
+		string = sb.toString();
 	}
 
 }

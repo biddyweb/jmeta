@@ -90,6 +90,8 @@ public class DataFile extends Data {
 		
 		long size	= file.length();
 		long count	= size / 65536;  
+		if(count<1)
+			count=1;
 		
 		//set size
 		fragment.put("_size", (size+"").getBytes());
@@ -104,7 +106,18 @@ public class DataFile extends Data {
 				int offset = (i-1)*65536;
 				
 				//size to read in the file
-				int sizeToRead = (int) (i < count ? 65536 : size-i*65536);
+				int sizeToRead = -1;
+				//if i < count, the size is 64ko
+				if(i<count){
+					sizeToRead = 65536;
+				//if not but count was > 1, make the difference
+				//original size - nb * 64ko
+				}else if(count > 1){
+					size = size-i*65536;
+				}else{
+					//else it's the orinial size
+					sizeToRead = (int)size;
+				}
 
 				//the byte arry where to put the data
 				byte[] bloc 	= new byte[sizeToRead];
@@ -116,12 +129,10 @@ public class DataFile extends Data {
 				String blocHash = Model.hash(bloc);
 				
 				//write informations to the fragment
-				//bloc number
-				fragment.put("_i", ((i-1)+"").getBytes());
 				//hash
-				fragment.put("_blocHash", blocHash.getBytes());
+				fragment.put("_"+i+"_blocHash", blocHash.getBytes());
 				//bloc
-				fragment.put("_contentPart", bloc);
+				fragment.put("_"+i+"_contentPart", bloc);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO do something here
@@ -130,6 +141,11 @@ public class DataFile extends Data {
 			// TODO do something here
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+		// TODO too tired to do this tonight
 	}
 
 }

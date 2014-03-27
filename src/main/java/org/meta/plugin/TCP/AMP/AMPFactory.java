@@ -1,7 +1,6 @@
 package org.meta.plugin.TCP.AMP;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 /*
  *	JMeta - Meta's java implementation

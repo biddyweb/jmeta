@@ -1,7 +1,5 @@
 package javaTests.org.meta;
 
-import java.text.ParseException;
-
 import org.meta.plugin.TCP.AMP.AMPAskFactory;
 import org.meta.plugin.TCP.AMP.AMPAskParser;
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
@@ -39,9 +37,6 @@ public class AMPAskParserTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-
-
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.meta.modele;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import djondb.BSONObj;
@@ -34,8 +33,8 @@ public abstract class Searchable {
 	private 	String 	 	hashCode 	= null;
 	private 	BSONObj 	oldJson 	= null;
 	
-	private		boolean    createInDb  = false;
-	private 	boolean 	updateDB	= false;
+	protected	boolean    createInDb  = false;
+	protected 	boolean 	updateDB	= false;
 	
 	/**
 	 * This constrcutor is needed for Java reflexion usage
@@ -135,8 +134,8 @@ public abstract class Searchable {
 	
 	public LinkedHashMap<String, byte[]> getAmpAnswerPart(){
 		LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<String, byte[]>();
-		fragment.put("_type", (getClass()+"").getBytes());
-		fragment.put("hash", getHashCode().getBytes());
+		fragment.put("_type", (this.getClass().getName()+"").getBytes());
+		fragment.put("_hash", getHashCode().getBytes());
 		fillFragment(fragment);
 		return fragment;
 	}
@@ -146,5 +145,16 @@ public abstract class Searchable {
 	 * @param fragment
 	 */
 	protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);
+
+	public void unParseFromAmpFragment(LinkedHashMap<String, byte[]> fragment) {
+		this.createInDb = true;
+		this.updateDB   = false;
+		this.hashCode 	= new String(fragment.get("_hash"));
+		fragment.remove("_hash");
+		decodefragment(fragment);
+		fragment.clear();
+	}
+
+	protected abstract void decodefragment(LinkedHashMap<String, byte[]> fragment);
 	
 }

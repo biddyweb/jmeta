@@ -337,6 +337,10 @@ public class Model {
 
 	public static String hash(byte[] bloc) {
 		// TODO create this method further
-		return null;
+		return "TODO_hash_a_faire";
+	}
+
+	public static boolean checkHash(String hash, byte[] bloc) {
+		return hash.equals(hash(bloc));
 	}
 }

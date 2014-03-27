@@ -36,6 +36,7 @@ public class MetaData extends Searchable {
 
 	private ArrayList<Data> 			linkedData = null;
 	private ArrayList<MetaProperty>	 	properties = null;
+	private ArrayList<String> tmpLinkedData;
 	
 	/**
 	 * needed for java Reflection
@@ -142,15 +143,54 @@ public class MetaData extends Searchable {
 	@Override
 	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
 		//write every properties
+		fragment.put("_nbProperties", (properties.size()+"").getBytes());
 		for (int i = 0; i < properties.size();i++) {
 			MetaProperty property = properties.get(i);
-			fragment.put("_property_"+i, property.getValue().getBytes());
-			fragment.put("_property_"+i, property.getName().getBytes());
+			fragment.put("_i"+i+"_property_name", property.getValue().getBytes());
+			fragment.put("_i"+i+"_property_value", property.getName().getBytes());
 		}
 		//write every data's hash
+		fragment.put("_nbLinkedData", (linkedData.size()+"").getBytes());
 		for (int i = 0; i < linkedData.size();i++) {
 			Data data = linkedData.get(i);
-			fragment.put("_data_"+i, data.getHashCode().getBytes());
+			fragment.put("_i"+i+"_data", data.getHashCode().getBytes());
 		}
+	}
+
+	@Override
+	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+		//when this method is called in a metaData, her state is no more a real
+		//MetaData but a temporary metaData, it means, it only represent what's 
+		//over the network, so source = null ans result = null
+		linkedData = null;
+		//but not properties
+		properties = new ArrayList<MetaProperty>();
+		//and the Search cannot be write or updated in database
+		updateDB   = false;
+		createInDb = false; 
+		
+		//extract all linkedDatas and delete it from the fragment too
+		int nbProperties = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		for(int i=0; i<nbProperties; i++){
+			String name = new String(fragment.get("_i"+i+"_property_name"));
+			String value = new String(fragment.get("_i"+i+"_property_value"));
+			MetaProperty property = new MetaProperty(name, value);
+			fragment.remove("_i"+i+"_property_name");
+			fragment.remove("_i"+i+"_property_value");
+			properties.add(property);
+		}
+		
+		//extract all linkedDatas and delete it from the fragment too
+		int nbLinkedData = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		tmpLinkedData  	 = new ArrayList<String>();
+		for(int i=0; i<nbLinkedData; i++){
+			String data = new String(fragment.get("_i"+i+"_data"));
+			fragment.remove("_i"+i+"_data");
+			tmpLinkedData.add(data);
+		}
+	}
+
+	public ArrayList<String> getTmpLinkedData() {
+		return tmpLinkedData;
 	}
 }

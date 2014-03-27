@@ -33,6 +33,9 @@ public class Search extends Searchable {
 	private Searchable 				source 		= null;
 	private ArrayList<MetaData>		results 	= null;
 	
+	private String 				tmpSourceHashes	= null;
+	private ArrayList<String>	tmpResultsHashes= null;
+	
 	public Search(){
 		super();
 		results = new ArrayList<MetaData>();
@@ -145,11 +148,44 @@ public class Search extends Searchable {
 		//write hash source
 		fragment.put("_source", source.getHashCode().getBytes());
 		//write every hash results
+		fragment.put("_nbMetaData", (results.size()+"").getBytes());
 		for (int i = 0; i < results.size();i++) {
 			MetaData metaData = results.get(i);
-			fragment.put("_metaData_"+i, metaData.getHashCode().getBytes());
+			fragment.put("_i"+i+"_metaData_"+i, metaData.getHashCode().getBytes());
 		}
 		
 	}
 
+	@Override
+	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+		//when this method is called in a Search, her state is no more a real
+		//Search but a temporary search, it means, it only represent what's 
+		//over the network, so source = null ans result = null
+		source = null;
+		results= null;
+		//and the Search cannot be write or updated in database
+		updateDB   = false;
+		createInDb = false; 
+		
+		//extract the source and delete from the fragment
+		tmpSourceHashes  = new String(fragment.get("_source"));
+		fragment.remove("_source");
+		
+		//extract all metaDatas and delete it from the fragment too
+		int nbMetaData   = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		tmpResultsHashes = new ArrayList<String>();
+		for(int i=0; i<nbMetaData; i++){
+			String metaData = new String(fragment.get("_i"+i+"_metaData"));
+			fragment.remove("_i"+i+"_metaData");
+			tmpResultsHashes.add(metaData);
+		}
+	}
+
+	public String getTmpSourceHashes() {
+		return tmpSourceHashes;
+	}
+
+	public ArrayList<String> getTmpResultsHashes() {
+		return tmpResultsHashes;
+	}
 }

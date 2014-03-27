@@ -21,7 +21,7 @@ public class AMPAnswerFactory extends AMPFactory {
 	 */
 	public AMPAnswerFactory(String answer, ArrayList<Searchable> datas){
 		//write the answer number and the count of datas send
-		HashMap<String, byte[]> map = new HashMap<String, byte[]>();
+		LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();
 		map.put("_answer", answer.getBytes());
 		map.put("_nbDatas", Integer.toString(datas.size()).getBytes());
 		

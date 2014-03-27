@@ -10,7 +10,7 @@ public class AMPAnswerParser extends AMPParser{
 	//Do not initialize those variables, because it's made by the mumy
 	//in her constructor ;) via the implement method "useContent"
 	private String 					answer		;
-	private HashMap<String, byte[]>	parameters	;
+	private LinkedHashMap<String, byte[]>	parameters	;
 	
 	public AMPAnswerParser(byte[] bs) throws NotAValidAMPCommand {
 		super(bs);
@@ -27,7 +27,7 @@ public class AMPAnswerParser extends AMPParser{
 		return answer;
 	}
 
-	public HashMap<String, byte[]> getParameters() {
+	public LinkedHashMap<String, byte[]> getParameters() {
 		return parameters;
 	}
 }

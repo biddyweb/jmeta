@@ -2,6 +2,7 @@ package org.meta.plugin.TCP.AMP;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 Thomas LAVOCAT
@@ -29,7 +30,7 @@ public abstract class AMPFactory {
 	 * @param map
 	 * @return
 	 */
-	protected void build(HashMap<String, byte[]> map) 
+	protected void build(LinkedHashMap<String, byte[]> map) 
 	{
 		message = new byte[0];
 		for(String name : map.keySet())

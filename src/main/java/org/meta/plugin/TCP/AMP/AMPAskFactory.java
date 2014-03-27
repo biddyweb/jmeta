@@ -1,6 +1,6 @@
 package org.meta.plugin.TCP.AMP;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * 
@@ -18,7 +18,7 @@ public class AMPAskFactory extends AMPFactory{
 	 * @param hash the hash of the request
 	 */
 	public AMPAskFactory(String ask, String command, String hash) {
-		HashMap<String, byte[]> map = new HashMap<String, byte[]>();
+		LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();
 		map.put("_ask", ask.getBytes());
 		map.put("_command", command.getBytes());
 		map.put("_hash", hash.getBytes());

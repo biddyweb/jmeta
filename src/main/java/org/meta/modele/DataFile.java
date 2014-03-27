@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import djondb.BSONObj;
 
@@ -83,7 +83,7 @@ public class DataFile extends Data {
 	}
 	
 	@Override
-	protected void fillFragment(HashMap<String, byte[]> fragment) {
+	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
 		//write hash source
 		fragment.put("_fileName", file.getName().getBytes());
 		//Send the file, it will surrely be bigger than 65 536o

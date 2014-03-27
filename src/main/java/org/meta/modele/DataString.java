@@ -1,7 +1,7 @@
 package org.meta.modele;
 
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import djondb.BSONObj;
 
@@ -20,7 +20,7 @@ import djondb.BSONObj;
  *	GNU Affero General Public License for more details.
  *	
  *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *	along with this program. HashMap If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  * 
@@ -80,7 +80,7 @@ public class DataString extends Data {
 	}
 
 	@Override
-	protected void fillFragment(HashMap<String, byte[]> fragment) {
+	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
 		//write the file name
 		//TODO
 	}

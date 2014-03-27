@@ -1,7 +1,5 @@
 package org.meta.modele;
 
-import java.io.File;
-
 import djondb.BSONObj;
 
 /*

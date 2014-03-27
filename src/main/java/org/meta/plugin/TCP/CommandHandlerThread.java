@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.text.ParseException;
 
 import org.meta.plugin.TCP.AMP.AMPAskParser;
+import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
 /**
  * This thread only listen to AMP Command
@@ -66,14 +67,15 @@ public class CommandHandlerThread extends Thread{
 			}
 		} catch (IOException e) {
 			e.printStackTrace();//TODO gérer cette exception
-		} catch (ParseException e) {
-			e.printStackTrace();//TODO It means its not an AMPCommand
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			//TODO if an exception is throw here it means you cannot excecute 
 			//the command
 		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotAValidAMPCommand e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {

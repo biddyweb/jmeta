@@ -1,7 +1,7 @@
 package org.meta.modele;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import djondb.BSONArrayObj;
 import djondb.BSONObj;
@@ -140,7 +140,7 @@ public class MetaData extends Searchable {
 	}
 
 	@Override
-	protected void fillFragment(HashMap<String, byte[]> fragment) {
+	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
 		//write every properties
 		for (int i = 0; i < properties.size();i++) {
 			MetaProperty property = properties.get(i);

@@ -2,6 +2,7 @@ package org.meta.modele;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import djondb.BSONObj;
 
@@ -132,8 +133,8 @@ public abstract class Searchable {
 		return new ArrayList<Searchable>();
 	}
 	
-	public HashMap<String, byte[]> getAmpAnswerPart(){
-		HashMap<String, byte[]> fragment = new HashMap<String, byte[]>();
+	public LinkedHashMap<String, byte[]> getAmpAnswerPart(){
+		LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<String, byte[]>();
 		fragment.put("_type", (getClass()+"").getBytes());
 		fragment.put("hash", getHashCode().getBytes());
 		fillFragment(fragment);
@@ -144,6 +145,6 @@ public abstract class Searchable {
 	 * Fill the fragment with usefull informations
 	 * @param fragment
 	 */
-	protected abstract void fillFragment(HashMap<String, byte[]> fragment);
+	protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);
 	
 }

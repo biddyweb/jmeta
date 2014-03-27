@@ -1,6 +1,6 @@
 package org.meta.plugin.TCP.AMP;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
@@ -15,7 +15,7 @@ public abstract class AMPParser {
 	 * @param bs
 	 */
 	private void parse(byte[] bs) throws NotAValidAMPCommand{
-		HashMap<String, byte[]> content = new HashMap<String, byte[]>();
+		LinkedHashMap<String, byte[]> content = new LinkedHashMap<String, byte[]>();
 		int readIndex = 0;
 		
 		//for each elements in the byte array
@@ -54,7 +54,7 @@ public abstract class AMPParser {
 		useContent(content);
 	}
 
-	protected abstract void useContent(HashMap<String, byte[]> content) throws NotAValidAMPCommand;
+	protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPCommand;
 
 	private int parseSize(byte a, byte b) {
 		return ((int)a<<8)+((int)b);

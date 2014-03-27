@@ -1,7 +1,6 @@
 package org.meta.plugin.TCP.AMP;
 
-import java.text.ParseException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPAskCommand;
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
@@ -20,7 +19,7 @@ public class AMPAskParser extends AMPParser{
 	}
 	
 	@Override
-	protected void useContent(HashMap<String, byte[]> content) throws NotAValidAMPAskCommand {
+	protected void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPAskCommand {
 		ask 	= content.get("_ask") != null ? new String(content.get("_ask")) : null;
 		command = content.get("_command") != null ?new String(content.get("_command")) : null;
 		hash 	= content.get("_hash") != null ? new String(content.get("_hash")) : null;

@@ -1,7 +1,7 @@
 package org.meta.modele;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import djondb.BSONArrayObj;
 import djondb.BSONObj;
@@ -141,7 +141,7 @@ public class Search extends Searchable {
 	}
 
 	@Override
-	protected void fillFragment(HashMap<String, byte[]> fragment) {
+	protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
 		//write hash source
 		fragment.put("_source", source.getHashCode().getBytes());
 		//write every hash results

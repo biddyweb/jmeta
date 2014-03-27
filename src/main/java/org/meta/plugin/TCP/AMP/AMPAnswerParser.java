@@ -1,7 +1,7 @@
 package org.meta.plugin.TCP.AMP;
 
-import java.text.ParseException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 
@@ -17,7 +17,7 @@ public class AMPAnswerParser extends AMPParser{
 	}
 
 	@Override
-	protected void useContent(HashMap<String, byte[]> content) {
+	protected void useContent(LinkedHashMap<String, byte[]> content) {
 		answer = new String(content.get("_answer"));
 		content.remove("_answer");
 		parameters = content;

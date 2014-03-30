@@ -3,6 +3,7 @@ package org.meta.modele;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -145,7 +146,33 @@ public class DataFile extends Data {
 
 	@Override
 	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
-		// TODO too tired to do this tonight
+		//file name
+		String  fileName = new String(fragment.get("_fileName")) ;
+		File 	file     = new File(System.getProperty("java.io.tmpdir")+"/"+fileName);
+		
+		try {
+			if(file.createNewFile()){
+				FileOutputStream fos = new FileOutputStream(file);
+				long count = Long.parseLong(new String(fragment.get("_count")));
+				fragment.remove("_size");
+				fragment.remove("_count");
+				
+				for(int i=1; i<=count; i++){
+					String hash = new String(fragment.get("_"+i+"_blocHash"));
+					fragment.remove("_"+i+"_blocHash");
+					byte[] bloc = fragment.get("_"+i+"_contentPart");
+					if(Model.checkHash(hash, bloc)){
+						fos.write(bloc);
+					}else{
+						//TODO write here the code needed to ask unCorrect blocs.
+					}
+				}
+			}else{
+				//TODO throw an exception
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
-
 }

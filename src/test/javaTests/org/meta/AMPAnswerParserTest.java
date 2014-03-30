@@ -1,7 +1,7 @@
 package javaTests.org.meta;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.meta.modele.Data;
 import org.meta.modele.DataFile;
@@ -17,8 +17,11 @@ import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 public class AMPAnswerParserTest {
 	
 	public static void main(String[] args) {
+		//Data File
+		DataFile dataFile = new DataFile("toto va au cinéma", new File("/home/faquin/done.txt"));
 		
-		// -- Data
+		
+		// -- Data String
 		DataString data = new DataString(
 				"hashData1", 
 				"Toto va à la plage");
@@ -48,6 +51,7 @@ public class AMPAnswerParserTest {
 		
 		ArrayList<Searchable> datas = new ArrayList<Searchable>();
 		datas.add(data);
+		datas.add(dataFile);
 		
 		AMPAnswerFactory factory = new AMPAnswerFactory("12", datas);
 		AMPAnswerParser parser;
@@ -65,13 +69,12 @@ public class AMPAnswerParserTest {
 				}else if(searchable instanceof MetaData){
 					MetaData metaData3 = (MetaData) searchable;
 				}else if(searchable instanceof DataFile){
-					MetaData metaData3 = (MetaData) searchable;
+					DataFile metaData3 = (DataFile) searchable;
 				}else if(searchable instanceof DataString){
 					DataString dataString = (DataString) searchable;
 					System.out.println(dataString.getString());
 				}
 			}
-			
 		} catch (NotAValidAMPCommand e) {
 			e.printStackTrace();
 		}

@@ -37,14 +37,14 @@ public abstract class Searchable {
 	protected 	boolean 	updateDB	= false;
 	
 	/**
-	 * This constrcutor is needed for Java reflexion usage
+	 * This constructor is needed for Java reflexion usage
 	 */
 	public Searchable(){
 		hashCode 	= "empty";
 	}
 	
 	/**
-	 * This construcotr has to be used in case of creation 
+	 * This constructor has to be used in case of creation
 	 * @param hashCode
 	 */
 	public Searchable(String hashCode){
@@ -87,7 +87,7 @@ public abstract class Searchable {
 	
 	/**
 	 * 
-	 * @return true if you have to create false in othe case
+	 * @return true if you have to create false in other case
 	 */
 	public boolean haveToCreate(){
 		return createInDb;		
@@ -96,7 +96,7 @@ public abstract class Searchable {
 	/**
 	 * 
 	 * @return transform the Searchable object into a JSON that can 
-	 * be storable
+	 * be stored
 	 */
 	public BSONObj toJson(){
 		BSONObj json = new BSONObj();
@@ -118,7 +118,7 @@ public abstract class Searchable {
 	 * @param oldJson
 	 */
 	public void setOldJson(BSONObj oldJson) {
-		//put the update flag to true dans create to false,
+		//put the update flag to true and create to false,
 		updateDB 	= true;
 		createInDb 	= false;
 		this.oldJson = oldJson;
@@ -126,7 +126,7 @@ public abstract class Searchable {
 	
 	/**
 	 *
-	 * @return the list of childs to create
+	 * @return the list of children to create
 	 */
 	public ArrayList<Searchable> getChildsToCreate(){
 		return new ArrayList<Searchable>();
@@ -141,7 +141,7 @@ public abstract class Searchable {
 	}
 	
 	/**
-	 * Fill the fragment with usefull informations
+	 * Fill the fragment with useful informations
 	 * @param fragment
 	 */
 	protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);

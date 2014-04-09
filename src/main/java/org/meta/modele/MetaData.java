@@ -170,7 +170,7 @@ public class MetaData extends Searchable {
 		createInDb = false; 
 		
 		//extract all linkedDatas and delete it from the fragment too
-		int nbProperties = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
 		for(int i=0; i<nbProperties; i++){
 			String name = new String(fragment.get("_i"+i+"_property_name"));
 			String value = new String(fragment.get("_i"+i+"_property_value"));
@@ -181,7 +181,7 @@ public class MetaData extends Searchable {
 		}
 		
 		//extract all linkedDatas and delete it from the fragment too
-		int nbLinkedData = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		int nbLinkedData = Integer.parseInt(new String(fragment.get("_nbLinkedData")));
 		tmpLinkedData  	 = new ArrayList<String>();
 		for(int i=0; i<nbLinkedData; i++){
 			String data = new String(fragment.get("_i"+i+"_data"));

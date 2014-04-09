@@ -172,10 +172,10 @@ public class Search extends Searchable {
 		fragment.remove("_source");
 		
 		//extract all metaDatas and delete it from the fragment too
-		int nbMetaData   = Integer.parseInt(new String(fragment.get("nbMetaData")));
+		int nbMetaData   = Integer.parseInt(new String(fragment.get("_nbMetaData")));
 		tmpResultsHashes = new ArrayList<String>();
 		for(int i=0; i<nbMetaData; i++){
-			String metaData = new String(fragment.get("_i"+i+"_metaData"));
+			String metaData = new String(fragment.get("_i"+i+"_metaData_"+0));
 			fragment.remove("_i"+i+"_metaData");
 			tmpResultsHashes.add(metaData);
 		}

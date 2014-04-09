@@ -147,7 +147,7 @@ public class DataFile extends Data {
 	@Override
 	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
 		//TODO file name
-		File 	file     = new File(System.getProperty("java.io.tmpdir")+"/"+super.hash);
+		file     = new File(System.getProperty("java.io.tmpdir")+"/"+super.hash);
 		
 		try {
 			if(file.createNewFile()){

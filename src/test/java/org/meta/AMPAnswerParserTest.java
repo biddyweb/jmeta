@@ -52,6 +52,8 @@ public class AMPAnswerParserTest {
 		ArrayList<Searchable> datas = new ArrayList<Searchable>();
 		datas.add(data);
 		datas.add(dataFile);
+		datas.add(search);
+		datas.add(metaData);
 		
 		AMPAnswerFactory factory = new AMPAnswerFactory("12", datas);
 		AMPAnswerParser parser;
@@ -65,11 +67,13 @@ public class AMPAnswerParserTest {
 				
 				if(searchable instanceof Search){
 					Search search3 = (Search) searchable;
-					System.out.println(search3.getTmpSourceHashes());
+					System.out.println(search3.getTmpResultsHashes());
 				}else if(searchable instanceof MetaData){
 					MetaData metaData3 = (MetaData) searchable;
+					System.out.println(metaData3.getTmpLinkedData());
 				}else if(searchable instanceof DataFile){
-					DataFile metaData3 = (DataFile) searchable;
+					DataFile dataFile3 = (DataFile) searchable;
+					System.out.println(dataFile3.getFile().getName());
 				}else if(searchable instanceof DataString){
 					DataString dataString = (DataString) searchable;
 					System.out.println(dataString.getString());

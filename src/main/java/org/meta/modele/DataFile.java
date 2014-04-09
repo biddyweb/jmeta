@@ -146,9 +146,8 @@ public class DataFile extends Data {
 
 	@Override
 	protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
-		//file name
-		String  fileName = new String(fragment.get("_fileName")) ;
-		File 	file     = new File(System.getProperty("java.io.tmpdir")+"/"+fileName);
+		//TODO file name
+		File 	file     = new File(System.getProperty("java.io.tmpdir")+"/"+super.hash);
 		
 		try {
 			if(file.createNewFile()){
@@ -166,9 +165,7 @@ public class DataFile extends Data {
 					}else{
 						//TODO write here the code needed to ask unCorrect blocs.
 					}
-				}
-			}else{
-				//TODO throw an exception
+				}		
 			}
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block

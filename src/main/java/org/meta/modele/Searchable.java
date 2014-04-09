@@ -30,7 +30,7 @@ import djondb.BSONObj;
  */
 public abstract class Searchable {
 	
-	private 	String 	 	hashCode 	= null;
+	protected 	String 	 	hash 		= null;
 	private 	BSONObj 	oldJson 	= null;
 	
 	protected	boolean    createInDb  = false;
@@ -40,7 +40,7 @@ public abstract class Searchable {
 	 * This constructor is needed for Java reflexion usage
 	 */
 	public Searchable(){
-		hashCode 	= "empty";
+		hash 	= "empty";
 	}
 	
 	/**
@@ -48,7 +48,7 @@ public abstract class Searchable {
 	 * @param hashCode
 	 */
 	public Searchable(String hashCode){
-		this.hashCode 	= hashCode;
+		this.hash 	= hashCode;
 		updateDB   = false;
 		createInDb = true;
 	}
@@ -58,7 +58,7 @@ public abstract class Searchable {
 	 * @param hashCode
 	 */
 	public Searchable(String hashCode, BSONObj json){
-		this.hashCode 	= hashCode;
+		this.hash 	= hashCode;
 		setOldJson(json);
 	}
 	
@@ -67,14 +67,14 @@ public abstract class Searchable {
 	 * @return the hashCode of this Searchable object
 	 */
 	public String getHashCode(){
-		return hashCode;
+		return hash;
 	}
 	
 	/**
 	 * @param hashCode the hashCode to set
 	 */
 	public void setHashCode(String hashCode) {
-		this.hashCode = hashCode;
+		this.hash = hashCode;
 	}
 
 	/**
@@ -149,7 +149,7 @@ public abstract class Searchable {
 	public void unParseFromAmpFragment(LinkedHashMap<String, byte[]> fragment) {
 		this.createInDb = true;
 		this.updateDB   = false;
-		this.hashCode 	= new String(fragment.get("_hash"));
+		this.hash 	= new String(fragment.get("_hash"));
 		fragment.remove("_hash");
 		decodefragment(fragment);
 		fragment.clear();

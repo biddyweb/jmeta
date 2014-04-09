@@ -3,6 +3,10 @@ package javaTests.org.meta;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
 import org.meta.modele.Data;
 import org.meta.modele.DataFile;
 import org.meta.modele.MetaData;
@@ -14,7 +18,24 @@ import djondb.LibraryException;
 
 public class ModelTest {
 
-	public static void main(String[] args) throws LibraryException {
+	protected Model model;
+
+	@Before	
+	public void setUp() throws LibraryException {
+//		model = new Model();
+	}
+
+	@Test
+	public void testCreate() throws Exception {
+		assertEquals(2, 2);
+	}	
+    @Test
+	public void testCreate2() throws Exception {
+		assertEquals(2, 3);
+	}	
+
+
+	 public static void main(String[] args) throws LibraryException {
 		// -- instantiate the model
 		Model model = new Model();
 		/*******************************************************************

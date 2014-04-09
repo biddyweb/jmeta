@@ -14,12 +14,12 @@ import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
  * @author faquin
  *
  */
-public class CommandHandlerThread extends Thread{
+public class AskHandlerThread extends Thread{
 	
 	private Socket 		client	= null;
 	private TCPReader 	reader = TCPReader.getInstance();
 
-	public CommandHandlerThread(Socket client){
+	public AskHandlerThread(Socket client){
 		this.client = client;
 	}
 	

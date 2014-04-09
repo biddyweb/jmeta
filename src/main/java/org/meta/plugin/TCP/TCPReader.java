@@ -58,7 +58,7 @@ public class TCPReader extends Thread {
 			socket = new ServerSocket(port);
 			while(work){
 				Socket client = socket.accept();
-				CommandHandlerThread discussWith = new CommandHandlerThread(client);
+				AskHandlerThread discussWith = new AskHandlerThread(client);
 				discussWith.start();
 			}
 		} catch (IOException e) {

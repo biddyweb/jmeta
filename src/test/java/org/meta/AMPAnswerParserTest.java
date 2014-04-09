@@ -1,4 +1,4 @@
-package javaTests.org.meta;
+package org.meta;
 
 import java.io.File;
 import java.util.ArrayList;

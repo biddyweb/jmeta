@@ -1,4 +1,4 @@
-package javaTests.org.meta;
+package org.meta;
 
 import org.meta.plugin.TCP.AMP.AMPAskFactory;
 import org.meta.plugin.TCP.AMP.AMPAskParser;

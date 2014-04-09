@@ -1,4 +1,4 @@
-package javaTests.org.meta;
+package org.meta;
 import java.io.IOException;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureBootstrap; 

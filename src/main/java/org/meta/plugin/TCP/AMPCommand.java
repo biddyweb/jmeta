@@ -8,7 +8,7 @@ public abstract class AMPCommand {
 	
 	public AMPCommand(){}
 	
-	public abstract Byte[] execute();
+	public abstract byte[] execute();
 	
 	
 	

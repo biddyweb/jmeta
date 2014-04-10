@@ -2,9 +2,12 @@ package org.meta.plugin.TCP;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.meta.modele.Searchable;
 import org.meta.plugin.TCP.AMP.AMPAnswerParser;
@@ -15,19 +18,25 @@ import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 public class AnswerSenderThread extends Thread {
 
-	private InetAddress adress = null;
-	private AMPAskFactory ask = null;
-	private ArrayList<Searchable> results = null;
-	private int port = 0;
-
+	private InetAddress 			adress 		= null;
+	private AMPAskFactory 			ask 		= null;
+	private ArrayList<Searchable> 	results 	= null;
+	private int 					port 		= 0;
+	private TCPResponseCallback 	listenner 	= null;
 	/**
 	 * 
+	 * @param listenner 
 	 * @param answer
 	 */
-	public AnswerSenderThread(AMPAskFactory ask, InetAddress adress, int port) {
-		this.ask = ask;
-		this.adress = adress;
-		this.port = port;
+	public AnswerSenderThread(	AMPAskFactory ask,
+								InetAddress adress, 
+								int port,
+								TCPResponseCallback listenner)
+	{
+		this.ask 		= ask;
+		this.adress 	= adress;
+		this.port 		= port;
+		this.listenner 	= listenner;
 	}
 
 	public void run() {
@@ -35,7 +44,10 @@ public class AnswerSenderThread extends Thread {
 			// Open a connection to the pair
 			Socket client = new Socket(adress, port);
 			// write the message
-			client.getOutputStream().write(ask.getMessage());
+			OutputStream os = client.getOutputStream();
+			os.write(ask.getMessage());
+			client.shutdownOutput();
+
 			// wait for an answer
 			InputStream is = client.getInputStream();
 			//Open the input stream			
@@ -55,8 +67,9 @@ public class AnswerSenderThread extends Thread {
 		} catch (IOException | NotAValidAMPCommand e) {
 			e.printStackTrace();// TODO
 		}
+		
+		listenner.callback(results);
 	}
-	
 	
 	public ArrayList<Searchable> getResults() {
 		return results;

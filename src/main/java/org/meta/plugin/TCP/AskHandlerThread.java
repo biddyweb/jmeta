@@ -40,15 +40,14 @@ public class AskHandlerThread extends Thread{
 			AMPAskParser parser = new AMPAskParser(buffer.getRawData());
 			buffer.flush();
 			buffer.close();
-			client.close();
-			inputStream.close();
+			
 			//Get the _command parameter from the amp command
 			//If not null, it means we speak the same langage, if not
 			//do nothing
 			if(parser.getCommand() != null){//TODO handle this with an exception
 				//get the AMPCommand from the TCPReader singleton
 				//who know every plugins
-				Class<AMPCommand> classCommand = 
+				Class<? extends AMPCommand> classCommand = 
 										this.reader.getCommand(parser.getCommand());
 				//if the classCommand is null, we d'ont have the requeried
 				//command to execute
@@ -60,7 +59,7 @@ public class AskHandlerThread extends Thread{
 					//Set the parameters as String[]
 					command.setParameters(parser.getHash());
 					//and execute it
-					Byte[] response = command.execute();
+					byte[] response = command.execute();
 					//finally, write the output to the client
 					OutputStream os = client.getOutputStream();
 					for (int i = 0; i < response.length; i++) {

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.text.ParseException;
-
 import org.meta.plugin.TCP.AMP.AMPAskParser;
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+
+import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 /**
  * This thread only listen to AMP Command
@@ -27,18 +27,21 @@ public class AskHandlerThread extends Thread{
 	public void run() {
 		InputStream inputStream = null;
 		try {
-			//Use a Stringbuilder to rebuilt the stream
-			StringBuilder input = new StringBuilder();
 			//Open the client inputStream
 			inputStream = client.getInputStream();
 			//Read the stream
-			int octet = inputStream.read();
-			while(octet != -1){
-				input.append((char) octet);
-				octet = inputStream.read();
+			ByteArrayBuffer buffer = new ByteArrayBuffer();
+			int count = 0;
+			
+			while ((count = inputStream.read()) != -1) {
+				buffer.write(count);	
 			}
 			//The question as to be a AMP command, if not -> exception
-			AMPAskParser parser = new AMPAskParser(input.toString().getBytes());
+			AMPAskParser parser = new AMPAskParser(buffer.getRawData());
+			buffer.flush();
+			buffer.close();
+			client.close();
+			inputStream.close();
 			//Get the _command parameter from the amp command
 			//If not null, it means we speak the same langage, if not
 			//do nothing

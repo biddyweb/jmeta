@@ -93,9 +93,9 @@ public class Controler {
 				//plugin founded
 				lstPluginsNames.add(pluginsProperties.getProperty(key));
 				//load TCP class
-				String strTCPClass = pluginsProperties.getProperty(key+".TCPClass");
+				String strTCPClass = pluginsProperties.getProperty(key.replaceAll(".name", "")+".TCPClass");
 				//load web service class
-				String strWSClass  = pluginsProperties.getProperty(key+"WSClass");
+				String strWSClass  = pluginsProperties.getProperty(key.replaceAll(".name", "")+".WSClass");
 				
 				try {
 					Class<?> clazzTCP 	= Class.forName(strTCPClass);

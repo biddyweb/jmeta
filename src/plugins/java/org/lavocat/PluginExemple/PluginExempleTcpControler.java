@@ -1,19 +1,20 @@
 package org.lavocat.PluginExemple;
 
-import org.meta.plugin.tcp.AMPCommand;
+import org.meta.plugin.PluginTCPControler;
 
-public class PluginExempleTcpControler extends AMPCommand {
+public class PluginExempleTcpControler extends PluginTCPControler {
 
 	@Override
-	public byte[] execute() {
+	public void nodesFounded() {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
-	public void setParameters(String hash) {
+	protected void initialiseCommands() {
 		// TODO Auto-generated method stub
-
+		
 	}
+
 
 }

@@ -33,19 +33,21 @@ import org.meta.plugin.tcp.TCPReader;
  */
 public abstract class PluginTCPControler implements P2PListener{
 
-	protected 	P2PControler 						p2pControler 	= 	null;
-	protected  Model 		 						model 			=	null;
-	protected  HashMap<String, Class<AMPCommand>>	lstCommands		= 	null;
-	private 	TCPReader							reader			= 	null;
+	protected 	P2PControler p2pControler 	= 	null;
+	protected  	Model 		 model 			=	null;
+	private 	TCPReader	reader			= 	null;
+	protected  	HashMap<String, Class<? extends AMPCommand>>	lstCommands		= 	null;
 	
 	public PluginTCPControler(){
 		reader = TCPReader.getInstance();
+		lstCommands = new HashMap<String, Class<? extends AMPCommand>>();
 	}
 
 	/**
 	 * Fil the lstCommands with all the needed TCP commands.
+	 * @param lstCommands2 
 	 */
-	protected abstract void initialiseCommands();
+	protected abstract void registercommands(HashMap<String, Class<? extends AMPCommand>> commands);
 
 	/**
 	 * @param p2pControler the p2pControler to set
@@ -58,7 +60,7 @@ public abstract class PluginTCPControler implements P2PListener{
 	 * initialize the plugin
 	 */
 	public void init() {
-		initialiseCommands();
+		registercommands(lstCommands);
 		registerCommandsToTCPReader();
 	}
 

@@ -48,7 +48,7 @@ public class AskHandlerThread extends Thread{
 			if(parser.getCommand() != null){//TODO handle this with an exception
 				//get the AMPCommand from the TCPReader singleton
 				//who know every plugins
-				Class<? extends Command> classCommand = 
+				Class<? extends AbstractCommand> classCommand = 
 										this.reader.getCommand(parser.getCommand());
 				//if the classCommand is null, we d'ont have the requeried
 				//command to execute
@@ -56,7 +56,7 @@ public class AskHandlerThread extends Thread{
 					//Make a new instance, is an exception is thrown here
 					//it means that maybe here's an error in the plugin
 					//config file;
-					Command command = (Command) classCommand.newInstance();
+					AbstractCommand command = (AbstractCommand) classCommand.newInstance();
 					//Set the parameters as String[]
 					command.setParameters(parser.getHash());
 					//and execute it

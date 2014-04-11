@@ -1,8 +1,8 @@
 package org.lavocat.PluginExemple.tcp.commands;
 
-import org.meta.plugin.tcp.Command;
+import org.meta.plugin.tcp.AbstractCommand;
 
-public class ExempleCommand extends Command {
+public class ExempleCommand extends AbstractCommand {
 
 	@Override
 	public byte[] execute() {

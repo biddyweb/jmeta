@@ -1,11 +1,12 @@
-package org.meta.plugin.TCP;
+package org.meta.plugin.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import org.meta.plugin.TCP.AMP.AMPAskParser;
+
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.AMPAskParser;
 
 import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 

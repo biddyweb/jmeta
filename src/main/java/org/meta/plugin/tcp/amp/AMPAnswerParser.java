@@ -1,4 +1,4 @@
-package org.meta.plugin.TCP.AMP;
+package org.meta.plugin.tcp.amp;
 
 import java.util.ArrayList;
 import java.util.Iterator;

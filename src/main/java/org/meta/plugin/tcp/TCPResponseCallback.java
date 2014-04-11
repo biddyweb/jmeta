@@ -1,4 +1,4 @@
-package org.meta.plugin.TCP;
+package org.meta.plugin.tcp;
 
 import java.util.ArrayList;
 

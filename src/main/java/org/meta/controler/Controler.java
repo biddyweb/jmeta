@@ -13,7 +13,7 @@ import org.meta.controler.P2P.P2PControler;
 import org.meta.modele.Model;
 import org.meta.plugin.PluginTCPControler;
 import org.meta.plugin.PluginWebServiceControler;
-import org.meta.plugin.TCP.TCPReader;
+import org.meta.plugin.tcp.TCPReader;
 
 import djondb.LibraryException;
 

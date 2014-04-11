@@ -1,6 +1,6 @@
 package org.lavocat.PluginExemple;
 
-import org.meta.plugin.TCP.AMPCommand;
+import org.meta.plugin.tcp.AMPCommand;
 
 public class PluginExempleTcpControler extends AMPCommand {
 

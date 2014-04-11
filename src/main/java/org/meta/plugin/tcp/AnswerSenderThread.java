@@ -1,4 +1,4 @@
-package org.meta.plugin.TCP;
+package org.meta.plugin.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.meta.modele.Searchable;
-import org.meta.plugin.TCP.AMP.AMPAnswerParser;
-import org.meta.plugin.TCP.AMP.AMPAskFactory;
 import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.AMPAnswerParser;
+import org.meta.plugin.tcp.amp.AMPAskFactory;
 
 import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 

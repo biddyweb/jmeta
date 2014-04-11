@@ -1,8 +1,8 @@
-package org.meta.plugin.TCP;
+package org.meta.plugin.tcp;
 
 import java.net.InetAddress;
 
-import org.meta.plugin.TCP.AMP.AMPAskFactory;
+import org.meta.plugin.tcp.amp.AMPAskFactory;
 
 
 public class TCPWriter {

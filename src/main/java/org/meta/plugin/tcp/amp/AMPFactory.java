@@ -1,4 +1,4 @@
-package org.meta.plugin.TCP.AMP;
+package org.meta.plugin.tcp.amp;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;

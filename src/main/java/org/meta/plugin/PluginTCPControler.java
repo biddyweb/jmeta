@@ -6,8 +6,8 @@ import java.util.Iterator;
 import org.meta.controler.P2P.P2PControler;
 import org.meta.controler.P2P.P2PListener;
 import org.meta.modele.Model;
-import org.meta.plugin.TCP.AMPCommand;
-import org.meta.plugin.TCP.TCPReader;
+import org.meta.plugin.tcp.AMPCommand;
+import org.meta.plugin.tcp.TCPReader;
 
 /*
  *	JMeta - Meta's java implementation

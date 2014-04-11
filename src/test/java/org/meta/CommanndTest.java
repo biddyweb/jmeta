@@ -10,11 +10,11 @@ import org.meta.modele.MetaData;
 import org.meta.modele.MetaProperty;
 import org.meta.modele.Search;
 import org.meta.modele.Searchable;
-import org.meta.plugin.tcp.AMPCommand;
+import org.meta.plugin.tcp.Command;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 
-public class CommanndTest extends AMPCommand {
+public class CommanndTest extends Command {
 
 	@Override
 	public byte[] execute() {

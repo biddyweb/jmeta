@@ -2,11 +2,11 @@ package org.meta.plugin.tcp;
 
 
 
-public abstract class AMPCommand {
+public abstract class Command {
 	protected String		commandName =	null;
 	protected String		callingIp   =	null;
 	
-	public AMPCommand(){}
+	public Command(){}
 	
 	public abstract byte[] execute();
 	

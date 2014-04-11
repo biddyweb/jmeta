@@ -30,25 +30,25 @@ import java.util.HashMap;
  */
 public class TCPReader extends Thread{
 
-	private HashMap<String, Class<? extends AMPCommand>> mapCommand 	= null;
+	private HashMap<String, Class<? extends Command>> mapCommand 	= null;
 	private 			boolean 		work		= true;
 	private static 		TCPReader 		instance 	= new TCPReader();
 	private 			int				port		= 4001;
 	private				ServerSocket 	socket		= null;
 	
 	private TCPReader() {
-		mapCommand = new HashMap<String, Class<? extends AMPCommand>>();
+		mapCommand = new HashMap<String, Class<? extends Command>>();
 	}
 	
 	public static TCPReader getInstance() {
 		return instance;
 	}
 	
-	public void registerCommand(String commandName, Class<? extends AMPCommand> clazz){
+	public void registerCommand(String commandName, Class<? extends Command> clazz){
 		mapCommand.put(commandName, clazz);
 	}
 	
-	public Class<? extends AMPCommand> getCommand(String commandName){
+	public Class<? extends Command> getCommand(String commandName){
 		return mapCommand.get(commandName);
 	}
 	

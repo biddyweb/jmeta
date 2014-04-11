@@ -6,7 +6,7 @@ import java.util.Iterator;
 import org.meta.controler.P2P.P2PControler;
 import org.meta.controler.P2P.P2PListener;
 import org.meta.modele.Model;
-import org.meta.plugin.tcp.AMPCommand;
+import org.meta.plugin.tcp.Command;
 import org.meta.plugin.tcp.TCPReader;
 
 /*
@@ -36,18 +36,18 @@ public abstract class PluginTCPControler implements P2PListener{
 	protected 	P2PControler p2pControler 	= 	null;
 	protected  	Model 		 model 			=	null;
 	private 	TCPReader	reader			= 	null;
-	protected  	HashMap<String, Class<? extends AMPCommand>>	lstCommands		= 	null;
+	protected  	HashMap<String, Class<? extends Command>>	lstCommands		= 	null;
 	
 	public PluginTCPControler(){
 		reader = TCPReader.getInstance();
-		lstCommands = new HashMap<String, Class<? extends AMPCommand>>();
+		lstCommands = new HashMap<String, Class<? extends Command>>();
 	}
 
 	/**
 	 * Fil the lstCommands with all the needed TCP commands.
 	 * @param lstCommands2 
 	 */
-	protected abstract void registercommands(HashMap<String, Class<? extends AMPCommand>> commands);
+	protected abstract void registercommands(HashMap<String, Class<? extends Command>> commands);
 
 	/**
 	 * @param p2pControler the p2pControler to set

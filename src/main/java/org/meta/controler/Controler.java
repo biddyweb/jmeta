@@ -72,7 +72,7 @@ public class Controler {
 		 this.configuration 	= new Properties();
 		 pluginsProperties.load(pluginInput);
 		 configuration.load(confInput);
-		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.getProperty("port")));
+		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.getProperty("port")+1));
 		 TCPReader.getInstance().initializePortAndRun(Integer.parseInt(configuration.getProperty("port")));
 		 pluginInitialisation();
 	 }

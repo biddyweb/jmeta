@@ -1,0 +1,5 @@
+#JMeta configuration file
+
+#TCP Configuration
+port:	4001
+

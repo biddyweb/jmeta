@@ -44,8 +44,8 @@ public class Controler {
 	private Properties 		pluginsProperties		= 	null;
 	private Properties		configuration			=	null;
 	private Model 			model 					=	null;
-	private String 			pluginsropertiesFile	=	null;//TODO
-	private String 			confPropertiesFile		=	null;//TODO
+	private String 			pluginsropertiesFile	=	"conf/plugins.prop";
+	private String 			confPropertiesFile		=	"conf/jmeta.prop";
 	private P2PControler 	p2pControler 			= 	null;
 	private ArrayList<String>							lstPluginsNames			=	null;
 	private HashMap<String, PluginTCPControler> 		mapTCPControler			=	null;

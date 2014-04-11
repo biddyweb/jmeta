@@ -1,0 +1,13 @@
+#
+# 	JMeta plugin properties File
+#
+#	To declare a Plugin follow this exemple :
+#
+#	PluginExemple.name: 		PluginExemple
+#	PluginExemple.TCPClass:		org.lavocat.plugins.PluginExemple.PluginExempleTcpControler
+#	PluginExemple.WSClass:		org.lavocat.plugins.PluginExemple.PluginExempleWebServiceControler
+
+PluginExemple.name: 		PluginExemple
+PluginExemple.TCPClass:		org.lavocat.plugins.PluginExemple.PluginExempleTcpControler
+PluginExemple.WSClass:		org.lavocat.plugins.PluginExemple.PluginExempleWebServiceControler
+

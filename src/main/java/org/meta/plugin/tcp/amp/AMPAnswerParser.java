@@ -9,8 +9,8 @@ import org.meta.modele.DataString;
 import org.meta.modele.MetaData;
 import org.meta.modele.Search;
 import org.meta.modele.Searchable;
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
-import org.meta.plugin.TCP.AMP.exception.NotAValidAmpAnswerCommand;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
 
 public class AMPAnswerParser extends AMPParser{
 

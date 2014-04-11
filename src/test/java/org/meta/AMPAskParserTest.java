@@ -1,8 +1,8 @@
 package org.meta;
 
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.AMPAskParser;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
 public class AMPAskParserTest {
 

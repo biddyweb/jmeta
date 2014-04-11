@@ -2,8 +2,8 @@ package org.meta.plugin.tcp.amp;
 
 import java.util.LinkedHashMap;
 
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPAskCommand;
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPAskCommand;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
 
 public class AMPAskParser extends AMPParser{

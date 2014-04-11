@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.AMPAskParser;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
 import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 

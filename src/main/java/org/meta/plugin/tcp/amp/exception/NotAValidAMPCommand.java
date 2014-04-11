@@ -1,4 +1,4 @@
-package org.meta.plugin.TCP.AMP.exception;
+package org.meta.plugin.tcp.amp.exception;
 
 public class NotAValidAMPCommand extends Exception{
 

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.meta.modele.Searchable;
-import org.meta.plugin.TCP.AMP.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
+import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
 import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 

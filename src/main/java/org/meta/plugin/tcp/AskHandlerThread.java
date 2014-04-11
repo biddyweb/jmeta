@@ -57,10 +57,10 @@ public class AskHandlerThread extends Thread{
 					//it means that maybe here's an error in the plugin
 					//config file;
 					AbstractCommand command = (AbstractCommand) classCommand.newInstance();
-					//Set the parameters as String[]
-					command.setParameters(parser.getHash());
 					//and execute it
-					byte[] response = command.execute();
+					String hash = parser.getHash();
+					String answer = parser.getAsk();
+					byte[] response = command.execute(answer, hash).getMessage();
 					//finally, write the output to the client
 					OutputStream os = client.getOutputStream();
 					for (int i = 0; i < response.length; i++) {

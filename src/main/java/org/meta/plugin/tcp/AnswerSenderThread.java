@@ -22,7 +22,7 @@ public class AnswerSenderThread extends Thread {
 	private AMPAskFactory 			ask 		= null;
 	private ArrayList<Searchable> 	results 	= null;
 	private int 					port 		= 0;
-	private TCPResponseCallback 	listenner 	= null;
+	private TCPResponseCallbackInteface 	listenner 	= null;
 	/**
 	 * 
 	 * @param listenner 
@@ -31,7 +31,7 @@ public class AnswerSenderThread extends Thread {
 	public AnswerSenderThread(	AMPAskFactory ask,
 								InetAddress adress, 
 								int port,
-								TCPResponseCallback listenner)
+								TCPResponseCallbackInteface listenner)
 	{
 		this.ask 		= ask;
 		this.adress 	= adress;

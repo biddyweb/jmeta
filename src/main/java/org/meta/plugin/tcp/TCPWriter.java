@@ -19,7 +19,7 @@ public class TCPWriter {
 	public void askTo(	InetAddress adress, 
 						String command, 
 						String hash, 
-						TCPResponseCallback listenner){
+						TCPResponseCallbackInteface listenner){
 		lastAsk++;
 		AMPAskFactory ask = new AMPAskFactory(lastAsk+"", command, hash);
 		AnswerSenderThread sender = new AnswerSenderThread(	ask, 

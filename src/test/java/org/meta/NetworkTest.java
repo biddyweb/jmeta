@@ -10,7 +10,7 @@ import org.meta.modele.MetaData;
 import org.meta.modele.Search;
 import org.meta.modele.Searchable;
 import org.meta.plugin.tcp.TCPReader;
-import org.meta.plugin.tcp.TCPResponseCallback;
+import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.tcp.TCPWriter;
 
 public class NetworkTest {
@@ -22,7 +22,7 @@ public class NetworkTest {
 		InetAddress adress;
 		try {
 			adress = InetAddress.getLocalHost();
-			writer.askTo(adress, "toto", "youpi", new TCPResponseCallback() {
+			writer.askTo(adress, "toto", "youpi", new TCPResponseCallbackInteface() {
 				
 				@Override
 				public void callback(ArrayList<Searchable> results) {

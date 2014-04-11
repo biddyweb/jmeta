@@ -18,7 +18,7 @@ import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 public class AskHandlerThread extends Thread{
 	
 	private Socket 		client	= null;
-	private TCPReader 	reader = TCPReader.getInstance();
+	private SingletonTCPReader 	reader = SingletonTCPReader.getInstance();
 
 	public AskHandlerThread(Socket client){
 		this.client = client;

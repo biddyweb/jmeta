@@ -9,16 +9,16 @@ import org.meta.modele.DataString;
 import org.meta.modele.MetaData;
 import org.meta.modele.Search;
 import org.meta.modele.Searchable;
-import org.meta.plugin.tcp.TCPReader;
+import org.meta.plugin.tcp.SingletonTCPReader;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
-import org.meta.plugin.tcp.TCPWriter;
+import org.meta.plugin.tcp.SingletonTCPWriter;
 
 public class NetworkTest {
 	public static void main(String[] args) {
-		TCPReader reader = TCPReader.getInstance();
+		SingletonTCPReader reader = SingletonTCPReader.getInstance();
 		reader.registerCommand("toto", CommanndTest.class);
 		reader.initializePortAndRun(4001);
-		TCPWriter writer = TCPWriter.getInstance();
+		SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
 		InetAddress adress;
 		try {
 			adress = InetAddress.getLocalHost();

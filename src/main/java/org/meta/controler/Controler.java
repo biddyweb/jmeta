@@ -13,7 +13,7 @@ import org.meta.controler.P2P.P2PControler;
 import org.meta.modele.Model;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
-import org.meta.plugin.tcp.TCPReader;
+import org.meta.plugin.tcp.SingletonTCPReader;
 
 import djondb.LibraryException;
 
@@ -73,7 +73,7 @@ public class Controler {
 		 pluginsProperties.load(pluginInput);
 		 configuration.load(confInput);
 		 this.p2pControler = new P2PControler(Integer.parseInt(configuration.getProperty("port")+1));
-		 TCPReader.getInstance().initializePortAndRun(Integer.parseInt(configuration.getProperty("port")));
+		 SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(configuration.getProperty("port")));
 		 pluginInitialisation();
 	 }
 	 

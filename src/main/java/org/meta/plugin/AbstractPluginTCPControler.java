@@ -7,7 +7,7 @@ import org.meta.controler.P2P.P2PControler;
 import org.meta.controler.P2P.P2PListener;
 import org.meta.modele.Model;
 import org.meta.plugin.tcp.AbstractCommand;
-import org.meta.plugin.tcp.TCPReader;
+import org.meta.plugin.tcp.SingletonTCPReader;
 
 /*
  *	JMeta - Meta's java implementation
@@ -35,11 +35,11 @@ public abstract class AbstractPluginTCPControler implements P2PListener{
 
 	protected 	P2PControler p2pControler 	= 	null;
 	protected  	Model 		 model 			=	null;
-	private 	TCPReader	reader			= 	null;
+	private 	SingletonTCPReader	reader			= 	null;
 	protected  	HashMap<String, Class<? extends AbstractCommand>>	lstCommands		= 	null;
 	
 	public AbstractPluginTCPControler(){
-		reader = TCPReader.getInstance();
+		reader = SingletonTCPReader.getInstance();
 		lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
 	}
 

@@ -5,14 +5,14 @@ import java.net.InetAddress;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 
 
-public class TCPWriter {
-	private static 		TCPWriter 	instance 	= new TCPWriter();
+public class SingletonTCPWriter {
+	private static 		SingletonTCPWriter 	instance 	= new SingletonTCPWriter();
 	private 			int			port		= 4001;//TODO
 	private 			int			lastAsk 	= 0;
 	
-	private TCPWriter() {}
+	private SingletonTCPWriter() {}
 	
-	public static TCPWriter getInstance() {
+	public static SingletonTCPWriter getInstance() {
 		return instance;
 	}
 	

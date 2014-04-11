@@ -28,19 +28,19 @@ import java.util.HashMap;
  * @author Thomas LAVOCAT
  *
  */
-public class TCPReader extends Thread{
+public class SingletonTCPReader extends Thread{
 
 	private HashMap<String, Class<? extends AbstractCommand>> mapCommand 	= null;
 	private 			boolean 		work		= true;
-	private static 		TCPReader 		instance 	= new TCPReader();
+	private static 		SingletonTCPReader 		instance 	= new SingletonTCPReader();
 	private 			int				port		= 4001;
 	private				ServerSocket 	socket		= null;
 	
-	private TCPReader() {
+	private SingletonTCPReader() {
 		mapCommand = new HashMap<String, Class<? extends AbstractCommand>>();
 	}
 	
-	public static TCPReader getInstance() {
+	public static SingletonTCPReader getInstance() {
 		return instance;
 	}
 	

@@ -11,8 +11,8 @@ import java.util.Properties;
 
 import org.meta.controler.P2P.P2PControler;
 import org.meta.modele.Model;
-import org.meta.plugin.PluginTCPControler;
-import org.meta.plugin.PluginWebServiceControler;
+import org.meta.plugin.AbstractPluginTCPControler;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.TCPReader;
 
 import djondb.LibraryException;
@@ -48,8 +48,8 @@ public class Controler {
 	private String 			confPropertiesFile		=	"conf/jmeta.prop";
 	private P2PControler 	p2pControler 			= 	null;
 	private ArrayList<String>							lstPluginsNames			=	null;
-	private HashMap<String, PluginTCPControler> 		mapTCPControler			=	null;
-	private HashMap<String, PluginWebServiceControler>	mapWebServiceControler	=	null;
+	private HashMap<String, AbstractPluginTCPControler> 		mapTCPControler			=	null;
+	private HashMap<String, AbstractPluginWebServiceControler>	mapWebServiceControler	=	null;
 	
 	/**
 	 * 
@@ -82,8 +82,8 @@ public class Controler {
 	  */
 	private void pluginInitialisation() {
 		lstPluginsNames			= new ArrayList<String>();
-		mapTCPControler 		= new HashMap<String, PluginTCPControler>();
-		mapWebServiceControler	= new HashMap<String, PluginWebServiceControler>();
+		mapTCPControler 		= new HashMap<String, AbstractPluginTCPControler>();
+		mapWebServiceControler	= new HashMap<String, AbstractPluginWebServiceControler>();
 		
 		Enumeration<Object> keys = pluginsProperties.keys();
 		while(keys.hasMoreElements()){
@@ -102,11 +102,11 @@ public class Controler {
 					Class<?> clazzWS	= Class.forName(strWSClass);
 					
 					//load TCPControler
-					PluginTCPControler tcpControler = 
-							(PluginTCPControler)   clazzTCP.newInstance();
+					AbstractPluginTCPControler tcpControler = 
+							(AbstractPluginTCPControler)   clazzTCP.newInstance();
 					//load webServiceControler
-					PluginWebServiceControler webServiceControler = 
-							(PluginWebServiceControler) clazzWS.newInstance();
+					AbstractPluginWebServiceControler webServiceControler = 
+							(AbstractPluginWebServiceControler) clazzWS.newInstance();
 					
 					//Set parameters
 					tcpControler.setP2pControler(p2pControler);

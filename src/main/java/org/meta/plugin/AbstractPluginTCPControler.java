@@ -31,14 +31,14 @@ import org.meta.plugin.tcp.TCPReader;
  * @author Thomas LAVOCAT
  *
  */
-public abstract class PluginTCPControler implements P2PListener{
+public abstract class AbstractPluginTCPControler implements P2PListener{
 
 	protected 	P2PControler p2pControler 	= 	null;
 	protected  	Model 		 model 			=	null;
 	private 	TCPReader	reader			= 	null;
 	protected  	HashMap<String, Class<? extends Command>>	lstCommands		= 	null;
 	
-	public PluginTCPControler(){
+	public AbstractPluginTCPControler(){
 		reader = TCPReader.getInstance();
 		lstCommands = new HashMap<String, Class<? extends Command>>();
 	}

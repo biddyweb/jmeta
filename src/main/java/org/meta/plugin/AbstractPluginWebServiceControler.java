@@ -24,11 +24,11 @@ import org.meta.modele.Model;
  * @author Thomas LAVOCAT
  *
  */
-public abstract class PluginWebServiceControler {
+public abstract class AbstractPluginWebServiceControler {
 	protected Model 				model 		= null;
-	protected PluginTCPControler tcpControler 	= null;
+	protected AbstractPluginTCPControler tcpControler 	= null;
 	
-	public PluginWebServiceControler(){}
+	public AbstractPluginWebServiceControler(){}
 
 	/**
 	 * @param model the model to set
@@ -40,7 +40,7 @@ public abstract class PluginWebServiceControler {
 	/**
 	 * @param tcpControler the tcpControler to set
 	 */
-	public void setTcpControler(PluginTCPControler tcpControler) {
+	public void setTcpControler(AbstractPluginTCPControler tcpControler) {
 		this.tcpControler = tcpControler;
 	}
 

@@ -1,7 +1,7 @@
 package org.lavocat.PluginExemple;
 
-import org.meta.plugin.PluginWebServiceControler;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 
-public class PluginExempleWebServiceControler extends PluginWebServiceControler{
+public class PluginExempleWebServiceControler extends AbstractPluginWebServiceControler{
 
 }

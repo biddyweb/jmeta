@@ -2,7 +2,7 @@ package org.meta.plugin.tcp;
 
 import java.util.ArrayList;
 
-import org.meta.modele.Searchable;
+import org.meta.model.Searchable;
 
 public interface TCPResponseCallbackInteface {
 	

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import org.meta.modele.DataFile;
-import org.meta.modele.DataString;
-import org.meta.modele.MetaData;
-import org.meta.modele.Search;
-import org.meta.modele.Searchable;
+import org.meta.model.DataFile;
+import org.meta.model.DataString;
+import org.meta.model.MetaData;
+import org.meta.model.Search;
+import org.meta.model.Searchable;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
 

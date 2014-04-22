@@ -1,6 +1,6 @@
 package org.meta.plugin;
 
-import org.meta.modele.Model;
+import org.meta.model.Model;
 
 /*
  *	JMeta - Meta's java implementation

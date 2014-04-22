@@ -1,15 +1,17 @@
-package org.meta.modele;
-
+package org.meta.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import kyotocabinet.DB;
+import org.bson.BSONObject;
+import org.bson.BasicBSONDecoder;
+import org.bson.types.BasicBSONList;
 
-import djondb.BSONArrayObj;
-import djondb.BSONObj;
-import djondb.DjondbConnection;
-import djondb.DjondbConnectionManager;
-import djondb.LibraryException;
-import djondb.Loader;
+import org.meta.common.MetaProperties;
+import org.meta.model.exceptions.ModelException;
 
 /*
  *	JMeta - Meta's java implementation
@@ -29,318 +31,303 @@ import djondb.Loader;
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * 
+ *
  * @author Thomas LAVOCAT
  *
  */
 public class Model {
-	//DataBase connection
-	private DjondbConnection connection = null;	
-	
-	/**
-	 * Instanciate a new model. Init the dataBaseConnection.
-	 * @throws LibraryException
-	 */
-	public Model() throws LibraryException{
-		initDataBase();
-	}
-	
-	/**
-	 * Initialize data base connection
-	 * @throws LibraryException 
-	 */
-	private void initDataBase() throws LibraryException {
-		Loader.initialize();
-		connection = DjondbConnectionManager.getConnection("localhost");
-		connection.open();
-	}
 
-	/**
-	 * 
-	 * @param hash
-	 * @return a search pointed by his hash. Return null if not found
-	 * or if the hash is not pointed a Search object
-	 */
-	public Search getSearch(String hash){
-		Search search = null;
-		try {
-			//Try to load the search true the data base
-			search = (Search) load(hash);
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return search;
-	}
-	
-	/**
-	 * 
-	 * @param hash
-	 * @return a MetaData pointed by his hash or null is the hash is pointed
-	 * on nothing or if the hash is pointed on a non MetaData object
-	 */
-	public MetaData getMetaData(String hash){
-		MetaData metaData = null;
-		try {
-			metaData = (MetaData) load(hash);
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return metaData;
-	}
+    private static String DEFAULT_DATABASE_FILE = "db/jmeta.db";
+    DB kyotoDB;
+    private BasicBSONDecoder bsonDecoder;
 
-	/**
-	 * 
-	 * @param hash
-	 * @return a Data pointed by the hash or null if the hash is pointed on 
-	 * nothing or on a non Data Object
-	 */
-	public Data getData(String hash){
-		Data data = null;
-		try {
-			data = (Data) load(hash);
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return data;
-	}
-	
-	/**
-	 * 
-	 * @param hash
-	 * @return the Search linked to the hash or null if not found
-	 */
-	public Searchable getSearchable(String hash){
-		Searchable 	foundedObject 	= null;
-		try {
-			foundedObject = load(hash);
-		} catch (ClassNotFoundException 
-				| InstantiationException
-				| IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	
-		return 	foundedObject;
-	}
-	
-	/**
-	 * Recursive synchronized method Load.
-	 * 
-	 * 
-	 * @param hash
-	 * @return a searchale object if found or null if not.
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	private synchronized Searchable load(String hash) throws 
-											ClassNotFoundException, 
-											InstantiationException, 
-											IllegalAccessException 
-	{
-		//find in the dataBase everything if looking for the hash
-		BSONArrayObj resultSearch 	 = connection.find(
-						"JMeta", 
-						"JMeta", 
-						"$\"hash\" == \""+hash+"\"");
-		Searchable searchable = null;
-		//and get the first element (if exists of course)
-		if(resultSearch.length()>=1){
-			/*
-			 * Every Searchable object have the same globals datas :
-			 * - className
-			 * - hash
-			 */
-			BSONObj 	jsonSearcheable	= resultSearch.get(0);
-			String 		className	   	= jsonSearcheable.getString("class");
-			//The class name is used to instantiate an object
-			Class<?> 	clazz			= Class.forName(className);
-			searchable 		= (Searchable) clazz.newInstance();
-			//Set his hash code
-			searchable.setHashCode(hash);
-			//set his old json
-			searchable.setOldJson(jsonSearcheable);
-			
-			/*
-			 * Now we're looking for what is this object ? And extract the
-			 * good one.
-			 */
-			if(searchable instanceof Search){
-				extractSearch(searchable);
-			}else if(searchable instanceof MetaData){
-				extractMetaData(searchable);
-			}else if(searchable instanceof DataFile){
-				extractDataFile(searchable);
-			}else if(searchable instanceof DataString){
-				extractDataString(searchable);
-			}
-		}
-		return searchable;
-	}
-	
-	/**
-	 * 
-	 * @param searchable
-	 */
-	private void extractDataString(Searchable searchable) {
-		DataString data = (DataString) searchable;
-		String string = data.getOldJson().getString("string");
-		data.setString(string);
-	}
+    /**
+     * Instanciate a new model. Init the dataBaseConnection.
+     *
+     * @throws org.meta.model.exceptions.ModelException
+     */
+    public Model() throws ModelException {
+        initDataBase();
+    }
 
-	/**
-	 * Extract a data from Searchable object
-	 * @param searchable
-	 * @param jsonSearcheable
-	 */
-	private void extractDataFile(Searchable searchable) 
-	{
-		DataFile data = (DataFile) searchable;
-		File file = new File(data.getOldJson().getString("file"));
-		data.setFile(file);
-	}
+    /**
+     * Initialize data base connection
+     *
+     * @throws LibraryException
+     */
+    private void initDataBase() throws ModelException {
+        String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
+        kyotoDB = new DB();
+        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OAUTOTRAN | DB.OCREATE)) {
+            throw new ModelException("Unable to open database file : " + databaseFile);
+        }
+        bsonDecoder = new BasicBSONDecoder();
+    }
 
-	/**
-	 * Extract a metadata from a searchale object
-	 * @param searchable
-	 * @param jsonSearcheable
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws ClassNotFoundException 
-	 */
-	private void extractMetaData(Searchable searchable) 
-		throws 
-			ClassNotFoundException, 
-			InstantiationException, 
-			IllegalAccessException 
-	{
-		MetaData 		metaData		= (MetaData) searchable;
-		BSONArrayObj 	arLinkedData 	= metaData.getOldJson().
-													getBSONArray("linkedData");
-		BSONArrayObj	arProperties	= metaData.getOldJson().
-													getBSONArray("properties");
+    /**
+     *
+     * @param hash
+     * @return a search pointed by his hash. Return null if not found or if the
+     * hash is not pointed a Search object
+     */
+    public Search getSearch(String hash) {
+        Search search = null;
+        try {
+            //Try to load the search true the data base
+            search = (Search) load(hash);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return search;
+    }
 
-		//foreach datas pointed by the json
-		//extract them with load method
-		//and put them in the ArrayList datas
-		ArrayList<Data> datas = new ArrayList<Data>();
-		for(int i=0; i<arLinkedData.length(); i++){
-			datas.add((Data) load(
-					arLinkedData.get(i).getString("data")
-					)
-			);
-		}
-		metaData.setLinkedData(datas);
-		
-		//Foreach metaproperties
-		//extract them from the old json
-		//and add them to the ArrayList of properties
-		ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
- 		for(int i=0; i<arProperties.length(); i++){
- 			String name = arProperties.get(i).getString("name");
- 			String value= arProperties.get(i).getString("value");
-			properties.add(new MetaProperty(name, value));
-		}
- 		metaData.setProperties(properties);
-	}
+    /**
+     *
+     * @param hash
+     * @return a MetaData pointed by his hash or null is the hash is pointed on
+     * nothing or if the hash is pointed on a non MetaData object
+     */
+    public MetaData getMetaData(String hash) {
+        MetaData metaData = null;
+        try {
+            metaData = (MetaData) load(hash);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return metaData;
+    }
 
-	/**
-	 * Extract a search from a searchable object
-	 * @param searchable
-	 * @param jsonSearcheable
-	 * @param hashSource
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessExceptionn
-	 */
-	private void extractSearch(Searchable searchable) 
-	throws ClassNotFoundException, 
-			InstantiationException, 
-			IllegalAccessException 
-	{
-		Search 		 search   	= (Search) searchable;
-		//load the source from her hash
-		Searchable 	 source   	= load(search.getOldJson().getString("source"));
-		//foreach metadata in the old json
-		//extract them by the load method
-		//and put them in the list
-		BSONArrayObj arResults	= search.getOldJson().getBSONArray("results");
-		ArrayList<MetaData> results = new ArrayList<MetaData>();
-		for (int i = 0; i < arResults.length(); i++) {
-			results.add((MetaData) load(
-								arResults.get(i).getString("metaData")
-								)
-						);
-		}
-		search.setSource(source);
-		search.setResults(results);
-	}
+    /**
+     *
+     * @param hash
+     * @return a Data pointed by the hash or null if the hash is pointed on
+     * nothing or on a non Data Object
+     */
+    public Data getData(String hash) {
+        Data data = null;
+        try {
+            data = (Data) load(hash);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
 
-	/**
-	 * update a search in DB with all dependencies created / updated
-	 * @param search the object to create / update
-	 */
-	public synchronized void updateInDataBase(Searchable searchable){
-		//only if the searchable have to be updated 
-		if(searchable.haveToUpdate()){
-			//delete the old data
-			BSONObj oldJson = searchable.getOldJson();
-			connection.remove(	
-					"JMeta", 
-					"JMeta",  
-					oldJson.getString("_id"), 
-					oldJson.getString("_revision"));
-			//insert the new
-			connection.insert("JMeta", "JMeta", searchable.toJson());
-			//And look for anything new to create
-			ArrayList<Searchable> lstChildsToCreate = 
-												searchable.getChildsToCreate();
-			for(Searchable itemToCreate : lstChildsToCreate)
-				createInDataBase(itemToCreate);
-		}
-	}
+    /**
+     *
+     * @param hash
+     * @return the Search linked to the hash or null if not found
+     */
+    public Searchable getSearchable(String hash) {
+        Searchable foundedObject = null;
+        try {
+            foundedObject = load(hash);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return foundedObject;
+    }
 
-	/**
-	 * delete a search in DB with all dependencies created / updated
-	 * @param search the object to create / update
-	 */
-	public synchronized void deleteInDataBase(Searchable searchable){
-		//Only in case of updatable object, you can delete it
-		if(searchable.haveToUpdate()){
-			BSONObj oldJson = searchable.getOldJson();
-			oldJson.begin();
-			connection.remove(	
-					"JMeta", 
-					"JMeta",  
-					oldJson.getString("_id"), 
-					oldJson.getString("_revision"));
-			oldJson.end();
-		}
-	}
-	
-	/**
-	 * Create a search in DB with all dependencies created / updated
-	 * @param search the object to create / update
-	 */
-	public synchronized void createInDataBase(Searchable searchable){
-		connection.insert("JMeta", "JMeta", searchable.toJson());
-	}
-	
-	/**
-	 * Release the database connection via DjondbConnectionManager
-	 */
-	public void releaseConnection(){
-		DjondbConnectionManager.releaseConnection(connection);
-	}
+    /**
+     * Recursive synchronized method Load.
+     *
+     * @param hash
+     * @return a searchale object if found or null if not.
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private Searchable load(String hash) throws
+            ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException {
 
-	public static String hash(byte[] bloc) {
-		// TODO create this method further
-		return "TODO_hash_a_faire";
-	}
+        String serializedData = kyotoDB.get(hash);
+        if (serializedData == null) {
+            return null;
+        }
+        BSONObject bsonObject = bsonDecoder.readObject(serializedData.getBytes());
+        Searchable searchable = null;
 
-	public static boolean checkHash(String hash, byte[] bloc) {
-		return hash.equals(hash(bloc));
-	}
+        /*
+         * Every Searchable object have the same globals datas :
+         * - className
+         * - hash
+         */
+        String className = bsonObject.get("class").toString();
+        //The class name is used to instantiate an object
+        Class<?> clazz = Class.forName(className);
+        searchable = (Searchable) clazz.newInstance();
+        //Set his hash code
+        searchable.setHashCode(hash);
+
+        /*
+         * Now we're looking for what is this object ? And extract the
+         * good one.
+         */
+        if (searchable instanceof Search) {
+            extractSearch(searchable, bsonObject);
+        } else if (searchable instanceof MetaData) {
+            extractMetaData(searchable, bsonObject);
+        } else if (searchable instanceof DataFile) {
+            extractDataFile(searchable, bsonObject);
+        } else if (searchable instanceof DataString) {
+            extractDataString(searchable, bsonObject);
+        }
+        return searchable;
+    }
+
+    /**
+     *
+     * @param searchable
+     */
+    private void extractDataString(Searchable searchable, BSONObject bsonObject) {
+        DataString data = (DataString) searchable;
+        data.setString(bsonObject.get("string").toString());
+    }
+
+    /**
+     * Extract a data from Searchable object
+     *
+     * @param searchable
+     * @param jsonSearcheable
+     */
+    private void extractDataFile(Searchable searchable, BSONObject bsonObject) {
+        DataFile data = (DataFile) searchable;
+        String filePath = bsonObject.get("file").toString();
+        File file = new File(filePath);
+        data.setFile(file);
+    }
+
+    /**
+     * Extract a metadata from a searchale object
+     *
+     * @param searchable
+     * @param jsonSearcheable
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     */
+    private void extractMetaData(Searchable searchable, BSONObject bsonObject)
+            throws
+            ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException {
+        MetaData metaData = (MetaData) searchable;
+        List<Data> linkedData = new ArrayList<Data>();
+        BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
+        for (String key : bsonLinkedData.keySet()) {
+            Data toAdd = (Data) load(bsonLinkedData.get(key).toString());
+            linkedData.add(toAdd);
+        }
+        BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("properties");
+        BSONObject tmp;
+        List<MetaProperty> properties = new ArrayList<MetaProperty>();
+        for (String key : bsonProperties.keySet()) {
+            tmp = (BSONObject) bsonProperties.get(key);
+            MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
+            properties.add(toAdd);
+        }
+        metaData.setLinkedData(linkedData);
+        metaData.setProperties(properties);
+    }
+
+    /**
+     * Extract a search from a searchable object
+     *
+     * @param searchable
+     * @param jsonSearcheable
+     * @param hashSource
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessExceptionn
+     */
+    private void extractSearch(Searchable searchable, BSONObject bsonObject)
+            throws ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException {
+        Search search = (Search) searchable;
+        //load the source from her hash
+        Searchable source = load(bsonObject.get("source").toString());
+        List<MetaData> results = new ArrayList<MetaData>();
+        BasicBSONList bsonResultsList = (BasicBSONList) bsonObject.get("results");
+        for (String key : bsonResultsList.keySet()) {
+            Searchable result = load(bsonResultsList.get(key).toString());
+            if (result != null) {
+                results.add((MetaData) result);
+            }
+        }
+        search.setSource(source);
+        search.setResults(results);
+    }
+
+    /**
+     * update a search in DB with all dependencies created / updated
+     *
+     * @param search the object to create / update
+     */
+    public synchronized void updateInDataBase(Searchable searchable) {
+        // No need for it, we just have to call 'set'
+        
+        //only if the searchable have to be updated 
+//        if (searchable.haveToUpdate()) {
+//            //delete the old data
+//            BSONObj oldJson = searchable.getOldJson();
+//            connection.remove(
+//                    "JMeta",
+//                    "JMeta",
+//                    oldJson.getString("_id"),
+//                    oldJson.getString("_revision"));
+//            //insert the new
+//            connection.insert("JMeta", "JMeta", searchable.toJson());
+//            //And look for anything new to create
+//            ArrayList<Searchable> lstChildsToCreate
+//                    = searchable.getChildsToCreate();
+//            for (Searchable itemToCreate : lstChildsToCreate) {
+//                createInDataBase(itemToCreate);
+//            }
+//        }
+    }
+
+    /**
+     * delete a search in DB with all dependencies created / updated
+     *
+     * @param search the object to create / update
+     */
+    public synchronized void remove(Searchable searchable) {
+    }
+
+    public Searchable get(String hash) {
+        Searchable ret = null;
+        try {
+            ret = load(hash);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
+    /**
+     * Create a search in DB with all dependencies created / updated
+     *
+     * @param searchable 
+     *      the object to create / update
+     * @return true on success, false otherwise
+     */
+    public boolean set(Searchable searchable) {
+        // Instead of having "childs to create" and call manually "updateInDatabase", we could have a custom method per 
+        // Object 'set'  method that would check if the childs of the object (results of a search for example) are to be created or not.
+        // This would keep the database up to date and consistente all the time, but would make the 'set' a little slower. 
+        // TODO keep database consistent and up to date.
+        return kyotoDB.set(searchable.getHashCode(), searchable.toJson());
+    }
+
+    public static String hash(byte[] bloc) {
+        // TODO create this method further
+        return "TODO_hash_a_faire";
+    }
+
+    public static boolean checkHash(String hash, byte[] bloc) {
+        return hash.equals(hash(bloc));
+    }
 }

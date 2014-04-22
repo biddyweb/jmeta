@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import org.meta.modele.Searchable;
+import org.meta.model.Searchable;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;

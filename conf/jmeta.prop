@@ -1,5 +1,8 @@
 #JMeta configuration file
 
+#database file location
+database_path:	
+
 #TCP Configuration
 port:	4002
 

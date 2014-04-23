@@ -1,5 +1,6 @@
 package org.meta.plugin.tcp;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,7 +9,6 @@ import java.net.Socket;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 /**
  * This thread only listen to AMP Command
@@ -31,14 +31,14 @@ public class AskHandlerThread extends Thread{
 			//Open the client inputStream
 			inputStream = client.getInputStream();
 			//Read the stream
-			ByteArrayBuffer buffer = new ByteArrayBuffer();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			int count = 0;
 			
 			while ((count = inputStream.read()) != -1) {
-				buffer.write(count);	
+				buffer.write(count);
 			}
 			//The question as to be a AMP command, if not -> exception
-			AMPAskParser parser = new AMPAskParser(buffer.getRawData());
+			AMPAskParser parser = new AMPAskParser(buffer.toByteArray());
 			buffer.flush();
 			buffer.close();
 			

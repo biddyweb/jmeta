@@ -22,7 +22,6 @@ public class AMPAskParserTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			
 			AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete");
 			

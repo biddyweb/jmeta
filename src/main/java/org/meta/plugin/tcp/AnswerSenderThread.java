@@ -1,17 +1,18 @@
 package org.meta.plugin.tcp;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+
 import org.meta.modele.Searchable;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 public class AnswerSenderThread extends Thread {
 
@@ -48,13 +49,13 @@ public class AnswerSenderThread extends Thread {
 			// wait for an answer
 			InputStream is = client.getInputStream();
 			//Open the input stream			
-			ByteArrayBuffer buffer = new ByteArrayBuffer();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			int count = 0;
 			while ((count = is.read()) != -1) {
 				buffer.write(count);	
 			}
 			//parse it into an answer
-			AMPAnswerParser parser = new AMPAnswerParser(buffer.getRawData());
+			AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray());
 			this.results = parser.getDatas();
 			//close everything that use memory
 			buffer.flush();

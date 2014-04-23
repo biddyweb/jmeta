@@ -12,12 +12,11 @@ import org.meta.modele.Search;
 import org.meta.modele.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;
-import org.meta.plugin.tcp.amp.AMPAnswerParser;
 
 public class CommanndTest extends AbstractCommand {
 
 	@Override
-	public byte[] execute() {
+	public AMPAnswerFactory execute(String answer, String hash) {
 		System.out.println("toto");
 		
 		//Data File
@@ -59,13 +58,6 @@ public class CommanndTest extends AbstractCommand {
 		datas.add(metaData);
 		
 		AMPAnswerFactory factory = new AMPAnswerFactory("12", datas);
-		return factory.getMessage();
+		return factory;
 	}
-
-	@Override
-	public void setParameters(String hash) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

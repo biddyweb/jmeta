@@ -1,4 +1,4 @@
-package org.meta.modele;
+package org.meta.model;
 
 /*
  *	JMeta - Meta's java implementation

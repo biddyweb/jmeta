@@ -45,11 +45,6 @@
 
   <dependencies>
     <dependency>
-        <groupId>djondb</groupId>
-        <artifactId>djondb</artifactId>
-        <version>1</version>
-    </dependency>
-    <dependency>
       <groupId>net.tomp2p</groupId>
       <artifactId>TomP2P</artifactId>
       <version>4.4</version>
@@ -60,11 +55,15 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.2.4</version>
-        <scope>compile</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+      <version>2.11.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fallabs</groupId>
+      <artifactId>kyotocabinet-java</artifactId>
+      <version>1.24</version>
+    </dependency>
   </dependencies>
 </project>

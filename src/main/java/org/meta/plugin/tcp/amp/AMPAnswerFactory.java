@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import org.meta.modele.Searchable;
+import org.meta.model.Searchable;
 
 /**
  * Create a new AmpAnswerFactory to create an answer

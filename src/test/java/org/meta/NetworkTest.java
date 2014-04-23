@@ -4,11 +4,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import org.meta.modele.DataFile;
-import org.meta.modele.DataString;
-import org.meta.modele.MetaData;
-import org.meta.modele.Search;
-import org.meta.modele.Searchable;
+import org.meta.model.DataFile;
+import org.meta.model.DataString;
+import org.meta.model.MetaData;
+import org.meta.model.Search;
+import org.meta.model.Searchable;
 import org.meta.plugin.tcp.SingletonTCPReader;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.tcp.SingletonTCPWriter;

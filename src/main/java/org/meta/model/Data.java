@@ -1,6 +1,4 @@
-package org.meta.modele;
-
-import djondb.BSONObj;
+package org.meta.model;
 
 /*
  *	JMeta - Meta's java implementation
@@ -20,37 +18,28 @@ import djondb.BSONObj;
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * 
+ *
  * @author Thomas LAVOCAT
- *	
+ *
  * This class correspond to a data on the hard drive. Pointed by a file.
  */
 public abstract class Data extends Searchable {
 
-	
-	
-	/**
-	 * needed for java Reflexion
-	 */
-	public Data(){
-		super();
-	}
-	
-	/**
-	 * Instantiate a new Data -> use in case of creation
-	 * @param hashCode
-	 * @param file
-	 */
-	public Data(String hashCode) {
-		super(hashCode);
-	}
+    /**
+     * needed for java Reflexion
+     */
+    public Data() {
+        super();
+    }
 
-	public Data(String hashCode, BSONObj json){
-		super(hashCode, json);
-	}
-	
-	public BSONObj toJson(){
-		return super.toJson();
-	}
+    /**
+     * Instantiate a new Data -> use in case of creation
+     *
+     * @param hashCode
+     * @param file
+     */
+    public Data(String hashCode) {
+        super(hashCode);
+    }
 
 }

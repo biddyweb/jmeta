@@ -2,41 +2,46 @@ package org.meta.plugin.webservice;
 
 import java.util.HashMap;
 
+import org.eclipse.jetty.server.Server;
 import org.meta.plugin.tcp.AbstractCommand;
 
-public class SingletonWebServiceReader extends Thread{
+public class SingletonWebServiceReader extends Thread {
 
-	private HashMap<String, Class<?>> mapCommand 	= null;
-	private 			boolean 			work		= true;
-	private static 		SingletonWebServiceReader 	instance 	= new SingletonWebServiceReader();
+	private HashMap<String, Class<? extends AbstractWebService>> mapCommand = null;
+	private Server 	server 	= null;
+	private static 	SingletonWebServiceReader instance 	= null;
 	
 	private SingletonWebServiceReader() {
-		mapCommand = new HashMap<String, Class<?>>();
+		mapCommand = new HashMap<String, Class<? extends AbstractWebService>>();
+		server = new Server(8080);
+		server.setHandler(new WebRequestHandler());
 	}
 	
 	public static SingletonWebServiceReader getInstance() {
+		if(instance == null)
+			instance = new SingletonWebServiceReader();
 		return instance;
 	}
 	
-	public void registerCommand(String commandName, Class<? extends AbstractCommand> clazz){
+	public void registerCommand(String commandName, Class<? extends AbstractWebService> clazz){
 		mapCommand.put(commandName, clazz);
 	}
 	
-	public Class<?> getCommand(String commandName){
+	public Class<? extends AbstractWebService> getCommand(String commandName){
 		return mapCommand.get(commandName);
 	}
 	
 	@Override
 	public void run() {
-		while(work){
+		try {
+			server.start();
+			server.join();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}	
 	
-	public void kill(){
-		work = false;
-	}
-
-	public void initialiseAndRun(int port) {
+	public void initialiseAndRun() {
 		this.start();
 	}
 }

@@ -3,7 +3,6 @@ package org.meta.plugin.webservice;
 import java.util.HashMap;
 
 import org.eclipse.jetty.server.Server;
-import org.meta.plugin.tcp.AbstractCommand;
 
 public class SingletonWebServiceReader extends Thread {
 

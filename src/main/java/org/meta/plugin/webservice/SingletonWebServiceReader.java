@@ -3,6 +3,7 @@ package org.meta.plugin.webservice;
 import java.util.HashMap;
 
 import org.eclipse.jetty.server.Server;
+import org.meta.common.MetaProperties;
 
 public class SingletonWebServiceReader extends Thread {
 
@@ -12,8 +13,7 @@ public class SingletonWebServiceReader extends Thread {
 	
 	private SingletonWebServiceReader() {
 		mapCommand = new HashMap<String, Class<? extends AbstractWebService>>();
-		server = new Server(8080);
-		server.setHandler(new WebRequestHandler());
+		this.start();
 	}
 	
 	public static SingletonWebServiceReader getInstance() {
@@ -32,6 +32,8 @@ public class SingletonWebServiceReader extends Thread {
 	
 	@Override
 	public void run() {
+		server = new Server(8080);
+		server.setHandler(new WebRequestHandler());
 		try {
 			server.start();
 			server.join();

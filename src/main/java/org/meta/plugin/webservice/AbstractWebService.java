@@ -1,11 +1,14 @@
 package org.meta.plugin.webservice;
 
-import org.meta.plugin.webservice.commands.InterfaceDescriptor;
+import java.util.Map;
 
+import org.meta.plugin.webservice.forms.InterfaceDescriptor;
+
+//TODO transform as an interface
 public abstract class AbstractWebService {
 
 	public abstract InterfaceDescriptor getInterface();
 
-	public abstract String execute();
+	public abstract String execute(Map<String, String[]> map);
 
 }

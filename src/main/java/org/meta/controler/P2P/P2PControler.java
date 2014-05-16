@@ -51,19 +51,14 @@ public class P2PControler implements BaseFutureListener<BaseFuture>{
 		FutureBootstrap future = another.bootstrap().setPeerAddress(peer.getPeerAddress()).start();
 		future.addListener(new BaseFutureListener<BaseFuture>() {
 
-			@Override
-			public void exceptionCaught(Throwable t) throws Exception {
-				t.printStackTrace();
+			public void operationComplete(BaseFuture future) throws Exception {
+				// TODO Auto-generated method stub
 				
 			}
 
-			@Override
-			public void operationComplete(BaseFuture future) throws Exception {
-				if(future.isSuccess()) { // this flag indicates if the future was successful
-					System.out.println("success");
-				} else {
-					System.out.println("failure");
-				}
+			public void exceptionCaught(Throwable t) throws Exception {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}
@@ -88,12 +83,10 @@ public class P2PControler implements BaseFutureListener<BaseFuture>{
 		futureDHT.addListener(this);
 	}
 
-	@Override
 	public void exceptionCaught(Throwable t) throws Exception {
 		System.out.println(t.getLocalizedMessage());
 	}
 
-	@Override
 	public void operationComplete(BaseFuture future) throws Exception {
 		
 	}

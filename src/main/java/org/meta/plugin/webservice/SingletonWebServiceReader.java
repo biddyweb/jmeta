@@ -1,9 +1,10 @@
 package org.meta.plugin.webservice;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
+import org.bson.types.BasicBSONList;
 import org.eclipse.jetty.server.Server;
-import org.meta.common.MetaProperties;
 
 public class SingletonWebServiceReader extends Thread {
 
@@ -44,5 +45,18 @@ public class SingletonWebServiceReader extends Thread {
 	
 	public void initialiseAndRun() {
 		this.start();
+	}
+	
+	/**
+	 * 
+	 * @return the plugin list as a json
+	 */
+	public String getCommandListAsJson() {
+		BasicBSONList list = new BasicBSONList();
+		for (Iterator<String> i = mapCommand.keySet().iterator(); i.hasNext();) {
+			String key = (String) i.next();
+			list.add(key);
+		}
+		return list.toString();
 	}
 }

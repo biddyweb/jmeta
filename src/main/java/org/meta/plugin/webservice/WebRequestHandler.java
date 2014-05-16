@@ -26,38 +26,67 @@ public class WebRequestHandler extends AbstractHandler {
 						HttpServletResponse response) 
 								throws 	IOException, 
 										ServletException {
+		//Split the incomming url on every /
 		String[] 	urlParse 	= target.split("/");
-		String		action		= urlParse[urlParse.length-2];
-		String 		command 	= urlParse[urlParse.length-1];
+		String 		action		= "";
+		String		command		= "";
 		
-		Class<? extends AbstractWebService> clazzWs = webServiceReader.getCommand(command);
-		if(clazzWs != null){
-			try {
-				AbstractWebService commandWs = 
+		if(urlParse.length == 3){
+			//if theres 3 it means we've got two parameters, an action and
+			//a command
+			action		= urlParse[urlParse.length-2];
+			command 	= urlParse[urlParse.length-1];
+		}else{
+			//just one action
+			action 	= urlParse[urlParse.length-1];
+		}
+
+		response.setContentType("application/json");
+		if(command != ""){
+			//Get the associated command
+			Class<? extends AbstractWebService> clazzWs = 
+										webServiceReader.getCommand(command);
+			if(clazzWs != null){
+				try {
+					//
+					AbstractWebService commandWs = 
 									(AbstractWebService) clazzWs.newInstance();
-				switch (action) {
-				case "execute":
-					response.setContentType("application/json");
-					response.getWriter().print(commandWs.execute(request.getParameterMap()));
-					break;
-
-				case "interface":
-				default:
-					InterfaceDescriptor interfaceDesc = commandWs.getInterface();
-					response.setContentType("application/json");
-					BasicBSONObject json = interfaceDesc.toJson();
-					
-					response.getWriter().print(json.toString());
-					break;
+					switch (action) {
+					case "execute":
+						response.getWriter().print(
+								commandWs.execute(request.getParameterMap()));
+						break;
+	
+					case "interface":
+					default:
+						InterfaceDescriptor interfaceDesc = commandWs.getInterface();
+						BasicBSONObject json = interfaceDesc.toJson();
+						
+						response.getWriter().print(json.toString());
+						break;
+					}
+	
+			        response.setStatus(HttpServletResponse.SC_OK);
+			        base.setHandled(true);
+				} catch (Exception e) {
+					response.getWriter().write(e.getMessage());
+			        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			        base.setHandled(true);
 				}
-
-		        response.setStatus(HttpServletResponse.SC_OK);
-		        base.setHandled(true);
-			} catch (Exception e) {
-				response.getWriter().write(e.getMessage());
-		        response.setStatus(HttpServletResponse.SC_OK);
+			}else{
+		        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		        base.setHandled(true);
 			}
+		}else{
+			 switch (action) {
+			case "getPluginList":
+			default:
+				response.getWriter().print(webServiceReader.getCommandListAsJson());
+				break;
+			}
+			 
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        base.setHandled(true);
 		}
 	}
 

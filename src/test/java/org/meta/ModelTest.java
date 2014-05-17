@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.model.Data;
@@ -158,18 +157,9 @@ public class ModelTest {
         }
     }
 
-    /**
-     *
-     */
-    @Test
+    //@Test
     public void perfTest() {
-        Model model = null;
-        try {
-            model = new Model();
-        } catch (ModelException ex) {
-            Logger.getLogger(ModelTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        int NB_IT = 1000000;
+        int NB_IT = 100000;
         File file = new File("db/meta.kch");
 
         for (int i = 0; i < NB_IT; i++) {

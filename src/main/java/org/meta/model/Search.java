@@ -92,7 +92,11 @@ public class Search extends Searchable {
         this.results = results;
     }
 
-    public String toJson() {
+    /**
+     *
+     * @return transform the Search object into a BSON Object.
+     */
+    public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         bsonObject.put("source", source.getHashCode());
         BasicBSONList bsonResultsList = new BasicBSONList();
@@ -101,7 +105,7 @@ public class Search extends Searchable {
             bsonResultsList.put(i, metaData.getHashCode());
         }
         bsonObject.put("results", bsonResultsList);
-        return bsonObject.toString();
+        return bsonObject;
     }
 
     @Override

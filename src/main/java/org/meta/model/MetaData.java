@@ -93,7 +93,7 @@ public class MetaData extends Searchable {
         this.properties = properties;
     }
 
-    public String toJson() {
+    public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
 
         BasicBSONList bsonLinkedData = new BasicBSONList();
@@ -108,10 +108,10 @@ public class MetaData extends Searchable {
             BasicBSONObject bsonProperty = new BasicBSONObject();
             bsonProperty.put("name", property.getName());
             bsonProperty.put("value", property.getValue());
-            bsonProperties.add(bsonProperty);
+            bsonProperties.put(i, bsonProperty);
         }
         bsonObject.put("properties", bsonProperties);
-        return bsonObject.toString();
+        return bsonObject;
     }
 
     @Override

@@ -67,10 +67,10 @@ public class DataFile extends Data {
         this.file = file;
     }
 
-    public String toJson() {
+    public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         bsonObject.put("file", file.getAbsolutePath());
-        return bsonObject.toString();
+        return bsonObject;
     }
 
     @Override

@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kyotocabinet.DB;
+import org.bson.BSONDecoder;
+import org.bson.BSONEncoder;
 import org.bson.BSONObject;
 import org.bson.BasicBSONDecoder;
+import org.bson.BasicBSONEncoder;
 import org.bson.types.BasicBSONList;
-
 import org.meta.common.MetaProperties;
 import org.meta.model.exceptions.ModelException;
 
@@ -37,9 +39,10 @@ import org.meta.model.exceptions.ModelException;
  */
 public class Model {
 
-    private static String DEFAULT_DATABASE_FILE = "db/jmeta.db";
+    private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     DB kyotoDB;
-    private BasicBSONDecoder bsonDecoder;
+    private BSONDecoder bsonDecoder;
+    private BSONEncoder bsonEncoder;
 
     /**
      * Instanciate a new model. Init the dataBaseConnection.
@@ -48,6 +51,8 @@ public class Model {
      */
     public Model() throws ModelException {
         initDataBase();
+        bsonDecoder = new BasicBSONDecoder();
+        bsonEncoder = new BasicBSONEncoder();
     }
 
     /**
@@ -61,7 +66,6 @@ public class Model {
         if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OAUTOTRAN | DB.OCREATE)) {
             throw new ModelException("Unable to open database file : " + databaseFile);
         }
-        bsonDecoder = new BasicBSONDecoder();
     }
 
     /**
@@ -141,12 +145,11 @@ public class Model {
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
-
-        String serializedData = kyotoDB.get(hash);
+        byte[] serializedData = kyotoDB.get(hash.getBytes());
         if (serializedData == null) {
             return null;
         }
-        BSONObject bsonObject = bsonDecoder.readObject(serializedData.getBytes());
+        BSONObject bsonObject = bsonDecoder.readObject(serializedData);
         Searchable searchable = null;
 
         /*
@@ -252,6 +255,7 @@ public class Model {
         List<MetaData> results = new ArrayList<MetaData>();
         BasicBSONList bsonResultsList = (BasicBSONList) bsonObject.get("results");
         for (String key : bsonResultsList.keySet()) {
+            //System.out.println("EXTRACT SEARCH, MetaData hash = " + bsonResultsList.get(key).toString());
             Searchable result = load(bsonResultsList.get(key).toString());
             if (result != null) {
                 results.add((MetaData) result);
@@ -268,7 +272,7 @@ public class Model {
      */
     public synchronized void updateInDataBase(Searchable searchable) {
         // No need for it, we just have to call 'set'
-        
+
         //only if the searchable have to be updated 
 //        if (searchable.haveToUpdate()) {
 //            //delete the old data
@@ -293,8 +297,10 @@ public class Model {
      * delete a search in DB with all dependencies created / updated
      *
      * @param search the object to create / update
+     * @return true on success, false otherwise
      */
-    public synchronized void remove(Searchable searchable) {
+    public synchronized boolean remove(Searchable searchable) {
+        return true;
     }
 
     public Searchable get(String hash) {
@@ -306,20 +312,28 @@ public class Model {
         }
         return ret;
     }
-    
+
     /**
      * Create a search in DB with all dependencies created / updated
      *
-     * @param searchable 
-     *      the object to create / update
+     * @param searchable the object to create / update
      * @return true on success, false otherwise
      */
     public boolean set(Searchable searchable) {
         // Instead of having "childs to create" and call manually "updateInDatabase", we could have a custom method per 
         // Object 'set'  method that would check if the childs of the object (results of a search for example) are to be created or not.
         // This would keep the database up to date and consistente all the time, but would make the 'set' a little slower. 
+
         // TODO keep database consistent and up to date.
-        return kyotoDB.set(searchable.getHashCode(), searchable.toJson());
+        if (searchable == null) {
+            return false;
+        }
+        BSONObject bsonObject = searchable.getBson();
+        byte[] data = bsonEncoder.encode(bsonObject);
+        if (data == null) {
+            return false;
+        }
+        return kyotoDB.set(searchable.getHashCode().getBytes(), data);
     }
 
     public static String hash(byte[] bloc) {

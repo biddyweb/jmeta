@@ -2,13 +2,15 @@ package org.meta;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.junit.Test;
-import org.junit.Before;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
@@ -19,27 +21,35 @@ import org.meta.model.exceptions.ModelException;
 
 public class ModelTest {
 
-    protected Model model;
+    protected static Model model;
+    private static final Logger LOGGER = Logger.getLogger(ModelTest.class.getName());
 
-    @Before
-    public void setUp() {
-//		model = new Model();
-    }
-
-    @Test
-    public void testCreate() throws Exception {
-        assertEquals(2, 2);
-    }
-
-    @Test
-    public void testCreate2() throws Exception {
-        assertEquals(2, 2);
-    }
-
-    public static void main(String[] args) {
+    @BeforeClass
+    public static void setUp() {
         try {
-            // -- instantiate the model
-            Model model = new Model();
+            model = new Model();
+        } catch (ModelException ex) {
+            Logger.getLogger(ModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void basicTest() {
+        try {
+            DataFile data = new DataFile(
+                    "hashData1",
+                    new File("db/meta.kch"));
+            Assert.assertTrue(model.set(data));
+            Assert.assertNotNull(model.get("hashData1"));
+        } catch (Exception ex) {
+            Assert.fail(ex.getMessage());
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void fullTest() throws ModelException {
+        try {
             /**
              * *****************************************************************
              *
@@ -50,31 +60,31 @@ public class ModelTest {
             // -- Data
             DataFile data = new DataFile(
                     "hashData1",
-                    new File("/home/ecodair/subtitle.txt"));
-            ArrayList<Data> linkedData = new ArrayList<Data>();
+                    new File("db/meta.kch"));
+            List<Data> linkedData = new ArrayList<Data>();
             linkedData.add(data);
-            
+
             // -- MetaProperty
             MetaProperty property = new MetaProperty("st", "fr");
-            ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+            List<MetaProperty> properties = new ArrayList<MetaProperty>();
             properties.add(property);
-            
+
             // -- MetaData answer
             MetaData metaData = new MetaData(
                     "hashMetaData",
                     linkedData,
                     properties);
-            ArrayList<MetaData> results = new ArrayList<MetaData>();
+            List<MetaData> results = new ArrayList<MetaData>();
             results.add(metaData);
-            
+
             // -- MetaData source
             DataFile data2 = new DataFile(
                     "hashData2",
-                    new File("/home/ecodair/movie.avi"));
-            
+                    new File("db/meta.kch"));
+
             // -- Search
             Search search = new Search("hashSearch", data2, results);
-            
+
             /**
              * *****************************************************************
              *
@@ -84,10 +94,11 @@ public class ModelTest {
              *
              *****************************************************************
              */
-            model.set(search);
-            model.set(data2);
-            model.set(metaData);
-            model.set(data);
+            Assert.assertTrue("Set search", model.set(search));
+            Assert.assertTrue("Set data2", model.set(data2));
+            Assert.assertTrue("Set metaData", model.set(metaData));
+            Assert.assertTrue("Set data", model.set(data));
+
             /**
              * *****************************************************************
              *
@@ -98,15 +109,17 @@ public class ModelTest {
              *****************************************************************
              */
             Search readSearch = model.getSearch("hashSearch");
+            Assert.assertNotNull("readsearch", readSearch);
+
             Data readData = model.getData("hashData1");
+            Assert.assertNotNull("readData", readData);
+
             MetaData readMetaData = model.getMetaData("hashMetaData");
+            Assert.assertNotNull("readMetaData", readMetaData);
+
             Data readData2 = model.getData("hashData2");
-            
-            System.out.println(readSearch.toJson());
-            System.out.println(readData.toJson());
-            System.out.println(readMetaData.toJson());
-            System.out.println(readData2.toJson());
-            
+            Assert.assertNotNull("readData2", readData2);
+
             /**
              * *****************************************************************
              *
@@ -119,13 +132,14 @@ public class ModelTest {
             // -- MetaData source
             DataFile data3 = new DataFile(
                     "hashData3",
-                    new File("/home/ecodair/movie8.avi"));
+                    new File("db/meta.kch"));
             readSearch.setSource(data3);
-            model.updateInDataBase(readSearch);
+            Assert.assertTrue("Set readSearch to update", model.set(readSearch));
             Search readSearchAfterUpdate = model.getSearch("hashSearch");
-            System.out.println(readSearchAfterUpdate.toJson());
-            Data readData3 = model.getData("hashData3");
-            System.out.println(readData3.toJson());
+
+            Assert.assertNotNull("readSearchAfterUpdate", readSearchAfterUpdate);
+
+//            System.out.println(readSearchAfterUpdate.toJson());
             /**
              * *****************************************************************
              *
@@ -138,10 +152,32 @@ public class ModelTest {
             model.remove(readData2);
             model.remove(readMetaData);
             model.remove(readData);
-            model.remove(readData3);
             model.remove(readSearchAfterUpdate);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void perfTest() {
+        Model model = null;
+        try {
+            model = new Model();
         } catch (ModelException ex) {
             Logger.getLogger(ModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        int NB_IT = 1000000;
+        File file = new File("db/meta.kch");
+
+        for (int i = 0; i < NB_IT; i++) {
+            String hash = "hashData" + i;
+            DataFile data = new DataFile(hash, file);
+            Assert.assertTrue("perf set" + hash, model.set(data));
+            Assert.assertNotNull("perf get " + hash, model.getData(hash));
+        }
+
     }
 }

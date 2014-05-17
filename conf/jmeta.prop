@@ -1,7 +1,6 @@
 #JMeta configuration file
 
-#database file location
-database_path:	
+database_path: db/meta.kch
 
 #TCP Configuration
 port:	4002

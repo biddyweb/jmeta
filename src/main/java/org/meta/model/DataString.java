@@ -63,14 +63,19 @@ public class DataString extends Data {
         this.string = string;
     }
 
-    public String toJson() {
+    /**
+     * 
+     * @override
+     */
+    public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         bsonObject.put("string", string);
-        return bsonObject.toString();
+        return bsonObject;
     }
 
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+        //TODO Move elsewhere.
         byte[] totalString = string.getBytes();
 
 		//Send the file, it will surrely be bigger than 65 536o

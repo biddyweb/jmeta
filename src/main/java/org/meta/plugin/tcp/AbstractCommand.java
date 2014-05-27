@@ -3,10 +3,8 @@ package org.meta.plugin.tcp;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 
 
-
+//TODO transform as an interface
 public abstract class AbstractCommand {
-	
-	protected String workOn = null;
 	
 	public AbstractCommand(){}
 	

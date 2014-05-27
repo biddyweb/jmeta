@@ -1,6 +1,11 @@
 package org.meta.plugin;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.meta.model.Model;
+import org.meta.plugin.webservice.AbstractWebService;
+import org.meta.plugin.webservice.SingletonWebServiceReader;
 
 /*
  *	JMeta - Meta's java implementation
@@ -25,10 +30,15 @@ import org.meta.model.Model;
  *
  */
 public abstract class AbstractPluginWebServiceControler {
-	protected Model 				model 		= null;
-	protected AbstractPluginTCPControler tcpControler 	= null;
+	protected 	Model 							model 		= null;
+	private		SingletonWebServiceReader 		reader 		= null;
+	protected  	HashMap<String, Class<? extends AbstractWebService>>	lstCommands		= 	null;
+	protected 	AbstractPluginTCPControler 		tcpControler= null;
 	
-	public AbstractPluginWebServiceControler(){}
+	public AbstractPluginWebServiceControler(){
+		reader		= SingletonWebServiceReader.getInstance();
+		lstCommands = new HashMap<String, Class<? extends AbstractWebService>>();
+	}
 
 	/**
 	 * @param model the model to set
@@ -38,15 +48,32 @@ public abstract class AbstractPluginWebServiceControler {
 	}
 
 	/**
-	 * @param tcpControler the tcpControler to set
+	 * initialize the plugin
 	 */
-	public void setTcpControler(AbstractPluginTCPControler tcpControler) {
-		this.tcpControler = tcpControler;
+	public void init() {
+		registercommands(lstCommands);
+		registerCommandsToTCPReader();
 	}
 
-	public void init() {
-		// TODO Auto-generated method stub
+	/**
+	 * register the commands to TCPReader
+	 */
+	private void registerCommandsToTCPReader() {
+		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
+			String commandName = i.next();
+			reader.registerCommand(commandName, lstCommands.get(commandName));
+		}
 	}
 	
+	/**
+	 * Fil the lstCommands with all the needed TCP commands.
+	 * @param lstCommands2 
+	 */
+	protected abstract void registercommands(HashMap<String, Class<? extends AbstractWebService>> commands);
+
+	public void setTcpControler(AbstractPluginTCPControler tcpControler) {
+		this.tcpControler = tcpControler;
+		
+	}
 	
 }

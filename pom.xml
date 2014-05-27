@@ -2,10 +2,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-<!--
-sdfsd
--->
-
   <groupId>org.meta</groupId>
   <artifactId>jmeta</artifactId>
   <version>0.1</version>
@@ -20,8 +16,6 @@ sdfsd
         <url>http://tomp2p.net/dev/mvn/</url>
       </repository>
     </repositories>
-
-
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,11 +63,18 @@ sdfsd
       <artifactId>mongo-java-driver</artifactId>
       <version>2.12.1</version>
     </dependency>
+    
     <dependency>
       <groupId>com.fallabs</groupId>
       <artifactId>kyotocabinet-java</artifactId>
       <version>1.24</version>
       <type>jar</type>
+    </dependency>
+   
+    <dependency>
+    	<groupId>org.eclipse.jetty</groupId>
+    	<artifactId>jetty-server</artifactId>
+    	<version>9.2.0.M0</version>
     </dependency>
   </dependencies>
 </project>

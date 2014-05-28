@@ -1,4 +1,19 @@
 Note for developers:
+====================
+
+* jkyotocabinet compilation
+
+jkyotocabinet sources available from : 
+http://fallabs.com/kyotocabinet/javapkg/
+
+On debian, to be able to ./configure, you'll need to tell the script about
+environment :
+
+MYJAVAHOME=/usr/lib/jvm/java-7-openjdk-amd64/ ./configure
+
+Then : make install
+
+* jni
 
 The JNI kyotocabinet binding is a bit tricky to make it work in a portable
 fashion. What is done at the moment is to link to a local directory and put
@@ -6,4 +21,4 @@ symbolic links in it:
 
 ln -s /usr/local/lib/libjkyotocabinet.so nativelib/libjkyotocabinet.so
 
-(make sure to adapt /usr/local/lib to your local installation directory
+(make sure to adapt /usr/local/lib to your local installation directory)

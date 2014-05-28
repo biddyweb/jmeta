@@ -110,7 +110,7 @@ public class WebRequestHandler extends AbstractHandler {
 			}
 		}else{
 			 switch (action) {
-			case "getPluginList":
+			case "getCommandList":
 			default:
 				response.getWriter().print(webServiceReader
 													.getCommandListAsJson());

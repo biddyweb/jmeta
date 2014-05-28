@@ -33,7 +33,7 @@ public class SingletonWebServiceReader extends Thread {
 	
 	@Override
 	public void run() {
-		server = new Server(8080);
+		server = new Server(8080);//TODO
 		server.setHandler(new WebRequestHandler());
 		try {
 			server.start();

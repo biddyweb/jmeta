@@ -34,6 +34,8 @@ public abstract class AbstractPluginWebServiceControler {
 	private		SingletonWebServiceReader 		reader 		= null;
 	protected  	HashMap<String, Class<? extends AbstractWebService>>	lstCommands		= 	null;
 	protected 	AbstractPluginTCPControler 		tcpControler= null;
+	protected 	String 							pluginName	= null;
+	
 	
 	public AbstractPluginWebServiceControler(){
 		reader		= SingletonWebServiceReader.getInstance();
@@ -50,7 +52,8 @@ public abstract class AbstractPluginWebServiceControler {
 	/**
 	 * initialize the plugin
 	 */
-	public void init() {
+	public void init(String pluginName) {
+		this.pluginName = pluginName;
 		registercommands(lstCommands);
 		registerCommandsToTCPReader();
 	}
@@ -61,7 +64,7 @@ public abstract class AbstractPluginWebServiceControler {
 	private void registerCommandsToTCPReader() {
 		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
 			String commandName = i.next();
-			reader.registerCommand(commandName, lstCommands.get(commandName));
+			reader.registerCommand(pluginName+"_"+commandName, lstCommands.get(commandName));
 		}
 	}
 	

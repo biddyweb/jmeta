@@ -16,6 +16,7 @@ public class WebRequestHandler extends AbstractHandler {
 
 	private SingletonWebServiceReader 			webServiceReader 	= null;
 	private HashMap<String, AbstractWebService> instanceMap 		= null;
+	private int nbCommands = 0;
 
 	public WebRequestHandler() {
 		webServiceReader 	= SingletonWebServiceReader.getInstance();
@@ -115,6 +116,11 @@ public class WebRequestHandler extends AbstractHandler {
 	        response.setStatus(HttpServletResponse.SC_OK);
 	        base.setHandled(true);
 		}
+	}
+
+	private String getNewId() {
+		nbCommands++;
+		return "command"+nbCommands;
 	}
 
 }

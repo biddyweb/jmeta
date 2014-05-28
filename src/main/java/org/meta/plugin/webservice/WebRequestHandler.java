@@ -92,8 +92,10 @@ public class WebRequestHandler extends AbstractHandler {
 						break;
 					}
 					
-					result.append("idCommand", idCommand);
-					response.getWriter().print(result.toString());
+					if(result != null){
+						result.append("idCommand", idCommand);
+						response.getWriter().print(result.toString());
+					}
 			        response.setStatus(HttpServletResponse.SC_OK);
 			        base.setHandled(true);
 				} catch (Exception e) {

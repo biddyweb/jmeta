@@ -1,6 +1,7 @@
 package org.meta.plugin.webservice;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +15,11 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 public class WebRequestHandler extends AbstractHandler {
 
 	private SingletonWebServiceReader webServiceReader = null;
+	private HashMap<String, AbstractWebService> instanceMap;
 
 	public WebRequestHandler() {
-		webServiceReader = SingletonWebServiceReader.getInstance();
+		webServiceReader 	= SingletonWebServiceReader.getInstance();
+		instanceMap 		= new HashMap<String, AbstractWebService>();
 	}
 	
 	@Override
@@ -37,7 +40,7 @@ public class WebRequestHandler extends AbstractHandler {
 			action		= urlParse[urlParse.length-2];
 			command 	= urlParse[urlParse.length-1];
 		}else{
-			//just one action
+			// otherwise just one System action 
 			action 	= urlParse[urlParse.length-1];
 		}
 
@@ -46,26 +49,50 @@ public class WebRequestHandler extends AbstractHandler {
 			//Get the associated command
 			Class<? extends AbstractWebService> clazzWs = 
 										webServiceReader.getCommand(command);
+			//if clazzWs is not null it means it was found and executable
 			if(clazzWs != null){
 				try {
-					//
-					AbstractWebService commandWs = 
-									(AbstractWebService) clazzWs.newInstance();
+					
+					String idCommand = request.getParameter("idCommand");
+					AbstractWebService commandWs = null;
+					
+					if(idCommand != null && idCommand != ""){
+						commandWs = instanceMap.get(idCommand);
+					}
+					if(commandWs == null){
+						idCommand = getNewId();
+						commandWs = (AbstractWebService) clazzWs.newInstance();
+						instanceMap.put(idCommand, commandWs);
+					}
+					
+					BasicBSONObject result = null;
+					
 					switch (action) {
+
+					case "terminate" :
+						instanceMap.remove(idCommand);
+						break;
+					
+					//getNextResults from network
+					case "retrieveUpdate" :
+						result = commandWs.retrieveUpdate().toJson();
+						break ;
+					
+						//execute command
 					case "execute":
-						response.getWriter().print(
-								commandWs.execute(request.getParameterMap()));
+						result = commandWs.execute(request.getParameterMap())
+						.toJson();
 						break;
 	
+					//default case : get the interface descriptor
 					case "interface":
 					default:
-						InterfaceDescriptor interfaceDesc = commandWs.getInterface();
-						BasicBSONObject json = interfaceDesc.toJson();
-						
-						response.getWriter().print(json.toString());
+						result = commandWs.getInterface().toJson();
 						break;
 					}
-	
+					
+					result.append("idCommand", idCommand);
+					response.getWriter().print(result.toString());
 			        response.setStatus(HttpServletResponse.SC_OK);
 			        base.setHandled(true);
 				} catch (Exception e) {

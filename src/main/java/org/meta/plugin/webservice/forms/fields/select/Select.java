@@ -1,11 +1,11 @@
 package org.meta.plugin.webservice.forms.fields.select;
 
-import org.meta.plugin.webservice.forms.InterfaceElement;
+import org.meta.plugin.webservice.forms.InterfaceField;
 
-public class Select extends InterfaceElement{
+public class Select extends InterfaceField{
 
-	public Select(String id) {
-		super(id);
+	public Select(String id, String label) {
+		super(id, label);
 	}
 
 	@Override

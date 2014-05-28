@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.BasicBSONObject;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.meta.plugin.webservice.forms.InterfaceDescriptor;
+
 
 public class WebRequestHandler extends AbstractHandler {
 
@@ -98,7 +98,8 @@ public class WebRequestHandler extends AbstractHandler {
 			        base.setHandled(true);
 				} catch (Exception e) {
 					response.getWriter().write(e.getMessage());
-			        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			        response.setStatus(HttpServletResponse
+			        								.SC_INTERNAL_SERVER_ERROR);
 			        base.setHandled(true);
 				}
 			}else{
@@ -109,7 +110,8 @@ public class WebRequestHandler extends AbstractHandler {
 			 switch (action) {
 			case "getPluginList":
 			default:
-				response.getWriter().print(webServiceReader.getCommandListAsJson());
+				response.getWriter().print(webServiceReader
+													.getCommandListAsJson());
 				break;
 			}
 			 

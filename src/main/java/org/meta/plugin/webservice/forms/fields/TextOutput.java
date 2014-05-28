@@ -1,6 +1,6 @@
 package org.meta.plugin.webservice.forms.fields;
 
-import org.meta.plugin.webservice.forms.InterfaceElement;
+import org.meta.plugin.webservice.forms.InterfaceField;
 
 
 /**
@@ -8,10 +8,10 @@ import org.meta.plugin.webservice.forms.InterfaceElement;
  * @author faquin
  *
  */
-public class TextOutput extends InterfaceElement {
+public class TextOutput extends InterfaceField {
 
-	public TextOutput(String id) {
-		super(id);
+	public TextOutput(String id, String label) {
+		super(id, label);
 	}
 
 	@Override

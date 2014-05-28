@@ -11,7 +11,7 @@ public class PluginExempleWebServiceControler extends AbstractPluginWebServiceCo
 	@Override
 	protected void registercommands(
 			HashMap<String, Class<? extends AbstractWebService>> commands) {
-		commands.put("bouli", ExempleWsCommand.class);
+		commands.put("example", ExempleWsCommand.class);
 	}
 
 }

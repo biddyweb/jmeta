@@ -10,7 +10,7 @@ public class Select extends InterfaceField{
 
 	@Override
 	protected String getType() {
-		return "radioButton";
+		return "select";
 	}
 
 }

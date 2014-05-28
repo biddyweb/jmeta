@@ -40,15 +40,15 @@ public class ExempleWsCommand extends AbstractWebService {
 		column.addChild(new SelectList("list", buttons));
 		
 		ArrayList<RadioButton> radio = new ArrayList<RadioButton>();
-		buttons.add(new Select("radio1", "radio1"));
-		buttons.add(new Select("radio2", "radio2"));
-		buttons.add(new Select("radio3", "radio3"));
+		radio.add(new RadioButton("radio1", "radio1"));
+		radio.add(new RadioButton("radio2", "radio2"));
+		radio.add(new RadioButton("radio3", "radio3"));
 		column.addChild(new RadioList("list", radio));
 		
 		ArrayList<CheckBox> check = new ArrayList<CheckBox>();
-		buttons.add(new Select("check1", "check1"));
-		buttons.add(new Select("check2", "check2"));
-		buttons.add(new Select("check3", "check3"));
+		check.add(new CheckBox("check1", "check1"));
+		check.add(new CheckBox("check2", "check2"));
+		check.add(new CheckBox("check3", "check3"));
 		column.addChild(new CheckBoxLists("list", check));
 		
 		output = new TextOutput("output", "Sortie");

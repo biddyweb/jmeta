@@ -28,7 +28,7 @@ public class SelectList extends InterfaceElement {
 	
 	@Override
 	protected String getType() {
-		return "checkBoxList";
+		return "selectList";
 	}
 
 }

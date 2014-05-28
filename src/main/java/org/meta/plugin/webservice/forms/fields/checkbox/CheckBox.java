@@ -10,7 +10,7 @@ public class CheckBox extends InterfaceField{
 
 	@Override
 	protected String getType() {
-		return "radioButton";
+		return "checkBox";
 	}
 
 }

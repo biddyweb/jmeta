@@ -8,6 +8,6 @@
 #	PluginExemple.WSClass:		org.lavocat.plugins.PluginExemple.PluginExempleWebServiceControler
 
 PluginExemple.name: 		PluginExemple
-PluginExemple.TCPClass:		org.lavocat.PluginExemple.PluginExempleTcpControler
-PluginExemple.WSClass:		org.lavocat.PluginExemple.PluginExempleWebServiceControler
+PluginExemple.TCPClass:		org.meta.PluginExemple.PluginExempleTcpControler
+PluginExemple.WSClass:		org.meta.PluginExemple.PluginExempleWebServiceControler
 

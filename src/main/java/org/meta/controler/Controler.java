@@ -108,8 +108,8 @@ public class Controler {
                     webServiceControler.setModel(model);
                     webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
-                    tcpControler.init();
-                    webServiceControler.init();
+                    tcpControler.init(key.replaceAll(".name", ""));
+                    webServiceControler.init(key.replaceAll(".name", ""));
 
                 } catch (ClassNotFoundException e) {
                     System.out.println("The plugin " + key + " is not available");

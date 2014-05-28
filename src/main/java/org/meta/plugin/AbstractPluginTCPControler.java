@@ -37,6 +37,7 @@ public abstract class AbstractPluginTCPControler implements P2PListener{
 	protected  	Model 		 model 			=	null;
 	private 	SingletonTCPReader	reader			= 	null;
 	protected  	HashMap<String, Class<? extends AbstractCommand>>	lstCommands		= 	null;
+	private 	String pluginName = null;
 	
 	public AbstractPluginTCPControler(){
 		reader = SingletonTCPReader.getInstance();
@@ -58,8 +59,10 @@ public abstract class AbstractPluginTCPControler implements P2PListener{
 
 	/**
 	 * initialize the plugin
+	 * @param pluginName 
 	 */
-	public void init() {
+	public void init(String pluginName) {
+		this.pluginName = pluginName;
 		registercommands(lstCommands);
 		registerCommandsToTCPReader();
 	}
@@ -70,7 +73,7 @@ public abstract class AbstractPluginTCPControler implements P2PListener{
 	private void registerCommandsToTCPReader() {
 		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
 			String commandName = i.next();
-			reader.registerCommand(commandName, lstCommands.get(commandName));
+			reader.registerCommand(pluginName+"_"+commandName, lstCommands.get(commandName));
 		}
 	}
 

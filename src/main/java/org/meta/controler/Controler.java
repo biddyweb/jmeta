@@ -1,7 +1,5 @@
 package org.meta.controler;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -44,7 +42,6 @@ public class Controler {
 
     private Model model = null;
     private String pluginsPropertiesFile = "conf/plugins.prop";
-    private String confPropertiesFile = "conf/jmeta.prop";
     private P2PControler p2pControler = null;
     private ArrayList<String> lstPluginsNames = null;
     private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;

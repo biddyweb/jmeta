@@ -14,8 +14,8 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 
 public class WebRequestHandler extends AbstractHandler {
 
-	private SingletonWebServiceReader webServiceReader = null;
-	private HashMap<String, AbstractWebService> instanceMap;
+	private SingletonWebServiceReader 			webServiceReader 	= null;
+	private HashMap<String, AbstractWebService> instanceMap 		= null;
 
 	public WebRequestHandler() {
 		webServiceReader 	= SingletonWebServiceReader.getInstance();

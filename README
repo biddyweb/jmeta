@@ -1,0 +1,9 @@
+Note for developers:
+
+The JNI kyotocabinet binding is a bit tricky to make it work in a portable
+fashion. What is done at the moment is to link to a local directory and put
+symbolic links in it:
+
+ln -s /usr/local/lib/libjkyotocabinet.so nativelib/libjkyotocabinet.so
+
+(make sure to adapt /usr/local/lib to your local installation directory

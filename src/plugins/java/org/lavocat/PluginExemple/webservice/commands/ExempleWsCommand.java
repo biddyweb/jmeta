@@ -1,12 +1,14 @@
 package org.lavocat.PluginExemple.webservice.commands;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.DateInput;
 import org.meta.plugin.webservice.forms.fields.TextInput;
+import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.fields.checkbox.CheckBox;
 import org.meta.plugin.webservice.forms.fields.checkbox.CheckBoxLists;
 import org.meta.plugin.webservice.forms.fields.radio.RadioButton;
@@ -18,8 +20,11 @@ import org.meta.plugin.webservice.forms.organizers.LineOrganizer;
 
 public class ExempleWsCommand extends AbstractWebService {
 
-	@Override
-	public InterfaceDescriptor getInterface() {
+	private InterfaceDescriptor descriptor 	= null;
+	private TextOutput			output 		= null;
+	private int	 				nbRefresh	= 0;
+
+	public ExempleWsCommand(){
 		// Describe a full interface for test		
 		ColumnOrganizer column 		= new ColumnOrganizer("column1");
 		column.addChild(new DateInput("birthDate", "Birth Date"));
@@ -46,12 +51,32 @@ public class ExempleWsCommand extends AbstractWebService {
 		buttons.add(new Select("check3", "check3"));
 		column.addChild(new CheckBoxLists("list", check));
 		
-		InterfaceDescriptor descriptor = new InterfaceDescriptor(column);
+		output = new TextOutput("output", "Sortie");
+		
+		column.addChild(output);
+		descriptor = new InterfaceDescriptor(column);
+	}
+	
+	@Override
+	public InterfaceDescriptor getInterface() {
 		return descriptor;
 	}
 
 	@Override
-	public String execute(Map<String, String[]> map) {
-		return "you rules !";
+	public InterfaceDescriptor execute(Map<String, String[]> map) {
+		output.flush();
+		output.append("Your sended parameters are :");
+		for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
+			String key = (String) i.next();
+			output.append(" - "+key+" : "+map.get(key));
+		}		
+		return descriptor;
+	}
+
+	@Override
+	public InterfaceDescriptor retrieveUpdate() {
+		nbRefresh++;
+		output.append("refresh number"+nbRefresh);
+		return descriptor;
 	}
 }

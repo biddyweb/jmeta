@@ -5,6 +5,10 @@ import java.util.Iterator;
 
 import org.bson.types.BasicBSONList;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+
 
 public class SingletonWebServiceReader extends Thread {
 
@@ -34,7 +38,15 @@ public class SingletonWebServiceReader extends Thread {
 	@Override
 	public void run() {
 		server = new Server(8080);//TODO
-		server.setHandler(new WebRequestHandler());
+
+		ResourceHandler resource_handler = new ResourceHandler();
+		resource_handler.setDirectoriesListed(true);
+		resource_handler.setResourceBase("static");
+
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] { resource_handler, new WebRequestHandler() });
+
+		server.setHandler(handlers);
 		try {
 			server.start();
 			server.join();

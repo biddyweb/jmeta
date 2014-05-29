@@ -39,6 +39,7 @@ public class SingletonWebServiceReader extends Thread {
 	public void run() {
 		server = new Server(8080);//TODO
 
+		// serve statics files within 'static' directory
 		ResourceHandler resource_handler = new ResourceHandler();
 		resource_handler.setDirectoriesListed(true);
 		resource_handler.setResourceBase("static");

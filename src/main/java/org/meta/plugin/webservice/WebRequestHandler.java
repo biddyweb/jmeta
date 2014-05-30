@@ -45,7 +45,7 @@ public class WebRequestHandler extends AbstractHandler {
 			action 	= urlParse[urlParse.length-1];
 		}
 
-		response.setContentType("application/json");
+		response.setContentType("application/json; charset=utf-8");
 		if(command != ""){
 			//Get the associated command
 			Class<? extends AbstractWebService> clazzWs = 

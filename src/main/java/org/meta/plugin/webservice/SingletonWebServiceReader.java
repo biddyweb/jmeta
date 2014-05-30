@@ -8,7 +8,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 
 public class SingletonWebServiceReader extends Thread {
 
@@ -70,6 +71,9 @@ public class SingletonWebServiceReader extends Thread {
 			String key = (String) i.next();
 			list.add(key);
 		}
-		return list.toString();
+
+		// Serialize BasicBSONList in JSON
+		ObjectSerializer json_serializer = JSONSerializers.getStrict();
+		return json_serializer.serialize(list);
 	}
 }

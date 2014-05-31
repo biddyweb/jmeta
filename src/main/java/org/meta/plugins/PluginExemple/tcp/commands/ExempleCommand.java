@@ -1,4 +1,4 @@
-package org.meta.PluginExemple.tcp.commands;
+package org.meta.plugins.PluginExemple.tcp.commands;
 
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;

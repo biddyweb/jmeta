@@ -1,8 +1,8 @@
-package org.meta.PluginExemple;
+package org.meta.plugins.PluginExemple;
 
 import java.util.HashMap;
 
-import org.meta.PluginExemple.tcp.commands.ExempleCommand;
+import org.meta.plugins.PluginExemple.tcp.commands.ExempleCommand;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.tcp.AbstractCommand;
 

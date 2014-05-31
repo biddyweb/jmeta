@@ -1,4 +1,4 @@
-package org.meta.PluginExemple.webservice.commands;
+package org.meta.plugins.PluginExemple.webservice.commands;
 
 import java.util.ArrayList;
 import java.util.Iterator;

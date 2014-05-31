@@ -1,8 +1,8 @@
-package org.meta.PluginExemple;
+package org.meta.plugins.PluginExemple;
 
 import java.util.HashMap;
 
-import org.meta.PluginExemple.webservice.commands.ExempleWsCommand;
+import org.meta.plugins.PluginExemple.webservice.commands.ExempleWsCommand;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 

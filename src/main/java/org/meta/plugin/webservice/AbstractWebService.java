@@ -2,6 +2,8 @@ package org.meta.plugin.webservice;
 
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
+
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 
@@ -27,5 +29,10 @@ public abstract class AbstractWebService {
 	public abstract InterfaceDescriptor execute(Map<String, String[]> map);
 
 	public abstract InterfaceDescriptor retrieveUpdate();
+
+	@PreDestroy
+	public void kill() {
+		controler = null;
+	}
 
 }

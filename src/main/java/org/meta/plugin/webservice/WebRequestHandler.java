@@ -60,8 +60,13 @@ public class WebRequestHandler extends AbstractHandler {
 			pluginInstance = webServiceReader.getPlugin(plugin);
 		}
 		
+		//Tree cases :
+		// we have a command and a plugin
+		// we only have a plugin
+		// we have nothing
+		
 		if(command != "" && pluginInstance != null){
-			//Get the associated command
+			//First case, get the associated command
 			
 			Class<? extends AbstractWebService> clazzWs = 
 										pluginInstance.getCommand(command);
@@ -80,12 +85,16 @@ public class WebRequestHandler extends AbstractHandler {
 						commandWs = (AbstractWebService) clazzWs.newInstance();
 						instanceMap.put(idCommand, commandWs);
 					}
+					commandWs.setWebServiceControler(pluginInstance);
 					
 					BasicBSONObject result = null;
 					
 					switch (action) {
-
+					//fflush memory
 					case "terminate" :
+						commandWs =instanceMap.get(idCommand);
+						if(commandWs != null)
+							commandWs.kill();
 						instanceMap.remove(idCommand);
 						break;
 					
@@ -94,7 +103,7 @@ public class WebRequestHandler extends AbstractHandler {
 						result = commandWs.retrieveUpdate().toJson();
 						break ;
 					
-						//execute command
+					//execute command
 					case "execute":
 						result = commandWs.execute(request.getParameterMap())
 						.toJson();
@@ -124,6 +133,7 @@ public class WebRequestHandler extends AbstractHandler {
 		        base.setHandled(true);
 			}
 		} else if(plugin != "" && pluginInstance != null){
+			//second case, we only have a plugin
 			switch (action){
 			case "getCommandList":
 			default:
@@ -134,6 +144,7 @@ public class WebRequestHandler extends AbstractHandler {
 	        response.setStatus(HttpServletResponse.SC_OK);
 	        base.setHandled(true);
 		}else{
+			//last case
 			 switch (action) {
 			case "getPluginsList":
 			default:

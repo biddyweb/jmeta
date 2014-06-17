@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import kyotocabinet.DB;
+
 import org.bson.BSONDecoder;
 import org.bson.BSONEncoder;
 import org.bson.BSONObject;
@@ -344,4 +346,9 @@ public class Model {
     public static boolean checkHash(String hash, byte[] bloc) {
         return hash.equals(hash(bloc));
     }
+
+	public String hash(File file) {
+		// TODO Auto-generated method stub
+		return "TODO-hash_a_faire";
+	}
 }

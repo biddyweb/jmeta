@@ -1,10 +1,14 @@
 package org.meta.plugin;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.bson.types.BasicBSONList;
+import org.meta.controler.P2P.P2PListener;
 import org.meta.model.Model;
+import org.meta.plugin.tcp.SingletonTCPWriter;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.SingletonWebServiceReader;
 
@@ -52,6 +56,10 @@ public abstract class AbstractPluginWebServiceControler {
 	public void setModel(Model model) {
 		this.model = model;
 	}
+	
+	public Model getModel(){
+		return model;
+	}
 
 	/**
 	 * initialize the plugin
@@ -94,6 +102,26 @@ public abstract class AbstractPluginWebServiceControler {
 		// Serialize BasicBSONList in JSON
 		ObjectSerializer json_serializer = JSONSerializers.getStrict();
 		return json_serializer.serialize(list);	
+	}
+
+	public void search(	final String hash, 
+						final String command, 
+						final AbstractWebService abstractWebService)
+	{
+		tcpControler.lookForPeer(hash, new P2PListener() {
+			
+			@Override
+			public void nodesFounded(InetAddress node) {
+				SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
+				InetAddress adress;
+				try {
+					adress = InetAddress.getLocalHost();
+					writer.askTo(adress, command, hash, abstractWebService);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 }

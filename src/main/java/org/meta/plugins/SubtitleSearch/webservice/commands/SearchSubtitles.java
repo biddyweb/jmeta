@@ -1,14 +1,17 @@
 package org.meta.plugins.SubtitleSearch.webservice.commands;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 
+import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWebServiceControler;
 
 public class SearchSubtitles extends AbstractWebService{
 	
@@ -46,7 +49,10 @@ public class SearchSubtitles extends AbstractWebService{
 			File file = new File(path);
 			if(file.exists()){
 				initialTextOutput.flush();
-				
+				PluginSubtitleSearchWebServiceControler controler = 
+					(PluginSubtitleSearchWebServiceControler) super.controler;
+				String hash = controler.getModel().hash(file);
+				super.controler.search(hash, "CommandName//TODO", this);//TODO
 			}else{
 				initialTextOutput.flush();
 				initialTextOutput.append("The file does not exist");
@@ -62,6 +68,11 @@ public class SearchSubtitles extends AbstractWebService{
 	public InterfaceDescriptor retrieveUpdate() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void callback(ArrayList<Searchable> results) {
+		// TODO Auto-generated method stub
 	}
 
 }

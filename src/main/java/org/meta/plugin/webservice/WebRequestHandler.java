@@ -103,6 +103,8 @@ public class WebRequestHandler extends AbstractHandler {
 						result = commandWs.retrieveUpdate().toJson();
 						break ;
 					
+					
+					
 					//execute command
 					case "execute":
 						result = commandWs.execute(request.getParameterMap())
@@ -112,7 +114,7 @@ public class WebRequestHandler extends AbstractHandler {
 					//default case : get the interface descriptor	
 					case "interface":
 					default:
-						result = commandWs.getInterface().toJson();
+						result = commandWs.getInterface(request.getParameterMap()).toJson();
 						break;
 					}
 					

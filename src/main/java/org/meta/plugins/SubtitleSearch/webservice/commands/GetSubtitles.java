@@ -10,7 +10,7 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 public class GetSubtitles extends AbstractWebService{
 
 	@Override
-	public InterfaceDescriptor getInterface() {
+	public InterfaceDescriptor getInterface(Map<String, String[]> map) {
 		// TODO Auto-generated method stub
 		return null;
 	}

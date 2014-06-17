@@ -32,7 +32,7 @@ public class SearchSubtitles extends AbstractWebService{
 	}
 	
 	@Override
-	public InterfaceDescriptor getInterface() {
+	public InterfaceDescriptor getInterface(Map<String, String[]> map) {
 		return initialDescriptor;
 	}
 

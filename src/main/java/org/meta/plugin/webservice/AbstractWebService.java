@@ -25,7 +25,7 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
 		this.controler = controler;
 	}
 
-	public abstract InterfaceDescriptor getInterface();
+	public abstract InterfaceDescriptor getInterface(Map<String, String[]> map);
 
 	public abstract InterfaceDescriptor execute(Map<String, String[]> map);
 

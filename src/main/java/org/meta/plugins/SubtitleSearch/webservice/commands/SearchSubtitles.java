@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.bson.BasicBSONObject;
 import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
@@ -73,6 +74,15 @@ public class SearchSubtitles extends AbstractWebService{
 	@Override
 	public void callback(ArrayList<Searchable> results) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public BasicBSONObject getNextStep() {
+		BasicBSONObject nextStep = new BasicBSONObject();
+		nextStep.append("pluginName", "SubtitleSearch");
+		nextStep.append("commandName", "getSubtitles");
+		//TODO give parameters
+		return nextStep;
 	}
 
 }

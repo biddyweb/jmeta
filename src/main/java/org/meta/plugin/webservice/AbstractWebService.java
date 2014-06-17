@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
+import org.bson.BasicBSONObject;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
@@ -31,9 +32,12 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
 
 	public abstract InterfaceDescriptor retrieveUpdate();
 
+	public abstract BasicBSONObject getNextStep();
+
 	@PreDestroy
 	public void kill() {
 		controler = null;
 	}
+
 
 }

@@ -11,9 +11,4 @@ public class PluginSubtitleSearchTcpControler extends AbstractPluginTCPControler
 	protected void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands) {
 	}
 
-	@Override
-	public void nodesFounded() {
-		
-	}
-
 }

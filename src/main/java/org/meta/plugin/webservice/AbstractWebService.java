@@ -5,10 +5,11 @@ import java.util.Map;
 import javax.annotation.PreDestroy;
 
 import org.meta.plugin.AbstractPluginWebServiceControler;
+import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 
 //TODO transform as an interface
-public abstract class AbstractWebService {
+public abstract class AbstractWebService implements TCPResponseCallbackInteface {
 	
 	protected AbstractPluginWebServiceControler controler = null;
 	

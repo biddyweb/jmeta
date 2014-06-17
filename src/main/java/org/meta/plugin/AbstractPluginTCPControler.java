@@ -3,6 +3,8 @@ package org.meta.plugin;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.tomp2p.peers.Number160;
+
 import org.meta.controler.P2P.P2PControler;
 import org.meta.controler.P2P.P2PListener;
 import org.meta.model.Model;
@@ -31,7 +33,7 @@ import org.meta.plugin.tcp.SingletonTCPReader;
  * @author Thomas LAVOCAT
  *
  */
-public abstract class AbstractPluginTCPControler implements P2PListener{
+public abstract class AbstractPluginTCPControler {
 
 	protected 	P2PControler p2pControler 	= 	null;
 	protected  	Model 		 model 			=	null;
@@ -83,6 +85,10 @@ public abstract class AbstractPluginTCPControler implements P2PListener{
 	 */
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	public void lookForPeer(String hash, P2PListener listener) {
+		p2pControler.lookForPeer((Number160) null, listener);//TODO
 	}
 	
 	

@@ -105,6 +105,7 @@ public abstract class AbstractPluginWebServiceControler {
 	}
 
 	public void search(	final String hash, 
+						final String plugin, 
 						final String command, 
 						final AbstractWebService abstractWebService)
 	{
@@ -116,7 +117,7 @@ public abstract class AbstractPluginWebServiceControler {
 				InetAddress adress;
 				try {
 					adress = InetAddress.getLocalHost();
-					writer.askTo(adress, command, hash, abstractWebService);
+					writer.askTo(adress, plugin, command, hash, abstractWebService);
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				}

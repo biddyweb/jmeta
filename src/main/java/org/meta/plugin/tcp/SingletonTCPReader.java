@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
+import org.meta.plugin.AbstractPluginTCPControler;
+
 
 /*
  *	JMeta - Meta's java implementation
@@ -30,26 +32,22 @@ import java.util.HashMap;
  */
 public class SingletonTCPReader extends Thread{
 
-	private HashMap<String, Class<? extends AbstractCommand>> mapCommand 	= null;
+	private HashMap<String, AbstractPluginTCPControler> mapPlugin 	= null;
 	private 			boolean 		work		= true;
 	private static 		SingletonTCPReader 		instance 	= new SingletonTCPReader();
 	private 			int				port		= 4001;
 	private				ServerSocket 	socket		= null;
 	
 	private SingletonTCPReader() {
-		mapCommand = new HashMap<String, Class<? extends AbstractCommand>>();
+		mapPlugin = new HashMap<String,AbstractPluginTCPControler>();
 	}
 	
 	public static SingletonTCPReader getInstance() {
 		return instance;
 	}
 	
-	public void registerCommand(String commandName, Class<? extends AbstractCommand> clazz){
-		mapCommand.put(commandName, clazz);
-	}
-	
-	public Class<? extends AbstractCommand> getCommand(String commandName){
-		return mapCommand.get(commandName);
+	public Class<? extends AbstractCommand> getCommand(String pluginName, String commandName){
+		return mapPlugin.get(pluginName).getCommand(commandName);
 	}
 	
 	@Override
@@ -73,5 +71,10 @@ public class SingletonTCPReader extends Thread{
 	public void initializePortAndRun(int port) {
 		this.port = port;
 		this.start();
+	}
+
+	public void registerPlugin(String pluginName,
+			AbstractPluginTCPControler abstractPluginTCPControler) {
+		mapPlugin.put(pluginName, abstractPluginTCPControler);
 	}
 }

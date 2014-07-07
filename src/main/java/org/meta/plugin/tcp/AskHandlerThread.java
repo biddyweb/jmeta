@@ -49,7 +49,9 @@ public class AskHandlerThread extends Thread{
 				//get the AMPCommand from the TCPReader singleton
 				//who know every plugins
 				Class<? extends AbstractCommand> classCommand = 
-										this.reader.getCommand(parser.getCommand());
+										this.reader.getCommand(
+												parser.getPlugin(),
+												parser.getCommand());
 				//if the classCommand is null, we d'ont have the requeried
 				//command to execute
 				if(classCommand != null){

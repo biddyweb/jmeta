@@ -7,7 +7,7 @@ public class SearchSubtitleCommand extends AbstractCommand {
 
 	@Override
 	public AMPAnswerFactory execute(String answer, String hash) {
-		// TODO Auto-generated method stub
+		
 		return new AMPAnswerFactory(answer, null);
 	}
 

@@ -1,8 +1,6 @@
 package org.meta.plugin;
 
 import java.util.HashMap;
-import java.util.Iterator;
-
 import net.tomp2p.peers.Number160;
 
 import org.meta.controler.P2P.P2PControler;
@@ -73,10 +71,7 @@ public abstract class AbstractPluginTCPControler {
 	 * register the commands to TCPReader
 	 */
 	private void registerCommandsToTCPReader() {
-		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
-			String commandName = i.next();
-			reader.registerCommand(pluginName+"_"+commandName, lstCommands.get(commandName));
-		}
+		reader.registerPlugin(pluginName, this);
 	}
 
 	/**
@@ -91,5 +86,7 @@ public abstract class AbstractPluginTCPControler {
 		p2pControler.lookForPeer((Number160) null, listener);//TODO
 	}
 	
-	
+	public Class<? extends AbstractCommand> getCommand(String commandName){
+		return lstCommands.get(commandName);
+	}
 }

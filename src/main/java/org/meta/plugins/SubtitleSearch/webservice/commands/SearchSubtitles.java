@@ -53,7 +53,10 @@ public class SearchSubtitles extends AbstractWebService{
 				PluginSubtitleSearchWebServiceControler controler = 
 					(PluginSubtitleSearchWebServiceControler) super.controler;
 				String hash = controler.getModel().hash(file);
-				super.controler.search(hash, "CommandName//TODO", this);//TODO
+				super.controler.search(	hash, 
+										"SubtitleSearch", 
+										"SearchSubtitleCommand", 
+										this);
 			}else{
 				initialTextOutput.flush();
 				initialTextOutput.append("The file does not exist");

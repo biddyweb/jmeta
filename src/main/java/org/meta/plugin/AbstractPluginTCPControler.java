@@ -40,7 +40,7 @@ public abstract class AbstractPluginTCPControler {
 	private 	String pluginName = null;
 	
 	public AbstractPluginTCPControler(){
-		reader = SingletonTCPReader.getInstance();
+		reader 		= SingletonTCPReader.getInstance();
 		lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
 	}
 
@@ -64,13 +64,13 @@ public abstract class AbstractPluginTCPControler {
 	public void init(String pluginName) {
 		this.pluginName = pluginName;
 		registercommands(lstCommands);
-		registerCommandsToTCPReader();
+		registerToTCPReader();
 	}
 
 	/**
 	 * register the commands to TCPReader
 	 */
-	private void registerCommandsToTCPReader() {
+	private void registerToTCPReader() {
 		reader.registerPlugin(pluginName, this);
 	}
 

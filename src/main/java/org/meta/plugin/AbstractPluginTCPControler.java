@@ -1,11 +1,13 @@
 package org.meta.plugin;
 
 import java.util.HashMap;
+
 import net.tomp2p.peers.Number160;
 
 import org.meta.controler.P2P.P2PControler;
 import org.meta.controler.P2P.P2PListener;
 import org.meta.model.Model;
+import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.SingletonTCPReader;
 
@@ -86,7 +88,22 @@ public abstract class AbstractPluginTCPControler {
 		p2pControler.lookForPeer((Number160) null, listener);//TODO
 	}
 	
-	public Class<? extends AbstractCommand> getCommand(String commandName){
-		return lstCommands.get(commandName);
+	public AbstractCommand getCommand(String commandName){
+		AbstractCommand command = null;
+		
+		Class<? extends AbstractCommand> clazz = lstCommands.get(commandName);
+		if(clazz != null){
+			try {
+				command = (AbstractCommand) clazz.newInstance();
+				command.setPluginTCPControler(this);
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}		
+		return command;
+	}
+
+	public Searchable getInTheModel(String hash) {
+		return model.getSearchable(hash);
 	}
 }

@@ -34,6 +34,7 @@ public class AnswerSenderThread extends Thread {
 		this.adress 	= adress;
 		this.port 		= port;
 		this.listenner 	= listenner;
+		this.results 	= new ArrayList<Searchable>();
 	}
 
 	public void run() {
@@ -53,9 +54,11 @@ public class AnswerSenderThread extends Thread {
 			while ((count = is.read()) != -1) {
 				buffer.write(count);	
 			}
-			//parse it into an answer
-			AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray());
-			this.results = parser.getDatas();
+			if(buffer.size() > 0){
+				//parse it into an answer
+				AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray());
+				this.results = parser.getDatas();
+			}
 			//close everything that use memory
 			buffer.flush();
 			buffer.close();

@@ -46,9 +46,16 @@ public class SingletonTCPReader extends Thread{
 		return instance;
 	}
 	
-	public Class<? extends AbstractCommand> getCommand(String pluginName, String commandName){
+	public AbstractCommand getCommand(String pluginName, String commandName){
+		AbstractCommand command = null;
 		AbstractPluginTCPControler plugin = mapPlugin.get(pluginName);
-		return plugin != null ? plugin.getCommand(commandName) : null;
+		
+		if(plugin != null ){
+			command = plugin.getCommand(commandName);
+		}
+		
+		
+		return command;
 	}
 	
 	@Override

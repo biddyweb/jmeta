@@ -45,7 +45,7 @@ public class AskHandlerThread extends Thread{
 			//Get the _command parameter from the amp command
 			//If not null, it means we speak the same langage, if not
 			//do nothing
-			if(parser.getCommand() != null){//TODO handle this with an exception
+      			if(parser.getCommand() != null){//TODO handle this with an exception
 				//get the AMPCommand from the TCPReader singleton
 				//who know every plugins
 				Class<? extends AbstractCommand> classCommand = 
@@ -73,15 +73,12 @@ public class AskHandlerThread extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();//TODO gérer cette exception
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			//TODO if an exception is throw here it means you cannot excecute 
 			//the command
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotAValidAMPCommand e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if(inputStream != null)

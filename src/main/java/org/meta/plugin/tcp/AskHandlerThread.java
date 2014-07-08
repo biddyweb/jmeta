@@ -45,21 +45,14 @@ public class AskHandlerThread extends Thread{
 			//Get the _command parameter from the amp command
 			//If not null, it means we speak the same langage, if not
 			//do nothing
-      			if(parser.getCommand() != null){//TODO handle this with an exception
-				//get the AMPCommand from the TCPReader singleton
-				//who know every plugins
-				Class<? extends AbstractCommand> classCommand = 
-										this.reader.getCommand(
-												parser.getPlugin(),
-												parser.getCommand());
-				//if the classCommand is null, we d'ont have the requeried
-				//command to execute
-				if(classCommand != null){
-					//Make a new instance, is an exception is thrown here
-					//it means that maybe here's an error in the plugin
-					//config file;
-					AbstractCommand command = (AbstractCommand) classCommand.newInstance();
-					//and execute it
+  			if(	parser.getCommand() != null	&&
+  				parser.getPlugin()  != null	
+			){
+				AbstractCommand command = this.reader.getCommand(
+						parser.getPlugin(),
+						parser.getCommand());
+				if(command != null){
+					//execute it
 					String hash = parser.getHash();
 					String answer = parser.getAsk();
 					byte[] response = command.execute(answer, hash).getMessage();
@@ -72,12 +65,6 @@ public class AskHandlerThread extends Thread{
 			}
 		} catch (IOException e) {
 			e.printStackTrace();//TODO gérer cette exception
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-			//TODO if an exception is throw here it means you cannot excecute 
-			//the command
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		} catch (NotAValidAMPCommand e) {
 			e.printStackTrace();
 		} finally {

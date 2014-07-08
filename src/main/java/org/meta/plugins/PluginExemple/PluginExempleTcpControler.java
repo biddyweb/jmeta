@@ -13,9 +13,5 @@ public class PluginExempleTcpControler extends AbstractPluginTCPControler {
 		commands.put("toto", ExempleCommand.class);
 	}
 
-	@Override
-	public void nodesFounded() {
-		
-	}
 
 }

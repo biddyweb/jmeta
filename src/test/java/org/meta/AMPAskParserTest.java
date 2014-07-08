@@ -23,13 +23,13 @@ public class AMPAskParserTest {
 				e.printStackTrace();
 			}
 			
-			AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete");
+			AMPAskFactory factory = new AMPAskFactory("23", "plugin", "toto", "cacahuete");
 			
-			System.out.println(factory.getMessage());
 			
 			try {
 				parser = new AMPAskParser(factory.getMessage());
 				System.out.println(parser.getAsk());
+				System.out.println(parser.getPlugin());
 				System.out.println(parser.getCommand());
 				System.out.println(parser.getHash());
 			} catch (NotAValidAMPCommand e) {

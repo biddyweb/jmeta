@@ -3,12 +3,15 @@ package org.meta;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
+import org.meta.plugin.AbstractPluginTCPControler;
+import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.SingletonTCPReader;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.tcp.SingletonTCPWriter;
@@ -16,13 +19,25 @@ import org.meta.plugin.tcp.SingletonTCPWriter;
 public class NetworkTest {
 	public static void main(String[] args) {
 		SingletonTCPReader reader = SingletonTCPReader.getInstance();
-		reader.registerCommand("toto", CommanndTest.class);
+		
+		AbstractPluginTCPControler pluginTest = new AbstractPluginTCPControler(){
+
+			@Override
+			protected void registercommands(
+					HashMap<String, Class<? extends AbstractCommand>> commands) {
+				commands.put("toto", CommanndTest.class);
+			}
+			
+		};
+		pluginTest.init("truc");
+		reader.registerPlugin("truc", pluginTest);
+		
 		reader.initializePortAndRun(4001);
 		SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
 		InetAddress adress;
 		try {
 			adress = InetAddress.getLocalHost();
-			writer.askTo(adress, "toto", "youpi", new TCPResponseCallbackInteface() {
+			writer.askTo(adress, "truc", "toto", "youpi", new TCPResponseCallbackInteface() {
 				
 				@Override
 				public void callback(ArrayList<Searchable> results) {
@@ -46,7 +61,6 @@ public class NetworkTest {
 				}
 			});
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		reader.kill();

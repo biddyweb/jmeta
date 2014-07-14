@@ -56,14 +56,10 @@ public class Controler {
     public Controler()
             throws IOException,
             URISyntaxException {
-        try {
-            this.model = new Model();
-            this.p2pControler = new P2PControler(Integer.parseInt(MetaProperties.getProperty("port"))+ 1);
-            SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
-            pluginInitialisation();
-        } catch (ModelException ex) {
-            Logger.getLogger(Controler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.model = Model.getInstance();
+        this.p2pControler = new P2PControler(Integer.parseInt(MetaProperties.getProperty("port")) + 1);
+        SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        pluginInitialisation();
     }
 
     /**

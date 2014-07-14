@@ -1,4 +1,4 @@
-package org.meta;
+package org.meta.tests;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

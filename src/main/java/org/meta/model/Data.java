@@ -1,5 +1,7 @@
 package org.meta.model;
 
+import org.meta.common.MetHash;
+
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 Thomas LAVOCAT
@@ -38,8 +40,8 @@ public abstract class Data extends Searchable {
      * @param hashCode
      * @param file
      */
-    public Data(String hashCode) {
-        super(hashCode);
+    public Data(MetHash hash) {
+        super(hash);
     }
 
 }

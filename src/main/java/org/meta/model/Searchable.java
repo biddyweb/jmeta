@@ -1,10 +1,9 @@
 package org.meta.model;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
+import org.meta.common.MetHash;
 
 /*
  *	JMeta - Meta's java implementation
@@ -23,22 +22,30 @@ import org.bson.BasicBSONObject;
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- *
- * @author Thomas LAVOCAT This abstract class represent something that can be
- * searchable and storable in the dataBase
- */
 public abstract class Searchable {
 
-    protected String hash = null;
-    protected boolean createInDb = false;
-    protected boolean updateDB = false;
+    protected MetHash hash = null;
+    protected ObjectState state;
+
+    /**
+     * Enum to lists the different possible states of a model object.
+     */
+    protected enum ObjectState {
+        //Object has been instanciated, it does not comes from network or database.
+        CREATED,
+        //Object comes from network.
+        FROM_NETWORK,
+        //Object comes from database and is up to date.
+        UP_TO_DATE,
+        //Object comes from database but has been modified.
+        DIRTY;
+    };
 
     /**
      * This constructor is needed for Java reflexion usage
      */
     public Searchable() {
-        hash = "empty";
+        state = ObjectState.CREATED;
     }
 
     /**
@@ -46,41 +53,53 @@ public abstract class Searchable {
      *
      * @param hashCode
      */
-    public Searchable(String hashCode) {
-        this.hash = hashCode;
-        updateDB = false;
-        createInDb = true;
+    public Searchable(MetHash hash) {
+        this.hash = hash;
+        state = ObjectState.CREATED;
     }
 
     /**
      *
      * @return the hashCode of this Searchable object
      */
-    public String getHashCode() {
+    public MetHash getHash() {
         return hash;
     }
 
     /**
      * @param hashCode the hashCode to set
      */
-    public void setHashCode(String hashCode) {
-        this.hash = hashCode;
+    public void setHash(MetHash hash) {
+        this.hash = hash;
     }
 
     /**
-     *
-     * @return true if you have to update false in other case
+     * 
+     * @return ObjectState The current state of this object.
      */
-    public boolean haveToUpdate() {
-        return updateDB;
+    public ObjectState getState() {
+        return state;
     }
 
     /**
-     *
-     * @return true if you have to create false in other case
+     * Set the current state of this object.
+     * 
+     * @param state ObjectState the state.
      */
-    public boolean haveToCreate() {
-        return createInDb;
+    public void setState(ObjectState state) {
+        this.state = state;
+    }
+
+    /**
+     * For internal purposes, updates the current state of the object based on current state.
+     * 
+     * For now, just sets the object as dirty if it comes from database.
+     */
+    protected void updateState() {
+        if (state == ObjectState.UP_TO_DATE) {
+            System.out.println("update state for " + this.hash.toString() + " set to dirty");
+            state = ObjectState.DIRTY;
+        }
     }
 
     /**
@@ -94,26 +113,19 @@ public abstract class Searchable {
 
     /**
      *
-     * @return transform the Searchable object into a JSON that can be stored
+     * @return transform the Searchable object into a BSON object for
+     * serialization.
      */
     public BSONObject getBson() {
-        BasicBSONObject bsonObject = new BasicBSONObject("hash", this.hash);
-        bsonObject.put("class", this.getClass().getName());
+        BasicBSONObject bsonObject = new BasicBSONObject("hash", this.hash.toString());
+        bsonObject.put("type", ModelType.fromClass(this.getClass()).name());
         return bsonObject;
-    }
-
-    /**
-     *
-     * @return the list of children to create
-     */
-    public List<Searchable> getChildsToCreate() {
-        return new ArrayList<Searchable>();
     }
 
     public LinkedHashMap<String, byte[]> getAmpAnswerPart() {
         LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<String, byte[]>();
         fragment.put("_type", (this.getClass().getName() + "").getBytes());
-        fragment.put("_hash", getHashCode().getBytes());
+        fragment.put("_hash", getHash().toByteArray());
         fillFragment(fragment);
         return fragment;
     }
@@ -126,9 +138,7 @@ public abstract class Searchable {
     protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);
 
     public void unParseFromAmpFragment(LinkedHashMap<String, byte[]> fragment) {
-        this.createInDb = true;
-        this.updateDB = false;
-        this.hash = new String(fragment.get("_hash"));
+        this.hash = new MetHash(fragment.get("_hash"));
         fragment.remove("_hash");
         decodefragment(fragment);
         fragment.clear();

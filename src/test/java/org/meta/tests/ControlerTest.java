@@ -1,4 +1,4 @@
-package org.meta;
+package org.meta.tests;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

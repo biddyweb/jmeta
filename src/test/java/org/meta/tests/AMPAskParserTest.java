@@ -1,4 +1,4 @@
-package org.meta;
+package org.meta.tests;
 
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.AMPAskParser;

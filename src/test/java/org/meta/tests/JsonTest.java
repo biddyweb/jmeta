@@ -1,4 +1,4 @@
-package org.meta;
+package org.meta.tests;
 
 
 public class JsonTest {

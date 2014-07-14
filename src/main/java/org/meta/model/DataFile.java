@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.bson.BSONObject;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 
 /*
  *	JMeta - Meta's java implementation
@@ -38,7 +40,7 @@ public class DataFile extends Data {
     /**
      * needed for java Reflexion
      */
-    public DataFile() {
+    protected DataFile() {
         super();
     }
 
@@ -48,8 +50,8 @@ public class DataFile extends Data {
      * @param hashCode
      * @param file
      */
-    public DataFile(String hashCode, File file) {
-        super(hashCode);
+    public DataFile(MetHash hash, File file) {
+        super(hash);
         this.file = file;
     }
 
@@ -65,6 +67,7 @@ public class DataFile extends Data {
      */
     public void setFile(File file) {
         this.file = file;
+        this.updateState();
     }
 
     public BSONObject getBson() {
@@ -118,11 +121,11 @@ public class DataFile extends Data {
                 stream.read(bloc, offset, sizeToRead);
 
                 //Make the hash from the bloc
-                String blocHash = Model.hash(bloc);
+                MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
 
 				//write informations to the fragment
                 //hash
-                fragment.put("_" + i + "_blocHash", blocHash.getBytes());
+                fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
                 //bloc
                 fragment.put("_" + i + "_contentPart", bloc);
             }
@@ -151,7 +154,7 @@ public class DataFile extends Data {
                     String hash = new String(fragment.get("_" + i + "_blocHash"));
                     fragment.remove("_" + i + "_blocHash");
                     byte[] bloc = fragment.get("_" + i + "_contentPart");
-                    if (Model.checkHash(hash, bloc)) {
+                    if (MetamphetUtils.checkHash(hash, bloc)) {
                         fos.write(bloc);
                     } else {
                         //TODO write here the code needed to ask unCorrect blocs.

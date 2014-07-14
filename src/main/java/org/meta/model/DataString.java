@@ -3,6 +3,8 @@ package org.meta.model;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import org.bson.BSONObject;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 
 /*
  *	JMeta - Meta's java implementation
@@ -34,7 +36,7 @@ public class DataString extends Data {
     /**
      * needed for java Reflexion
      */
-    public DataString() {
+    protected DataString() {
         super();
     }
 
@@ -44,8 +46,8 @@ public class DataString extends Data {
      * @param hashCode
      * @param file
      */
-    public DataString(String hashCode, String string) {
-        super(hashCode);
+    public DataString(MetHash hash, String string) {
+        super(hash);
         this.string = string;
     }
 
@@ -61,6 +63,7 @@ public class DataString extends Data {
      */
     public void setString(String string) {
         this.string = string;
+        this.updateState();
     }
 
     /**
@@ -109,13 +112,13 @@ public class DataString extends Data {
             byte[] bloc = Arrays.copyOfRange(totalString, offset, sizeToRead);
 
             //Make the hash from the bloc
-            String blocHash = Model.hash(bloc);
+            MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
 
 			//write informations to the fragment
             //bloc number
             fragment.put("_i" + i + "_i", ((i - 1) + "").getBytes());
             //hash
-            fragment.put("_i" + i + "_blocHash", blocHash.getBytes());
+            fragment.put("_i" + i + "_blocHash", blocHash.toByteArray());
             //bloc
             fragment.put("_i" + i + "_contentPart", bloc);
         }
@@ -135,7 +138,7 @@ public class DataString extends Data {
             String hash = new String(fragment.get("_i" + i + "_blocHash"));
             fragment.remove("_i" + i + "_blocHash");
             byte[] bloc = fragment.get("_i" + i + "_contentPart");
-            if (Model.checkHash(hash, bloc)) {
+            if (MetamphetUtils.checkHash(hash, bloc)) {
                 sb.append(new String(bloc));
             } else {
                 //TODO write here the code needed to ask unCorrect blocs.

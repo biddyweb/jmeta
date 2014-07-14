@@ -2,16 +2,19 @@ package org.meta.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kyotocabinet.DB;
+import org.bson.BSON;
 import org.bson.BSONDecoder;
 import org.bson.BSONEncoder;
 import org.bson.BSONObject;
 import org.bson.BasicBSONDecoder;
 import org.bson.BasicBSONEncoder;
 import org.bson.types.BasicBSONList;
+import org.meta.common.MetHash;
 import org.meta.common.MetaProperties;
 import org.meta.model.exceptions.ModelException;
 
@@ -32,27 +35,57 @@ import org.meta.model.exceptions.ModelException;
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- *
- * @author Thomas LAVOCAT
- *
- */
 public class Model {
 
+    private static Model instance;
     private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     DB kyotoDB;
-    private BSONDecoder bsonDecoder;
-    private BSONEncoder bsonEncoder;
+    ModelFactory factory;
+    private ThreadLocal<BSONDecoder> decodersPool;
+//    private BSONDecoder bsonDecoder;
+//    private BSONEncoder bsonEncoder;
 
     /**
      * Instanciate a new model. Init the dataBaseConnection.
      *
      * @throws org.meta.model.exceptions.ModelException
      */
-    public Model() throws ModelException {
+    private Model() throws ModelException {
         initDataBase();
-        bsonDecoder = new BasicBSONDecoder();
-        bsonEncoder = new BasicBSONEncoder();
+//        bsonDecoder = new BasicBSONDecoder();
+//        bsonEncoder = new BasicBSONEncoder();
+        factory = new ModelFactory();
+    }
+
+    @Override
+    protected void finalize() {
+        System.out.println("MODEL FINALIZE");
+        kyotoDB.close();
+    }
+
+    /**
+     * Singleton instance getter.
+     *
+     * @return The model Instance.
+     */
+    public synchronized static Model getInstance() {
+        if (instance == null) {
+            try {
+                instance = new Model();
+            } catch (ModelException ex) {
+                Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        }
+        return instance;
+    }
+
+    /**
+     *
+     * @return The model factory.
+     */
+    public ModelFactory getFactory() {
+        return this.factory;
     }
 
     /**
@@ -63,8 +96,8 @@ public class Model {
     private void initDataBase() throws ModelException {
         String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
         kyotoDB = new DB();
-        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OAUTOTRAN | DB.OCREATE)) {
-            throw new ModelException("Unable to open database file : " + databaseFile);
+        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET)) {
+            throw new ModelException("Unable to start kyoto cabinet with database file : " + databaseFile);
         }
     }
 
@@ -74,11 +107,11 @@ public class Model {
      * @return a search pointed by his hash. Return null if not found or if the
      * hash is not pointed a Search object
      */
-    public Search getSearch(String hash) {
+    public Search getSearch(MetHash hash) {
         Search search = null;
         try {
-            //Try to load the search true the data base
-            search = (Search) load(hash);
+            //Try to load the search in the data base
+            search = (Search) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -88,13 +121,13 @@ public class Model {
     /**
      *
      * @param hash
-     * @return a MetaData pointed by his hash or null is the hash is pointed on
+     * @return a MetaData pointed by his hash or null if the hash is pointed on
      * nothing or if the hash is pointed on a non MetaData object
      */
-    public MetaData getMetaData(String hash) {
+    public MetaData getMetaData(MetHash hash) {
         MetaData metaData = null;
         try {
-            metaData = (MetaData) load(hash);
+            metaData = (MetaData) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -104,13 +137,29 @@ public class Model {
     /**
      *
      * @param hash
-     * @return a Data pointed by the hash or null if the hash is pointed on
-     * nothing or on a non Data Object
+     * @return a DataString object or null if the hash does not exists
      */
-    public Data getData(String hash) {
-        Data data = null;
+    public DataString getDataString(MetHash hash) {
+        DataString data = null;
+
         try {
-            data = (Data) load(hash);
+            data = (DataString) load(hash.toByteArray());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    /**
+     *
+     * @param hash
+     * @return a DataString object or null if the hash does not exists
+     */
+    public DataFile getDataFile(MetHash hash) {
+        DataFile data = null;
+
+        try {
+            data = (DataFile) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -122,10 +171,10 @@ public class Model {
      * @param hash
      * @return the Search linked to the hash or null if not found
      */
-    public Searchable getSearchable(String hash) {
+    public Searchable getSearchable(MetHash hash) {
         Searchable foundedObject = null;
         try {
-            foundedObject = load(hash);
+            foundedObject = load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -141,29 +190,29 @@ public class Model {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private Searchable load(String hash) throws
+    private Searchable load(byte[] hash) throws
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
-        byte[] serializedData = kyotoDB.get(hash.getBytes());
+        byte[] serializedData = kyotoDB.get(hash);
         if (serializedData == null) {
             return null;
         }
-        BSONObject bsonObject = bsonDecoder.readObject(serializedData);
+        BSONObject bsonObject = null;
+        try {
+            bsonObject = BSON.decode(serializedData);
+        } catch (Exception e) {
+            System.err.println("ERROR DECODE : " + serializedData);
+            e.printStackTrace();
+            return null;
+        }
         Searchable searchable = null;
 
-        /*
-         * Every Searchable object have the same globals datas :
-         * - className
-         * - hash
-         */
-        String className = bsonObject.get("class").toString();
-        //The class name is used to instantiate an object
-        Class<?> clazz = Class.forName(className);
-        searchable = (Searchable) clazz.newInstance();
-        //Set his hash code
-        searchable.setHashCode(hash);
-
+        String typeName = bsonObject.get("type").toString();
+        ModelType type = ModelType.valueOf(typeName);
+        searchable = factory.getInstance(type);
+        //Set the hash code
+        searchable.setHash(new MetHash(hash));
         /*
          * Now we're looking for what is this object ? And extract the
          * good one.
@@ -177,6 +226,8 @@ public class Model {
         } else if (searchable instanceof DataString) {
             extractDataString(searchable, bsonObject);
         }
+        searchable.setState(Searchable.ObjectState.UP_TO_DATE);
+        //Freshly out from db : up to date
         return searchable;
     }
 
@@ -220,7 +271,8 @@ public class Model {
         List<Data> linkedData = new ArrayList<Data>();
         BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
         for (String key : bsonLinkedData.keySet()) {
-            Data toAdd = (Data) load(bsonLinkedData.get(key).toString());
+            MetHash hash = new MetHash(bsonLinkedData.get(key).toString());
+            Data toAdd = (Data) load(hash.toByteArray());
             linkedData.add(toAdd);
         }
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("properties");
@@ -251,12 +303,13 @@ public class Model {
             IllegalAccessException {
         Search search = (Search) searchable;
         //load the source from her hash
-        Searchable source = load(bsonObject.get("source").toString());
+        MetHash hash = new MetHash(bsonObject.get("source").toString());
+        Searchable source = load(hash.toByteArray());
         List<MetaData> results = new ArrayList<MetaData>();
         BasicBSONList bsonResultsList = (BasicBSONList) bsonObject.get("results");
         for (String key : bsonResultsList.keySet()) {
-            //System.out.println("EXTRACT SEARCH, MetaData hash = " + bsonResultsList.get(key).toString());
-            Searchable result = load(bsonResultsList.get(key).toString());
+            hash = new MetHash(bsonResultsList.get(key).toString());
+            Searchable result = load(hash.toByteArray());
             if (result != null) {
                 results.add((MetaData) result);
             }
@@ -266,47 +319,14 @@ public class Model {
     }
 
     /**
-     * update a search in DB with all dependencies created / updated
      *
-     * @param search the object to create / update
+     * @param hash
+     * @return A searchable object, or null if not found.
      */
-    public synchronized void updateInDataBase(Searchable searchable) {
-        // No need for it, we just have to call 'set'
-
-        //only if the searchable have to be updated 
-//        if (searchable.haveToUpdate()) {
-//            //delete the old data
-//            BSONObj oldJson = searchable.getOldJson();
-//            connection.remove(
-//                    "JMeta",
-//                    "JMeta",
-//                    oldJson.getString("_id"),
-//                    oldJson.getString("_revision"));
-//            //insert the new
-//            connection.insert("JMeta", "JMeta", searchable.toJson());
-//            //And look for anything new to create
-//            ArrayList<Searchable> lstChildsToCreate
-//                    = searchable.getChildsToCreate();
-//            for (Searchable itemToCreate : lstChildsToCreate) {
-//                createInDataBase(itemToCreate);
-//            }
-//        }
-    }
-
-    /**
-     * delete a search in DB with all dependencies created / updated
-     *
-     * @param search the object to create / update
-     * @return true on success, false otherwise
-     */
-    public synchronized boolean remove(Searchable searchable) {
-        return true;
-    }
-
-    public Searchable get(String hash) {
+    public Searchable get(MetHash hash) {
         Searchable ret = null;
         try {
-            ret = load(hash);
+            ret = load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -314,34 +334,156 @@ public class Model {
     }
 
     /**
-     * Create a search in DB with all dependencies created / updated
+     * 
+     * @param startTx
+     * @return 
+     */
+    private boolean startTransaction(boolean startTx) {
+        if (!startTx) {
+            return true;
+        }
+        if (!kyotoDB.begin_transaction(false)) {
+            System.err.println("KYOTO FAILED TO START TX! " + kyotoDB.error());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param commit if true commits the current transaction
+     * if false rollback.
+     * 
+     * @return true on success, false otherwise
+     */
+    private boolean commitTransaction(boolean commit) {
+        return kyotoDB.end_transaction(commit);
+    }
+
+    /**
      *
-     * @param searchable the object to create / update
+     * @see Model.set
+     *
+     * @param searchable The object to set to db.
+     *
+     * @param startTx If true starts a transaction for all writes to db.
+     *
+     * @return true on success, false otherwise
+     *
+     * If false is returned, the database remains untouched.
+     */
+    private boolean set(Searchable searchable, boolean startTx) {
+        boolean status = startTransaction(startTx);
+        //Based on the object's type, redirects to specific set method.
+        switch (ModelType.fromClass(searchable.getClass())) {
+            case DATAFILE:
+            case DATASTRING:
+                //Datas have no childs, nothing to do here
+                break;
+            case METADATA:
+                status = this.setMetaData((MetaData) searchable);
+                break;
+            case SEARCH:
+                status = this.setSearch((Search) searchable);
+                break;
+            default:
+                return false;
+        }
+        //Finally encode the object itself and put it to db
+        BSONObject bsonObject = searchable.getBson();
+        byte[] data = null;
+        try {
+            data = BSON.encode(bsonObject);
+            status = status && data != null;
+        } catch (Exception e) {
+            System.err.println("ERROR ENCODE BSON object : " + bsonObject.toString());
+            e.printStackTrace();
+            status = false;
+        }
+        if (status) {
+            byte[] key = searchable.getHash().toByteArray();
+            byte[] existingData = kyotoDB.get(key);
+            if (existingData == null || !Arrays.equals(data, existingData)) {
+                status = status && kyotoDB.set(key, data);
+            }
+        }
+        if (startTx) {
+            status = commitTransaction(status) && status;
+        }
+        return status;
+    }
+
+    /**
+     * Creates or updates a searchable object in database. All children of given
+     * object are also created/updated.
+     *
+     * @param searchable The object to create / update
+     *
      * @return true on success, false otherwise
      */
     public boolean set(Searchable searchable) {
-        // Instead of having "childs to create" and call manually "updateInDatabase", we could have a custom method per 
-        // Object 'set'  method that would check if the childs of the object (results of a search for example) are to be created or not.
-        // This would keep the database up to date and consistente all the time, but would make the 'set' a little slower. 
-
-        // TODO keep database consistent and up to date.
         if (searchable == null) {
             return false;
         }
-        BSONObject bsonObject = searchable.getBson();
-        byte[] data = bsonEncoder.encode(bsonObject);
-        if (data == null) {
-            return false;
+        return set(searchable, true);
+    }
+
+    /**
+     * Calls the 'set' method for each of the search's children.
+     *
+     * @param search A Search object.
+     *
+     */
+    private boolean setSearch(Search search) {
+        boolean status = true;
+
+        if (search.getSource().getState() != Searchable.ObjectState.UP_TO_DATE) {
+            status = status && this.set(search.getSource(), false);
         }
-        return kyotoDB.set(searchable.getHashCode().getBytes(), data);
+        for (MetaData metaData : search.getResults()) {
+            if (metaData.getState() != Searchable.ObjectState.UP_TO_DATE) {
+                status = status && this.set(metaData, false);
+            }
+        }
+        return status;
     }
 
-    public static String hash(byte[] bloc) {
-        // TODO create this method further
-        return "TODO_hash_a_faire";
+    /**
+     * Calls the 'set' method for each of the metaData's children.
+     *
+     * @param metaData The MetaData object
+     */
+    private boolean setMetaData(MetaData metaData) {
+        boolean status = true;
+
+        for (Data data : metaData.getLinkedData()) {
+            if (data.getState() != Searchable.ObjectState.UP_TO_DATE) {
+                status = status && this.set(data, false);
+            }
+        }
+        return status;
     }
 
-    public static boolean checkHash(String hash, byte[] bloc) {
-        return hash.equals(hash(bloc));
+    /**
+     * Delete an object in DB
+     *
+     * @param searchable the object to remove from db
+     * @return true on success, false otherwise
+     */
+    public boolean remove(Searchable searchable) {
+        return remove(searchable.getHash());
     }
+
+    /**
+     * Delete an object in DB
+     *
+     * @param hash The hash to remove from db
+     * @return true on success, false otherwise
+     */
+    public boolean remove(MetHash hash) {
+        startTransaction(true);
+        boolean status = kyotoDB.remove(hash.toByteArray());
+        return commitTransaction(status) && status;
+    }
+
 }

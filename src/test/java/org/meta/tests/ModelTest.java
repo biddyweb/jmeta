@@ -205,7 +205,7 @@ public class ModelTest {
         }
     }
 
-    @Test
+    //@Test
     public void perfTest() {
         MetHash hash;   
         int NB_IT = 100000;
@@ -242,7 +242,7 @@ public class ModelTest {
         System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
     }
 
-    @Test
+    //@Test
     public void threadTest() throws InterruptedException {
         final int NB_THREADS = 100;
         final int NB_IT = 100;

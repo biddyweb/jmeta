@@ -207,7 +207,7 @@ public class ModelTest {
 
     @Test
     public void perfTest() {
-        MetHash hash;
+        MetHash hash;   
         int NB_IT = 100000;
         startTime = new Date().getTime();
         File file = new File("db/meta.kch");

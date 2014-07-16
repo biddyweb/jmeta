@@ -27,63 +27,65 @@ import org.meta.plugin.tcp.SingletonTCPReader;
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * 
+ *
  * @author Thomas LAVOCAT
  *
  */
-public abstract class AbstractPluginTCPControler implements P2PListener{
+public abstract class AbstractPluginTCPControler implements P2PListener {
 
-	protected 	P2PControler p2pControler 	= 	null;
-	protected  	Model 		 model 			=	null;
-	private 	SingletonTCPReader	reader			= 	null;
-	protected  	HashMap<String, Class<? extends AbstractCommand>>	lstCommands		= 	null;
-	private 	String pluginName = null;
-	
-	public AbstractPluginTCPControler(){
-		reader = SingletonTCPReader.getInstance();
-		lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
-	}
+    protected P2PControler p2pControler = null;
+    protected Model model = null;
+    private SingletonTCPReader reader = null;
+    protected HashMap<String, Class<? extends AbstractCommand>> lstCommands = null;
+    private String pluginName = null;
 
-	/**
-	 * Fil the lstCommands with all the needed TCP commands.
-	 * @param lstCommands2 
-	 */
-	protected abstract void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands);
+    public AbstractPluginTCPControler() {
+        reader = SingletonTCPReader.getInstance();
+        lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
+    }
 
-	/**
-	 * @param p2pControler the p2pControler to set
-	 */
-	public void setP2pControler(P2PControler p2pControler) {
-		this.p2pControler = p2pControler;
-	}
+    /**
+     * Fill the lstCommands with all the needed TCP commands.
+     *
+     * @param lstCommands2
+     */
+    protected abstract void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands);
 
-	/**
-	 * initialize the plugin
-	 * @param pluginName 
-	 */
-	public void init(String pluginName) {
-		this.pluginName = pluginName;
-		registercommands(lstCommands);
-		registerCommandsToTCPReader();
-	}
+    /**
+     * @param p2pControler the p2pControler to set
+     */
+    public void setP2pControler(P2PControler p2pControler) {
+        this.p2pControler = p2pControler;
+    }
 
-	/**
-	 * register the commands to TCPReader
-	 */
-	private void registerCommandsToTCPReader() {
-		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
-			String commandName = i.next();
-			reader.registerCommand(pluginName+"_"+commandName, lstCommands.get(commandName));
-		}
-	}
+    /**
+     * initialize the plugin
+     *
+     * @param pluginName
+     */
+    public void init(String pluginName) {
+        this.pluginName = pluginName;
+        registercommands(lstCommands);
+        registerCommandsToTCPReader();
+    }
 
-	/**
-	 * Give the model
-	 * @param model
-	 */
-	public void setModel(Model model) {
-		this.model = model;
-	}
-	
-	
+    /**
+     * register the commands to TCPReader
+     */
+    private void registerCommandsToTCPReader() {
+        for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
+            String commandName = i.next();
+            reader.registerCommand(pluginName + "_" + commandName, lstCommands.get(commandName));
+        }
+    }
+
+    /**
+     * Give the model
+     *
+     * @param model
+     */
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
 }

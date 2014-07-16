@@ -41,9 +41,6 @@ public class Model {
     private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     DB kyotoDB;
     ModelFactory factory;
-    private ThreadLocal<BSONDecoder> decodersPool;
-//    private BSONDecoder bsonDecoder;
-//    private BSONEncoder bsonEncoder;
 
     /**
      * Instanciate a new model. Init the dataBaseConnection.
@@ -52,14 +49,11 @@ public class Model {
      */
     private Model() throws ModelException {
         initDataBase();
-//        bsonDecoder = new BasicBSONDecoder();
-//        bsonEncoder = new BasicBSONEncoder();
         factory = new ModelFactory();
     }
 
     @Override
     protected void finalize() {
-        System.out.println("MODEL FINALIZE");
         kyotoDB.close();
     }
 
@@ -202,7 +196,6 @@ public class Model {
         try {
             bsonObject = BSON.decode(serializedData);
         } catch (Exception e) {
-            System.err.println("ERROR DECODE : " + serializedData);
             e.printStackTrace();
             return null;
         }

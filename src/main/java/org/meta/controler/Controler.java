@@ -61,9 +61,13 @@ public class Controler {
         SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
         pluginInitialisation();
     }
+ 
+    public void stop() {
+        SingletonTCPReader.getInstance().kill();
+    }
 
     /**
-     * TODO
+     * TODO add custom class loader
      */
     private void pluginInitialisation() {
         lstPluginsNames = new ArrayList<String>();
@@ -78,7 +82,7 @@ public class Controler {
             if (key.contains(".name")) {
                 //plugin founded
                 lstPluginsNames.add(pluginsProperties.getProperty(key));
-                //load TCP class
+                   //load TCP class
                 String strTCPClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".TCPClass");
                 //load web service class
                 String strWSClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".WSClass");

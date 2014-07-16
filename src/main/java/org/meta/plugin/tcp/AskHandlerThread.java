@@ -9,86 +9,87 @@ import java.net.Socket;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
-
 /**
  * This thread only listen to AMP Command
+ *
  * @author faquin
  *
  */
-public class AskHandlerThread extends Thread{
-	
-	private Socket 		client	= null;
-	private SingletonTCPReader 	reader = SingletonTCPReader.getInstance();
+public class AskHandlerThread extends Thread {
 
-	public AskHandlerThread(Socket client){
-		this.client = client;
-	}
-	
-	@Override
-	public void run() {
-		InputStream inputStream = null;
-		try {
-			//Open the client inputStream
-			inputStream = client.getInputStream();
-			//Read the stream
-			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			int count = 0;
-			
-			while ((count = inputStream.read()) != -1) {
-				buffer.write(count);
-			}
-			//The question as to be a AMP command, if not -> exception
-			AMPAskParser parser = new AMPAskParser(buffer.toByteArray());
-			buffer.flush();
-			buffer.close();
-			
+    private Socket client = null;
+    private SingletonTCPReader reader = SingletonTCPReader.getInstance();
+
+    public AskHandlerThread(Socket client) {
+        this.client = client;
+    }
+
+    @Override
+    public void run() {
+        InputStream inputStream = null;
+        try {
+            //Open the client inputStream
+            inputStream = client.getInputStream();
+            //Read the stream
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int count = 0;
+
+            while ((count = inputStream.read()) != -1) {
+                buffer.write(count);
+            }
+            //The question as to be a AMP command, if not -> exception
+            AMPAskParser parser = new AMPAskParser(buffer.toByteArray());
+            buffer.flush();
+            buffer.close();
+
 			//Get the _command parameter from the amp command
-			//If not null, it means we speak the same langage, if not
-			//do nothing
-			if(parser.getCommand() != null){//TODO handle this with an exception
-				//get the AMPCommand from the TCPReader singleton
-				//who know every plugins
-				Class<? extends AbstractCommand> classCommand = 
-										this.reader.getCommand(parser.getCommand());
+            //If not null, it means we speak the same langage, if not
+            //do nothing
+            if (parser.getCommand() != null) {//TODO handle this with an exception
+                //get the AMPCommand from the TCPReader singleton
+                //who know every plugins
+                Class<? extends AbstractCommand> classCommand
+                        = this.reader.getCommand(parser.getCommand());
 				//if the classCommand is null, we d'ont have the requeried
-				//command to execute
-				if(classCommand != null){
+                //command to execute
+                if (classCommand != null) {
 					//Make a new instance, is an exception is thrown here
-					//it means that maybe here's an error in the plugin
-					//config file;
-					AbstractCommand command = (AbstractCommand) classCommand.newInstance();
-					//and execute it
-					String hash = parser.getHash();
-					String answer = parser.getAsk();
-					byte[] response = command.execute(answer, hash).getMessage();
-					//finally, write the output to the client
-					OutputStream os = client.getOutputStream();
-					for (int i = 0; i < response.length; i++) {
-						os.write((int)response[i]); 
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();//TODO gérer cette exception
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+                    //it means that maybe here's an error in the plugin
+                    //config file;
+                    AbstractCommand command = (AbstractCommand) classCommand.newInstance();
+                    //and execute it
+                    String hash = parser.getHash();
+                    String answer = parser.getAsk();
+                    byte[] response = command.execute(answer, hash).getMessage();
+                    //finally, write the output to the client
+                    OutputStream os = client.getOutputStream();
+                    for (int i = 0; i < response.length; i++) {
+                        os.write((int) response[i]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();//TODO gérer cette exception
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
 			//TODO if an exception is throw here it means you cannot excecute 
-			//the command
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotAValidAMPCommand e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if(inputStream != null)
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-	}
-	
+            //the command
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NotAValidAMPCommand e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

@@ -164,4 +164,11 @@ public class DataFile extends Data {
             e1.printStackTrace();
         }
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		DataFile clone = new DataFile();
+		clone.setHashCode(this.hash);
+		return clone;
+	}
 }

@@ -1,8 +1,10 @@
 package org.meta.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
@@ -184,4 +186,16 @@ public class MetaData extends Searchable {
     public List<String> getTmpLinkedData() {
         return tmpLinkedData;
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		MetaData metaDataClone = new MetaData();
+		ArrayList<Data> linkedDataClone = new ArrayList<Data>();
+		for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
+			Data data = i.next();
+			linkedDataClone.add((Data) data.toOnlyTextData());
+		}
+		metaDataClone.setLinkedData(linkedDataClone);
+		return metaDataClone;
+	}
 }

@@ -135,4 +135,6 @@ public abstract class Searchable {
     }
 
     protected abstract void decodefragment(LinkedHashMap<String, byte[]> fragment);
+
+	public abstract Searchable toOnlyTextData();
 }

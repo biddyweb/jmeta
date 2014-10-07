@@ -1,8 +1,10 @@
 package org.meta.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 
@@ -18,7 +20,7 @@ import org.bson.types.BasicBSONList;
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
+ *	GNU Affero General Public cloneLicense for more details.
  *	
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -178,4 +180,17 @@ public class Search extends Searchable {
     public List<String> getTmpResultsHashes() {
         return tmpResultsHashes;
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		Search searchClone = new Search();
+		searchClone.setSource(source.toOnlyTextData());
+		ArrayList<MetaData> resultsClone = new ArrayList<MetaData>();
+		for (Iterator<MetaData> i = results.iterator(); i.hasNext();) {
+			MetaData metaData =  i.next();
+			resultsClone.add((MetaData) metaData.toOnlyTextData());
+		}
+		searchClone.setResults(resultsClone);
+		return searchClone;
+	}
 }

@@ -2,9 +2,12 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.BasicBSONObject;
+import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
@@ -17,8 +20,6 @@ import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 import org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWebServiceControler;
-
-import com.sun.xml.internal.ws.api.addressing.WSEndpointReference.Metadata;
 
 public class SearchSubtitles extends AbstractWebService{
 	
@@ -100,7 +101,29 @@ public class SearchSubtitles extends AbstractWebService{
 
 	@Override
 	public void callback(ArrayList<Searchable> results) {
-		// TODO Auto-generated method stub
+		//Those results are incomplete
+		for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
+			Searchable searchable = i.next();
+			if (searchable instanceof Search) {
+				Search search = (Search) searchable;
+				
+				List<MetaData> metaDatas = search.getResults();
+				for (Iterator<MetaData> j = metaDatas.iterator(); j.hasNext();){
+					MetaData metaData = j.next();
+					
+					List<Data> linkDatas =	metaData.getLinkedData();
+					for (Iterator<Data> k = linkDatas.iterator(); k
+							.hasNext();) {
+						Data data = (Data) k.next();
+						//TODO what to do with the output ?
+						//I think, fill the interface with links, should be good
+						//an idea is to build a request URL to the next step
+						//with those links
+						data.getHashCode();
+					}
+				}
+			}
+		}
 	}
 
 	@Override

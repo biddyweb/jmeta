@@ -91,6 +91,7 @@ public class MetaData extends Searchable {
      */
     public void setProperties(List<MetaProperty> properties) {
         this.properties = properties;
+        //TODO make the hash here
     }
 
     public BSONObject getBson() {
@@ -175,7 +176,11 @@ public class MetaData extends Searchable {
             tmpLinkedData.add(data);
         }
     }
-
+    
+    /**
+     * 
+     * @return a list of the futures results
+     */
     public List<String> getTmpLinkedData() {
         return tmpLinkedData;
     }

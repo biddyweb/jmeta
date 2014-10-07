@@ -73,6 +73,7 @@ public class Search extends Searchable {
      */
     public void setSource(Searchable source) {
         this.source = source;
+        //TODO make the hash here only if source and results are sets
     }
 
     /**
@@ -90,6 +91,7 @@ public class Search extends Searchable {
      */
     public void setResults(List<MetaData> results) {
         this.results = results;
+        //TODO make the hash hehre only if source and results are sets
     }
 
     /**

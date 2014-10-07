@@ -65,6 +65,7 @@ public class DataFile extends Data {
      */
     public void setFile(File file) {
         this.file = file;
+        //TODO make the hash here !
     }
 
     public BSONObject getBson() {

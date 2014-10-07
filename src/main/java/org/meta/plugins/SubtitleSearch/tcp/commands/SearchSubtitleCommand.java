@@ -11,7 +11,7 @@ public class SearchSubtitleCommand extends AbstractCommand {
 	@Override
 	public AMPAnswerFactory execute(String answer, String hash) {
 		ArrayList<Searchable> datas = new ArrayList<Searchable>();
-		datas.add(myTCPControler.getInTheModel(hash));
+		datas.add(myTCPControler.getInTheModel(hash).toOnlyTextData());
 		return new AMPAnswerFactory(answer, datas);
 	}
 

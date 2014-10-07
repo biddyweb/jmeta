@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.bson.BasicBSONObject;
+import org.meta.model.DataFile;
+import org.meta.model.MetaData;
+import org.meta.model.MetaProperty;
+import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
@@ -13,6 +17,8 @@ import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 import org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWebServiceControler;
+
+import com.sun.xml.internal.ws.api.addressing.WSEndpointReference.Metadata;
 
 public class SearchSubtitles extends AbstractWebService{
 	
@@ -29,6 +35,7 @@ public class SearchSubtitles extends AbstractWebService{
 		//has a linked button on himself
 		column.addChild(new SelfSubmitButton("submitToMe", "Search"));
 		initialDescriptor = new InterfaceDescriptor(column);
+		initialTextOutput.append(" ");
 		//Second descriptor, used to show results
 	}
 	
@@ -52,8 +59,26 @@ public class SearchSubtitles extends AbstractWebService{
 				initialTextOutput.flush();
 				PluginSubtitleSearchWebServiceControler controler = 
 					(PluginSubtitleSearchWebServiceControler) super.controler;
-				String hash = controler.getModel().hash(file);
-				super.controler.search(	hash, 
+				//instanciate a new MetaData st:<choosen language>
+				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+				properties.add(new MetaProperty("st", "fr"));
+				MetaData st = new MetaData();
+				st.setProperties(properties);
+				ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
+				metaDatas.add(st);
+				
+				//instanciate a new DataFile Object
+				DataFile movie = new DataFile();
+				movie.setFile(file);
+				
+				//create a new search with in input the DataFile and in output
+				//the metaData
+				Search subtitleSearch = new Search();
+				subtitleSearch.setSource(movie);
+				subtitleSearch.setResults(metaDatas);
+				
+				//lookup on the network to find the subtitles
+				super.controler.search(	subtitleSearch.getHashCode(), 
 										"SubtitleSearch", 
 										"SearchSubtitleCommand", 
 										this);
@@ -70,8 +95,7 @@ public class SearchSubtitles extends AbstractWebService{
 
 	@Override
 	public InterfaceDescriptor retrieveUpdate() {
-		// TODO Auto-generated method stub
-		return null;
+		return initialDescriptor;
 	}
 
 	@Override

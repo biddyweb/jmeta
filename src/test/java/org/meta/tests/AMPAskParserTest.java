@@ -25,7 +25,7 @@ public class AMPAskParserTest {
             //e.printStackTrace();
         }
 
-        AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete");
+        AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete", "hash");
 
         System.out.println(factory.getMessage());
 

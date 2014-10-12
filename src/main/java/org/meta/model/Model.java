@@ -35,6 +35,11 @@ import org.meta.model.exceptions.ModelException;
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ *
+ * @author Nicolas MICHON, Thomas LAVOCAT
+ *
+ */
 public class Model {
 
     private static Model instance;
@@ -479,4 +484,8 @@ public class Model {
         return commitTransaction(status) && status;
     }
 
+	public MetHash hash(File file) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

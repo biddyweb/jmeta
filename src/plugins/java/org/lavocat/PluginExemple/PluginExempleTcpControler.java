@@ -12,10 +12,4 @@ public class PluginExempleTcpControler extends AbstractPluginTCPControler {
 	protected void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands) {
 		commands.put("toto", ExempleCommand.class);
 	}
-
-	@Override
-	public void nodesFounded() {
-		
-	}
-
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.BasicBSONObject;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 
 
 public class WebRequestHandler extends AbstractHandler {
@@ -33,23 +34,42 @@ public class WebRequestHandler extends AbstractHandler {
 		//Split the incomming url on every /
 		String[] 	urlParse 	= target.split("/");
 		String 		action		= "";
+		String 		plugin		= "";
 		String		command		= "";
 		
-		if(urlParse.length == 3){
+		if(urlParse.length == 4){
 			//if theres 3 it means we've got two parameters, an action and
 			//a command
-			action		= urlParse[urlParse.length-2];
+			action 		= urlParse[urlParse.length-3];
+			plugin		= urlParse[urlParse.length-2];
 			command 	= urlParse[urlParse.length-1];
+		}else if (urlParse.length == 3){
+			action 		= urlParse[urlParse.length-2];
+			plugin		= urlParse[urlParse.length-1];
 		}else{
 			// otherwise just one System action 
 			action 	= urlParse[urlParse.length-1];
 		}
 
 		response.setContentType("application/json; charset=utf-8");
-		if(command != ""){
-			//Get the associated command
+		
+		
+		AbstractPluginWebServiceControler pluginInstance = null;
+		
+		if(plugin != ""){
+			pluginInstance = webServiceReader.getPlugin(plugin);
+		}
+		
+		//Tree cases :
+		// we have a command and a plugin
+		// we only have a plugin
+		// we have nothing
+		
+		if(command != "" && pluginInstance != null){
+			//First case, get the associated command
+			
 			Class<? extends AbstractWebService> clazzWs = 
-										webServiceReader.getCommand(command);
+										pluginInstance.getCommand(command);
 			//if clazzWs is not null it means it was found and executable
 			if(clazzWs != null){
 				try {
@@ -65,12 +85,16 @@ public class WebRequestHandler extends AbstractHandler {
 						commandWs = (AbstractWebService) clazzWs.newInstance();
 						instanceMap.put(idCommand, commandWs);
 					}
+					commandWs.setWebServiceControler(pluginInstance);
 					
 					BasicBSONObject result = null;
 					
 					switch (action) {
-
+					//fflush memory
 					case "terminate" :
+						commandWs =instanceMap.get(idCommand);
+						if(commandWs != null)
+							commandWs.kill();
 						instanceMap.remove(idCommand);
 						break;
 					
@@ -79,16 +103,21 @@ public class WebRequestHandler extends AbstractHandler {
 						result = commandWs.retrieveUpdate().toJson();
 						break ;
 					
-						//execute command
+					//execute command
 					case "execute":
 						result = commandWs.execute(request.getParameterMap())
 						.toJson();
 						break;
-	
-					//default case : get the interface descriptor
+					
+					//get the next step in the workflow
+					case "nextStep":
+						result = commandWs.getNextStep();
+						break;
+					
+					//default case : get the interface descriptor	
 					case "interface":
 					default:
-						result = commandWs.getInterface().toJson();
+						result = commandWs.getInterface(request.getParameterMap()).toJson();
 						break;
 					}
 					
@@ -108,12 +137,24 @@ public class WebRequestHandler extends AbstractHandler {
 		        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		        base.setHandled(true);
 			}
-		}else{
-			 switch (action) {
+		} else if(plugin != "" && pluginInstance != null){
+			//second case, we only have a plugin
+			switch (action){
 			case "getCommandList":
 			default:
+				response.getWriter().print(pluginInstance.getJsonCommandList());
+			break;
+			}	
+			
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        base.setHandled(true);
+		}else{
+			//last case
+			 switch (action) {
+			case "getPluginsList":
+			default:
 				response.getWriter().print(webServiceReader
-													.getCommandListAsJson());
+						.getPluginListAsJson());
 				break;
 			}
 			 

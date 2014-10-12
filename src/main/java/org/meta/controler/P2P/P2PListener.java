@@ -1,5 +1,7 @@
  package org.meta.controler.P2P;
 
+import java.net.InetAddress;
+
 
 
 /*
@@ -25,5 +27,5 @@
  *
  */
 public interface P2PListener {	
-	public void nodesFounded();
+	void nodesFounded(InetAddress node);
 }

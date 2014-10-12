@@ -17,11 +17,12 @@ public class SingletonTCPWriter {
 	}
 	
 	public void askTo(	InetAddress adress, 
+						String plugin,
 						String command, 
 						String hash, 
 						TCPResponseCallbackInteface listenner){
 		lastAsk++;
-		AMPAskFactory ask = new AMPAskFactory(lastAsk+"", command, hash);
+		AMPAskFactory ask = new AMPAskFactory(lastAsk+"", plugin, command, hash);
 		AnswerSenderThread sender = new AnswerSenderThread(	ask, 
 															adress, 
 															port, 

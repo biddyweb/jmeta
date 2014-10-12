@@ -1,11 +1,19 @@
 package org.meta.plugin;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.bson.types.BasicBSONList;
+import org.meta.controler.P2P.P2PListener;
 import org.meta.model.Model;
+import org.meta.plugin.tcp.SingletonTCPWriter;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.SingletonWebServiceReader;
+
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 
 /*
  *	JMeta - Meta's java implementation
@@ -48,6 +56,10 @@ public abstract class AbstractPluginWebServiceControler {
 	public void setModel(Model model) {
 		this.model = model;
 	}
+	
+	public Model getModel(){
+		return model;
+	}
 
 	/**
 	 * initialize the plugin
@@ -55,17 +67,14 @@ public abstract class AbstractPluginWebServiceControler {
 	public void init(String pluginName) {
 		this.pluginName = pluginName;
 		registercommands(lstCommands);
-		registerCommandsToTCPReader();
+		registerToTCPReader();
 	}
 
 	/**
 	 * register the commands to TCPReader
 	 */
-	private void registerCommandsToTCPReader() {
-		for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
-			String commandName = i.next();
-			reader.registerCommand(pluginName+"_"+commandName, lstCommands.get(commandName));
-		}
+	private void registerToTCPReader() {
+		reader.registerPlugin(pluginName, this);
 	}
 	
 	/**
@@ -77,6 +86,43 @@ public abstract class AbstractPluginWebServiceControler {
 	public void setTcpControler(AbstractPluginTCPControler tcpControler) {
 		this.tcpControler = tcpControler;
 		
+	}
+
+	public Class<? extends AbstractWebService> getCommand(String command) {
+		return lstCommands.get(command);
+	}
+
+	public String getJsonCommandList() {
+		BasicBSONList list = new BasicBSONList();
+		for (Iterator<String> i=lstCommands.keySet().iterator(); i.hasNext();){	
+			String key = (String) i.next();
+			list.add(key);
+		}
+		
+		// Serialize BasicBSONList in JSON
+		ObjectSerializer json_serializer = JSONSerializers.getStrict();
+		return json_serializer.serialize(list);	
+	}
+
+	public void search(	final String hash, 
+						final String plugin, 
+						final String command, 
+						final AbstractWebService abstractWebService)
+	{
+		tcpControler.lookForPeer(hash, new P2PListener() {
+			
+			@Override
+			public void nodesFounded(InetAddress node) {
+				SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
+				InetAddress adress;
+				try {
+					adress = InetAddress.getLocalHost();
+					writer.askTo(adress, plugin, command, hash, abstractWebService);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 }

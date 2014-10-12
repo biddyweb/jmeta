@@ -2,8 +2,10 @@ package org.meta.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
@@ -76,6 +78,7 @@ public class Search extends Searchable {
     public void setSource(Searchable source) {
         this.source = source;
         this.updateState();
+		//TODO make the hash here only if source and results are sets
     }
 
     /**
@@ -105,6 +108,7 @@ public class Search extends Searchable {
     public void setResults(List<MetaData> results) {
         this.results = results;
         this.updateState();
+		//TODO make the hash hehre only if source and results are sets
     }
 
     /**
@@ -133,6 +137,7 @@ public class Search extends Searchable {
             MetaData metaData = results.get(i);
             fragment.put("_i" + i + "_metaData_" + i, metaData.getHash().toByteArray());
         }
+
     }
 
     @Override
@@ -142,6 +147,7 @@ public class Search extends Searchable {
         //over the network, so source = null ans result = null
         source = null;
         results = null;
+        //and the Search cannot be write or updated in database
 
         //extract the source and delete from the fragment
         tmpSourceHashes = new String(fragment.get("_source"));
@@ -164,4 +170,17 @@ public class Search extends Searchable {
     public List<String> getTmpResultsHashes() {
         return tmpResultsHashes;
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		Search searchClone = new Search();
+		searchClone.setSource(source.toOnlyTextData());
+		ArrayList<MetaData> resultsClone = new ArrayList<MetaData>();
+		for (Iterator<MetaData> i = results.iterator(); i.hasNext();) {
+			MetaData metaData =  i.next();
+			resultsClone.add((MetaData) metaData.toOnlyTextData());
+		}
+		searchClone.setResults(resultsClone);
+		return searchClone;
+	}
 }

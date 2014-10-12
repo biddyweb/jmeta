@@ -8,17 +8,20 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.meta.plugin.AbstractPluginWebServiceControler;
+
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
 
+
 public class SingletonWebServiceReader extends Thread {
 
-	private HashMap<String, Class<? extends AbstractWebService>> mapCommand = null;
+	private HashMap<String, AbstractPluginWebServiceControler> mapPlugins = null;
 	private Server 	server 	= null;
 	private static 	SingletonWebServiceReader instance 	= null;
 	
 	private SingletonWebServiceReader() {
-		mapCommand = new HashMap<String, Class<? extends AbstractWebService>>();
+		mapPlugins = new HashMap<String, AbstractPluginWebServiceControler>();
 		this.start();
 	}
 	
@@ -28,12 +31,8 @@ public class SingletonWebServiceReader extends Thread {
 		return instance;
 	}
 	
-	public void registerCommand(String commandName, Class<? extends AbstractWebService> clazz){
-		mapCommand.put(commandName, clazz);
-	}
-	
-	public Class<? extends AbstractWebService> getCommand(String commandName){
-		return mapCommand.get(commandName);
+	public AbstractPluginWebServiceControler getPlugin(String commandName){
+		return mapPlugins.get(commandName);
 	}
 	
 	@Override
@@ -60,20 +59,22 @@ public class SingletonWebServiceReader extends Thread {
 	public void initialiseAndRun() {
 		this.start();
 	}
-	
-	/**
-	 * 
-	 * @return the plugin list as a json
-	 */
-	public String getCommandListAsJson() {
+
+	public void registerPlugin(String pluginName,
+			AbstractPluginWebServiceControler abstractPluginWebServiceControler) {
+		mapPlugins.put(pluginName, abstractPluginWebServiceControler);
+	}
+
+	public String getPluginListAsJson() {
 		BasicBSONList list = new BasicBSONList();
-		for (Iterator<String> i = mapCommand.keySet().iterator(); i.hasNext();) {
+		for (Iterator<String> i = mapPlugins.keySet().iterator(); i.hasNext();){	
 			String key = (String) i.next();
 			list.add(key);
 		}
-
+		
 		// Serialize BasicBSONList in JSON
 		ObjectSerializer json_serializer = JSONSerializers.getStrict();
-		return json_serializer.serialize(list);
+		return json_serializer.serialize(list);	
 	}
+	
 }

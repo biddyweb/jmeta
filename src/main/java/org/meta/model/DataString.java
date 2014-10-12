@@ -148,4 +148,9 @@ public class DataString extends Data {
         string = sb.toString();
     }
 
+	@Override
+	public Searchable toOnlyTextData() {
+		return this;
+	}
+
 }

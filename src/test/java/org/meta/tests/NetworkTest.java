@@ -3,8 +3,10 @@ package org.meta.tests;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.lavocat.PluginExemple.PluginExempleTcpControler;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -19,15 +21,17 @@ public class NetworkTest {
     @Test
     public void networkTest() {
         try {
+        	PluginExempleTcpControler examplePlugin= new PluginExempleTcpControler();
+        	
             SingletonTCPReader reader = SingletonTCPReader.getInstance();
-            reader.registerCommand("toto", CommanndTest.class);
+            reader.registerPlugin("test", examplePlugin);
             reader.initializePortAndRun(4001);
             SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
             InetAddress adress;
             try {
                 adress = InetAddress.getLocalHost();
-                writer.askTo(adress, "toto", "youpi", new TCPResponseCallbackInteface() {
-
+                writer.askTo(adress, "toto", "youpi", null, new TCPResponseCallbackInteface() {
+                
                     @Override
                     public void callback(ArrayList<Searchable> results) {
                         for (int i = 0; i < results.size(); i++) {

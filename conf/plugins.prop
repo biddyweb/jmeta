@@ -8,6 +8,9 @@
 #	PluginExemple.WSClass:		org.lavocat.plugins.PluginExemple.PluginExempleWebServiceControler
 
 PluginExemple.name: 		PluginExemple
-PluginExemple.TCPClass:		org.meta.PluginExemple.PluginExempleTcpControler
-PluginExemple.WSClass:		org.meta.PluginExemple.PluginExempleWebServiceControler
+PluginExemple.TCPClass:		org.meta.plugins.PluginExemple.PluginExempleTcpControler
+PluginExemple.WSClass:		org.meta.plugins.PluginExemple.PluginExempleWebServiceControler
 
+SubtitleSearch.name: 		SubtitleSearch
+SubtitleSearch.TCPClass:	org.meta.plugins.SubtitleSearch.PluginSubtitleSearchTcpControler
+SubtitleSearch.WSClass:		org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWebServiceControler

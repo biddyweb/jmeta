@@ -26,7 +26,10 @@ import org.meta.common.MetHash;
  * This class correspond to a data on the hard drive. Pointed by a file.
  */
 public abstract class Data extends Searchable {
-
+	
+	//TODO add an optional description into the files -> not need to be added
+	//in the hash operation
+	
     /**
      * needed for java Reflexion
      */

@@ -2,8 +2,10 @@ package org.meta.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
@@ -117,6 +119,7 @@ public class MetaData extends Searchable {
     public void setProperties(List<MetaProperty> properties) {
         this.properties = properties;
         this.updateState();
+		//TODO make the hash here
     }
 
     public BSONObject getBson() {
@@ -165,6 +168,7 @@ public class MetaData extends Searchable {
         linkedData = null;
         //but not properties
         properties = new ArrayList<MetaProperty>();
+        //and the Search cannot be write or updated in database
 
         //extract all linkedDatas and delete it from the fragment too
         int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
@@ -186,8 +190,24 @@ public class MetaData extends Searchable {
             tmpLinkedData.add(data);
         }
     }
-
+    
+    /**
+     * 
+     * @return a list of the futures results
+     */
     public List<String> getTmpLinkedData() {
         return tmpLinkedData;
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		MetaData metaDataClone = new MetaData();
+		ArrayList<Data> linkedDataClone = new ArrayList<Data>();
+		for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
+			Data data = i.next();
+			linkedDataClone.add((Data) data.toOnlyTextData());
+		}
+		metaDataClone.setLinkedData(linkedDataClone);
+		return metaDataClone;
+	}
 }

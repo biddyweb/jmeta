@@ -68,6 +68,7 @@ public class DataFile extends Data {
     public void setFile(File file) {
         this.file = file;
         this.updateState();
+		//TODO make the hash here !
     }
 
     public BSONObject getBson() {
@@ -166,4 +167,11 @@ public class DataFile extends Data {
             e1.printStackTrace();
         }
     }
+
+	@Override
+	public Searchable toOnlyTextData() {
+		DataFile clone = new DataFile();
+		clone.setHash(this.hash);
+		return clone;
+	}
 }

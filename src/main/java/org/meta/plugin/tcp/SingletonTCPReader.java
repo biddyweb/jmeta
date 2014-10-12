@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.meta.plugin.AbstractPluginTCPControler;
 
 
 /*
@@ -27,53 +28,61 @@ import java.util.logging.Logger;
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * TODO clean this! 
- * 
+ * Singleton who is listened to the request from DHT
+ * TODO need a cleaning ?
  * @author Thomas LAVOCAT
- * 
  *
  */
 public class SingletonTCPReader {
 
-    private HashMap<String, Class<? extends AbstractCommand>> mapCommand = null;
-    private boolean work = true;
-    private static SingletonTCPReader instance = new SingletonTCPReader();
-    private int port = 4001;
-    private ServerSocket socket = null;
-    private Thread listenerThread;
-    
+	private 			boolean 		work			= true;
+	private 			int				port			= 4001;
+	private				ServerSocket 	socket			= null;
+	private 			Thread 			listenerThread	= null;
+	private HashMap<String, AbstractPluginTCPControler> mapPlugin 	= null;
+	private static 		SingletonTCPReader 				instance 	= new SingletonTCPReader();
+
     //The thead routine.
     private Runnable listenerRunnable = new Runnable() {
         @Override
         public void run() {
-            try {
-                socket = new ServerSocket(port);
-                while (work) {
-                    Socket client = socket.accept();
-                    AskHandlerThread discussWith = new AskHandlerThread(client);
-                    discussWith.start();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+			try {
+				socket = new ServerSocket(port);
+				while(work){
+					Socket client = socket.accept();
+					AskHandlerThread discussWith = new AskHandlerThread(client);
+					discussWith.start();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         }
     };
 
-    private SingletonTCPReader() {
-        mapCommand = new HashMap<String, Class<? extends AbstractCommand>>();
-    }
+	private SingletonTCPReader() {
+		mapPlugin = new HashMap<String,AbstractPluginTCPControler>();
+	}
+	
+	public static SingletonTCPReader getInstance() {
+		return instance;
+	}
+	
+	public void registerPlugin(String pluginName,
+		AbstractPluginTCPControler abstractPluginTCPControler) {
+		mapPlugin.put(pluginName, abstractPluginTCPControler);
+	}
 
-    public static SingletonTCPReader getInstance() {
-        return instance;
-    }
-
-    public void registerCommand(String commandName, Class<? extends AbstractCommand> clazz) {
-        mapCommand.put(commandName, clazz);
-    }
-
-    public Class<? extends AbstractCommand> getCommand(String commandName) {
-        return mapCommand.get(commandName);
-    }
+	public AbstractCommand getCommand(String pluginName, String commandName){
+		AbstractCommand command = null;
+		AbstractPluginTCPControler plugin = mapPlugin.get(pluginName);
+		
+		if(plugin != null ){
+			command = plugin.getCommand(commandName);
+		}
+		
+		
+		return command;
+	}
 
     public void kill() {
         try {

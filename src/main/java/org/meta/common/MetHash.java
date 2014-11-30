@@ -19,14 +19,14 @@ public class MetHash extends Number implements Comparable<MetHash> {
 
     public final static MetHash MAX_VALUE = new MetHash(new int[]{-1, -1, -1, -1, -1});
 
-    private final static long LONG_MASK = 0xffffffffL;
+    protected final static long LONG_MASK = 0xffffffffL;
 
-    private final static int BYTE_MASK = 0xff;
+    protected final static int BYTE_MASK = 0xff;
 
-    private final static int CHAR_MASK = 0xf;
+    protected final static int CHAR_MASK = 0xf;
 
     // a map used for String <-> Key conversion
-    private final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+    protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
         'f'};
 
     // size of the backing integer array
@@ -36,7 +36,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     public final static int BYTE_ARRAY_SIZE = BITS / 8;
 
     // backing integer array
-    private final int[] val;
+    protected final int[] val;
 
     // constants
     public final static MetHash ZERO = new MetHash(0);

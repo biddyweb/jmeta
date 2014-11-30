@@ -7,11 +7,11 @@ database_path: db/meta.kch
 port:	4002
 
 #The port used for the DHT
-dhtPort: 15000
+dhtPort: 15001
 
 #A list of known peers in the DHT to help us bootstrap
 # comma-separated list in the ip:port format or in the hostname:port fomat
-dhtKnownPeers: 127.0.0.1:15001
+dhtKnownPeers: 127.0.0.1:15000
 
 #If we broadcast to find peers during bootstrap or not.
 dhtBootstrapBroadcast: true

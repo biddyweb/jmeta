@@ -48,49 +48,49 @@ public class SearchSubtitles extends AbstractWebService{
 	@Override
 	public InterfaceDescriptor execute(Map<String, String[]> map) {
 		InterfaceDescriptor response = initialDescriptor;
-		//Get file path
-		String[] pathes = map.get("path");
-		String 	 path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
-		
-		//if path is not empty, try to search othrerwise just return the main
-		//interface
-		if(path != ""){
-			File file = new File(path);
-			if(file.exists()){
-				initialTextOutput.flush();
-				PluginSubtitleSearchWebServiceControler controler = 
-					(PluginSubtitleSearchWebServiceControler) super.controler;
-				//instanciate a new MetaData st:<choosen language>
-				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
-				properties.add(new MetaProperty("st", "fr"));
-				MetaData st = new MetaData();
-				st.setProperties(properties);
-				ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
-				metaDatas.add(st);
-				
-				//instanciate a new DataFile Object
-				DataFile movie = new DataFile();
-				movie.setFile(file);
-				
-				//create a new search with in input the DataFile and in output
-				//the metaData
-				Search subtitleSearch = new Search();
-				subtitleSearch.setSource(movie);
-				subtitleSearch.setResults(metaDatas);
-				
-				//lookup on the network to find the subtitles
-				super.controler.search(	subtitleSearch.getHashCode(), 
-										"SubtitleSearch", 
-										"SearchSubtitleCommand", 
-										this);
-			}else{
-				initialTextOutput.flush();
-				initialTextOutput.append("The file does not exist");
-			}
-		}else{
-			initialTextOutput.flush();
-			initialTextOutput.append("Please set a valide path name");
-		}
+//		//Get file path
+//		String[] pathes = map.get("path");
+//		String 	 path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
+//		
+//		//if path is not empty, try to search othrerwise just return the main
+//		//interface
+//		if(path != ""){
+//			File file = new File(path);
+//			if(file.exists()){
+//				initialTextOutput.flush();
+//				PluginSubtitleSearchWebServiceControler controler = 
+//					(PluginSubtitleSearchWebServiceControler) super.controler;
+//				//instanciate a new MetaData st:<choosen language>
+//				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+//				properties.add(new MetaProperty("st", "fr"));
+//				MetaData st = new MetaData();
+//				st.setProperties(properties);
+//				ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
+//				metaDatas.add(st);
+//				
+//				//instanciate a new DataFile Object
+//				DataFile movie = new DataFile();
+//				movie.setFile(file);
+//				
+//				//create a new search with in input the DataFile and in output
+//				//the metaData
+//				Search subtitleSearch = new Search();
+//				subtitleSearch.setSource(movie);
+//				subtitleSearch.setResults(metaDatas);
+//				
+//				//lookup on the network to find the subtitles
+//				super.controler.search(	subtitleSearch.getHashCode(), 
+//										"SubtitleSearch", 
+//										"SearchSubtitleCommand", 
+//										this);
+//			}else{
+//				initialTextOutput.flush();
+//				initialTextOutput.append("The file does not exist");
+//			}
+//		}else{
+//			initialTextOutput.flush();
+//			initialTextOutput.append("Please set a valide path name");
+//		}
 		return response;
 	}
 
@@ -119,7 +119,7 @@ public class SearchSubtitles extends AbstractWebService{
 						//I think, fill the interface with links, should be good
 						//an idea is to build a request URL to the next step
 						//with those links
-						data.getHashCode();
+						//data.getHashCode();
 					}
 				}
 			}

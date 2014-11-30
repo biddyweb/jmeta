@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.lavocat.PluginExemple.PluginExempleTcpControler;
+//import org.lavocat.PluginExemple.PluginExempleTcpControler;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -18,20 +18,20 @@ import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 
 public class NetworkTest {
 
-    @Test
+    //@Test
     public void networkTest() {
         try {
-        	PluginExempleTcpControler examplePlugin= new PluginExempleTcpControler();
-        	
+            //PluginExempleTcpControler examplePlugin = new PluginExempleTcpControler();
+
             SingletonTCPReader reader = SingletonTCPReader.getInstance();
-            reader.registerPlugin("test", examplePlugin);
+            //reader.registerPlugin("test", examplePlugin);
             reader.initializePortAndRun(4001);
             SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
             InetAddress adress;
             try {
                 adress = InetAddress.getLocalHost();
                 writer.askTo(adress, "toto", "youpi", null, new TCPResponseCallbackInteface() {
-                
+
                     @Override
                     public void callback(ArrayList<Searchable> results) {
                         for (int i = 0; i < results.size(); i++) {

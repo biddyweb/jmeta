@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.meta.common.MetHash;
 import org.meta.common.MetaProperties;
 import org.meta.model.Model;
-import org.meta.controler.P2P.P2PControler;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
@@ -42,7 +42,6 @@ public class Controler {
 
     private Model model = null;
     private String pluginsPropertiesFile = "conf/plugins.prop";
-    private P2PControler p2pControler = null;
     private ArrayList<String> lstPluginsNames = null;
     private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;
     private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
@@ -57,7 +56,7 @@ public class Controler {
             throws IOException,
             URISyntaxException {
         this.model = Model.getInstance();
-        this.p2pControler = new P2PControler(Integer.parseInt(MetaProperties.getProperty("port")) + 1);
+        MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
         SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
         pluginInitialisation();
     }
@@ -99,7 +98,6 @@ public class Controler {
                             = (AbstractPluginWebServiceControler) clazzWS.newInstance();
 
                     //Set parameters
-                    tcpControler.setP2pControler(p2pControler);
                     tcpControler.setModel(model);
                     //Set parameters
                     webServiceControler.setModel(model);

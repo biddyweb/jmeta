@@ -1,12 +1,6 @@
- package org.meta.controler.P2P;
-
-import java.net.InetAddress;
-
-
-
 /*
  *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
+ *	Copyright (C) 2013 Nicolas Michon
  *	
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as
@@ -21,6 +15,13 @@ import java.net.InetAddress;
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public interface P2PListener {	
-	void nodesFounded(InetAddress node);
+package org.meta.dht;
+
+/**
+ * An asynchronous DHT operation representing the process of storing a hash in 
+ * the DHT.
+ * 
+ * @author nico
+ */
+public abstract class StoreOperation extends DHTOperation {
 }

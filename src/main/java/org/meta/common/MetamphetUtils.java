@@ -15,6 +15,7 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import net.tomp2p.peers.Number160;
 
 /**
  *
@@ -25,6 +26,10 @@ import java.util.Random;
 public class MetamphetUtils {
 
     private static final Random random = new Random();
+
+    public static Number160 toNumer160(MetHash hash) {
+        return new Number160(hash.toByteArray());
+    }
 
     public static MetHash makeSHAHash(File file) {
         FileInputStream fis = null;

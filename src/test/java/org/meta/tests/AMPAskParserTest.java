@@ -3,6 +3,7 @@ package org.meta.tests;
 import org.junit.Assert;
 import org.junit.Test;
 import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
@@ -26,15 +27,17 @@ public class AMPAskParserTest {
             //e.printStackTrace();
         }
 
-        AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete", new MetHash("hash"));
-
-        System.out.println(factory.getMessage());
-
+        AMPAskFactory factory = new AMPAskFactory(
+                                            "23", 
+                                            "toto", 
+                                            "cacahuete", 
+                                            MetamphetUtils.makeSHAHash("toto"));
         try {
             parser = new AMPAskParser(factory.getMessage());
-            System.out.println(parser.getAsk());
-            System.out.println(parser.getCommand());
-            System.out.println(parser.getHash());
+            Assert.assertEquals("23", parser.getAsk());
+            Assert.assertEquals("toto", parser.getPlugin());
+            Assert.assertEquals("cacahuete", parser.getCommand());
+            Assert.assertEquals(MetamphetUtils.makeSHAHash("toto").toString(), parser.getHash());
         } catch (NotAValidAMPCommand e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());

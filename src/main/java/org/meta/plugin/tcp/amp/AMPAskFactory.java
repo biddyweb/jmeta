@@ -24,7 +24,7 @@ public class AMPAskFactory extends AMPFactory{
         map.put("_ask", ask.getBytes());
         map.put("_plugin", plugin.getBytes());
         map.put("_command", command.getBytes());
-        map.put("_hash", hash.toByteArray());
+        map.put("_hash", hash.toString().getBytes());
         //build the message
         super.build(map);
     }

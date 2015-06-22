@@ -52,7 +52,7 @@ public class NetworkTest {
                             }
                         }
                     }
-                });
+                },4001);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
                 Assert.fail(e.getMessage());

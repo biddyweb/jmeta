@@ -37,7 +37,7 @@ public class SingletonWebServiceReader extends Thread {
 	
 	@Override
 	public void run() {
-		server = new Server(8080);//TODO
+		server = new Server(8080);//TODO add parameter
 
 		// serve statics files within 'static' directory
 		ResourceHandler resource_handler = new ResourceHandler();
@@ -45,7 +45,10 @@ public class SingletonWebServiceReader extends Thread {
 		resource_handler.setResourceBase("static");
 
 		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler[] { resource_handler, new WebRequestHandler() });
+		handlers.setHandlers(new Handler[] { 
+				resource_handler,
+				new WebRequestHandler() 
+		});
 
 		server.setHandler(handlers);
 		try {

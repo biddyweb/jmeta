@@ -11,6 +11,8 @@ import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
+import org.meta.model.Model;
+import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
@@ -25,7 +27,7 @@ public class SearchSubtitles extends AbstractWebService{
 	
 	InterfaceDescriptor initialDescriptor 	= null;
 	TextOutput			initialTextOutput	= null;
-	
+	ModelFactory 		factory             = null;
 	public SearchSubtitles(){
 		//initial descriptor, used to initiate the subtitle search
 		ColumnOrganizer column = new ColumnOrganizer("center");
@@ -38,6 +40,7 @@ public class SearchSubtitles extends AbstractWebService{
 		initialDescriptor = new InterfaceDescriptor(column);
 		initialTextOutput.append(" ");
 		//Second descriptor, used to show results
+		factory = Model.getInstance().getFactory();
 	}
 	
 	@Override
@@ -57,31 +60,31 @@ public class SearchSubtitles extends AbstractWebService{
 		if(path != ""){
 			File file = new File(path);
 			if(file.exists()){
-//				initialTextOutput.flush();
-//				
-//				//instanciate a new MetaData st:<choosen language>
-//				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
-//				properties.add(new MetaProperty("st", "fr"));
-//				MetaData st = new MetaData();
-//				st.setProperties(properties);
-//				ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
-//				metaDatas.add(st);
-//				
-//				//instanciate a new DataFile Object
-//				DataFile movie = new DataFile();
-//				movie.setFile(file);
-//				
-//				//create a new search with in input the DataFile and in output
-//				//the metaData
-//				Search subtitleSearch = new Search();
-//				subtitleSearch.setSource(movie);
-//				subtitleSearch.setResults(metaDatas);
-//				
-//				//lookup on the network to find the subtitles
-//				super.controler.search(	subtitleSearch.getHash(), 
-//										"SubtitleSearch", 
-//										"SearchSubtitleCommand", 
-//										this);
+				initialTextOutput.flush();
+				
+				//instanciate a new MetaData st:<choosen language>
+				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+				properties.add(new MetaProperty("st", "fr"));
+				MetaData st = factory.getMetaData();
+				st.setProperties(properties);
+				ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
+				metaDatas.add(st);
+				
+				//instanciate a new DataFile Object
+				DataFile movie = factory.getDataFile();
+				movie.setFile(file);
+				
+				//create a new search with in input the DataFile and in output
+				//the metaData
+				Search subtitleSearch = factory.getSearch();
+				subtitleSearch.setSource(movie);
+				subtitleSearch.setResults(metaDatas);
+				
+				//lookup on the network to find the subtitles
+				super.controler.search(	subtitleSearch.getHash(), 
+										"SubtitleSearch", 
+										"SearchSubtitleCommand", 
+										this);
 			}else{
 				initialTextOutput.flush();
 				initialTextOutput.append("The file does not exist");

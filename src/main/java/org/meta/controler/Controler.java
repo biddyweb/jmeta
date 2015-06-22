@@ -82,7 +82,7 @@ public class Controler {
         Enumeration<Object> keys = pluginsProperties.keys();
         while (keys.hasMoreElements()) {
             String key = ((String) keys.nextElement());
-            //TODO split sur les points et prendre le dernier élément
+            //TODO split on point &  take last element
             if (key.contains(".name")) {
                 //plugin founded
                 lstPluginsNames.add(pluginsProperties.getProperty(key));
@@ -106,10 +106,12 @@ public class Controler {
                     tcpControler.setModel(model);
                     //Set parameters
                     webServiceControler.setModel(model);
+                    //TODO rebirth P2PControler ?
                     webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
                     tcpControler.init(key.replaceAll(".name", ""));
                     tcpReader.registerPlugin(key.replaceAll(".name", ""), tcpControler);
+
                     webServiceControler.init(key.replaceAll(".name", ""));
                     webServiceReader.registerPlugin(key.replaceAll(".name", ""), webServiceControler);
 

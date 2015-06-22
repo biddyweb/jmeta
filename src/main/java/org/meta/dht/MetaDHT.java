@@ -32,38 +32,56 @@ public abstract class MetaDHT {
     }
 
     /**
+     * The DHTConfiguration object.
+     */
+    protected DHTConfiguration configuration;
+
+    /**
      * Initializes the DHT with the given configuration.
-     * 
+     *
      * Registers our identity and starts listening for peers in the DHT.
-     * 
+     *
      * @param configuration The {@link DHTConfiguration} holding configuration.
-     * 
+     *
      * @throws java.io.IOException If an underlying network operation failed.
      */
     public abstract void start(DHTConfiguration configuration) throws IOException;
 
     /**
-     * Bootstrap the DHT using broadcast to find nodes.
-     * 
-     * @return The asynchronous BootstrapOperation representing the outcome
-     * of the bootstrap.
+     * Bootstrap the DHT to find nodes.
+     *
+     * @return The asynchronous BootstrapOperation representing the outcome of the bootstrap.
      */
     public abstract BootstrapOperation bootstrap();
 
     /**
      * @param hash. The hash to find peers for.
-     * 
-     * @return The asynchronous FindPeersOperation representing the outcome 
-     * of the operation.
+     *
+     * @return The asynchronous FindPeersOperation representing the outcome of the operation.
      */
     public abstract FindPeersOperation findPeers(MetHash hash);
 
     /**
-     * 
+     *
      * @param hash The hash to store on the DHT.
-     * @return The asynchronous StoreOperation representing the outcome of 
-     * the operation.
+     * @return The asynchronous StoreOperation representing the outcome of the operation.
      */
     public abstract StoreOperation store(MetHash hash);
+
+    /**
+     * Set the configuration of this DHT instance.
+     * 
+     * @param configuration. The configuration Object.
+     */
+    public void setConfiguration(DHTConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    /**
+     * @return The Configuration used by this DHT instance.
+     */
+    public DHTConfiguration getConfiguration() {
+        return this.configuration;
+    }
 
 }

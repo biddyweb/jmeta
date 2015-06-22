@@ -17,14 +17,11 @@
  */
 package org.meta.dht;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.meta.common.Identity;
 import org.meta.common.MetamphetUtils;
 
@@ -78,7 +75,7 @@ public class DHTConfiguration {
     /**
      * The list of known peers in the DHT to help us bootstrap.
      */
-    private Collection<MetaPeer> knwonPeers;
+    private Collection<MetaPeer> knownPeers;
 
     /**
      * If we broadcast to bootstrap or not.
@@ -92,7 +89,7 @@ public class DHTConfiguration {
         this.port = DEFAULT_DHT_PORT;
         this.identity = new Identity(MetamphetUtils.createRandomHash());
         //No known peers by default...
-        this.knwonPeers = new ArrayList<MetaPeer>();
+        this.knownPeers = new ArrayList<MetaPeer>();
         //No known peers so we broadcast.
         this.bootstrapBroadcast = true;
     }
@@ -100,7 +97,7 @@ public class DHTConfiguration {
     /**
      * Initializes the configuration with given parameters.
      *
-     * @param id Our identity over th DHT.
+     * @param id Our identity over the DHT.
      * @param port The DHT port to listen to.
      * @param knownPeers The list of known peers to bootstrap to.
      * @param broadast If we broadcast to bootstrap or not.
@@ -109,7 +106,7 @@ public class DHTConfiguration {
         this.port = port;
         this.identity = id;
         this.bootstrapBroadcast = broadast;
-        this.knwonPeers = knownPeers;
+        this.knownPeers = knownPeers;
     }
 
     /**
@@ -145,12 +142,12 @@ public class DHTConfiguration {
         if (this.properties.containsKey(DHT_KNOWN_PEERS_KEY)) {
             String knownPeersString = this.properties.getProperty(DHT_KNOWN_PEERS_KEY);
             try {
-                this.knwonPeers = DHTConfiguration.peersFromString(knownPeersString);
+                this.knownPeers = DHTConfiguration.peersFromString(knownPeersString);
             } catch (UnknownHostException ex) {
-                this.knwonPeers = new ArrayList<MetaPeer>();
+                this.knownPeers = new ArrayList<MetaPeer>();
             }
         } else {
-            this.knwonPeers = new ArrayList<MetaPeer>();
+            this.knownPeers = new ArrayList<MetaPeer>();
         }
     }
 
@@ -190,12 +187,12 @@ public class DHTConfiguration {
         this.port = port;
     }
 
-    public Collection<MetaPeer> getKnwonPeers() {
-        return knwonPeers;
+    public Collection<MetaPeer> getKnownPeers() {
+        return knownPeers;
     }
 
     public void setKnwonPeers(Collection<MetaPeer> knwonPeers) {
-        this.knwonPeers = knwonPeers;
+        this.knownPeers = knwonPeers;
     }
 
     public boolean isBootstrapBroadcast() {

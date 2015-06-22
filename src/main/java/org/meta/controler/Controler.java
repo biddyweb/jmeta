@@ -15,6 +15,7 @@ import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.SingletonTCPReader;
+import org.meta.plugin.webservice.SingletonWebServiceReader;
 
 /*
  *	JMeta - Meta's java implementation
@@ -45,7 +46,8 @@ public class Controler {
     private ArrayList<String> lstPluginsNames = null;
     private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;
     private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
-
+    private SingletonWebServiceReader webServiceReader = null;
+    
     /**
      *
      * @throws LibraryException
@@ -58,6 +60,7 @@ public class Controler {
         this.model = Model.getInstance();
         MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
         SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        webServiceReader.start();
         pluginInitialisation();
     }
  

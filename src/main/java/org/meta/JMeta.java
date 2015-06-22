@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.meta.common.MetaProperties;
-
+ 
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.DHTConfiguration;
@@ -21,24 +21,22 @@ public class JMeta {
     public static void main(String[] args) {
         MetaDHT dht = MetaDHT.getInstance();
         DHTConfiguration configuration = new DHTConfiguration(MetaProperties.getDefaultProperties());
+
         try {
             dht.start(configuration);
         } catch (IOException ex) {
             Logger.getLogger(JMeta.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
 
-        try {
-            System.out.println("Waiting 15s for other (test) peers to initialize...");
-            Thread.sleep(10000);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+        BootstrapOperation bootstrapOperation = dht.bootstrap();
 
-        dht.bootstrap().addListener(new OperationListener<BootstrapOperation>() {
+        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
 
             @Override
             public void failed(BootstrapOperation operation) {
-                Logger.getLogger(JMeta.class.getName()).log(Level.SEVERE, "Bootstrap oeration failed.");
+                Logger.getLogger(JMeta.class.getName()).log(Level.SEVERE, "Bootstrap oeration failed, exiting");
+                System.exit(1);
             }
 
             @Override
@@ -49,6 +47,8 @@ public class JMeta {
                 }
             }
         });
+        //Wait for boostraping to finish.
+        bootstrapOperation.awaitUninterruptibly();
 
         try {
             System.out.println("JMETA: starting controler.");

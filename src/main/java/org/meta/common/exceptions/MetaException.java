@@ -16,7 +16,7 @@ public class MetaException extends Exception {
         super(message);
     }
 
-    
+
     public MetaException(Throwable t) {
         super(t);
     }

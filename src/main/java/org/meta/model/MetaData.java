@@ -12,21 +12,21 @@ import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Thomas LAVOCAT
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -103,7 +103,7 @@ public class MetaData extends Searchable {
     }
 
     /**
-     * 
+     *
      * @param properties properties to add to the metatdata's property list
      */
     public void addProperties(MetaProperty ...properties) {
@@ -119,7 +119,7 @@ public class MetaData extends Searchable {
     public void setProperties(List<MetaProperty> properties) {
         this.properties = properties;
         this.updateState();
-		//TODO make the hash here
+        //TODO make the hash here
     }
 
     public BSONObject getBson() {
@@ -163,7 +163,7 @@ public class MetaData extends Searchable {
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a metaData, her state is no more a real
-        //MetaData but a temporary metaData, it means, it only represent what's 
+        //MetaData but a temporary metaData, it means, it only represent what's
         //over the network, so source = null ans result = null
         linkedData = null;
         //but not properties
@@ -190,24 +190,24 @@ public class MetaData extends Searchable {
             tmpLinkedData.add(data);
         }
     }
-    
+
     /**
-     * 
+     *
      * @return a list of the futures results
      */
     public List<String> getTmpLinkedData() {
         return tmpLinkedData;
     }
 
-	@Override
-	public Searchable toOnlyTextData() {
-		MetaData metaDataClone = new MetaData();
-		ArrayList<Data> linkedDataClone = new ArrayList<Data>();
-		for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
-			Data data = i.next();
-			linkedDataClone.add((Data) data.toOnlyTextData());
-		}
-		metaDataClone.setLinkedData(linkedDataClone);
-		return metaDataClone;
-	}
+    @Override
+    public Searchable toOnlyTextData() {
+        MetaData metaDataClone = new MetaData();
+        ArrayList<Data> linkedDataClone = new ArrayList<Data>();
+        for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
+            Data data = i.next();
+            linkedDataClone.add((Data) data.toOnlyTextData());
+        }
+        metaDataClone.setLinkedData(linkedDataClone);
+        return metaDataClone;
+    }
 }

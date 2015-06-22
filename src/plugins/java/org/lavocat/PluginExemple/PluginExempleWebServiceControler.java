@@ -8,10 +8,10 @@ import org.meta.plugin.webservice.AbstractWebService;
 
 public class PluginExempleWebServiceControler extends AbstractPluginWebServiceControler{
 
-	@Override
-	protected void registercommands(
-			HashMap<String, Class<? extends AbstractWebService>> commands) {
-		commands.put("example", ExempleWsCommand.class);
-	}
+    @Override
+    protected void registercommands(
+            HashMap<String, Class<? extends AbstractWebService>> commands) {
+        commands.put("example", ExempleWsCommand.class);
+    }
 
 }

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 /**
  *
  * Utility class for managing configuration files.
- * 
+ *
  * @author nico
  */
 public class MetaProperties {
@@ -31,7 +31,7 @@ public class MetaProperties {
     public static Properties getDefaultProperties() {
         return properties.get(DEFAULT_PROPERTY_PATH);
     }
-    
+
     private static boolean createProperties(String propertiesPath) {
         try {
             FileInputStream fis = new FileInputStream(propertiesPath);
@@ -54,7 +54,7 @@ public class MetaProperties {
      *
      * @param propertiesPath The relative path to the properties file.
      *
-     * @return The properties object associated to the given path or null 
+     * @return The properties object associated to the given path or null
      * if it doesn't exists.
      */
     public static synchronized Properties get(String propertiesPath) {

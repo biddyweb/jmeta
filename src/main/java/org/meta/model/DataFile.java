@@ -11,21 +11,21 @@ import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
 
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Thomas LAVOCAT
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -68,7 +68,7 @@ public class DataFile extends Data {
     public void setFile(File file) {
         this.file = file;
         this.updateState();
-		//TODO make the hash here !
+        //TODO make the hash here !
     }
 
     public BSONObject getBson() {
@@ -81,7 +81,7 @@ public class DataFile extends Data {
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         //write hash source
         fragment.put("_fileName", file.getName().getBytes());
-		//Send the file, it will surrely be bigger than 65 536o
+        //Send the file, it will surrely be bigger than 65 536o
 
         long size = file.length();
         long count = size / 65536;
@@ -106,7 +106,7 @@ public class DataFile extends Data {
                 //if i < count, the size is 64ko
                 if (i < count) {
                     sizeToRead = 65536;
-				//if not but count was > 1, make the difference
+                //if not but count was > 1, make the difference
                     //original size - nb * 64ko
                 } else if (count > 1) {
                     size = size - i * 65536;
@@ -124,7 +124,7 @@ public class DataFile extends Data {
                 //Make the hash from the bloc
                 MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
 
-				//write informations to the fragment
+                //write informations to the fragment
                 //hash
                 fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
                 //bloc
@@ -168,10 +168,10 @@ public class DataFile extends Data {
         }
     }
 
-	@Override
-	public Searchable toOnlyTextData() {
-		DataFile clone = new DataFile();
-		clone.setHash(this.hash);
-		return clone;
-	}
+    @Override
+    public Searchable toOnlyTextData() {
+        DataFile clone = new DataFile();
+        clone.setHash(this.hash);
+        return clone;
+    }
 }

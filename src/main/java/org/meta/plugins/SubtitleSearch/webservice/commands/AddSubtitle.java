@@ -10,34 +10,34 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 
 public class AddSubtitle extends AbstractWebService{
 
-	@Override
-	public InterfaceDescriptor getInterface(Map<String, String[]> map) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public InterfaceDescriptor getInterface(Map<String, String[]> map) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public InterfaceDescriptor execute(Map<String, String[]> map) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public InterfaceDescriptor execute(Map<String, String[]> map) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public InterfaceDescriptor retrieveUpdate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public InterfaceDescriptor retrieveUpdate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void callback(ArrayList<Searchable> results) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void callback(ArrayList<Searchable> results) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public BasicBSONObject getNextStep() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
+    @Override
+    public BasicBSONObject getNextStep() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

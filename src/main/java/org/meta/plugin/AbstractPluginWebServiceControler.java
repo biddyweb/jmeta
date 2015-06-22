@@ -22,21 +22,21 @@ import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
 
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Thomas LAVOCAT
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -107,35 +107,35 @@ public abstract class AbstractPluginWebServiceControler {
             final String plugin,
             final String command,
             final AbstractWebService abstractWebService) {
-    	
-    	
-    	FindPeersOperation peersOperation
-    									= MetaDHT.getInstance().findPeers(hash);
-    	peersOperation.addListener(new OperationListener<FindPeersOperation>() {
 
-			@Override
-			public void failed(FindPeersOperation operation) {
-				// TODO Auto-generated method stub
-			}
 
-			@Override
-			public void complete(FindPeersOperation operation) {
+        FindPeersOperation peersOperation
+                                        = MetaDHT.getInstance().findPeers(hash);
+        peersOperation.addListener(new OperationListener<FindPeersOperation>() {
+
+            @Override
+            public void failed(FindPeersOperation operation) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void complete(FindPeersOperation operation) {
               SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
               Collection<MetaPeer> peers =  operation.getPeers();
 
               for(Iterator<MetaPeer> i = peers.iterator(); i.hasNext();){
-            	  MetaPeer peer = i.next();
-            	  InetAddress adress = peer.getAddress();
-            	  //TODO control ID validity
-            	  writer.askTo(	adress, 
-								plugin, 
-								command, 
-								hash, 
-								abstractWebService, 
-								(int) peer.getPort());
+                  MetaPeer peer = i.next();
+                  InetAddress adress = peer.getAddress();
+                  //TODO control ID validity
+                  writer.askTo(    adress,
+                                plugin,
+                                command,
+                                hash,
+                                abstractWebService,
+                                (int) peer.getPort());
               }
-			}
-		});
+            }
+        });
     }
 
 }

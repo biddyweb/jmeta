@@ -8,9 +8,9 @@ import org.meta.plugins.SubtitleSearch.tcp.commands.SearchSubtitleCommand;
 
 public class PluginSubtitleSearchTcpControler extends AbstractPluginTCPControler {
 
-	@Override
-	protected void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands) {
-		commands.put("SearchSubtitleCommand", SearchSubtitleCommand.class);
-	}
+    @Override
+    protected void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands) {
+        commands.put("SearchSubtitleCommand", SearchSubtitleCommand.class);
+    }
 
 }

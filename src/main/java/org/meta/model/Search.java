@@ -11,21 +11,21 @@ import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Thomas LAVOCAT
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -78,7 +78,7 @@ public class Search extends Searchable {
     public void setSource(Searchable source) {
         this.source = source;
         this.updateState();
-		//TODO make the hash here only if source and results are sets
+        //TODO make the hash here only if source and results are sets
     }
 
     /**
@@ -90,7 +90,7 @@ public class Search extends Searchable {
     }
 
     /**
-     * 
+     *
      * @param metaDatas Results to add to the search's results.
      */
     public void addResults(MetaData ...metaDatas) {
@@ -108,7 +108,7 @@ public class Search extends Searchable {
     public void setResults(List<MetaData> results) {
         this.results = results;
         this.updateState();
-		//TODO make the hash hehre only if source and results are sets
+        //TODO make the hash hehre only if source and results are sets
     }
 
     /**
@@ -143,7 +143,7 @@ public class Search extends Searchable {
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a Search, her state is no more a real
-        //Search but a temporary search, it means, it only represent what's 
+        //Search but a temporary search, it means, it only represent what's
         //over the network, so source = null ans result = null
         source = null;
         results = null;
@@ -171,16 +171,16 @@ public class Search extends Searchable {
         return tmpResultsHashes;
     }
 
-	@Override
-	public Searchable toOnlyTextData() {
-		Search searchClone = new Search();
-		searchClone.setSource(source.toOnlyTextData());
-		ArrayList<MetaData> resultsClone = new ArrayList<MetaData>();
-		for (Iterator<MetaData> i = results.iterator(); i.hasNext();) {
-			MetaData metaData =  i.next();
-			resultsClone.add((MetaData) metaData.toOnlyTextData());
-		}
-		searchClone.setResults(resultsClone);
-		return searchClone;
-	}
+    @Override
+    public Searchable toOnlyTextData() {
+        Search searchClone = new Search();
+        searchClone.setSource(source.toOnlyTextData());
+        ArrayList<MetaData> resultsClone = new ArrayList<MetaData>();
+        for (Iterator<MetaData> i = results.iterator(); i.hasNext();) {
+            MetaData metaData =  i.next();
+            resultsClone.add((MetaData) metaData.toOnlyTextData());
+        }
+        searchClone.setResults(resultsClone);
+        return searchClone;
+    }
 }

@@ -4,13 +4,13 @@ import org.meta.plugin.webservice.forms.InterfaceField;
 
 public class Select extends InterfaceField{
 
-	public Select(String id, String label) {
-		super(id, label);
-	}
+    public Select(String id, String label) {
+        super(id, label);
+    }
 
-	@Override
-	protected String getType() {
-		return "select";
-	}
+    @Override
+    protected String getType() {
+        return "select";
+    }
 
 }

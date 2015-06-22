@@ -10,12 +10,12 @@ import org.meta.plugin.webservice.AbstractWebService;
 
 public class PluginSubtitleSearchWebServiceControler extends AbstractPluginWebServiceControler{
 
-	@Override
-	protected void registercommands(
-			HashMap<String, Class<? extends AbstractWebService>> commands) {
-		commands.put("searchSubtitles", 	SearchSubtitles.class);
-		commands.put("getSubtitles", 		GetSubtitles.class);
-		commands.put("addSubtitle", 		AddSubtitle.class);
-	}
+    @Override
+    protected void registercommands(
+            HashMap<String, Class<? extends AbstractWebService>> commands) {
+        commands.put("searchSubtitles",     SearchSubtitles.class);
+        commands.put("getSubtitles",         GetSubtitles.class);
+        commands.put("addSubtitle",         AddSubtitle.class);
+    }
 
 }

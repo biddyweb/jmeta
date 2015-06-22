@@ -97,10 +97,10 @@ public class MetamphetUtils {
     }
 
     /**
-     * 
+     *
      * @param hash
      * @param bloc
-     * 
+     *
      * @return true if the bloc's hash matches the given expected hash, false otherwise.
      */
     public static boolean checkHash(String hash, byte[] bloc) {

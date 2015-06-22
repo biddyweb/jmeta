@@ -4,19 +4,19 @@ import org.meta.plugin.webservice.forms.InterfaceField;
 
 
 /**
- * 
+ *
  * @author faquin
  *
  */
 public class TextInput extends InterfaceField {
 
-	public TextInput(String id, String label) {
-		super(id, label);
-	}
+    public TextInput(String id, String label) {
+        super(id, label);
+    }
 
-	@Override
-	protected String getType() {
-		return "TextInput";
-	}
+    @Override
+    protected String getType() {
+        return "TextInput";
+    }
 
 }

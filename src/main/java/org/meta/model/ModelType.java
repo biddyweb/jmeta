@@ -7,9 +7,9 @@
 package org.meta.model;
 
 /**
- * 
+ *
  * Enum for model factory, lists objects type from model.
- * 
+ *
  * Only instanciable classes must be listed here!
  */
 public enum ModelType {

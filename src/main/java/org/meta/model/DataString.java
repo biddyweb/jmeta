@@ -7,21 +7,21 @@ import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
 
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 Thomas LAVOCAT
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program. HashMap If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Thomas LAVOCAT
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program. HashMap If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -67,7 +67,7 @@ public class DataString extends Data {
     }
 
     /**
-     * 
+     *
      * @override
      */
     public BSONObject getBson() {
@@ -81,7 +81,7 @@ public class DataString extends Data {
         //TODO Move elsewhere.
         byte[] totalString = string.getBytes();
 
-		//Send the file, it will surrely be bigger than 65 536o
+        //Send the file, it will surrely be bigger than 65 536o
         long size = totalString.length;
         long count = size / 65536;
 
@@ -98,7 +98,7 @@ public class DataString extends Data {
         for (int i = 1; i <= count; i++) {
             int offset = (i - 1) * 65536;
 
-			//size to read in the file
+            //size to read in the file
             int sizeToRead = -1;
             if (i < count) {
                 sizeToRead = 65536;
@@ -114,7 +114,7 @@ public class DataString extends Data {
             //Make the hash from the bloc
             MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
 
-			//write informations to the fragment
+            //write informations to the fragment
             //bloc number
             fragment.put("_i" + i + "_i", ((i - 1) + "").getBytes());
             //hash
@@ -144,13 +144,13 @@ public class DataString extends Data {
                 //TODO write here the code needed to ask unCorrect blocs.
             }
         }
-        //TODO final size check 
+        //TODO final size check
         string = sb.toString();
     }
 
-	@Override
-	public Searchable toOnlyTextData() {
-		return this;
-	}
+    @Override
+    public Searchable toOnlyTextData() {
+        return this;
+    }
 
 }

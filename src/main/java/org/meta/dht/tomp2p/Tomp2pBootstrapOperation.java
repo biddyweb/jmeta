@@ -17,7 +17,6 @@
  */
 package org.meta.dht.tomp2p;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -25,6 +24,7 @@ import java.util.logging.Logger;
 import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDiscover;
+import net.tomp2p.p2p.builder.AnnounceBuilder;
 import net.tomp2p.peers.PeerAddress;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.DHTConfiguration;
@@ -35,10 +35,11 @@ import org.meta.dht.MetaPeer;
  */
 public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
-    private Logger logger = Logger.getLogger(Tomp2pBootstrapOperation.class.getName());
+    private static final Logger logger = Logger.getLogger(Tomp2pBootstrapOperation.class.getName());
     private TomP2pDHT dht;
     private Collection<MetaPeer> knownPeers;
     private boolean broadcast;
+    private Tomp2pFutureDiscoverListener discoverListener;
     private Tomp2pFutureBootstrapListener bootstrapListener;
 
     /**
@@ -63,20 +64,22 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     @Override
     public void start() {
         int nbOperations = broadcast ? 1 + this.knownPeers.size() : this.knownPeers.size();
+        discoverListener = new Tomp2pFutureDiscoverListener(this.knownPeers.size());
         this.bootstrapListener = new Tomp2pFutureBootstrapListener(this, nbOperations);
         this.state = OperationState.WAITING;
 
         for (MetaPeer peer : knownPeers) {
             //Start the discovery operation
-            logger.log(Level.WARNING, "Starting discovery of peer : {0}", peer);
-            TomP2pFutureDiscoverListener discoverListener = new TomP2pFutureDiscoverListener(peer);
-            this.dht.getPeer().discover().setInetAddress(peer.getAddress()).setPorts(peer.getPort())
+            logger.log(Level.WARNING, "Starting discovery to peer : {0}", peer);
+            this.dht.getPeerDHT().peer().discover().inetAddress(peer.getAddress()).ports(peer.getPort())
                     .start().addListener(discoverListener);
         }
         if (broadcast) {
             logger.log(Level.WARNING, "Broadcasting to find peers.");
-            this.dht.getPeer().bootstrap().setBroadcast().setPorts(DHTConfiguration.DEFAULT_DHT_PORT)
-                    .start().addListener(this.bootstrapListener);
+            AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
+            announceBuilder.port(DHTConfiguration.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
+            //this.dht.getPeerDHT().peer().bootstrap().broadcast().setPorts(DHTConfiguration.DEFAULT_DHT_PORT)
+               //     .start().addListener(this.bootstrapListener);
         }
     }
 
@@ -84,13 +87,13 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     public void finish() {
         for (FutureBootstrap bootstrapFuture : this.bootstrapListener.getOperations()) {
             if (bootstrapFuture.isFailed()) {
-                logger.log(Level.WARNING, "BootstrapFuture failure : {0}", bootstrapFuture.getFailedReason());
+                logger.log(Level.WARNING, "BootstrapFuture failure : {0}", bootstrapFuture.failedReason());
                 continue;
             }
-            for (PeerAddress addr : bootstrapFuture.getBootstrapTo()) {
+            for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
                 MetaPeer peer = new MetaPeer();
-                peer.setAddress(addr.getInetAddress());
-                peer.setPort((short) addr.portUDP());
+                peer.setAddress(addr.inetAddress());
+                peer.setPort((short) addr.udpPort());
                 this.bootstrapTo.add(peer);
                 logger.log(Level.WARNING, "DHT bootstraped to a peer! {0}", peer.toString());
             }
@@ -105,44 +108,67 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     }
 
     /**
+     * Called by the Discovery listener once operation has finished successfully. Start the actual bootstraping here.
+     */
+    private void discoveryFinished() {
+        for (MetaPeer peer : knownPeers) {
+            this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
+                    .start().addListener(this.bootstrapListener);
+        }
+    }
+
+    /**
+     * Called by the Discovery listener if the operation failed.
+     *
+     * Mark this operation as failed and notify listeners...
+     */
+    private void discoveryFailed() {
+        this.state = OperationState.FAILED;
+        this.notifyListeners();
+    }
+
+    /**
      * Nested class implementation for the Tomp2p discover future operation listener.
      *
      * If the discovery operation succeeded, launch the bootstrap operation on the newly found address, otherwise try
      * the original address.
      */
-    private class TomP2pFutureDiscoverListener extends net.tomp2p.futures.BaseFutureAdapter<FutureDiscover> {
+    private class Tomp2pFutureDiscoverListener extends net.tomp2p.futures.BaseFutureAdapter<FutureDiscover> {
 
-        private MetaPeer peer;
+        private Boolean succeeddedOnce;
+        private int nbOperations;
 
-        TomP2pFutureDiscoverListener(MetaPeer peer) {
-            this.peer = peer;
+        public Tomp2pFutureDiscoverListener(final int nbOperations) {
+            this.nbOperations = nbOperations;
+            this.succeeddedOnce = false;
         }
 
-        //Inner class for the tomp2p discover future operation.
         @Override
         public void operationComplete(FutureDiscover future) throws Exception {
-            InetAddress address = null;
-            short port = 0;
-            if (future.isSuccess()) {
-                address = future.getPeerAddress().getInetAddress();
-                port = (short) future.getPeerAddress().portUDP();
-            } else if (future.isFailed()) {
-                address = this.peer.getAddress();
-                port = this.peer.getPort();
+            nbOperations--;
+            if (succeeddedOnce) {
+                return;
+            } else {
+                if (future.isSuccess()) {
+                    succeeddedOnce = true;
+                    logger.log(Level.WARNING, "DISCOVERY SUCCESS");
+                    Tomp2pBootstrapOperation.this.discoveryFinished();
+                } else if (future.isFailed()) {
+                    logger.log(Level.WARNING, "DISCOVERY FAILURE");
+                }
+                if (nbOperations == 0 && !succeeddedOnce) {
+                    Tomp2pBootstrapOperation.this.discoveryFailed();
+                }
             }
-            Tomp2pBootstrapOperation.this.dht.getPeer().bootstrap().setInetAddress(address)
-                    .setPorts(port)
-                    .start().addListener(Tomp2pBootstrapOperation.this.bootstrapListener);
-            logger.log(Level.WARNING, "Starting bootstrap on address : {0}:{1}", new Object[]{address, port});
         }
-    };
+    }
 
     /**
      * Nested class implementation for the Tomp2p bootstrap future operation listener.
      *
      * Bridge between tomp2p future and our async operation.
      *
-     * Wait for all tomp2p operations (we might bootstrap to several peers or also bootstrap) to finish before notifying
+     * Wait for all tomp2p operations (we might bootstrap to several peers or also broadcast) to finish before notifying
      * our operation.
      */
     private class Tomp2pFutureBootstrapListener extends BaseFutureAdapter<FutureBootstrap> {

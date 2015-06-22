@@ -18,13 +18,13 @@
 package org.meta.dht.tomp2p;
 
 import java.io.IOException;
-import java.util.Collection;
 import net.tomp2p.connection.Bindings;
-import net.tomp2p.connection.PeerBean;
+import net.tomp2p.dht.PeerBuilderDHT;
+import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.p2p.Peer;
-import net.tomp2p.p2p.PeerMaker;
+import net.tomp2p.p2p.PeerBuilder;
+//import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
-import net.tomp2p.peers.PeerAddress;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.dht.BootstrapOperation;
@@ -50,11 +50,7 @@ public class TomP2pDHT extends MetaDHT {
      * The tomp2p peer representing our node.
      */
     private Peer peer;
-
-    /**
-     * The DHTConfiguration object.
-     */
-    private DHTConfiguration configuration;
+    private PeerDHT peerDHT;
 
     /**
      * Empty constructor (should not be called directly)
@@ -64,10 +60,10 @@ public class TomP2pDHT extends MetaDHT {
 
     /**
      *
-     * @return The {@link net.tomp2p.p2p.Peer} representing our node.
+     * @return The {@link net.tomp2p.p2p.PeerDHT} representing our node.
      */
-    public net.tomp2p.p2p.Peer getPeer() {
-        return this.peer;
+    public PeerDHT getPeerDHT() {
+        return this.peerDHT;
     }
 
     @Override
@@ -83,18 +79,27 @@ public class TomP2pDHT extends MetaDHT {
         Number160 peerId = toNumber160(this.configuration.getIdentity());
         Bindings b = new Bindings(); //Bind to everything
         //TODO check and configure network properly
-        PeerMaker peerMaker = new PeerMaker(peerId);
-        peerMaker.setPorts(this.configuration.getPort());
-        peerMaker.setBindings(b);
-        this.peer = peerMaker.makeAndListen();
+        PeerBuilder peerBuilder = new PeerBuilder(peerId);
+        peerBuilder.ports(this.configuration.getPort());
+        peerBuilder.bindings(b);
+        this.peer = peerBuilder.start();
+
+        PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
+        this.peerDHT = peerBuilderDHT.start();
+
+        //PeerMaker peerMaker = new PeerMaker(peerId);
+        //peerMaker.setPorts(this.configuration.getPort());
+        //peerMaker.setBindings(b);
+        //this.peer = peerMaker.makeAndListen();
+        //this.peer.getConfiguration().setBehindFirewall(true);
     }
 
     @Override
     public BootstrapOperation bootstrap() {
-        Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnwonPeers(),
+        Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnownPeers(),
                 this.configuration.isBootstrapBroadcast());
         b.start();
-        return b;
+        return b; 
     }
 
     @Override
@@ -111,8 +116,9 @@ public class TomP2pDHT extends MetaDHT {
         return storeOperation;
     }
 
-    //BELOW STATIC UTILITY FUNCTIONS (MOSTLY CONVERSION for meta <-> tomp2p entities)
+    //BELOW STATIC UTILITY FUNCTIONS (Mostly conversion functions for meta <-> tomp2p entities)
     //TODO Move to utility class ?
+
     /**
      * Utility function to convert a MetHash to a Number160 used by TomP2p lib.
      *
@@ -141,8 +147,8 @@ public class TomP2pDHT extends MetaDHT {
      * @return The created Meta Peer.
      */
     public static MetaPeer toPeer(net.tomp2p.p2p.Peer peer) {
-        Identity id = new Identity(toMetHash(peer.getPeerID()));
-        //TODO check if using UDP port is correct!
-        return new MetaPeer(id, peer.getPeerAddress().getInetAddress(), (short) peer.getPeerAddress().portUDP());
+        Identity id = new Identity(toMetHash(peer.peerID()));
+        //TODO check if using only UDP port is correct!
+        return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
     }
 }

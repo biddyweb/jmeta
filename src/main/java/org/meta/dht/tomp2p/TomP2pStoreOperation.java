@@ -17,9 +17,15 @@
  */
 package org.meta.dht.tomp2p;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.tomp2p.dht.PutBuilder;
 import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.storage.Data;
+import org.meta.common.MetHash;
 import org.meta.dht.StoreOperation;
 
 /**
@@ -36,6 +42,7 @@ public class TomP2pStoreOperation extends StoreOperation {
      * Create the bootstrap operation with given arguments.
      *
      * @param dht The dht.
+     * @param hash The hash to store in the DHT.
      */
     public TomP2pStoreOperation(TomP2pDHT dht, Number160 hash) {
         this.dht = dht;
@@ -44,24 +51,30 @@ public class TomP2pStoreOperation extends StoreOperation {
 
     @Override
     public void start() {
-        this.dht.getPeer().put(this.hash).start().addListener(new BaseFutureListener<BaseFuture>() {
+        try {
+            PutBuilder putBuilder;
+            putBuilder = new PutBuilder(this.dht.getPeerDHT(), hash);
+            putBuilder.data(new Data("test data")).start().addListener(new BaseFutureListener<BaseFuture>() {
 
-            @Override
-            public void operationComplete(BaseFuture future) throws Exception {
-                if (future.isSuccess()) {
-                    TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
-                } else {
-                    TomP2pStoreOperation.this.setState(OperationState.FAILED);
+                @Override
+                public void operationComplete(BaseFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
+                    } else {
+                        TomP2pStoreOperation.this.setState(OperationState.FAILED);
+                    }
+                    TomP2pStoreOperation.this.finish();
                 }
-                TomP2pStoreOperation.this.finish();
-            }
-
-            @Override
-            public void exceptionCaught(Throwable t) throws Exception {
-                TomP2pStoreOperation.this.setState(OperationState.FAILED);
-                TomP2pStoreOperation.this.finish();
-            }
-        });
+                
+                @Override
+                public void exceptionCaught(Throwable t) throws Exception {
+                    TomP2pStoreOperation.this.setState(OperationState.FAILED);
+                    TomP2pStoreOperation.this.finish();
+                }
+            });
+        } catch (IOException ex) {
+            Logger.getLogger(TomP2pStoreOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

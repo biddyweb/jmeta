@@ -14,7 +14,7 @@ dhtPort: 15001
 dhtKnownPeers: 127.0.0.1:15000
 
 #If we broadcast to find peers during bootstrap or not.
-dhtBootstrapBroadcast: true
+dhtBootstrapBroadcast: false
 
 #The hash of our identity to use on the DHT. If not set, uses a random one.
 #dhtIdentity: blalgfgsfsdfs

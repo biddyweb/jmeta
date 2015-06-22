@@ -109,11 +109,11 @@ public abstract class DHTOperation {
     }
 
     /**
-     * Add a listener to listen to this operation events.
-     * If the operation already finished, notify the listener immediately.
-     * 
+     * Add a listener to listen to this operation events. If the operation already finished, notify the listener
+     * immediately.
+     *
      * @param listener The listener to add to the list.
-     * 
+     *
      * @return The DHTOperation for convenience.
      */
     public DHTOperation addListener(OperationListener<? extends DHTOperation> listener) {
@@ -182,6 +182,7 @@ public abstract class DHTOperation {
         synchronized (lock) {
             this.failedMessage = message;
             this.state = OperationState.FAILED;
+            
         }
         this.notifyListeners();
         return this;
@@ -191,29 +192,37 @@ public abstract class DHTOperation {
      * @return true if the operation completed (even if it failed), false otherwise.
      */
     public boolean hasFinished() {
-        return this.state != OperationState.INIT
-                && this.state != OperationState.WAITING;
+        synchronized (lock) {
+            return this.state != OperationState.INIT
+                    && this.state != OperationState.WAITING;
+        }
     }
 
     /**
      * @return true if operation succeeded, false if there was an error or a false response.
      */
     public boolean isSuccess() {
-        return state == OperationState.COMPLETE;
+        synchronized (lock) {
+            return state == OperationState.COMPLETE;
+        }
     }
 
     /**
      * @return true if operation failed, false otherwise.
      */
     public boolean isFailure() {
-        return this.state == OperationState.FAILED;
+        synchronized (lock) {
+            return this.state == OperationState.FAILED;
+        }
     }
 
     /**
      * @return true if the operation was canceled, false otherwise.
      */
     public boolean canceled() {
-        return this.state == OperationState.CANCELED;
+        synchronized (lock) {
+            return this.state == OperationState.CANCELED;
+        }
     }
 
     /**
@@ -245,6 +254,22 @@ public abstract class DHTOperation {
                 }
             }
             this.listeners.clear();
+            lock.notifyAll();
+        }
+    }
+
+    public DHTOperation awaitUninterruptibly() {
+        synchronized (lock) {
+            while (!this.hasFinished()) {
+                try {
+                    lock.wait();
+                    System.err.println("awaitUninterruptibly got notified...");
+                } catch (final InterruptedException e) {
+                    //Do nothing
+                    System.err.println("awaitUninterruptibly interrupted");
+                }
+            }
+            return this;
         }
     }
 }

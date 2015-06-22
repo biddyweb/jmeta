@@ -31,6 +31,7 @@ public abstract class Searchable {
      * Enum to lists the different possible states of a model object.
      */
     protected enum ObjectState {
+
         //Object has been instanciated, it does not comes from network or database.
         CREATED,
         //Object comes from network.
@@ -74,7 +75,7 @@ public abstract class Searchable {
     }
 
     /**
-     * 
+     *
      * @return ObjectState The current state of this object.
      */
     public ObjectState getState() {
@@ -83,7 +84,7 @@ public abstract class Searchable {
 
     /**
      * Set the current state of this object.
-     * 
+     *
      * @param state ObjectState the state.
      */
     public void setState(ObjectState state) {
@@ -92,7 +93,7 @@ public abstract class Searchable {
 
     /**
      * For internal purposes, updates the current state of the object based on current state.
-     * 
+     *
      * For now, just sets the object as dirty if it comes from database.
      */
     protected void updateState() {
@@ -104,8 +105,7 @@ public abstract class Searchable {
 
     /**
      *
-     * @return transform the Searchable object into a JSON string that can be
-     * stored directly
+     * @return transform the Searchable object into a JSON string that can be stored directly
      */
     public String toJson() {
         return this.getBson().toString();
@@ -113,8 +113,7 @@ public abstract class Searchable {
 
     /**
      *
-     * @return transform the Searchable object into a BSON object for
-     * serialization.
+     * @return transform the Searchable object into a BSON object for serialization.
      */
     public BSONObject getBson() {
         BasicBSONObject bsonObject = new BasicBSONObject("hash", this.hash.toString());
@@ -146,5 +145,5 @@ public abstract class Searchable {
 
     protected abstract void decodefragment(LinkedHashMap<String, byte[]> fragment);
 
-	public abstract Searchable toOnlyTextData();
+    public abstract Searchable toOnlyTextData();
 }

@@ -2,6 +2,7 @@ package org.meta.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
@@ -25,7 +26,7 @@ public class AMPAskParserTest {
             //e.printStackTrace();
         }
 
-        AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete", "hash");
+        AMPAskFactory factory = new AMPAskFactory("23", "toto", "cacahuete", new MetHash("hash"));
 
         System.out.println(factory.getMessage());
 

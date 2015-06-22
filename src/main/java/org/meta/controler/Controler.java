@@ -15,6 +15,7 @@ import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.SingletonTCPReader;
+import org.meta.plugin.webservice.SingletonWebServiceReader;
 
 /*
  *	JMeta - Meta's java implementation
@@ -45,6 +46,8 @@ public class Controler {
     private ArrayList<String> lstPluginsNames = null;
     private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;
     private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
+    private SingletonWebServiceReader webServiceReader = null;
+    private SingletonTCPReader tcpReader = null;
 
     /**
      *
@@ -57,10 +60,12 @@ public class Controler {
             URISyntaxException {
         this.model = Model.getInstance();
         MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
-        SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        tcpReader = SingletonTCPReader.getInstance();
+        tcpReader.initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        webServiceReader.start();
         pluginInitialisation();
     }
- 
+
     public void stop() {
         SingletonTCPReader.getInstance().kill();
     }
@@ -77,7 +82,7 @@ public class Controler {
         Enumeration<Object> keys = pluginsProperties.keys();
         while (keys.hasMoreElements()) {
             String key = ((String) keys.nextElement());
-            //TODO split sur les points et prendre le dernier élément
+            //TODO split on point &  take last element
             if (key.contains(".name")) {
                 //plugin founded
                 lstPluginsNames.add(pluginsProperties.getProperty(key));
@@ -101,10 +106,14 @@ public class Controler {
                     tcpControler.setModel(model);
                     //Set parameters
                     webServiceControler.setModel(model);
+                    //TODO rebirth P2PControler ?
                     webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
                     tcpControler.init(key.replaceAll(".name", ""));
+                    tcpReader.registerPlugin(key.replaceAll(".name", ""), tcpControler);
+
                     webServiceControler.init(key.replaceAll(".name", ""));
+                    webServiceReader.registerPlugin(key.replaceAll(".name", ""), webServiceControler);
 
                 } catch (ClassNotFoundException e) {
                     System.out.println("The plugin " + key + " is not available");

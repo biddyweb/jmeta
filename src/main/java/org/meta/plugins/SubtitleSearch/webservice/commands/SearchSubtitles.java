@@ -48,18 +48,17 @@ public class SearchSubtitles extends AbstractWebService{
 	@Override
 	public InterfaceDescriptor execute(Map<String, String[]> map) {
 		InterfaceDescriptor response = initialDescriptor;
-//		//Get file path
-//		String[] pathes = map.get("path");
-//		String 	 path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
-//		
-//		//if path is not empty, try to search othrerwise just return the main
-//		//interface
-//		if(path != ""){
-//			File file = new File(path);
-//			if(file.exists()){
+		//Get file path
+		String[] pathes = map.get("path");
+		String 	 path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
+		
+		//if path is not empty, try to search othrerwise just return the main
+		//interface
+		if(path != ""){
+			File file = new File(path);
+			if(file.exists()){
 //				initialTextOutput.flush();
-//				PluginSubtitleSearchWebServiceControler controler = 
-//					(PluginSubtitleSearchWebServiceControler) super.controler;
+//				
 //				//instanciate a new MetaData st:<choosen language>
 //				ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
 //				properties.add(new MetaProperty("st", "fr"));
@@ -79,18 +78,18 @@ public class SearchSubtitles extends AbstractWebService{
 //				subtitleSearch.setResults(metaDatas);
 //				
 //				//lookup on the network to find the subtitles
-//				super.controler.search(	subtitleSearch.getHashCode(), 
+//				super.controler.search(	subtitleSearch.getHash(), 
 //										"SubtitleSearch", 
 //										"SearchSubtitleCommand", 
 //										this);
-//			}else{
-//				initialTextOutput.flush();
-//				initialTextOutput.append("The file does not exist");
-//			}
-//		}else{
-//			initialTextOutput.flush();
-//			initialTextOutput.append("Please set a valide path name");
-//		}
+			}else{
+				initialTextOutput.flush();
+				initialTextOutput.append("The file does not exist");
+			}
+		}else{
+			initialTextOutput.flush();
+			initialTextOutput.append("Please set a valide path name");
+		}
 		return response;
 	}
 

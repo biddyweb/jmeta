@@ -17,15 +17,13 @@
  */
 package org.meta.tests.dht;
 
-import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.common.MetaProperties;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.DHTConfiguration;
-import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 
@@ -33,50 +31,65 @@ import org.meta.dht.OperationListener;
  *
  * @author nico
  */
-public class DHTBootstrapTests {
+public class DHTBootstrapTests extends AbstractDHTTests {
 
+    /**
+     * Test the bootstrap process to another peer. Assumes the another node is running!
+     */
     @Test
-    public void test() {
-        MetaDHT dht = MetaDHT.getInstance();
-        DHTConfiguration configuration = new DHTConfiguration(MetaProperties.get("conf/tests.prop"));
-        try {
-            dht.start(configuration);
-        } catch (IOException ex) {
-            Logger.getLogger(DHTBootstrapTests.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void testBootstrapSuccess() {
 
-        try {
-            System.out.println("Waiting 15s for other (test) peers to initialize...");
-            Thread.sleep(15000);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+        dht1.setConfiguration(configurationDht1); //Re - set valid configuration
+        BootstrapOperation bootstrapOperation = dht1.bootstrap();
 
-        dht.bootstrap().addListener(new OperationListener<BootstrapOperation>() {
+        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
 
             @Override
             public void failed(BootstrapOperation operation) {
-                Logger.getLogger(DHTBootstrapTests.class.getName()).log(Level.SEVERE, "Bootstrap oeration failed.");
-                Assert.fail("Bootstrap oeration failed.");
+                Logger.getLogger(DHTBootstrapTests.class.getName()).log(Level.SEVERE, "Bootstrap operation failed.");
+                Assert.fail("Bootstrap operation failed.");
             }
 
             @Override
             public void complete(BootstrapOperation operation) {
                 if (operation.isFailure()) {
-                    Assert.fail("Bootstrap oeration completed unsuccessfully.");
+                    Assert.fail("Bootstrap operation completed unsuccessfully. Reason : " + operation.getFailureMessage());
                 }
                 for (MetaPeer peer : operation.getBootstrapTo()) {
                     System.out.println("Bootstraped to : " + peer);
                 }
             }
         });
+        bootstrapOperation.awaitUninterruptibly();
+    }
 
-        try {
-            System.out.println("Waiting 60s for peers to bootstrap to us...");
-            Thread.sleep(60000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DHTBootstrapTests.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-        }
+    /**
+     * Test the bootstrap failure to another peer.
+     *
+     * @throws java.net.UnknownHostException
+     */
+    @Test
+    public void testBootstrapFailure() throws UnknownHostException {
+
+        DHTConfiguration wrongConfig = new DHTConfiguration(null, DHT1_PORT, DHTConfiguration.peersFromString("127.0.0.254:1"), false);
+        dht1.setConfiguration(wrongConfig); //Set invalid known peer 
+
+        BootstrapOperation bootstrapOperation = dht1.bootstrap();
+
+        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
+
+            @Override
+            public void failed(BootstrapOperation operation) {
+                Logger.getLogger(DHTBootstrapTests.class.getName()).log(Level.INFO, "testBootstrapFailure: Bootstrap operation failed and it's normal");
+            }
+
+            @Override
+            public void complete(BootstrapOperation operation) {
+                if (operation.isSuccess()) {
+                    Assert.fail("Bootstrap oeration completed successfully and shouldn't have.");
+                }
+            }
+        });
+        bootstrapOperation.awaitUninterruptibly();
     }
 }

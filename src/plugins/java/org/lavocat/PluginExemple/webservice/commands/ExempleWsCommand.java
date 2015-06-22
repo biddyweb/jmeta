@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.bson.BasicBSONObject;
+import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.DateInput;
@@ -57,7 +59,6 @@ public class ExempleWsCommand extends AbstractWebService {
 		descriptor = new InterfaceDescriptor(column);
 	}
 	
-	@Override
 	public InterfaceDescriptor getInterface() {
 		return descriptor;
 	}
@@ -78,5 +79,23 @@ public class ExempleWsCommand extends AbstractWebService {
 		nbRefresh++;
 		output.append("refresh number"+nbRefresh);
 		return descriptor;
+	}
+
+	@Override
+	public void callback(ArrayList<Searchable> results) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public InterfaceDescriptor getInterface(Map<String, String[]> map) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BasicBSONObject getNextStep() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

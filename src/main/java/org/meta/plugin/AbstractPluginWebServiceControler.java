@@ -2,11 +2,17 @@ package org.meta.plugin;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.bson.types.BasicBSONList;
-import org.meta.controler.P2P.P2PListener;
+import org.meta.common.MetHash;
+import org.meta.dht.DHTOperation;
+import org.meta.dht.FindPeersOperation;
+import org.meta.dht.MetaDHT;
+import org.meta.dht.MetaPeer;
+import org.meta.dht.OperationListener;
 import org.meta.model.Model;
 import org.meta.plugin.tcp.SingletonTCPWriter;
 import org.meta.plugin.webservice.AbstractWebService;
@@ -97,24 +103,39 @@ public abstract class AbstractPluginWebServiceControler {
         return json_serializer.serialize(list);
     }
 
-    public void search(final String hash,
+    public void search(final MetHash hash,
             final String plugin,
             final String command,
             final AbstractWebService abstractWebService) {
-//        tcpControler.lookForPeer(hash, new P2PListener() {
-//
-//            @Override
-//            public void nodesFounded(InetAddress node) {
-//                SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
-//                InetAddress adress;
-//                try {
-//                    adress = InetAddress.getLocalHost();
-//                    writer.askTo(adress, plugin, command, hash, abstractWebService);
-//                } catch (UnknownHostException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+    	
+    	
+    	FindPeersOperation peersOperation
+    									= MetaDHT.getInstance().findPeers(hash);
+    	peersOperation.addListener(new OperationListener<FindPeersOperation>() {
+
+			@Override
+			public void failed(FindPeersOperation operation) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void complete(FindPeersOperation operation) {
+              SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
+              Collection<MetaPeer> peers =  operation.getPeers();
+
+              for(Iterator<MetaPeer> i = peers.iterator(); i.hasNext();){
+            	  MetaPeer peer = i.next();
+            	  InetAddress adress = peer.getAddress();
+            	  //TODO control ID validity
+            	  writer.askTo(	adress, 
+								plugin, 
+								command, 
+								hash, 
+								abstractWebService, 
+								(int) peer.getPort());
+              }
+			}
+		});
     }
 
 }

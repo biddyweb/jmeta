@@ -67,14 +67,6 @@ public abstract class AbstractPluginWebServiceControler {
     public void init(String pluginName) {
         this.pluginName = pluginName;
         registercommands(lstCommands);
-        registerToTCPReader();
-    }
-
-    /**
-     * register the commands to TCPReader
-     */
-    private void registerToTCPReader() {
-        reader.registerPlugin(pluginName, this);
     }
 
     /**

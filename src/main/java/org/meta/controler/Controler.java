@@ -47,7 +47,8 @@ public class Controler {
     private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;
     private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
     private SingletonWebServiceReader webServiceReader = null;
-    
+    private SingletonTCPReader tcpReader = null;
+
     /**
      *
      * @throws LibraryException
@@ -59,11 +60,12 @@ public class Controler {
             URISyntaxException {
         this.model = Model.getInstance();
         MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
-        SingletonTCPReader.getInstance().initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        tcpReader = SingletonTCPReader.getInstance();
+        tcpReader.initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
         webServiceReader.start();
         pluginInitialisation();
     }
- 
+
     public void stop() {
         SingletonTCPReader.getInstance().kill();
     }
@@ -107,7 +109,9 @@ public class Controler {
                     webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
                     tcpControler.init(key.replaceAll(".name", ""));
+                    tcpReader.registerPlugin(key.replaceAll(".name", ""), tcpControler);
                     webServiceControler.init(key.replaceAll(".name", ""));
+                    webServiceReader.registerPlugin(key.replaceAll(".name", ""), webServiceControler);
 
                 } catch (ClassNotFoundException e) {
                     System.out.println("The plugin " + key + " is not available");

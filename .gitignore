@@ -9,4 +9,4 @@ nativelib
 *~
 docs
 mvnTest.sh
-
+*.swp

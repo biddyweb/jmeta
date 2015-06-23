@@ -3,7 +3,6 @@ package org.meta.plugin.tcp;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,12 +48,11 @@ public class SingletonTCPReader {
             try {
                 socket = new ServerSocket(port);
                 while (work) {
-                    Socket client = !socket.isClosed() ? socket.accept() : null;
-                    if(client != null){
-                        AskHandlerThread discussWith = new AskHandlerThread(client);
-                        discussWith.start();
-                    }
+                    Socket client = socket.accept();
+                    AskHandlerThread discussWith = new AskHandlerThread(client);
+                    discussWith.start();
                 }
+                
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -86,16 +84,16 @@ public class SingletonTCPReader {
     }
 
     public void kill() {
+        work = false;
+        try {
+            this.listenerThread.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
         try {
             if(socket != null)
                 socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            work = false;
-            this.listenerThread.join();
-        } catch (InterruptedException ex) {
             Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

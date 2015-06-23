@@ -17,9 +17,7 @@
  */
 package org.meta.tests.dht;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +27,6 @@ import org.meta.dht.DHTConfiguration;
 import org.meta.dht.MetaPeer;
 
 /**
- *
  * @author nico
  */
 public class DHTConfigTest {

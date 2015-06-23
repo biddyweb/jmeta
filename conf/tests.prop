@@ -16,5 +16,8 @@ dhtKnownPeers: 127.0.0.1:15000
 #If we broadcast to find peers during bootstrap or not.
 dhtBootstrapBroadcast: false
 
+#If the dht should bind only to local peers
+dhtOnlyLocal: true
+
 #The hash of our identity to use on the DHT. If not set, uses a random one.
 #dhtIdentity: blalgfgsfsdfs

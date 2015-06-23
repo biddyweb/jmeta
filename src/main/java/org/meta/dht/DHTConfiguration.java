@@ -58,6 +58,11 @@ public class DHTConfiguration {
     public static final String DHT_BOOTSTRAP_BROADCAST_KEY = "dhtBootstrapBroadcast";
 
     /**
+     * The key in configuration file for the bootstrap broadcast.
+     */
+    public static final String DHT_LOCAL_ONLY_KEY = "dhtLocalOnly";
+
+    /**
      * The properties class related to the configuration file.
      */
     private Properties properties;
@@ -83,15 +88,21 @@ public class DHTConfiguration {
     private boolean bootstrapBroadcast;
 
     /**
+     * If we only listen to local peers
+     */
+    private boolean dhtLocalOnly;
+
+    /**
      * Initializes the configuration with default values.
      */
     public DHTConfiguration() {
         this.port = DEFAULT_DHT_PORT;
         this.identity = new Identity(MetamphetUtils.createRandomHash());
         //No known peers by default...
-        this.knownPeers = new ArrayList<MetaPeer>();
+        this.knownPeers = new ArrayList<>();
         //No known peers so we broadcast.
         this.bootstrapBroadcast = true;
+        this.dhtLocalOnly = false;
     }
 
     /**
@@ -102,11 +113,12 @@ public class DHTConfiguration {
      * @param knownPeers The list of known peers to bootstrap to.
      * @param broadast If we broadcast to bootstrap or not.
      */
-    public DHTConfiguration(Identity id, short port, Collection<MetaPeer> knownPeers, boolean broadast) {
+    public DHTConfiguration(Identity id, short port, Collection<MetaPeer> knownPeers, boolean broadast, boolean localOnly) {
         this.port = port;
         this.identity = id;
         this.bootstrapBroadcast = broadast;
         this.knownPeers = knownPeers;
+        this.dhtLocalOnly = localOnly;
     }
 
     /**
@@ -139,15 +151,20 @@ public class DHTConfiguration {
         } else {
             this.bootstrapBroadcast = true;
         }
+        if (this.properties.containsKey(DHT_LOCAL_ONLY_KEY)) {
+            this.dhtLocalOnly = Boolean.valueOf(this.properties.getProperty(DHT_LOCAL_ONLY_KEY));
+        } else {
+            this.dhtLocalOnly = false;
+        }
         if (this.properties.containsKey(DHT_KNOWN_PEERS_KEY)) {
             String knownPeersString = this.properties.getProperty(DHT_KNOWN_PEERS_KEY);
             try {
                 this.knownPeers = DHTConfiguration.peersFromString(knownPeersString);
             } catch (UnknownHostException ex) {
-                this.knownPeers = new ArrayList<MetaPeer>();
+                this.knownPeers = new ArrayList<>();
             }
         } else {
-            this.knownPeers = new ArrayList<MetaPeer>();
+            this.knownPeers = new ArrayList<>();
         }
     }
 
@@ -161,8 +178,8 @@ public class DHTConfiguration {
      * </ul>
      *
      * @param peersString The string to extract peers from.
-     * @return The collection of {@link MetaPeer} extracted from the given string
-     * representation.
+     * @return The collection of {@link MetaPeer} extracted from the given
+     * string representation.
      */
     public static Collection<MetaPeer> peersFromString(String peersString) throws UnknownHostException {
         Collection<MetaPeer> peers = new ArrayList<MetaPeer>();
@@ -201,6 +218,14 @@ public class DHTConfiguration {
 
     public void setBootstrapBroadcast(boolean bootstrapBroadcast) {
         this.bootstrapBroadcast = bootstrapBroadcast;
+    }
+
+    public boolean isDhtLocalOnly() {
+        return dhtLocalOnly;
+    }
+
+    public void setDhtLocalOnly(boolean dhtLocalOnly) {
+        this.dhtLocalOnly = dhtLocalOnly;
     }
 
     public Identity getIdentity() {

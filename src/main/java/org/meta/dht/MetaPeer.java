@@ -50,7 +50,7 @@ public class MetaPeer {
      *
      * Initialize this peer with the given id, with empty address and port.
      *
-     * @param id. The peer's id.
+     * @param id. The peer id.
      */
     public MetaPeer(Identity id) {
         this(id, null, (short) 0);
@@ -59,9 +59,9 @@ public class MetaPeer {
     /**
      * Initialize this peer with id, address and port.
      *
-     * @param hash. The peer's id.
-     * @param addr. The peer's address.
-     * @param port. The peer's  port.
+     * @param id The peer id.
+     * @param addr. The peer address.
+     * @param port. The peer port.
      */
     public MetaPeer(Identity id, InetAddress addr, short port) {
         this.id = id;

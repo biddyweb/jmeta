@@ -27,6 +27,11 @@ import org.meta.dht.tomp2p.TomP2pDHT;
  */
 public abstract class MetaDHT {
 
+    /**
+     * 
+     * @return An instance of the DHT.
+     * TODO change this!!
+     */
     public static MetaDHT getInstance() {
         return new TomP2pDHT();
     }
@@ -67,6 +72,11 @@ public abstract class MetaDHT {
      * @return The asynchronous StoreOperation representing the outcome of the operation.
      */
     public abstract StoreOperation store(MetHash hash);
+
+    /**
+     * Stop the DHT, closing all sockets and connections to peers.
+     */
+    public abstract void stop();
 
     /**
      * Set the configuration of this DHT instance.

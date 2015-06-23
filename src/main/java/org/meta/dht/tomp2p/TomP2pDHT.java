@@ -21,9 +21,12 @@ import java.io.IOException;
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
+import net.tomp2p.futures.BaseFuture;
+import net.tomp2p.futures.BaseFutureAdapter;
+import net.tomp2p.futures.FutureDone;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerBuilder;
-//import net.tomp2p.p2p.PeerMaker;
+import net.tomp2p.p2p.builder.RoutingBuilder;
 import net.tomp2p.peers.Number160;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
@@ -33,6 +36,8 @@ import org.meta.dht.FindPeersOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.StoreOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -51,6 +56,8 @@ public class TomP2pDHT extends MetaDHT {
      */
     private Peer peer;
     private PeerDHT peerDHT;
+
+    private final Logger logger = LoggerFactory.getLogger(TomP2pDHT.class);
 
     /**
      * Empty constructor (should not be called directly)
@@ -83,15 +90,10 @@ public class TomP2pDHT extends MetaDHT {
         peerBuilder.ports(this.configuration.getPort());
         peerBuilder.bindings(b);
         this.peer = peerBuilder.start();
+        RoutingBuilder rb = new RoutingBuilder();
 
         PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
         this.peerDHT = peerBuilderDHT.start();
-
-        //PeerMaker peerMaker = new PeerMaker(peerId);
-        //peerMaker.setPorts(this.configuration.getPort());
-        //peerMaker.setBindings(b);
-        //this.peer = peerMaker.makeAndListen();
-        //this.peer.getConfiguration().setBehindFirewall(true);
     }
 
     @Override
@@ -116,9 +118,26 @@ public class TomP2pDHT extends MetaDHT {
         return storeOperation;
     }
 
+    @Override
+    public void stop() {
+        FutureDone<Void> shutdownOperation = this.peer.announceShutdown().start();
+        shutdownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
+
+            @Override
+            public void operationComplete(BaseFuture future) throws Exception {
+                TomP2pDHT.this.peer.shutdown().addListener(new BaseFutureAdapter<BaseFuture>() {
+
+                    @Override
+                    public void operationComplete(BaseFuture future) throws Exception {
+                        TomP2pDHT.this.logger.info("DHT has shut down.");
+                    }
+                });
+            }
+        });
+    }
+
     //BELOW STATIC UTILITY FUNCTIONS (Mostly conversion functions for meta <-> tomp2p entities)
     //TODO Move to utility class ?
-
     /**
      * Utility function to convert a MetHash to a Number160 used by TomP2p lib.
      *

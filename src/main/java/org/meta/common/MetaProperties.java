@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +19,7 @@ public class MetaProperties {
 
     private static final String DEFAULT_PROPERTY_PATH = "conf/jmeta.prop";
     private static Map<String, Properties> properties;
+    private static final Logger logger = LoggerFactory.getLogger(MetaProperties.class);
 
     static {
         properties = new HashMap<String, Properties>();
@@ -40,10 +41,10 @@ public class MetaProperties {
             properties.put(propertiesPath, newProperties);
             return true;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MetaProperties.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("property file not found", ex);
             return false;
         } catch (IOException ex) {
-            Logger.getLogger(MetaProperties.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Io exception", ex);
             return false;
         }
     }

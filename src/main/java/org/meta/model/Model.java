@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import kyotocabinet.DB;
 import org.bson.BSON;
 import org.bson.BSONObject;
@@ -40,6 +40,7 @@ public class Model {
 
     private static Model instance;
     private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
+    private static final Logger logger = LoggerFactory.getLogger(Model.class);
     DB kyotoDB;
     ModelFactory factory;
 
@@ -68,7 +69,7 @@ public class Model {
             try {
                 instance = new Model();
             } catch (ModelException ex) {
-                Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(null, ex);
                 return null;
             }
         }
@@ -90,6 +91,10 @@ public class Model {
      */
     private void initDataBase() throws ModelException {
         String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
+        File databaseDir = new File(databaseFile).getParentFile();
+        if (!databaseDir.isDirectory()) {
+            databaseDir.mkdir();
+        }
         kyotoDB = new DB();
         if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET)) {
             throw new ModelException("Unable to start kyoto cabinet with database file : " + databaseFile);
@@ -317,7 +322,7 @@ public class Model {
         try {
             ret = load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
         return ret;
     }

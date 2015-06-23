@@ -17,7 +17,7 @@ import com.mongodb.util.ObjectSerializer;
 public class SingletonWebServiceReader extends Thread {
 
     private HashMap<String, AbstractPluginWebServiceControler> mapPlugins = null;
-    private Server     server     = null;
+    private            Server                    server       = null;
     private static     SingletonWebServiceReader instance     = null;
 
     private SingletonWebServiceReader() {
@@ -80,4 +80,13 @@ public class SingletonWebServiceReader extends Thread {
         return json_serializer.serialize(list);
     }
 
+    public void kill(){
+         try {
+            if(server != null)
+                server.stop();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

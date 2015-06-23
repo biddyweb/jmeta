@@ -62,12 +62,14 @@ public class Controler {
         MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
         tcpReader = SingletonTCPReader.getInstance();
         tcpReader.initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
-        webServiceReader.start();
+
+        webServiceReader = SingletonWebServiceReader.getInstance();
         pluginInitialisation();
     }
 
     public void stop() {
-        SingletonTCPReader.getInstance().kill();
+        tcpReader.kill();
+        webServiceReader.kill();
     }
 
     /**

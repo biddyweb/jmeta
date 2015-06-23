@@ -49,9 +49,11 @@ public class SingletonTCPReader {
             try {
                 socket = new ServerSocket(port);
                 while (work) {
-                    Socket client = socket.accept();
-                    AskHandlerThread discussWith = new AskHandlerThread(client);
-                    discussWith.start();
+                    Socket client = !socket.isClosed() ? socket.accept() : null;
+                    if(client != null){
+                        AskHandlerThread discussWith = new AskHandlerThread(client);
+                        discussWith.start();
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,7 +87,8 @@ public class SingletonTCPReader {
 
     public void kill() {
         try {
-            socket.close();
+            if(socket != null)
+                socket.close();
         } catch (IOException ex) {
             Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
         }

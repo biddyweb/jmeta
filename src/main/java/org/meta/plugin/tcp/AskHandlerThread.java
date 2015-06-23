@@ -17,8 +17,8 @@ import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
  */
 public class AskHandlerThread extends Thread{
 
-    private Socket         client    = null;
-    private SingletonTCPReader     reader = SingletonTCPReader.getInstance();
+    private Socket client = null;
+    private SingletonTCPReader reader = SingletonTCPReader.getInstance();
 
     public AskHandlerThread(Socket client){
         this.client = client;
@@ -45,9 +45,9 @@ public class AskHandlerThread extends Thread{
             //Get the _command parameter from the amp command
             //If not null, it means we speak the same langage, if not
             //do nothing
-              if(    parser.getCommand() != null    &&
-                  parser.getPlugin()  != null
-            ){
+            if(parser.getCommand() != null &&
+                  parser.getPlugin() != null
+            ) {
                 AbstractCommand command = this.reader.getCommand(
                         parser.getPlugin(),
                         parser.getCommand());
@@ -76,5 +76,4 @@ public class AskHandlerThread extends Thread{
                 }
         }
     }
-
 }

@@ -15,7 +15,7 @@
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.meta.dht;
+package org.meta.configuration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Properties;
 import org.meta.common.Identity;
 import org.meta.common.MetamphetUtils;
+import org.meta.dht.MetaPeer;
 
 /**
  * Class holding general configuration entries for the DHT.
@@ -235,5 +236,4 @@ public class DHTConfiguration {
     public void setIdentity(Identity identity) {
         this.identity = identity;
     }
-
 }

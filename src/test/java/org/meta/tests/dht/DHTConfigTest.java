@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.dht.DHTConfiguration;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.MetaPeer;
 
 /**

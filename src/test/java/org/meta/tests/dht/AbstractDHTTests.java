@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
-import org.meta.dht.DHTConfiguration;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.tomp2p.TomP2pDHT;
 

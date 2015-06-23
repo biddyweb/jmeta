@@ -8,7 +8,7 @@ import org.meta.common.MetaProperties;
 
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;
-import org.meta.dht.DHTConfiguration;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;

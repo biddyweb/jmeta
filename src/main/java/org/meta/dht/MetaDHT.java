@@ -17,6 +17,7 @@
  */
 package org.meta.dht;
 
+import org.meta.configuration.DHTConfiguration;
 import java.io.IOException;
 import org.meta.common.MetHash;
 import org.meta.dht.tomp2p.TomP2pDHT;

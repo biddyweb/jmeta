@@ -27,7 +27,7 @@ import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.builder.AnnounceBuilder;
 import net.tomp2p.peers.PeerAddress;
 import org.meta.dht.BootstrapOperation;
-import org.meta.dht.DHTConfiguration;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.MetaPeer;
 
 /**

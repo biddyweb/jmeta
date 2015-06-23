@@ -31,7 +31,7 @@ import net.tomp2p.peers.Number160;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.dht.BootstrapOperation;
-import org.meta.dht.DHTConfiguration;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.FindPeersOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;

@@ -98,7 +98,7 @@ public class ModelTest {
             List<MetaProperty> props = Collections.singletonList(prop);
             MetHash metadataHash = MetamphetUtils.makeSHAHash("metadataHash");
             MetaData metaData = model.getFactory().getMetaData(metadataHash, Collections.singletonList((Data) dataMetaData), props);
-            Search search = model.getFactory().getSearch(hash, source, Collections.singletonList(metaData));
+            Search search = model.getFactory().getSearch(hash, source, metaData);
             Assert.assertTrue("1 model.set should be true!", model.set(search));
 
             ((DataString) search.getSource()).setString("newSourceData");
@@ -140,8 +140,6 @@ public class ModelTest {
                     metaDataHash,
                     linkedData,
                     properties);
-            List<MetaData> results = new ArrayList<MetaData>();
-            results.add(metaData);
 
             // -- MetaData source
             MetHash data2Hash = MetamphetUtils.makeSHAHash("hashData2");
@@ -151,7 +149,7 @@ public class ModelTest {
 
             // -- Search
             MetHash searchHash = MetamphetUtils.makeSHAHash("hashSearch");
-            Search search = model.getFactory().getSearch(searchHash, data2, results);
+            Search search = model.getFactory().getSearch(searchHash, data2, metaData);
 
             /**
              * *****************************************************************

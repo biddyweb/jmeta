@@ -65,7 +65,7 @@ public abstract class DHTOperation {
      */
     public DHTOperation() {
         this.state = OperationState.INIT;
-        this.listeners = new ArrayList<OperationListener<? extends DHTOperation>>();
+        this.listeners = new ArrayList<>();
     }
 
     /**
@@ -94,7 +94,8 @@ public abstract class DHTOperation {
     public abstract void finish();
 
     /**
-     * Cancel the operation and notifies the listeners the operation was canceled.
+     * Cancel the operation and notifies the listeners the operation was
+     * canceled.
      */
     public void cancel() {
         if (this.hasFinished()) {
@@ -109,8 +110,8 @@ public abstract class DHTOperation {
     }
 
     /**
-     * Add a listener to listen to this operation events. If the operation already finished, notify the listener
-     * immediately.
+     * Add a listener to listen to this operation events. If the operation
+     * already finished, notify the listener immediately.
      *
      * @param listener The listener to add to the list.
      *
@@ -163,9 +164,10 @@ public abstract class DHTOperation {
         }
         synchronized (lock) {
             this.setFailedMessage(reason);
-            this.notifyListeners();
-            return this;
+            this.state = OperationState.FAILED;
         }
+        this.notifyListeners();
+        return this;
     }
 
     /**
@@ -189,7 +191,8 @@ public abstract class DHTOperation {
     }
 
     /**
-     * @return true if the operation completed (even if it failed), false otherwise.
+     * @return true if the operation completed (even if it failed), false
+     * otherwise.
      */
     public boolean hasFinished() {
         synchronized (lock) {
@@ -199,7 +202,8 @@ public abstract class DHTOperation {
     }
 
     /**
-     * @return true if operation succeeded, false if there was an error or a false response.
+     * @return true if operation succeeded, false if there was an error or a
+     * false response.
      */
     public boolean isSuccess() {
         synchronized (lock) {
@@ -226,7 +230,8 @@ public abstract class DHTOperation {
     }
 
     /**
-     * Set the failed message based on the given Throwable.
+     * Set the failed message based on the given Throwable. Should be called
+     * from a synchronized block!
      *
      * @param t The Throwable.
      */
@@ -242,19 +247,20 @@ public abstract class DHTOperation {
     }
 
     /**
-     * Notify the listeners in case an event occurred (completion, cancellation, ...)
+     * Notify the listeners in case an event occurred (completion, cancellation,
+     * ...)
      */
     protected void notifyListeners() {
-        synchronized (lock) {
-            for (OperationListener l : listeners) {
-                if (this.isSuccess()) {
-                    l.complete(this);
-                } else {
-                    l.failed(this);
-                }
+        for (OperationListener l : listeners) {
+            if (this.isSuccess()) {
+                l.complete(this);
+            } else {
+                l.failed(this);
             }
-            this.listeners.clear();
-            lock.notifyAll();
+        }
+        this.listeners.clear();
+        synchronized (lock) {
+            this.lock.notifyAll();
         }
     }
 

@@ -8,11 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import kyotocabinet.DB;
 import org.bson.BSON;
-import org.bson.BSONDecoder;
-import org.bson.BSONEncoder;
 import org.bson.BSONObject;
-import org.bson.BasicBSONDecoder;
-import org.bson.BasicBSONEncoder;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 import org.meta.common.MetaProperties;
@@ -301,19 +297,14 @@ public class Model {
             IllegalAccessException {
         Search search = (Search) searchable;
         //load the source from her hash
-        MetHash hash = new MetHash(bsonObject.get("source").toString());
-        Searchable source = load(hash.toByteArray());
-        List<MetaData> results = new ArrayList<MetaData>();
-        BasicBSONList bsonResultsList = (BasicBSONList) bsonObject.get("results");
-        for (String key : bsonResultsList.keySet()) {
-            hash = new MetHash(bsonResultsList.get(key).toString());
-            Searchable result = load(hash.toByteArray());
-            if (result != null) {
-                results.add((MetaData) result);
-            }
-        }
+        MetHash    hashSource = new MetHash(bsonObject.get("source").toString());
+        Searchable source     = load(hashSource.toByteArray());
+        //load results
+        MetHash    hashResult = new MetHash(bsonObject.get("result").toString());
+        MetaData   result     = (MetaData) load(hashResult.toByteArray());
+        //update search
         search.setSource(source);
-        search.setResults(results);
+        search.setResult(result);
     }
 
     /**
@@ -438,11 +429,10 @@ public class Model {
         if (search.getSource().getState() != Searchable.ObjectState.UP_TO_DATE) {
             status = status && this.set(search.getSource(), false);
         }
-        for (MetaData metaData : search.getResults()) {
-            if (metaData.getState() != Searchable.ObjectState.UP_TO_DATE) {
-                status = status && this.set(metaData, false);
-            }
+        if (search.getResult().getState() != Searchable.ObjectState.UP_TO_DATE) {
+            status = status && this.set(search.getResult(), false);
         }
+        
         return status;
     }
 

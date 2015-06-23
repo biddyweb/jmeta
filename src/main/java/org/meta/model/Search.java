@@ -1,13 +1,7 @@
 package org.meta.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
-
 import org.bson.BSONObject;
-import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 
 /*
@@ -35,14 +29,13 @@ import org.meta.common.MetHash;
 public class Search extends Searchable {
 
     private Searchable source = null;
-    private List<MetaData> results = null;
+    private MetaData   result = null;
 
-    private String tmpSourceHashes = null;
-    private List<String> tmpResultsHashes = null;
+    private String tmpSourceHash  = null;
+    private String tmpResultHash = null;
 
     protected Search() {
         super();
-        results = new ArrayList<MetaData>();
     }
 
     /**
@@ -50,16 +43,16 @@ public class Search extends Searchable {
      *
      * @param hash this search hash
      * @param source search's source
-     * @param results search's results
+     * @param result search's results
      */
     public Search(
             MetHash hash,
             Searchable source,
-            List<MetaData> results
+            MetaData result
     ) {
         super(hash);
         this.setSource(source);
-        this.setResults(results);
+        this.setResult(result);
     }
 
     /**
@@ -85,28 +78,16 @@ public class Search extends Searchable {
      *
      * @return return the list of results
      */
-    public List<MetaData> getResults() {
-        return Collections.unmodifiableList(results);
+    public MetaData getResult() {
+        return result;
     }
-
-    /**
-     *
-     * @param metaDatas Results to add to the search's results.
-     */
-    public void addResults(MetaData ...metaDatas) {
-        for (MetaData metaData : metaDatas) {
-            this.results.add(metaData);
-        }
-        this.updateState();
-    }
-
     /**
      * set the list of results
      *
-     * @param results
+     * @param result
      */
-    public void setResults(List<MetaData> results) {
-        this.results = results;
+    public void setResult(MetaData result) {
+        this.result = result;
         this.updateState();
         //TODO make the hash hehre only if source and results are sets
     }
@@ -117,26 +98,16 @@ public class Search extends Searchable {
      */
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
-        bsonObject.put("source", source.getHash().toString());
-        BasicBSONList bsonResultsList = new BasicBSONList();
-        for (int i = 0; i < results.size(); i++) {
-            MetaData metaData = results.get(i);
-            bsonResultsList.put(i, metaData.getHash().toString());
-        }
-        bsonObject.put("results", bsonResultsList);
+        bsonObject.put("source", this.source.getHash().toString());
+        bsonObject.put("result", this.result.getHash().toString());
         return bsonObject;
     }
 
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         //write hash source
-        fragment.put("_source", source.getHash().toByteArray());
-        //write every hash results
-        fragment.put("_nbMetaData", (results.size() + "").getBytes());
-        for (int i = 0; i < results.size(); i++) {
-            MetaData metaData = results.get(i);
-            fragment.put("_i" + i + "_metaData_" + i, metaData.getHash().toByteArray());
-        }
+        fragment.put("_source",   source.getHash().toByteArray());
+        fragment.put("_metaData", result.getHash().toByteArray());
 
     }
 
@@ -144,43 +115,33 @@ public class Search extends Searchable {
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a Search, her state is no more a real
         //Search but a temporary search, it means, it only represent what's
-        //over the network, so source = null ans result = null
+        //over the network, so source = null and result = null
         source = null;
-        results = null;
+        result = null;
         //and the Search cannot be write or updated in database
 
         //extract the source and delete from the fragment
-        tmpSourceHashes = new String(fragment.get("_source"));
+        tmpSourceHash = new String(fragment.get("_source"));
         fragment.remove("_source");
 
-        //extract all metaDatas and delete it from the fragment too
-        int nbMetaData = Integer.parseInt(new String(fragment.get("_nbMetaData")));
-        tmpResultsHashes = new ArrayList<String>();
-        for (int i = 0; i < nbMetaData; i++) {
-            String metaData = new String(fragment.get("_i" + i + "_metaData_" + 0));
-            fragment.remove("_i" + i + "_metaData");
-            tmpResultsHashes.add(metaData);
-        }
+        //extract the metada and delete from fragment
+        tmpResultHash = "";
+        tmpResultHash = new String(fragment.get("_metaData"));
     }
 
     public String getTmpSourceHashes() {
-        return tmpSourceHashes;
+        return tmpSourceHash;
     }
 
-    public List<String> getTmpResultsHashes() {
-        return tmpResultsHashes;
+    public String getTmpResultsHashes() {
+        return tmpResultHash;
     }
 
     @Override
     public Searchable toOnlyTextData() {
         Search searchClone = new Search();
         searchClone.setSource(source.toOnlyTextData());
-        ArrayList<MetaData> resultsClone = new ArrayList<MetaData>();
-        for (Iterator<MetaData> i = results.iterator(); i.hasNext();) {
-            MetaData metaData =  i.next();
-            resultsClone.add((MetaData) metaData.toOnlyTextData());
-        }
-        searchClone.setResults(resultsClone);
+        searchClone.setResult((MetaData) result.toOnlyTextData());
         return searchClone;
     }
 }

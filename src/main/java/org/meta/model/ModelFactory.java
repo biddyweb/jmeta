@@ -69,12 +69,12 @@ public class ModelFactory {
      *
      * @return The fully-initialized search
      */
-    public Search getSearch(MetHash hash, Searchable source, List<MetaData> results) {
+    public Search getSearch(MetHash hash, Searchable source, MetaData result) {
         Search search = this.getSearch();
 
         search.setHash(hash);
         search.setSource(source);
-        search.setResults(results);
+        search.setResult(result);
         return search;
     }
 

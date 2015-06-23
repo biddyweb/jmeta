@@ -90,6 +90,10 @@ public class Model {
      */
     private void initDataBase() throws ModelException {
         String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
+        File databaseDir = new File(databaseFile).getParentFile();
+        if (!databaseDir.isDirectory()) {
+            databaseDir.mkdir();
+        }
         kyotoDB = new DB();
         if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET)) {
             throw new ModelException("Unable to start kyoto cabinet with database file : " + databaseFile);

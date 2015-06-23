@@ -43,7 +43,7 @@ public class SingletonTCPReader {
     private static final Logger logger = LoggerFactory.getLogger(SingletonTCPReader.class);
 
     //The thead routine.
-    private Runnable listenerRunnable = new Runnable() {
+    private final Runnable listenerRunnable = new Runnable() {
         @Override
         public void run() {
             try {
@@ -53,9 +53,13 @@ public class SingletonTCPReader {
                     AskHandlerThread discussWith = new AskHandlerThread(client);
                     discussWith.start();
                 }
-                
             } catch (IOException e) {
-                e.printStackTrace();
+                if (work == true) {
+                    //TODO Handle correcty this error
+                    logger.error("Socket error.", e);
+                } else {
+                    logger.info("Tcp thread exiting");
+                }
             }
         }
     };
@@ -80,21 +84,19 @@ public class SingletonTCPReader {
         if (plugin != null) {
             command = plugin.getCommand(commandName);
         }
-
         return command;
     }
 
     public void kill() {
         work = false;
         try {
-            this.listenerThread.join();
-        } catch (InterruptedException ex) {
-            logger.error(null, ex);
+            this.socket.close();
+        } catch (IOException ex) {
+            //No-op here, ex will occur but this is what we want to do.
         }
         try {
-            if(socket != null)
-                socket.close();
-        } catch (IOException ex) {
+            this.listenerThread.join();
+        } catch (InterruptedException ex) {
             logger.error(null, ex);
         }
     }

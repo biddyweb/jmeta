@@ -39,7 +39,6 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     private TomP2pDHT dht;
     private Collection<MetaPeer> knownPeers;
     private boolean broadcast;
-    private Tomp2pFutureDiscoverListener discoverListener;
     private Tomp2pFutureBootstrapListener bootstrapListener;
 
     /**
@@ -56,31 +55,33 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         if (this.knownPeers == null) {
             this.knownPeers = new ArrayList<MetaPeer>();
         }
-        if (this.knownPeers.isEmpty()) {
-            this.broadcast = true; //force broadcast if empty known peers...
-        }
+        this.bootstrapListener = new Tomp2pFutureBootstrapListener(broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
     }
 
     @Override
     public void start() {
-        int nbOperations = broadcast ? 1 + this.knownPeers.size() : this.knownPeers.size();
-        discoverListener = new Tomp2pFutureDiscoverListener(this.knownPeers.size());
-        this.bootstrapListener = new Tomp2pFutureBootstrapListener(this, nbOperations);
-        this.state = OperationState.WAITING;
+        this.setState(OperationState.WAITING);
+        PeerAddress localAddr = this.dht.getPeerDHT().peer().peerAddress();
 
-        for (MetaPeer peer : knownPeers) {
-            //Start the discovery operation
-            logger.debug("Starting discovery to peer : {0}", peer);
-            this.dht.getPeerDHT().peer().discover().inetAddress(peer.getAddress()).ports(peer.getPort())
-                    .start().addListener(discoverListener);
+        if (dht.getConfiguration().isDhtLocalOnly()) {
+            logger.info("Bootstraping dht in local-only mode.");
+            //If local network only, do no discover first
+            this.startBootstrap();
         }
-        if (broadcast) {
-            logger.debug("Broadcasting to find peers.");
-            AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
-            announceBuilder.port(DHTConfiguration.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
-            //this.dht.getPeerDHT().peer().bootstrap().broadcast().setPorts(DHTConfiguration.DEFAULT_DHT_PORT)
-               //     .start().addListener(this.bootstrapListener);
-        }
+        this.dht.getPeerDHT().peer().discover().inetAddress(localAddr.inetAddress()).ports(localAddr.udpPort())
+                .start().addListener(new BaseFutureAdapter<FutureDiscover>() {
+
+                    @Override
+                    public void operationComplete(FutureDiscover future) throws Exception {
+                        if (future.isFailed()) {
+                            logger.error("Failed to discover our public address.");
+                            Tomp2pBootstrapOperation.this.discoveryFailed();
+                            return;
+                        }
+                        logger.debug("Discovery finished! Our peer public address: {0}", future.peerAddress());
+                        Tomp2pBootstrapOperation.this.startBootstrap();
+                    }
+                });
     }
 
     @Override
@@ -99,19 +100,29 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             }
         }
         if (this.bootstrapTo.isEmpty()) {
-            //Consider an empty bootstrap list as a failure...
-            this.setState(OperationState.FAILED);
-        } else {
-            this.setState(OperationState.COMPLETE);
+            logger.warn("DHT bootstrap fail. Waiting for friends to come :)");
+            //Do not consider an empty bootstrap list a failure, if we are alone in the world
+            // we will just wait for someone to come!
         }
+        this.setState(OperationState.COMPLETE);
         this.notifyListeners();
     }
 
     /**
-     * Called by the Discovery listener once operation has finished successfully. Start the actual bootstraping here.
+     * Called by the Discovery listener once operation has finished successfully
+     * or if it is not needed.
+     *
+     * The actual bootstrap starts here.
      */
-    private void discoveryFinished() {
+    private void startBootstrap() {
+        if (broadcast) {
+            logger.debug("Broadcasting to find peers.");
+            AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
+            announceBuilder.port(DHTConfiguration.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
+        }
         for (MetaPeer peer : knownPeers) {
+            //Start the discovery operation
+            logger.debug("Starting bootstrap to peer : {0}", peer);
             this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
                     .start().addListener(this.bootstrapListener);
         }
@@ -120,73 +131,34 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     /**
      * Called by the Discovery listener if the operation failed.
      *
-     * Mark this operation as failed and notify listeners...
+     * If this operation failed we cannot continue so we notify listeners and
+     * exit...
      */
     private void discoveryFailed() {
-        this.state = OperationState.FAILED;
-        this.notifyListeners();
+        this.setFailed("Discovery operation failed");
     }
 
     /**
-     * Nested class implementation for the Tomp2p discover future operation listener.
-     *
-     * If the discovery operation succeeded, launch the bootstrap operation on the newly found address, otherwise try
-     * the original address.
-     */
-    private class Tomp2pFutureDiscoverListener extends net.tomp2p.futures.BaseFutureAdapter<FutureDiscover> {
-
-        private Boolean succeeddedOnce;
-        private int nbOperations;
-
-        public Tomp2pFutureDiscoverListener(final int nbOperations) {
-            this.nbOperations = nbOperations;
-            this.succeeddedOnce = false;
-        }
-
-        @Override
-        public void operationComplete(FutureDiscover future) throws Exception {
-            nbOperations--;
-            if (succeeddedOnce) {
-                return;
-            } else {
-                if (future.isSuccess()) {
-                    succeeddedOnce = true;
-                    logger.debug("DISCOVERY SUCCESS");
-                    Tomp2pBootstrapOperation.this.discoveryFinished();
-                } else if (future.isFailed()) {
-                    logger.debug("DISCOVERY FAILURE");
-                }
-                if (nbOperations == 0 && !succeeddedOnce) {
-                    Tomp2pBootstrapOperation.this.discoveryFailed();
-                }
-            }
-        }
-    }
-
-    /**
-     * Nested class implementation for the Tomp2p bootstrap future operation listener.
+     * Nested class implementation for the Tomp2p bootstrap future operation
+     * listener.
      *
      * Bridge between tomp2p future and our async operation.
      *
-     * Wait for all tomp2p operations (we might bootstrap to several peers or also broadcast) to finish before notifying
-     * our operation.
+     * Wait for all tomp2p operations (we might bootstrap to several peers or
+     * also broadcast) to finish before notifying our operation.
      */
     private class Tomp2pFutureBootstrapListener extends BaseFutureAdapter<FutureBootstrap> {
 
-        /**
-         * The target operation to notify when all is done.
-         */
-        private Tomp2pBootstrapOperation targetOperation;
-        private int nbOperations;
-        private Collection<FutureBootstrap> operations;
+        private final int nbOperations;
+        private final Collection<FutureBootstrap> operations;
 
         /**
-         * Initializes the listener and specify the number of operations to wait for before notifying.
+         * Initializes the listener and specify the number of operations to wait
+         * for before notifying.
          */
-        public Tomp2pFutureBootstrapListener(Tomp2pBootstrapOperation targetOperation, int nbOperations) {
-            this.targetOperation = targetOperation;
+        public Tomp2pFutureBootstrapListener(int nbOperations) {
             this.nbOperations = nbOperations;
-            this.operations = new ArrayList<FutureBootstrap>();
+            this.operations = new ArrayList<>();
         }
 
         @Override
@@ -194,7 +166,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             synchronized (this) { //We might be called from multiple threads.
                 this.operations.add(future);
                 if (this.operations.size() == this.nbOperations) {
-                    this.targetOperation.finish();
+                    Tomp2pBootstrapOperation.this.finish();
                 }
             }
         }

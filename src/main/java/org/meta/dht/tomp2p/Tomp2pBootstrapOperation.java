@@ -19,8 +19,8 @@ package org.meta.dht.tomp2p;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDiscover;
@@ -35,7 +35,7 @@ import org.meta.dht.MetaPeer;
  */
 public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
-    private static final Logger logger = Logger.getLogger(Tomp2pBootstrapOperation.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(Tomp2pBootstrapOperation.class);
     private TomP2pDHT dht;
     private Collection<MetaPeer> knownPeers;
     private boolean broadcast;
@@ -70,12 +70,12 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
         for (MetaPeer peer : knownPeers) {
             //Start the discovery operation
-            logger.log(Level.WARNING, "Starting discovery to peer : {0}", peer);
+            logger.debug("Starting discovery to peer : {0}", peer);
             this.dht.getPeerDHT().peer().discover().inetAddress(peer.getAddress()).ports(peer.getPort())
                     .start().addListener(discoverListener);
         }
         if (broadcast) {
-            logger.log(Level.WARNING, "Broadcasting to find peers.");
+            logger.debug("Broadcasting to find peers.");
             AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
             announceBuilder.port(DHTConfiguration.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
             //this.dht.getPeerDHT().peer().bootstrap().broadcast().setPorts(DHTConfiguration.DEFAULT_DHT_PORT)
@@ -87,7 +87,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     public void finish() {
         for (FutureBootstrap bootstrapFuture : this.bootstrapListener.getOperations()) {
             if (bootstrapFuture.isFailed()) {
-                logger.log(Level.WARNING, "BootstrapFuture failure : {0}", bootstrapFuture.failedReason());
+                logger.debug("BootstrapFuture failure : {0}", bootstrapFuture.failedReason());
                 continue;
             }
             for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
@@ -95,7 +95,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
                 peer.setAddress(addr.inetAddress());
                 peer.setPort((short) addr.udpPort());
                 this.bootstrapTo.add(peer);
-                logger.log(Level.WARNING, "DHT bootstraped to a peer! {0}", peer.toString());
+                logger.debug("DHT bootstraped to a peer! {0}", peer.toString());
             }
         }
         if (this.bootstrapTo.isEmpty()) {
@@ -151,10 +151,10 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             } else {
                 if (future.isSuccess()) {
                     succeeddedOnce = true;
-                    logger.log(Level.WARNING, "DISCOVERY SUCCESS");
+                    logger.debug("DISCOVERY SUCCESS");
                     Tomp2pBootstrapOperation.this.discoveryFinished();
                 } else if (future.isFailed()) {
-                    logger.log(Level.WARNING, "DISCOVERY FAILURE");
+                    logger.debug("DISCOVERY FAILURE");
                 }
                 if (nbOperations == 0 && !succeeddedOnce) {
                     Tomp2pBootstrapOperation.this.discoveryFailed();

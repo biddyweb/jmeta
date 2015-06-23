@@ -1,13 +1,12 @@
 package org.meta.controler;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.meta.common.MetHash;
 import org.meta.common.MetaProperties;
 import org.meta.model.Model;
@@ -48,7 +47,7 @@ public class Controler {
     private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
     private SingletonWebServiceReader webServiceReader = null;
     private SingletonTCPReader tcpReader = null;
-
+    private static final Logger logger = LoggerFactory.getLogger(Controler.class);
     /**
      *
      * @throws LibraryException
@@ -75,6 +74,7 @@ public class Controler {
      * TODO add custom class loader
      */
     private void pluginInitialisation() {
+        logger.debug("Controler: entering pluginInitialisation");
         lstPluginsNames = new ArrayList<String>();
         mapTCPControler = new HashMap<String, AbstractPluginTCPControler>();
         mapWebServiceControler = new HashMap<String, AbstractPluginWebServiceControler>();

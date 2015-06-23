@@ -18,8 +18,8 @@
 package org.meta.dht.tomp2p;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.tomp2p.dht.PutBuilder;
 import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
@@ -37,7 +37,7 @@ public class TomP2pStoreOperation extends StoreOperation {
 
     private TomP2pDHT dht;
     private Number160 hash;
-
+    private static final Logger logger = LoggerFactory.getLogger(TomP2pStoreOperation.class);
     /**
      * Create the bootstrap operation with given arguments.
      *
@@ -51,6 +51,7 @@ public class TomP2pStoreOperation extends StoreOperation {
 
     @Override
     public void start() {
+        logger.debug("Entering TomP2pStoreOperation method start");
         try {
             PutBuilder putBuilder;
             putBuilder = new PutBuilder(this.dht.getPeerDHT(), hash);
@@ -73,7 +74,7 @@ public class TomP2pStoreOperation extends StoreOperation {
                 }
             });
         } catch (IOException ex) {
-            Logger.getLogger(TomP2pStoreOperation.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 

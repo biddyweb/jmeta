@@ -7,8 +7,8 @@ package org.meta.model;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,6 +20,7 @@ public class InstancePool<T extends Searchable> {
 
     private static final int MIN_INSTANCES = 10;
     private static final int MAX_INSTANCES = 100000;
+    private static final Logger logger = LoggerFactory.getLogger(InstancePool.class);
 
     Class<T> clazz;
     private Queue<T> instances;
@@ -34,9 +35,9 @@ public class InstancePool<T extends Searchable> {
             try {
                 instances.add(clazz.newInstance());
             } catch (InstantiationException ex) {
-                Logger.getLogger(InstancePool.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(null, ex);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(InstancePool.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(null, ex);
             }
         }
     }

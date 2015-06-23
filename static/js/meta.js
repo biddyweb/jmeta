@@ -63,7 +63,11 @@ MetaJs.prototype.rebindLinkClicks = function(){
 
 MetaJs.prototype.loadPlugin = function(plugin, e){
     e.preventDefault();
-    alert(plugin.pluginName);
+    var main = $("#main");
+    main.html("");
+    var divContainerFluid = $("<div class='container-fluid'></div>");
+    main.append(divContainerFluid);
+    plugin.loadInto(divContainerFluid);
 }
 
 // This function is call when DOM is ready

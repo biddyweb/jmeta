@@ -59,7 +59,6 @@ public class Controler {
             throws IOException,
             URISyntaxException {
         this.model = Model.getInstance();
-        MetHash identity = new MetHash("0xAFC467DB"); //Arbitrary hash for our identity
         tcpReader = SingletonTCPReader.getInstance();
         tcpReader.initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
 

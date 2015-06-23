@@ -39,6 +39,7 @@ MetaJs.prototype.handleJsonFragmentResponse = function(i, item){
  */
 MetaJs.prototype.drawPlugins = function(){
     $.each(this.pluginList, this.drawPlugin.bind(this));
+    this.rebindLinkClicks();
 }
 
 /*
@@ -46,10 +47,23 @@ MetaJs.prototype.drawPlugins = function(){
  */
 MetaJs.prototype.drawPlugin = function(i, item){
     var str = $('<li role="presentation">'
-            + '<a href="#" tabindex="-1" role="menuitem">'
+            + '<a href="#" tabindex="-1" role="menuitem" class="pluginLink">'
             + item.pluginName
             + '</a></li>');
     $("#navBar").append(str);
+}
+MetaJs.prototype.rebindLinkClicks = function(){
+    var pluginlinks = $(".pluginLink");
+    for(var i=0; i<pluginlinks.length;i++){
+        var plugin = this.pluginList[i];
+        var link   = $(pluginlinks[i]);
+        link.click(this.loadPlugin.bind(this, plugin));
+    }
+}
+
+MetaJs.prototype.loadPlugin = function(plugin, e){
+    e.preventDefault();
+    alert(plugin.pluginName);
 }
 
 // This function is call when DOM is ready

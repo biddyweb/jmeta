@@ -18,37 +18,29 @@
 package org.meta.tests.dht;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.Assert;
-import org.junit.BeforeClass;
+import junit.framework.TestCase;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
-import org.meta.common.MetaProperties;
 import org.meta.common.MetamphetUtils;
 import org.meta.dht.DHTConfiguration;
 import org.meta.dht.MetaDHT;
-import org.meta.dht.MetaPeer;
 import org.meta.dht.tomp2p.TomP2pDHT;
 
 /**
  *
  * @author nico
  */
-public abstract class AbstractDHTTests {
+public abstract class AbstractDHTTests extends TestCase {
 
-    public static short DHT1_PORT = 15000;
-    public static short DHT2_PORT = 15001;
-    public static String DHT1_CONFIG = "127.0.0.1:" + DHT1_PORT;
-    public static String DHT2_CONFIG = "127.0.0.2:" + DHT2_PORT;
-    public static Boolean DHT1_BROADCAST = false;
-    public static Boolean DHT2_BROADCAST = false;
+    public static final short DHT1_PORT = 15000;
+    public static final short DHT2_PORT = 15001;
+    public static final String DHT1_CONFIG = "0.0.0.0:" + DHT1_PORT;
+    public static final String DHT2_CONFIG = "0.0.0.0:" + DHT2_PORT;
+    public static final Boolean DHT1_BROADCAST = false;
+    public static final Boolean DHT2_BROADCAST = false;
 
     protected static MetaDHT dht1;
     protected static MetaDHT dht2;
@@ -58,17 +50,19 @@ public abstract class AbstractDHTTests {
     protected static MetHash validHash = new MetHash(42);
     protected static MetHash invalidHash = new MetHash(43);
 
-    @BeforeClass
-    public static void setupDhtNodes() {
+    @Override
+    public void setUp() {
+        Logger.getLogger(AbstractDHTTests.class.getCanonicalName()).log(Level.INFO, "Creating tests dht nodes...");
         setupDht1();
         setupDht2();
+        Logger.getLogger(AbstractDHTTests.class.getCanonicalName()).log(Level.INFO, "Tests dht nodes Created.");
     }
 
     public static void setupDht1() {
         try {
             dht1 = new TomP2pDHT();
             //Hard-coded configuration
-            configurationDht1 = new DHTConfiguration(new Identity(MetamphetUtils.makeSHAHash("Peer1")), DHT1_PORT, DHTConfiguration.peersFromString(DHT2_CONFIG), DHT1_BROADCAST);
+            configurationDht1 = new DHTConfiguration(new Identity(MetamphetUtils.makeSHAHash("Peer1")), DHT1_PORT, DHTConfiguration.peersFromString(DHT2_CONFIG), DHT1_BROADCAST, true);
             dht1.start(configurationDht1);
         } catch (IOException ex) {
             Logger.getLogger(AbstractDHTTests.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,12 +74,18 @@ public abstract class AbstractDHTTests {
         try {
             dht2 = new TomP2pDHT();
             //Hard-coded configuration
-            configurationDht2 = new DHTConfiguration(new Identity(MetamphetUtils.makeSHAHash("Peer2")), DHT2_PORT, DHTConfiguration.peersFromString(DHT1_CONFIG), DHT2_BROADCAST);
+            configurationDht2 = new DHTConfiguration(new Identity(MetamphetUtils.makeSHAHash("Peer2")), DHT2_PORT, DHTConfiguration.peersFromString(DHT1_CONFIG), DHT2_BROADCAST, true);
             dht2.start(configurationDht2);
         } catch (IOException ex) {
             Logger.getLogger(AbstractDHTTests.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         }
+    }
+
+    @Override
+    public void tearDown() {
+        dht1.stop();
+        dht2.stop();
     }
 
 }

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.meta.plugin.AbstractPluginTCPControler;
 
 
@@ -40,6 +40,7 @@ public class SingletonTCPReader {
     private Thread listenerThread = null;
     private HashMap<String, AbstractPluginTCPControler> mapPlugin = null;
     private static SingletonTCPReader instance = new SingletonTCPReader();
+    private static final Logger logger = LoggerFactory.getLogger(SingletonTCPReader.class);
 
     //The thead routine.
     private Runnable listenerRunnable = new Runnable() {
@@ -88,13 +89,13 @@ public class SingletonTCPReader {
         try {
             this.listenerThread.join();
         } catch (InterruptedException ex) {
-            Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
         try {
             if(socket != null)
                 socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(SingletonTCPReader.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 

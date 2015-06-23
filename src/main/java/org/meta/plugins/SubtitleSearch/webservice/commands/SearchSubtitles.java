@@ -21,7 +21,6 @@ import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
-import org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWebServiceControler;
 
 public class SearchSubtitles extends AbstractWebService{
 
@@ -65,10 +64,8 @@ public class SearchSubtitles extends AbstractWebService{
                 //instanciate a new MetaData st:<choosen language>
                 ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
                 properties.add(new MetaProperty("st", "fr"));
-                MetaData st = factory.getMetaData();
-                st.setProperties(properties);
-                ArrayList<MetaData> metaDatas = new ArrayList<MetaData>();
-                metaDatas.add(st);
+                MetaData metaData = factory.getMetaData();
+                metaData.setProperties(properties);
 
                 //instanciate a new DataFile Object
                 DataFile movie = factory.getDataFile();
@@ -78,7 +75,7 @@ public class SearchSubtitles extends AbstractWebService{
                 //the metaData
                 Search subtitleSearch = factory.getSearch();
                 subtitleSearch.setSource(movie);
-                subtitleSearch.setResults(metaDatas);
+                subtitleSearch.setResult(metaData);
 
                 //lookup on the network to find the subtitles
                 super.controler.search(    subtitleSearch.getHash(),
@@ -109,20 +106,16 @@ public class SearchSubtitles extends AbstractWebService{
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
 
-                List<MetaData> metaDatas = search.getResults();
-                for (Iterator<MetaData> j = metaDatas.iterator(); j.hasNext();){
-                    MetaData metaData = j.next();
-
-                    List<Data> linkDatas =    metaData.getLinkedData();
-                    for (Iterator<Data> k = linkDatas.iterator(); k
-                            .hasNext();) {
-                        Data data = (Data) k.next();
-                        //TODO what to do with the output ?
-                        //I think, fill the interface with links, should be good
-                        //an idea is to build a request URL to the next step
-                        //with those links
-                        //data.getHashCode();
-                    }
+                MetaData metaData = search.getResult();
+                List<Data> linkDatas =    metaData.getLinkedData();
+                for (Iterator<Data> k = linkDatas.iterator(); k
+                        .hasNext();) {
+                    Data data = (Data) k.next();
+                    //TODO what to do with the output ?
+                    //I think, fill the interface with links, should be good
+                    //an idea is to build a request URL to the next step
+                    //with those links
+                    //data.getHashCode();
                 }
             }
         }

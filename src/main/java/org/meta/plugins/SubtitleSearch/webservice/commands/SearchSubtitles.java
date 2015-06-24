@@ -37,7 +37,7 @@ public class SearchSubtitles extends AbstractWebService{
         //has a linked button on himself
         column.addChild(new SelfSubmitButton("submitToMe", "Search"));
         initialDescriptor = new InterfaceDescriptor(column);
-        initialTextOutput.append(" ");
+        initialTextOutput.append("");
         //Second descriptor, used to show results
         factory = Model.getInstance().getFactory();
     }

@@ -1,20 +1,6 @@
-package org.meta.plugin;
-
-import java.util.HashMap;
-import java.util.Iterator;
-
-import net.tomp2p.peers.Number160;
-
-import org.meta.common.MetHash;
-import org.meta.controler.P2P.P2PListener;
-import org.meta.model.Model;
-import org.meta.model.Searchable;
-import org.meta.plugin.tcp.AbstractCommand;
-import org.meta.plugin.tcp.SingletonTCPReader;
-
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Thomas LAVOCAT
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -29,6 +15,16 @@ import org.meta.plugin.tcp.SingletonTCPReader;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.plugin;
+
+import java.util.HashMap;
+
+import org.meta.common.MetHash;
+import org.meta.model.Model;
+import org.meta.model.Searchable;
+import org.meta.plugin.tcp.AbstractCommand;
+import org.meta.plugin.tcp.SingletonTCPReader;
+
 /**
  *
  * @author Thomas LAVOCAT
@@ -47,7 +43,7 @@ public abstract class AbstractPluginTCPControler {
     }
 
     /**
-     * Fil the lstCommands with all the needed TCP commands.
+     * Fill the lstCommands with all the needed TCP commands.
      *
      * @param lstCommands2
      */

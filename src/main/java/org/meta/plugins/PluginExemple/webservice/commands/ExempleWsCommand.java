@@ -23,8 +23,8 @@ import org.meta.plugin.webservice.forms.organizers.LineOrganizer;
 public class ExempleWsCommand extends AbstractWebService {
 
     private InterfaceDescriptor descriptor     = null;
-    private TextOutput            output         = null;
-    private int                     nbRefresh    = 0;
+    private TextOutput          output         = null;
+    private int                 nbRefresh      = 0;
 
     public ExempleWsCommand(){
         // Describe a full interface for test
@@ -34,24 +34,30 @@ public class ExempleWsCommand extends AbstractWebService {
         column.addChild(line);
         line.addChild(new TextInput("firstName", "First Name"));
         line.addChild(new TextInput("lastName", "Last Name"));
+        
+        ColumnOrganizer right = new ColumnOrganizer("right");
+        line.addChild(right);
+        right.addChild(new DateInput("dateInscription", "Inscription Date"));
+        right.addChild(new DateInput("dateInscription1", "Inscription Date"));
+        right.addChild(new DateInput("dateInscription2", "Inscription Date"));
 
         ArrayList<Select> buttons = new ArrayList<Select>();
-        buttons.add(new Select("option1", "option1"));
-        buttons.add(new Select("option2", "option2"));
-        buttons.add(new Select("option3", "option3"));
-        column.addChild(new SelectList("list", buttons));
+        buttons.add(new Select("option1", "option 1"));
+        buttons.add(new Select("option2", "option 2"));
+        buttons.add(new Select("option3", "option 3"));
+        column.addChild(new SelectList("select", "select label", buttons));
 
         ArrayList<RadioButton> radio = new ArrayList<RadioButton>();
-        radio.add(new RadioButton("radio1", "radio1"));
-        radio.add(new RadioButton("radio2", "radio2"));
-        radio.add(new RadioButton("radio3", "radio3"));
-        column.addChild(new RadioList("list", radio));
+        radio.add(new RadioButton("radio1", "radio 1"));
+        radio.add(new RadioButton("radio2", "radio 2"));
+        radio.add(new RadioButton("radio3", "radio 3"));
+        column.addChild(new RadioList("RadioList", "Radio list label", radio));
 
         ArrayList<CheckBox> check = new ArrayList<CheckBox>();
-        check.add(new CheckBox("check1", "check1"));
-        check.add(new CheckBox("check2", "check2"));
-        check.add(new CheckBox("check3", "check3"));
-        column.addChild(new CheckBoxLists("list", check));
+        check.add(new CheckBox("check1", "check 1"));
+        check.add(new CheckBox("check2", "check 2"));
+        check.add(new CheckBox("check3", "check 3"));
+        column.addChild(new CheckBoxLists("checklist", "CheckList label", check));
 
         output = new TextOutput("output", "Sortie");
 
@@ -86,8 +92,7 @@ public class ExempleWsCommand extends AbstractWebService {
 
     @Override
     public InterfaceDescriptor getInterface(Map<String, String[]> map) {
-        // TODO Auto-generated method stub
-        return null;
+        return descriptor;
     }
 
     @Override

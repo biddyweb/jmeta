@@ -64,24 +64,25 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         PeerAddress localAddr = this.dht.getPeerDHT().peer().peerAddress();
 
         if (dht.getConfiguration().isDhtLocalOnly()) {
-            logger.info("Bootstraping dht in local-only mode.");
+            logger.debug("Bootstraping dht in local-only mode.");
             //If local network only, do no discover first
             this.startBootstrap();
-        }
-        this.dht.getPeerDHT().peer().discover().inetAddress(localAddr.inetAddress()).ports(localAddr.udpPort())
-                .start().addListener(new BaseFutureAdapter<FutureDiscover>() {
+        } else {
+            this.dht.getPeerDHT().peer().discover().inetAddress(localAddr.inetAddress()).ports(localAddr.udpPort())
+                    .start().addListener(new BaseFutureAdapter<FutureDiscover>() {
 
-                    @Override
-                    public void operationComplete(FutureDiscover future) throws Exception {
-                        if (future.isFailed()) {
-                            logger.error("Failed to discover our public address.");
-                            Tomp2pBootstrapOperation.this.discoveryFailed();
-                            return;
+                        @Override
+                        public void operationComplete(FutureDiscover future) throws Exception {
+                            if (future.isFailed()) {
+                                logger.error("Failed to discover our public address.");
+                                Tomp2pBootstrapOperation.this.discoveryFailed();
+                                return;
+                            }
+                            logger.debug("Discovery finished! Our peer public address: {0}", future.peerAddress());
+                            Tomp2pBootstrapOperation.this.startBootstrap();
                         }
-                        logger.debug("Discovery finished! Our peer public address: {0}", future.peerAddress());
-                        Tomp2pBootstrapOperation.this.startBootstrap();
-                    }
-                });
+                    });
+        }
     }
 
     @Override

@@ -51,13 +51,13 @@ import org.slf4j.LoggerFactory;
  */
 public class TomP2pDHT extends MetaDHT {
 
+    private final Logger logger = LoggerFactory.getLogger(TomP2pDHT.class);
+
     /**
      * The tomp2p peer representing our node.
      */
     private Peer peer;
     private PeerDHT peerDHT;
-
-    private final Logger logger = LoggerFactory.getLogger(TomP2pDHT.class);
 
     /**
      * Empty constructor (should not be called directly)
@@ -66,7 +66,6 @@ public class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     *
      * @return The {@link net.tomp2p.p2p.PeerDHT} representing our node.
      */
     public PeerDHT getPeerDHT() {
@@ -74,8 +73,7 @@ public class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public void start(DHTConfiguration configuration) throws IOException {
-        this.configuration = configuration;
+    public void start() throws IOException {
         this.startAndListen();
     }
 
@@ -90,7 +88,7 @@ public class TomP2pDHT extends MetaDHT {
         peerBuilder.ports(this.configuration.getPort());
         peerBuilder.bindings(b);
         this.peer = peerBuilder.start();
-        RoutingBuilder rb = new RoutingBuilder();
+        //RoutingBuilder rb = new RoutingBuilder();
 
         PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
         this.peerDHT = peerBuilderDHT.start();
@@ -120,6 +118,9 @@ public class TomP2pDHT extends MetaDHT {
 
     @Override
     public void stop() {
+        if (peer == null) {
+            return;
+        }
         FutureDone<Void> shutdownOperation = this.peer.announceShutdown().start();
         shutdownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
 
@@ -129,7 +130,7 @@ public class TomP2pDHT extends MetaDHT {
 
                     @Override
                     public void operationComplete(BaseFuture future) throws Exception {
-                        TomP2pDHT.this.logger.info("DHT has shut down.");
+                        TomP2pDHT.this.logger.info("Meta DHT has shut down.");
                     }
                 });
             }

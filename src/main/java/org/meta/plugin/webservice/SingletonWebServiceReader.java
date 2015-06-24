@@ -12,6 +12,7 @@ import org.meta.plugin.AbstractPluginWebServiceControler;
 
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
+import org.meta.configuration.MetaConfiguration;
 
 
 public class SingletonWebServiceReader extends Thread {
@@ -37,7 +38,7 @@ public class SingletonWebServiceReader extends Thread {
 
     @Override
     public void run() {
-        server = new Server(8080);//TODO add parameter
+        server = new Server(MetaConfiguration.getWSConfiguration().getWsPort());
 
         // serve statics files within 'static' directory
         ResourceHandler resource_handler = new ResourceHandler();

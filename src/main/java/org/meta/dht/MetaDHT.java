@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -43,15 +43,13 @@ public abstract class MetaDHT {
     protected DHTConfiguration configuration;
 
     /**
-     * Initializes the DHT with the given configuration.
+     * Initializes and starts the DHT.
      *
      * Registers our identity and starts listening for peers in the DHT.
      *
-     * @param configuration The {@link DHTConfiguration} holding configuration.
-     *
      * @throws java.io.IOException If an underlying network operation failed.
      */
-    public abstract void start(DHTConfiguration configuration) throws IOException;
+    public abstract void start() throws IOException;
 
     /**
      * Bootstrap the DHT to find nodes.
@@ -82,6 +80,9 @@ public abstract class MetaDHT {
     /**
      * Set the configuration of this DHT instance.
      *
+     * ! Once the DHT is started, re-defining the configuration
+     * will result in undefined behavior !
+     * 
      * @param configuration. The configuration Object.
      */
     public void setConfiguration(DHTConfiguration configuration) {

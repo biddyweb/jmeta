@@ -18,9 +18,10 @@ Command.prototype.fetchInterface = function(){
      var pluginsNames =
          $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
             .done(this.handleJsonResponse.bind(this))
-            .fail(function() {
-                    $('#commands_menu').append("<li>Webservice Error !</li>");
-            });
+            .fail(function(data) {
+                this.div.html("");
+                this.div.append(data["responseText"]);
+            }.bind(this));
 }
 
 Command.prototype.handleJsonResponse = function(data){
@@ -59,7 +60,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                               "' id='"+ data["id"]+"' />"+data["label"]+
                             "</label>");
             break;
-            
+
         case "checkBoxList" :
                  currentHtml =
                          $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
@@ -91,7 +92,6 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                             "</label>");
             break;
 
-            
         case "radioList" :
                  currentHtml =
                          $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
@@ -113,7 +113,6 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                 data = parentData;
             break;
 
-        //TODO SELECT
         case "selectList" :
                 currentHtml =
                          $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
@@ -123,7 +122,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                                  + "' id='"+ data["id"]+"'></select>");
                 divGroup.append(currentHtml);
                 divGroup = currentHtml;
-                
+
                 var boxes = data["content"];
                 var parentData = data;
                 for(var i=0; i<boxes.length; i++){

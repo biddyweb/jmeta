@@ -46,7 +46,7 @@ MetaJs.prototype.drawPlugins = function(){
  * draw a plugin pointed by his index
  */
 MetaJs.prototype.drawPlugin = function(i, item){
-    var str = $('<li role="presentation">'
+    var str = $('<li role="presentation" class="plugins" id="'+item.pluginName+'">'
             + '<a href="#" tabindex="-1" role="menuitem" class="pluginLink">'
             + item.pluginName
             + '</a></li>');
@@ -68,6 +68,9 @@ MetaJs.prototype.loadPlugin = function(plugin, e){
     var divContainerFluid = $("<div class='container-fluid'></div>");
     main.append(divContainerFluid);
     plugin.loadInto(divContainerFluid);
+
+    $("li.plugins").each(function(i, item){$(item).removeClass("active")});
+    $("#"+plugin.pluginName).toggleClass("active");
 }
 
 // This function is call when DOM is ready

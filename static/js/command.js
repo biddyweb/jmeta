@@ -40,44 +40,119 @@ Command.prototype.process = function(){
     this.fetchInterface();
 }
 Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
-    var divGroup = $("<div class='form-group'>");
+    var divGroup = $("<div class='form-group col-sm col-sm-"+colsm+"'>");
     parentHtml.append(divGroup);
     parentHtml = divGroup;
     var type        = data["type"];
     var currentHtml = null;
+    if(data["value"]===undefined)
+        data["value"]="";
     //write html
     switch(type){
 
         case "checkBox" :
-                currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='checkbox' name='"+ data["id"]+ "' value='"+
-                        data["value"]+ "' id='"+ data["id"]+ "' />");
+                currentHtml = $(
+                            "<div class='checkbox'>"+
+                            "<label>"+
+                              "<input type='checkbox' name='"+
+                              data["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
+            break;
+            
+        case "checkBoxList" :
+                 currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                    divGroup.append(currentHtml);
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    currentHtml = $(
+                            "<div class='checkbox'>"+
+                            "<label>"+
+                              "<input type='checkbox' name='"+
+                              parentData["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
             break;
 
-        case "radioButton" :
-                currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='radio' name='"+ data["id"]+ "' value='"+
-                        data["value"]+ "' id='"+ data["id"]+ "' />");
+        case "radio" :
+                currentHtml = $(
+                            "<div class='radio>"+
+                            "<label>"+
+                              "<input type='radio' name='"+
+                              data["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
             break;
 
-            //TODO SELECT
-            //TODO CheckBoxList
-            //TODO radiobutton list
+            
+        case "radioList" :
+                 currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                    divGroup.append(currentHtml);
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    currentHtml = $(
+                            "<div class='radio'>"+
+                            "<label>"+
+                              "<input type='radio' name='"+
+                              parentData["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
+            break;
+
+        //TODO SELECT
+        case "selectList" :
+                currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                divGroup.append(currentHtml);
+                currentHtml =
+                         $("<select class='form-control' name='"+ data["id"]
+                                 + "' id='"+ data["id"]+"'></select>");
+                divGroup.append(currentHtml);
+                divGroup = currentHtml;
+                
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    currentHtml = $(
+                              "<option>"+data["label"]+"</option>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
+            break;
 
         case "DateInput" :
                 currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='date' name='"+ data["id"]+ "' value='"+
+                        "<input class='form-control' type='date' name='"+
+                         data["id"]+ "' value='"+
                         data["value"]+ "' id='"+ data["id"]+ "' />");
             break;
 
         case "TextInput" :
                 currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='text' name='"+ data["id"]+ "' value='"+
+                        "<input class='form-control' type='text' name='"+
+                         data["id"]+ "' value='"+
                         data["value"]+ "' id='"+ data["id"]+ "' />");
             break;
 
         case "TextOutput" :
-                currentHtml = $("<h3>"+data["label"]+"</h3><p>"+data["message"]+"</p>");
+                if(data["message"]!=="")
+                    currentHtml = $("<h3>"+data["label"]+"</h3><p>"+data["message"]+"</p>");
             break;
 
         case "Column" :
@@ -89,12 +164,12 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                     }
                 }
             break;
-
-        case "Line" :
+        case "Line":
                 currentHtml = $("<div class='col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
-                    var colSm = content.lenth < 12 ? content.length / 12 : 1;
+                    console.log(content.length)
+                    var colSm = content.length < 12 ? 12 / content.length : 1;
                     for(var i=0; i<content.length; i++){
                         this.decodeJsonToHtml(content[i],currentHtml,colSm);
                     }
@@ -102,7 +177,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                 }
             break;
         case "selfSubmitButton" :
-                 currentHtml = $("<input type='submit' name='"+ data["id"]
+                 currentHtml = $("<input class='btn btn-default' type='submit' name='"+ data["id"]
                          + "' value='"+
                         data["label"]+ "' id='"+ data["id"]+ "' />");
             break;

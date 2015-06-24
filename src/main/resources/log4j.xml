@@ -9,8 +9,16 @@
     </layout>
   </appender>
 
+  <logger name="org.meta">
+    <level value="debug" />
+    <appender-ref ref="console" />
+  </logger>
+  <logger name="net.tomp2p">
+    <level value="warn" />
+    <appender-ref ref="console" />
+  </logger>
   <root>
-    <priority value ="debug" />
+    <priority value ="warn" />
     <appender-ref ref="console" />
   </root>
 

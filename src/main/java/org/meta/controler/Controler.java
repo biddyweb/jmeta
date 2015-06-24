@@ -1,4 +1,5 @@
 package org.meta.controler;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -48,15 +49,18 @@ public class Controler {
     private SingletonWebServiceReader webServiceReader = null;
     private SingletonTCPReader tcpReader = null;
     private static final Logger logger = LoggerFactory.getLogger(Controler.class);
+
     /**
      *
      * @throws LibraryException
      * @throws IOException
+     * @throws org.meta.model.exceptions.ModelException
      * @throws URISyntaxException
      */
     public Controler()
             throws IOException,
-            URISyntaxException {
+            URISyntaxException,
+            ModelException {
         this.model = Model.getInstance();
         tcpReader = SingletonTCPReader.getInstance();
         tcpReader.start();
@@ -87,7 +91,7 @@ public class Controler {
             if (key.contains(".name")) {
                 //plugin founded
                 lstPluginsNames.add(pluginsProperties.getProperty(key));
-                   //load TCP class
+                //load TCP class
                 String strTCPClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".TCPClass");
                 //load web service class
                 String strWSClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".WSClass");

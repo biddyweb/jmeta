@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,18 +19,25 @@ import org.meta.model.MetaProperty;
 import org.meta.model.Model;
 import org.meta.model.Search;
 import org.meta.model.exceptions.ModelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModelTest {
 
     protected static Model model;
     protected static Long startTime;
     protected static Long endTime;
-    private static final Logger LOGGER = Logger.getLogger(ModelTest.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ModelTest.class);
 
     @BeforeClass
     public static void setUp() {
         startTime = new Date().getTime();
-        model = Model.getInstance();
+        try {
+            model = Model.getInstance();
+        } catch (ModelException ex) {
+            logger.error(null, ex);
+            Assert.fail();
+        }
         endTime = new Date().getTime();
         System.out.println("Took : " + (endTime - startTime) + "ms to instanciate model");
     }
@@ -45,7 +51,7 @@ public class ModelTest {
             Assert.assertNotNull(model.get(hash));
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
-            LOGGER.log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 
@@ -62,7 +68,7 @@ public class ModelTest {
             Assert.assertEquals("newData", dataFromDb.getString());
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
-            LOGGER.log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 
@@ -199,7 +205,7 @@ public class ModelTest {
             Assert.assertTrue(model.remove(readMetaData));
             Assert.assertTrue(model.remove(readData));
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 

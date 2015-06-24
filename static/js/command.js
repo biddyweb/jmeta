@@ -15,25 +15,46 @@ Command.prototype.plugin       = null;
 Command.prototype.div          = null;
 Command.prototype.processHtml  = null;
 Command.prototype.toCommand    = null;
+Command.prototype.timer        = null;
+
+Command.prototype.startRetrievingUpdate = function(){
+    this.timer = window.setInterval(this.retrieveUpdate.bind(this), 500);
+}
+Command.prototype.stopTimer = function(){
+    window.clearInterval(this.timer);
+}
 
 Command.prototype.fetchInterface = function(){
      var pluginsNames =
          $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
-            .done(this.handleJsonResponse.bind(this))
+            .done(this.handleJsonResponse.bind(this, false))
+            .fail(function(data) {
+                this.div.html("");
+                this.div.append(data["responseText"]);
+            }.bind(this));
+}
+Command.prototype.retrieveUpdate = function(){
+     var parameter = $("#formCommand").serialize();
+     var pluginsNames =
+         $.getJSON('retrieveUpdate/'+this.plugin.pluginName+'/'+this.commandName+
+                 '?'+parameter)
+            .done(this.handleJsonResponse.bind(this, false))
             .fail(function(data) {
                 this.div.html("");
                 this.div.append(data["responseText"]);
             }.bind(this));
 }
 
-Command.prototype.handleJsonResponse = function(data){
-    this.processHtml = $("<form></form>");
+Command.prototype.handleJsonResponse = function(launchTimer, data){
+    this.processHtml = $("<form id='formCommand'></form>");
     this.processHtml.submit(this.submit.bind(this));
-    var tempHtml = $("<input type='hidden' name='idCommand' value='"+data["idCommand"]+"' />");
+    var tempHtml = $("<input type='hidden' id='idCommand' name='idCommand' value='"+data["idCommand"]+"' />");
     this.processHtml.append(tempHtml);
     truc = data;
     this.decodeJsonToHtml(data, this.processHtml);
     this.draw();
+    if(launchTimer)
+        this.startRetrievingUpdate();
 }
 
 Command.prototype.draw = function(){
@@ -73,7 +94,6 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                 for(var i=0; i<boxes.length; i++){
                     data = boxes[i];
                     var checked = data["checked"] ? "checked=checked" : "";
-                    console.log(checked);
                     currentHtml = $(
                             "<div class='checkbox'>"+
                             "<label>"+
@@ -174,7 +194,6 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                 currentHtml = $("<div class='col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
-                    console.log(content.length)
                     var colSm = content.length < 12 ? 12 / content.length : 1;
                     for(var i=0; i<content.length; i++){
                         this.decodeJsonToHtml(content[i],currentHtml,colSm);
@@ -183,7 +202,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                 }
             break;
 
-        case "selfsubmitbutton" :
+        case "selfSubmitButton" :
                  currentHtml = $("<input class='btn btn-default' type='submit' name='"+ data["id"]
                          + "' value='"+
                         data["label"]+ "' id='"+ data["id"]+ "' />");
@@ -206,10 +225,12 @@ Command.prototype.submit = function (e){
     e.preventDefault();
     //if another destination, terminate instance on server
     if(this.toCommand !== this.commandName){
+        this.stopTimer();
         var parameter = $(e.target).serialize();
         $.ajax({
             url: "terminate/"+this.plugin.pluginName+"/"+this.commandName+"?"+parameter
         });
+        $("#idCommand").val("");
     }
     var parameter = $(e.target).serialize();
     $.ajax({

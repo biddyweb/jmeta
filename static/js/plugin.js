@@ -57,13 +57,21 @@ Plugin.prototype.displayCommand = function(command, e){
     command.process();
 }
 Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
-    vla = this.objCommandlst
-    console.log(strCommand);
     var objCommand = this.objCommandlst[strCommand];
     this.switchTo(objCommand);
-    objCommand.handleJsonResponse(data);
+    objCommand.handleJsonResponse(true, data);
 }
 Plugin.prototype.switchTo = function(command){
+    this.killAllCommandsTimer();
     $("li.navcommand").each(function(i, item){$(item).removeClass("active")});
     $("#"+command.commandName).toggleClass("active");
+}
+Plugin.prototype.killAllCommandsTimer = function(){
+    //kill al commands timer
+    console.log(this.objCommandlst);
+    for(var i=0; i<this.commandList.length; i++){
+        var command = this.objCommandlst[this.commandList[i]];
+        if(command !== undefined)
+            command.stopTimer();
+    }
 }

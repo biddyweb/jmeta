@@ -6,6 +6,7 @@
 var MetaJs = function(){
     this.pluginList = new Array(0);
     this.fetchPlugins();
+    $.ajaxSetup({ cache: false });
 }
 
 //Attributes
@@ -63,6 +64,10 @@ MetaJs.prototype.rebindLinkClicks = function(){
 
 MetaJs.prototype.loadPlugin = function(plugin, e){
     e.preventDefault();
+    //in case of plugin change, kill all the timers
+    for(var i=0; i<this.pluginList.length; i++)
+        if(this.pluginList[i] !== undefined)
+            this.pluginList[i].killAllCommandsTimer();
     var main = $("#main");
     main.html("");
     var divContainerFluid = $("<div class='container-fluid'></div>");

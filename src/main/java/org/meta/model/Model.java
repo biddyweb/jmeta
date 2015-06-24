@@ -11,7 +11,7 @@ import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
-import org.meta.common.MetaProperties;
+import org.meta.configuration.MetaProperties;
 import org.meta.model.exceptions.ModelException;
 
 /*

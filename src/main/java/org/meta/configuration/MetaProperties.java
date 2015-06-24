@@ -1,4 +1,4 @@
-package org.meta.common;
+package org.meta.configuration;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -5,12 +5,15 @@
  *********************************************************************************/
 var Plugin = function (pluginName){
     this.pluginName   = pluginName;
-    this.commandList = new Array(0);
+    this.commandList  = new Array(0);
+    this.objCommandlst= {};
 
     this.fetchCommands();
 }
-Plugin.prototype.commandList = null;
-Plugin.prototype.pluginName  = null;
+Plugin.prototype.commandList    = null;
+Plugin.prototype.pluginName     = null;
+Plugin.prototype.objCommandlst  = null;
+
 
 Plugin.prototype.fetchCommands = function(){
      var pluginsNames = $.getJSON('interface/'+this.pluginName)
@@ -42,15 +45,25 @@ Plugin.prototype.loadInto = function(div){
                 + command
                 + '</a></li>');
         liRole.append(linkCom);
-        var command = new Command(command, this, divDisplay);
-        linkCom.click(this.displayCommand.bind(this, command));
+        var objCommand = new Command(command, this, divDisplay);
+        this.objCommandlst[command] = objCommand;
+        linkCom.click(this.displayCommand.bind(this, objCommand));
         if(i==0)
             linkCom.click();
     }
 }
 Plugin.prototype.displayCommand = function(command, e){
-    $("li.navcommand").each(function(i, item){$(item).removeClass("active")});
-    $("#"+command.commandName).toggleClass("active");
+    this.switchTo(command);
     command.process();
 }
-
+Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
+    vla = this.objCommandlst
+    console.log(strCommand);
+    var objCommand = this.objCommandlst[strCommand];
+    this.switchTo(objCommand);
+    objCommand.handleJsonResponse(data);
+}
+Plugin.prototype.switchTo = function(command){
+    $("li.navcommand").each(function(i, item){$(item).removeClass("active")});
+    $("#"+command.commandName).toggleClass("active");
+}

@@ -1,7 +1,9 @@
 package org.meta.plugins.PluginExemple.webservice.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.BasicBSONObject;
@@ -19,47 +21,25 @@ import org.meta.plugin.webservice.forms.fields.select.Select;
 import org.meta.plugin.webservice.forms.fields.select.SelectList;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.organizers.LineOrganizer;
+import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.meta.plugin.webservice.forms.submit.SubmitToButton;
 
 public class ExempleWsCommand extends AbstractWebService {
 
     private InterfaceDescriptor descriptor     = null;
     private TextOutput          output         = null;
     private int                 nbRefresh      = 0;
+	private DateInput birthDate;
 
     public ExempleWsCommand(){
         // Describe a full interface for test
         ColumnOrganizer column         = new ColumnOrganizer("column1");
-        column.addChild(new DateInput("birthDate", "Birth Date"));
-        LineOrganizer     line         = new LineOrganizer("ligne1");
-        column.addChild(line);
-        line.addChild(new TextInput("firstName", "First Name"));
-        line.addChild(new TextInput("lastName", "Last Name"));
-        
-        ColumnOrganizer right = new ColumnOrganizer("right");
-        line.addChild(right);
-        right.addChild(new DateInput("dateInscription", "Inscription Date"));
-        right.addChild(new DateInput("dateInscription1", "Inscription Date"));
-        right.addChild(new DateInput("dateInscription2", "Inscription Date"));
-
-        ArrayList<Select> buttons = new ArrayList<Select>();
-        buttons.add(new Select("option1", "option 1"));
-        buttons.add(new Select("option2", "option 2"));
-        buttons.add(new Select("option3", "option 3"));
-        column.addChild(new SelectList("select", "select label", buttons));
-
-        ArrayList<RadioButton> radio = new ArrayList<RadioButton>();
-        radio.add(new RadioButton("radio1", "radio 1"));
-        radio.add(new RadioButton("radio2", "radio 2"));
-        radio.add(new RadioButton("radio3", "radio 3"));
-        column.addChild(new RadioList("RadioList", "Radio list label", radio));
-
-        ArrayList<CheckBox> check = new ArrayList<CheckBox>();
-        check.add(new CheckBox("check1", "check 1"));
-        check.add(new CheckBox("check2", "check 2"));
-        check.add(new CheckBox("check3", "check 3"));
-        column.addChild(new CheckBoxLists("checklist", "CheckList label", check));
-
+        birthDate = new DateInput("birthDate", "Birth Date");
+        column.addChild(birthDate);
+        column.addChild(new SelfSubmitButton("submit", "submit form to me"));
+        column.addChild(new SubmitToButton("submitTo", "submit to an oth", "secondExample"));
         output = new TextOutput("output", "Sortie");
+        output.append("message");
 
         column.addChild(output);
         descriptor = new InterfaceDescriptor(column);
@@ -69,7 +49,8 @@ public class ExempleWsCommand extends AbstractWebService {
     @Override
     public InterfaceDescriptor execute(Map<String, String[]> map) {
         output.flush();
-        output.append("Your sended parameters are :");
+        birthDate.setValue(getParameter(birthDate.getId(), map));
+                output.append("Your sended parameters are :");
         for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
             String key = (String) i.next();
             output.append(" - "+key+" : "+map.get(key));

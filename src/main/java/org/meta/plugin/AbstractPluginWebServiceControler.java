@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
@@ -47,13 +48,14 @@ public abstract class AbstractPluginWebServiceControler {
 
     protected Model model = null;
     private SingletonWebServiceReader reader = null;
-    protected HashMap<String, Class<? extends AbstractWebService>> lstCommands = null;
+    protected LinkedHashMap<String, Class<? extends AbstractWebService>> 
+                                                            lstCommands = null;
     protected AbstractPluginTCPControler tcpControler = null;
     protected String pluginName = null;
 
     public AbstractPluginWebServiceControler() {
         reader = SingletonWebServiceReader.getInstance();
-        lstCommands = new HashMap<String, Class<? extends AbstractWebService>>();
+        lstCommands = new LinkedHashMap<String, Class<? extends AbstractWebService>>();
     }
 
     /**
@@ -80,7 +82,8 @@ public abstract class AbstractPluginWebServiceControler {
      *
      * @param lstCommands2
      */
-    protected abstract void registercommands(HashMap<String, Class<? extends AbstractWebService>> commands);
+    protected abstract void registercommands(
+    		LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
 
     public void setTcpControler(AbstractPluginTCPControler tcpControler) {
         this.tcpControler = tcpControler;

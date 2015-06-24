@@ -1,9 +1,7 @@
 package org.meta.plugins.PluginExemple.webservice.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.bson.BasicBSONObject;
@@ -11,16 +9,8 @@ import org.meta.model.Searchable;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.DateInput;
-import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
-import org.meta.plugin.webservice.forms.fields.checkbox.CheckBox;
-import org.meta.plugin.webservice.forms.fields.checkbox.CheckBoxLists;
-import org.meta.plugin.webservice.forms.fields.radio.RadioButton;
-import org.meta.plugin.webservice.forms.fields.radio.RadioList;
-import org.meta.plugin.webservice.forms.fields.select.Select;
-import org.meta.plugin.webservice.forms.fields.select.SelectList;
 import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
-import org.meta.plugin.webservice.forms.organizers.LineOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 import org.meta.plugin.webservice.forms.submit.SubmitToButton;
 

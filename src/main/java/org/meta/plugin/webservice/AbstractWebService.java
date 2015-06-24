@@ -38,6 +38,16 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
     public void kill() {
         controler = null;
     }
-
-
+    
+    public String[] getParameters(String name, Map<String, String[]> map){
+        return map.get(name);
+    }
+    
+    public String getParameter(String name, Map<String, String[]> map){
+        String parameter = null;
+        String[] parameters = getParameters(name, map);
+        if(parameters != null && parameters.length > 0)
+            parameter = parameters[0];
+        return parameter;
+    }
 }

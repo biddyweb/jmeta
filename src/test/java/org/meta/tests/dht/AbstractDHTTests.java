@@ -26,20 +26,21 @@ import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
 import org.meta.configuration.DHTConfiguration;
+import org.meta.dht.BootstrapOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
+import org.meta.dht.OperationListener;
 import org.meta.tests.MetaBaseTests;
 
 /**
  *
- * @author nico
  */
 public abstract class AbstractDHTTests extends MetaBaseTests {
 
     public static final short DHT1_PORT = 15000;
     public static final short DHT2_PORT = 15001;
-    public static final String DHT1_CONFIG = "0.0.0.0:" + DHT1_PORT;
-    public static final String DHT2_CONFIG = "0.0.0.0:" + DHT2_PORT;
+    public static final String DHT1_CONFIG = "127.0.0.1:" + DHT1_PORT;
+    public static final String DHT2_CONFIG = "127.0.0.1:" + DHT2_PORT;
     public static final Boolean DHT1_BROADCAST = false;
     public static final Boolean DHT2_BROADCAST = false;
 
@@ -53,6 +54,7 @@ public abstract class AbstractDHTTests extends MetaBaseTests {
 
     @Override
     public void setUp() {
+        super.setUp();
         Logger.getLogger(AbstractDHTTests.class.getCanonicalName()).log(Level.INFO, "Creating tests dht nodes...");
         setupDht1();
         setupDht2();
@@ -110,4 +112,23 @@ public abstract class AbstractDHTTests extends MetaBaseTests {
         dht2.stop();
     }
 
+    public void bootstrapDht(MetaDHT dht, final Boolean assertIfEmpty) {
+        BootstrapOperation bootstrapOperation = dht.bootstrap();
+
+        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
+
+            @Override
+            public void failed(BootstrapOperation operation) {
+
+            }
+
+            @Override
+            public void complete(BootstrapOperation operation) {
+                if (assertIfEmpty && operation.getBootstrapTo().isEmpty()) {
+                    org.junit.Assert.fail("Bootstrap operation failed during store test.");
+                }
+            }
+        });
+        bootstrapOperation.awaitUninterruptibly();
+    }
 }

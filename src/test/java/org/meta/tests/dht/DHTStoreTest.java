@@ -19,9 +19,15 @@ package org.meta.tests.dht;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 import org.meta.dht.BootstrapOperation;
+import org.meta.dht.FindPeersOperation;
+import org.meta.dht.MetaDHT;
+import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 import org.meta.dht.StoreOperation;
+import static org.meta.tests.dht.AbstractDHTTests.validHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DHTStoreTest extends AbstractDHTTests {
 
-    private static final Logger logger= LoggerFactory.getLogger(DHTStoreTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(DHTStoreTest.class);
 
     /**
      * Test the store process in the DHT.
@@ -38,52 +44,61 @@ public class DHTStoreTest extends AbstractDHTTests {
     @Test
     public void testSimpleStore() {
 
-        dht1.setConfiguration(configurationDht1); //Reset valid configuration
-        BootstrapOperation bootstrapOperation = dht1.bootstrap();
-
-        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
-
-            @Override
-            public void failed(BootstrapOperation operation) {
-                Assert.fail("Bootstrap operation failed during store test.");
-            }
-
-            @Override
-            public void complete(BootstrapOperation operation) {
-            }
-        });
-        bootstrapOperation.awaitUninterruptibly();
+        this.bootstrapDht(dht1, false);
+        this.bootstrapDht(dht2, true);
 
         StoreOperation storeOperation = dht1.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
             @Override
             public void failed(StoreOperation operation) {
-                logger.error("Store operation failed.");
-                Assert.fail("Store operation failed.");
+                logger.error("DHT1 Store operation failed.");
+                Assert.fail("DHT1 Store operation failed.");
             }
 
             @Override
             public void complete(StoreOperation operation) {
-                System.out.println("Store operation success!");
-                logger.info("Store operation success!");
+                logger.info("DHT1 Store operation success!");
             }
         });
+
         storeOperation.awaitUninterruptibly();
 
-//        FindPeersOperation findPeersOperation = dht1.findPeers(validHash);
-//        findPeersOperation.addListener(new OperationListener<FindPeersOperation>() {
+//        storeOperation = dht2.store(validHash);
+//        storeOperation.addListener(new OperationListener<StoreOperation>() {
 //
 //            @Override
-//            public void failed(FindPeersOperation operation) {
-//                Logger.getLogger(DHTStoreTests.class.getName()).log(Level.SEVERE, "Find peers operation failed");
+//            public void failed(StoreOperation operation) {
+//                logger.error("DHT2 Store operation failed.");
+//                Assert.fail("DHT2  Store operation failed.");
 //            }
 //
 //            @Override
-//            public void complete(FindPeersOperation operation) {
-//                Logger.getLogger(DHTStoreTests.class.getName()).log(Level.INFO, "Find peer operation success!");
+//            public void complete(StoreOperation operation) {
+//                logger.info("DHT2 Store operation success!");
 //            }
 //        });
-//        findPeersOperation.awaitUninterruptibly();
+//
+//        storeOperation.awaitUninterruptibly();
+
+        FindPeersOperation findPeersOperation = dht2.findPeers(validHash);
+        findPeersOperation.addListener(new OperationListener<FindPeersOperation>() {
+
+            @Override
+            public void failed(FindPeersOperation operation) {
+                logger.error("Find peers operation failed" + validHash);
+                Assert.fail("Find peers operation failed for key: " + validHash);
+            }
+
+            @Override
+            public void complete(FindPeersOperation operation) {
+                logger.info("Find peer operation success!");
+                for (MetaPeer peer : operation.getPeers()) {
+                    //Assert.assertEquals("Stored and retrieved values are different!", peer.getID().toString());
+                    logger.debug("Got peer = " + peer.toString());
+                }
+            }
+        });
+        findPeersOperation.awaitUninterruptibly();
     }
 }

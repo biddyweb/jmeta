@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 package org.meta.dht.tomp2p;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.tomp2p.dht.PutBuilder;
@@ -25,7 +26,6 @@ import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
-import org.meta.common.MetHash;
 import org.meta.dht.StoreOperation;
 
 /**
@@ -38,6 +38,7 @@ public class TomP2pStoreOperation extends StoreOperation {
     private TomP2pDHT dht;
     private Number160 hash;
     private static final Logger logger = LoggerFactory.getLogger(TomP2pStoreOperation.class);
+
     /**
      * Create the bootstrap operation with given arguments.
      *
@@ -51,11 +52,12 @@ public class TomP2pStoreOperation extends StoreOperation {
 
     @Override
     public void start() {
-        logger.debug("Entering TomP2pStoreOperation method start");
         try {
-            PutBuilder putBuilder;
-            putBuilder = new PutBuilder(this.dht.getPeerDHT(), hash);
-            putBuilder.data(new Data("test data")).start().addListener(new BaseFutureListener<BaseFuture>() {
+            logger.debug("Entering TomP2pStoreOperation method start");
+            PutBuilder putBuilder = new PutBuilder(this.dht.getPeerDHT(), hash);
+            Object data = this.dht.getPeerDHT().peerAddress().peerSocketAddress();
+
+            putBuilder.data(new Data(data)).start().addListener(new BaseFutureListener<BaseFuture>() {
 
                 @Override
                 public void operationComplete(BaseFuture future) throws Exception {
@@ -66,7 +68,7 @@ public class TomP2pStoreOperation extends StoreOperation {
                     }
                     TomP2pStoreOperation.this.finish();
                 }
-
+                
                 @Override
                 public void exceptionCaught(Throwable t) throws Exception {
                     TomP2pStoreOperation.this.setState(OperationState.FAILED);
@@ -74,7 +76,7 @@ public class TomP2pStoreOperation extends StoreOperation {
                 }
             });
         } catch (IOException ex) {
-            logger.error(null, ex);
+            java.util.logging.Logger.getLogger(TomP2pStoreOperation.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

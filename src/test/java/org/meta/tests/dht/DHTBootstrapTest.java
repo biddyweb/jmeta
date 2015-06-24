@@ -45,6 +45,7 @@ public class DHTBootstrapTest extends AbstractDHTTests {
                     bootstrapOperation.getFailureMessage());
             Assert.fail("Bootstrap operation failed.");
         } else if (bootstrapOperation.isSuccess()) {
+            //TODO check that the peer we boostraped to is DHT2!
             for (MetaPeer peer : bootstrapOperation.getBootstrapTo()) {
                 System.out.println("Bootstraped to : " + peer);
             }

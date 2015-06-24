@@ -104,7 +104,11 @@ public class TomP2pDHT extends MetaDHT {
 
     @Override
     public FindPeersOperation findPeers(MetHash hash) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Number160 contentHash = TomP2pDHT.toNumber160(hash);
+        TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
+
+        operation.start();
+        return operation;
     }
 
     @Override

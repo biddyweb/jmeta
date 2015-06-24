@@ -17,16 +17,29 @@
  */
 package org.meta.dht.tomp2p;
 
+import java.util.ArrayList;
+import net.tomp2p.dht.FutureGet;
+import net.tomp2p.futures.BaseFutureAdapter;
+import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.peers.PeerSocketAddress;
+import org.meta.common.Identity;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 import org.meta.dht.FindPeersOperation;
+import org.meta.dht.MetaPeer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * Tomp2p implementation of the find peers for hash operation.
  *
  * @author nico
  */
 public class TomP2pFindPeersOperation extends FindPeersOperation {
+
+    private static final Logger logger = LoggerFactory.getLogger(TomP2pFindPeersOperation.class);
 
     private TomP2pDHT dht;
     private Number160 hash;
@@ -38,12 +51,44 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
 
     @Override
     public void start() {
-        //this.dht.getPeer().
+        FutureGet futureGet = this.dht.getPeerDHT().get(this.hash).all().start();
+        futureGet.addListener(new BaseFutureListener<FutureGet>() {
+
+            @Override
+            public void operationComplete(FutureGet getOp) throws Exception {
+                if (getOp.isFailed()) {
+                    logger.debug("Failed to get hash from dht." + getOp.failedReason());
+                    TomP2pFindPeersOperation.this.setFailed("Failed to get hash from dht." + getOp.failedReason());
+                } else if (getOp.isSuccess()) {
+                    PeerSocketAddress data = (PeerSocketAddress) getOp.data().object();
+                    logger.debug("YEAHHH. Got data: " + data);
+                    TomP2pFindPeersOperation.this.peersFromData(data);
+                    TomP2pFindPeersOperation.this.setState(OperationState.COMPLETE);
+                    TomP2pFindPeersOperation.this.finish();
+                }
+            }
+
+            @Override
+            public void exceptionCaught(Throwable t) throws Exception {
+                logger.debug("Tomp2p find peers operation failed", t);
+                TomP2pFindPeersOperation.this.setFailed(t);
+            }
+        });
+    }
+
+    /**
+     * @param data 
+     */
+    private void peersFromData(PeerSocketAddress data) {
+        logger.debug("Initializing peers form received data.");
+        this.peers = new ArrayList<>();
+        //Only for test!!
+        this.peers.add(new MetaPeer(null, data.inetAddress(), (short) data.udpPort()));
     }
 
     @Override
     public void finish() {
-        //  this.d
+        this.notifyListeners();
     }
 
 }

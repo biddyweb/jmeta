@@ -18,7 +18,6 @@
 package org.meta.tests;
 
 import junit.framework.TestCase;
-import org.junit.BeforeClass;
 import org.meta.configuration.AMPConfiguration;
 import org.meta.configuration.DHTConfiguration;
 import org.meta.configuration.MetaConfiguration;

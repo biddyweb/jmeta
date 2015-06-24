@@ -1,10 +1,14 @@
 /**********************************************************************************
  *
  * Command class
- *
+ * @param commandName the command name
+ * @param plugin the plugin name
+ * @param div a div already added somewhere into the dom to write the calculated
+ *        output
  *********************************************************************************/
 var Command = function (commandName, plugin, div){
     this.commandName   = commandName;
+    this.toCommand     = commandName;
     this.plugin        = plugin     ;
     this.div           = div        ;
     this.data          = null;
@@ -13,75 +17,220 @@ Command.prototype.commandName  = null;
 Command.prototype.plugin       = null;
 Command.prototype.div          = null;
 Command.prototype.processHtml  = null;
+Command.prototype.toCommand    = null;
+Command.prototype.timer        = null;
 
+/**
+ * strat a timer to retrieve regular updates on the server (every
+ * 500 harcoded ms)
+ */
+Command.prototype.startRetrievingUpdate = function(){
+    this.timer = window.setInterval(this.retrieveUpdate.bind(this), 500);
+}
+/**
+ * stop the current timer
+ */
+Command.prototype.stopTimer = function(){
+    window.clearInterval(this.timer);
+}
+
+/**
+ * fetch the standard interface as JSON and execute a handleJsonResponse to
+ * do something with it
+ */
 Command.prototype.fetchInterface = function(){
      var pluginsNames =
          $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
-            .done(this.handleJsonResponse.bind(this))
-            .fail(function() {
-                    $('#commands_menu').append("<li>Webservice Error !</li>");
-            });
+            .done(this.handleJsonResponse.bind(this, false))
+            .fail(function(data) {
+                this.div.html("");
+                this.div.append(data["responseText"]);
+            }.bind(this));
+}
+/**
+ * launch a retrieveupdate (called by the timer) to get the last state of the
+ * severside command
+ */
+Command.prototype.retrieveUpdate = function(){
+    //get the main form parameters
+    var parameter = $("#formCommand").serialize();
+    var pluginsNames =
+        $.getJSON('retrieveUpdate/'+this.plugin.pluginName+'/'+this.commandName+
+                '?'+parameter)
+           .done(this.handleJsonResponse.bind(this, false))
+           .fail(function(data) {
+               this.div.html("");
+               this.div.append(data["responseText"]);
+           }.bind(this));
 }
 
-Command.prototype.handleJsonResponse = function(data){
-    this.processHtml = $("<form></form>");
-    var tempHtml = $("<input type='hidden' name='idCommand' value='"+data["idCommand"]+"' />");
+/**
+ * parse a json response and draw the interface
+ * @param launchtimer true if the timer has to be started false otherwise
+ * @param data        data to parse to draw the interface
+ */
+Command.prototype.handleJsonResponse = function(launchTimer, data){
+    //add a form to the main div
+    this.processHtml = $("<form id='formCommand'></form>");
+    //bind is submit to a custom proper submit function
+    this.processHtml.submit(this.submit.bind(this));
+    //add idCommand hidden input wich allow us to make several call to the same command
+    var tempHtml = $("<input type='hidden' id='idCommand' name='idCommand' value='"+data["idCommand"]+"' />");
     this.processHtml.append(tempHtml);
-    truc = data;
+    //decode json
     this.decodeJsonToHtml(data, this.processHtml);
+    //draw that all
     this.draw();
+    //if needed launch the timer
+    if(launchTimer)
+        this.startRetrievingUpdate();
 }
 
+/**
+ * flush the div html output and drawn processHtml in it
+ */
 Command.prototype.draw = function(){
     this.div.html("");
     this.div.append(this.processHtml);
 }
+/**
+ * process -> generally called by the plugin, 
+ * fetch the standard command interface and make a life cycle
+ */
 Command.prototype.process = function(){
     this.fetchInterface();
 }
+/**
+ * decode json to html -> recursive
+ * @param data          a well formated data json object
+ * @param parentHtml    the parent div to draw all that stuff
+ * @param colsm         width (in a bootstrap way) of that stuff
+ */
 Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
-    var divGroup = $("<div class='form-group'>");
+    //for style purposes add a div form group
+    var divGroup = $("<div class='form-group col-sm col-sm-"+colsm+"'>");
     parentHtml.append(divGroup);
     parentHtml = divGroup;
+    //extract the data type (which is usefull for the sitchw case bellow)
     var type        = data["type"];
     var currentHtml = null;
+    //in case of the real common valu undefined, make it value an empty string
+    if(data["value"]===undefined)
+        data["value"]="";
     //write html
     switch(type){
-
+        //if a single checkboc
         case "checkBox" :
-                currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='checkbox' name='"+ data["id"]+ "' value='"+
-                        data["value"]+ "' id='"+ data["id"]+ "' />");
+                currentHtml = $(
+                            "<div class='checkbox'>"+
+                            "<label>"+
+                              "<input type='checkbox' name='"+
+                              data["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
             break;
-
-        case "radioButton" :
-                currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='radio' name='"+ data["id"]+ "' value='"+
-                        data["value"]+ "' id='"+ data["id"]+ "' />");
+        //if a checkbox list, all the contained checkboxes will share the same name
+        //wich is the checkboxlist oject id
+        case "checkBoxList" :
+                 currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                    divGroup.append(currentHtml);
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    var checked = data["checked"] ? "checked=checked" : "";
+                    currentHtml = $(
+                            "<div class='checkbox'>"+
+                            "<label>"+
+                              "<input type='checkbox' name='"+
+                              parentData["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' "+checked+"/>"+data["label"]+
+                            "</label>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
             break;
+        //draw a single radio button, if that is usefull to someone...
+        case "radio" :
+                currentHtml = $(
+                            "<div class='radio>"+
+                            "<label>"+
+                              "<input type='radio' name='"+
+                              data["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' />"+data["label"]+
+                            "</label>");
+            break;
+        //if a radio list, all the contained radio buttons  will share the same name
+        //wich is the radio list oject id
+        case "radioList" :
+                 currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                    divGroup.append(currentHtml);
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    var checked = data["selected"] ? "checked=checked" : "";
+                    currentHtml = $(
+                            "<div class='radio'>"+
+                            "<label>"+
+                              "<input type='radio' name='"+
+                              parentData["id"]+ "' value='"+ data["id"]+
+                              "' id='"+ data["id"]+"' "+checked+" />"+data["label"]+
+                            "</label>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
+            break;
+        //draw a select 
+        case "selectList" :
+                currentHtml =
+                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                divGroup.append(currentHtml);
+                currentHtml =
+                         $("<select class='form-control' name='"+ data["id"]
+                                 + "' id='"+ data["id"]+"'></select>");
+                divGroup.append(currentHtml);
+                divGroup = currentHtml;
 
-            //TODO SELECT
-            //TODO CheckBoxList
-            //TODO radiobutton list
-
+                var boxes = data["content"];
+                var parentData = data;
+                for(var i=0; i<boxes.length; i++){
+                    data = boxes[i];
+                    var checked = data["selected"] ? "selected=selected" : "";
+                    currentHtml = $(
+                              "<option "+checked+"  value='"+ data["id"]+ "'>"+data["label"]+"</option>");
+                    divGroup.append(currentHtml);
+                    currentHtml = "";
+                }
+                data = parentData;
+            break;
+        //draw a date input, quite the same as a textinput in fact
         case "DateInput" :
                 currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='date' name='"+ data["id"]+ "' value='"+
+                        "<input class='form-control' type='date' name='"+
+                         data["id"]+ "' value='"+
                         data["value"]+ "' id='"+ data["id"]+ "' />");
             break;
-
+        //draw a text input
         case "TextInput" :
                 currentHtml = $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>"+
-                        "<input type='text' name='"+ data["id"]+ "' value='"+
+                        "<input class='form-control' type='text' name='"+
+                         data["id"]+ "' value='"+
                         data["value"]+ "' id='"+ data["id"]+ "' />");
             break;
-
+        //draw a simple text output replacing \n to <br />
         case "TextOutput" :
-                currentHtml = $("<h3>"+data["label"]+"</h3><p>"+data["message"]+"</p>");
+                if(data["message"]!=="")
+                    currentHtml = $("<h3>"+data["label"]+"</h3><p>"+data["message"].replace(/\n/g, "<br />")+"</p>");
             break;
-
+        //draw a column object wich is a div who's contain
+        //his children one under another
         case "Column" :
-                currentHtml = $("<div class='col-sm-12'></div>");
+                currentHtml = $("<div class='metaCol col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
                     for(var i=0; i<content.length; i++){
@@ -89,27 +238,75 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
                     }
                 }
             break;
-
-        case "Line" :
-                currentHtml = $("<div class='col-sm-12'></div>");
+        //draw a line object wich is a div who's contain his children side by side
+        case "Line":
+                currentHtml = $("<div class='metaLine col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
-                    var colSm = content.lenth < 12 ? content.length / 12 : 1;
+                    var colSm = content.length < 12 ? 12 / content.length : 1;
                     for(var i=0; i<content.length; i++){
                         this.decodeJsonToHtml(content[i],currentHtml,colSm);
                     }
 
                 }
             break;
+        //draw a self submit button who's allow the user to submit the form to 
+        //himslef
         case "selfSubmitButton" :
-                 currentHtml = $("<input type='submit' name='"+ data["id"]
+                 currentHtml = $("<input class='btn btn-default' type='submit' name='"+ data["id"]
                          + "' value='"+
                         data["label"]+ "' id='"+ data["id"]+ "' />");
             break;
+        //draw a button to submit to another command wich force the user to get 
+        //the result from another command 
+        case "submitToButton" :
+                var destination = data["destination"];
+                 currentHtml = $("<input class='btn btn-default' type='submit' name='"+ data["id"]
+                         + "' value='"+
+                        data["label"]+ "' id='"+ data["id"]+ "' />");
+                 //bind to the button a special click function to force a
+                 //workflow
+                 //toCommand becomme the destination attribute of the destination
+                 currentHtml.click(function(destination, e){
+                    this.toCommand = destination;
+                 }.bind(this, destination));
+            break;
     }
+    //finally add the content to the parent
     parentHtml.append(currentHtml);
-    //if an organizer recursive call
-    
-    //hidden for keeping the same command id
+}
+
+/**
+ * custom submit for the main form
+ * prevent default usage
+ *
+ * if redirected to another command, to have a clean state:
+ *      kill the timer
+ *      terminate the object on server
+ *      remove the id command form hidden input
+ *
+ * execute the form on the right command
+ */
+Command.prototype.submit = function (e){
+    e.preventDefault();
+    //if another destination, terminate instance on server
+    if(this.toCommand !== this.commandName){
+        this.stopTimer();
+        var parameter = $(e.target).serialize();
+        $.ajax({
+            url: "terminate/"+this.plugin.pluginName+"/"+this.commandName+"?"+parameter
+        });
+        $("#idCommand").val("");
+    }
+    var parameter = $(e.target).serialize();
+    //toCommand may point on the same command or another
+    //TODO what if an error ?
+    $.ajax({
+        url: "execute/"+this.plugin.pluginName+"/"+this.toCommand+"?"+parameter
+    }).done(this.plugin.handleCommandJsonResponse.bind(this.plugin, this.toCommand))
+    .fail(function(data) {
+            this.div.html("");
+            this.div.append(data["responseText"]);
+    }.bind(this));
 
 }

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
-import org.meta.plugin.webservice.forms.InterfaceElement;
+import org.meta.plugin.webservice.forms.InterfaceField;
 
-public class CheckBoxLists extends InterfaceElement {
+public class CheckBoxLists extends InterfaceField {
 
     private ArrayList<CheckBox> checkBoxes = null;
 
-    public CheckBoxLists(String id, ArrayList<CheckBox> buttons) {
-        super(id);
+    public CheckBoxLists(String id, String label, ArrayList<CheckBox> buttons) {
+        super(id, label);
         this.checkBoxes = buttons;
     }
 

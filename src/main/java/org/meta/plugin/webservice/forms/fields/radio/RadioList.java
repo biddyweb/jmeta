@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
-import org.meta.plugin.webservice.forms.InterfaceElement;
+import org.meta.plugin.webservice.forms.InterfaceField;
 
-public class RadioList extends InterfaceElement {
+public class RadioList extends InterfaceField {
 
     private ArrayList<RadioButton> buttons = null;
 
-    public RadioList(String id, ArrayList<RadioButton> buttons) {
-        super(id);
+    public RadioList(String id, String label, ArrayList<RadioButton> buttons) {
+        super(id, label);
         this.buttons = buttons;
     }
 

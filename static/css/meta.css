@@ -1,3 +1,26 @@
 body {
   padding-top: 70px;
 }
+
+.metaCol .col-sm-12 {
+        padding: 0;
+}
+.metaCol .col-sm-12 > .col-sm {
+        padding: 0;
+}
+
+.metaLine.col-sm-12 {
+        padding: 0;
+}
+.metaLine.col-sm-12 > .col-sm:last-child {
+        padding: 0;
+}
+.metaLine.col-sm-12 > .col-sm {
+        padding-right: 15px;
+}
+.btn-default {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #333;
+    width: 100%;
+}

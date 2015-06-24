@@ -1,6 +1,7 @@
 package org.meta.plugins.SubtitleSearch;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.meta.plugins.SubtitleSearch.webservice.commands.AddSubtitle;
 import org.meta.plugins.SubtitleSearch.webservice.commands.GetSubtitles;
@@ -12,7 +13,7 @@ public class PluginSubtitleSearchWebServiceControler extends AbstractPluginWebSe
 
     @Override
     protected void registercommands(
-            HashMap<String, Class<? extends AbstractWebService>> commands) {
+            LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {
         commands.put("searchSubtitles",     SearchSubtitles.class);
         commands.put("getSubtitles",         GetSubtitles.class);
         commands.put("addSubtitle",         AddSubtitle.class);

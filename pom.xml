@@ -76,8 +76,13 @@
     <dependency>
       <groupId>net.tomp2p</groupId>
       <artifactId>tomp2p-dht</artifactId>
-      <version>5.0-Beta2</version>
+      <version>5.0-Beta8</version>
     </dependency> 
+    <dependency>
+      <groupId>net.tomp2p</groupId>
+      <artifactId>tomp2p-tracker</artifactId>
+      <version>5.0-Beta8</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

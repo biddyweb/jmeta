@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bson.BasicBSONObject;
 import org.meta.model.Data;
@@ -15,6 +17,7 @@ import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
+import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
@@ -37,9 +40,13 @@ public class SearchSubtitles extends AbstractWebService{
         //has a linked button on himself
         column.addChild(new SelfSubmitButton("submitToMe", "Search"));
         initialDescriptor = new InterfaceDescriptor(column);
-        initialTextOutput.append(" ");
-        //Second descriptor, used to show results
-        factory = Model.getInstance().getFactory();
+        initialTextOutput.append("");
+        try {
+            //Second descriptor, used to show results
+            factory = Model.getInstance().getFactory();
+        } catch (ModelException ex) {
+            //TODO remove once we properly initialize the model
+        }
     }
 
     @Override

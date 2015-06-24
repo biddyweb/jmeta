@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.meta.common.MetHash;
-import org.meta.common.MetaProperties;
+import org.meta.configuration.MetaProperties;
 import org.meta.model.Model;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginTCPControler;
@@ -59,7 +59,7 @@ public class Controler {
             URISyntaxException {
         this.model = Model.getInstance();
         tcpReader = SingletonTCPReader.getInstance();
-        tcpReader.initializePortAndRun(Integer.parseInt(MetaProperties.getProperty("port")));
+        tcpReader.start();
 
         webServiceReader = SingletonWebServiceReader.getInstance();
         pluginInitialisation();

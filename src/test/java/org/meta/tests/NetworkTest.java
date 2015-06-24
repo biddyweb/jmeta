@@ -5,8 +5,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.junit.Assert;
-import org.junit.Test;
-//import org.lavocat.PluginExemple.PluginExempleTcpControler;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -25,7 +23,7 @@ public class NetworkTest {
 
             SingletonTCPReader reader = SingletonTCPReader.getInstance();
             //reader.registerPlugin("test", examplePlugin);
-            reader.initializePortAndRun(4001);
+            reader.start();
             SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
             InetAddress adress;
             try {

@@ -230,7 +230,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
         //draw a column object wich is a div who's contain
         //his children one under another
         case "Column" :
-                currentHtml = $("<div class='col-sm-12'></div>");
+                currentHtml = $("<div class='metaCol col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
                     for(var i=0; i<content.length; i++){
@@ -240,7 +240,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
             break;
         //draw a line object wich is a div who's contain his children side by side
         case "Line":
-                currentHtml = $("<div class='col-sm-12'></div>");
+                currentHtml = $("<div class='metaLine col-sm-12'></div>");
                 var content = data["content"];
                 if(content !== undefined){
                     var colSm = content.length < 12 ? 12 / content.length : 1;

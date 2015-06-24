@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -27,16 +27,16 @@ import org.meta.common.MetamphetUtils;
 import org.meta.dht.MetaPeer;
 
 /**
+ *
  * Class holding general configuration entries for the DHT.
  *
- * @author nico
  */
-public class DHTConfiguration {
+public final class DHTConfiguration extends BaseConfiguration {
 
     /**
      * The default DHT port.
      */
-    public static final short DEFAULT_DHT_PORT = 15000;
+    public static final Short DEFAULT_DHT_PORT = 15000;
 
     /**
      * The key in configuration file for the DHT port.
@@ -64,108 +64,77 @@ public class DHTConfiguration {
     public static final String DHT_LOCAL_ONLY_KEY = "dhtLocalOnly";
 
     /**
-     * The properties class related to the configuration file.
-     */
-    private Properties properties;
-
-    /**
      * Our identity (hash) on the DHT.
      */
-    private Identity identity;
+    private Identity identity = new Identity(MetamphetUtils.createRandomHash());
 
     /**
      * The port the DHT will listen to.
      */
-    private short port;
+    private Short port = DEFAULT_DHT_PORT;
 
     /**
      * The list of known peers in the DHT to help us bootstrap.
      */
-    private Collection<MetaPeer> knownPeers;
+    private Collection<MetaPeer> knownPeers = new ArrayList<>();
 
     /**
      * If we broadcast to bootstrap or not.
      */
-    private boolean bootstrapBroadcast;
+    private boolean bootstrapBroadcast = true;
 
     /**
      * If we only listen to local peers
      */
-    private boolean dhtLocalOnly;
+    private boolean dhtLocalOnly = true;
 
     /**
-     * Initializes the configuration with default values.
+     * Empty initialization with default values
      */
     public DHTConfiguration() {
-        this.port = DEFAULT_DHT_PORT;
-        this.identity = new Identity(MetamphetUtils.createRandomHash());
-        //No known peers by default...
-        this.knownPeers = new ArrayList<>();
-        //No known peers so we broadcast.
-        this.bootstrapBroadcast = true;
-        this.dhtLocalOnly = false;
     }
 
     /**
-     * Initializes the configuration with given parameters.
+     * Initializes the dht config from properties.
      *
-     * @param id Our identity over the DHT.
-     * @param port The DHT port to listen to.
-     * @param knownPeers The list of known peers to bootstrap to.
-     * @param broadast If we broadcast to bootstrap or not.
+     * @param properties
      */
-    public DHTConfiguration(Identity id, short port, Collection<MetaPeer> knownPeers, boolean broadast, boolean localOnly) {
-        this.port = port;
-        this.identity = id;
-        this.bootstrapBroadcast = broadast;
-        this.knownPeers = knownPeers;
-        this.dhtLocalOnly = localOnly;
+    public DHTConfiguration(Properties properties) {
+        super(properties);
+        if (properties != null) {
+            initFromProperties();
+        }
     }
 
-    /**
-     * Initializes the configuration from the configuration file. If some
-     * entries are not present, uses default values instead.
-     *
-     * @param prop The properties instance related to the configuration file.
-     */
-    public DHTConfiguration(Properties prop) {
-        if (prop == null) {
-            throw new NullPointerException("DHTConfiguration, can't initialize with null properties.");
+    @Override
+    public void initFromProperties() {
+        Short dhtPort = this.getShort(DHT_PORT_KEY);
+        if (port != null) {
+            this.port = dhtPort;
         }
-        this.properties = prop;
-        this.initFromProperties();
-    }
 
-    private void initFromProperties() {
-        if (this.properties.containsKey(DHT_PORT_KEY)) {
-            this.port = Short.valueOf(this.properties.getProperty(DHT_PORT_KEY));
-        } else {
-            this.port = DEFAULT_DHT_PORT;
+        String id = this.getValue(DHT_IDENTITY_KEY);
+        if (id != null) {
+            this.identity = new Identity(id);
         }
-        if (this.properties.containsKey(DHT_IDENTITY_KEY)) {
-            this.identity = new Identity(this.properties.getProperty(DHT_IDENTITY_KEY));
-        } else {
-            this.identity = new Identity(MetamphetUtils.createRandomHash());
+
+        Boolean broacast = this.getBoolean(DHT_BOOTSTRAP_BROADCAST_KEY);
+        if (broacast != null) {
+            this.bootstrapBroadcast = broacast;
         }
-        if (this.properties.containsKey(DHT_BOOTSTRAP_BROADCAST_KEY)) {
-            this.bootstrapBroadcast = Boolean.valueOf(this.properties.getProperty(DHT_BOOTSTRAP_BROADCAST_KEY));
-        } else {
-            this.bootstrapBroadcast = true;
+
+        Boolean localOnly = this.getBoolean(DHT_LOCAL_ONLY_KEY);
+        if (localOnly != null) {
+            this.dhtLocalOnly = localOnly;
         }
-        if (this.properties.containsKey(DHT_LOCAL_ONLY_KEY)) {
-            this.dhtLocalOnly = Boolean.valueOf(this.properties.getProperty(DHT_LOCAL_ONLY_KEY));
-        } else {
-            this.dhtLocalOnly = false;
-        }
-        if (this.properties.containsKey(DHT_KNOWN_PEERS_KEY)) {
-            String knownPeersString = this.properties.getProperty(DHT_KNOWN_PEERS_KEY);
+
+        String peersString = this.getValue(DHT_KNOWN_PEERS_KEY);
+        if (peersString != null) {
             try {
-                this.knownPeers = DHTConfiguration.peersFromString(knownPeersString);
+                this.knownPeers = DHTConfiguration.peersFromString(peersString);
             } catch (UnknownHostException ex) {
                 this.knownPeers = new ArrayList<>();
             }
-        } else {
-            this.knownPeers = new ArrayList<>();
         }
     }
 
@@ -181,9 +150,10 @@ public class DHTConfiguration {
      * @param peersString The string to extract peers from.
      * @return The collection of {@link MetaPeer} extracted from the given
      * string representation.
+     * @throws java.net.UnknownHostException
      */
     public static Collection<MetaPeer> peersFromString(String peersString) throws UnknownHostException {
-        Collection<MetaPeer> peers = new ArrayList<MetaPeer>();
+        Collection<MetaPeer> peers = new ArrayList<>();
         String[] knownPeersStringList = peersString.split(",");
         for (String peerString : knownPeersStringList) {
             String[] peerInfo = peerString.split(":");

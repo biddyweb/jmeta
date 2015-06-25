@@ -12,6 +12,7 @@ var Command = function (commandName, plugin, div){
     this.plugin        = plugin     ;
     this.div           = div        ;
     this.data          = null;
+    this.previousData  = null;
 }
 Command.prototype.commandName  = null;
 Command.prototype.plugin       = null;
@@ -19,13 +20,14 @@ Command.prototype.div          = null;
 Command.prototype.processHtml  = null;
 Command.prototype.toCommand    = null;
 Command.prototype.timer        = null;
+Command.prototype.previousData = null;
 
 /**
  * strat a timer to retrieve regular updates on the server (every
  * 500 harcoded ms)
  */
 Command.prototype.startRetrievingUpdate = function(){
-    this.timer = window.setInterval(this.retrieveUpdate.bind(this), 500);
+    this.timer = window.setInterval(this.retrieveUpdate.bind(this),  500);
 }
 /**
  * stop the current timer
@@ -39,13 +41,14 @@ Command.prototype.stopTimer = function(){
  * do something with it
  */
 Command.prototype.fetchInterface = function(){
-     var pluginsNames =
-         $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
-            .done(this.handleJsonResponse.bind(this, false))
-            .fail(function(data) {
-                this.div.html("");
-                this.div.append(data["responseText"]);
-            }.bind(this));
+    this.previousData = null;
+    var pluginsNames =
+        $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
+           .done(this.handleJsonResponse.bind(this, false))
+           .fail(function(data) {
+               this.div.html("");
+               this.div.append(data["responseText"]);
+           }.bind(this));
 }
 /**
  * launch a retrieveupdate (called by the timer) to get the last state of the
@@ -78,18 +81,28 @@ Command.prototype.handleJsonResponse = function(launchTimer, data){
     var tempHtml = $("<input type='hidden' id='idCommand' name='idCommand' value='"+data["idCommand"]+"' />");
     this.processHtml.append(tempHtml);
     //decode json
-    this.decodeJsonToHtml(data, this.processHtml);
-    //draw that all
-    this.draw();
+    if(this.previousData === null){
+        vache = data;
+        this.decodeJsonToHtml(data, this.processHtml);
+        //draw that all for the first run
+        this.firstDraw();
+        this.previousData = data;
+    }
+    else{
+        this.updateHtml(data, this.previousData);
+        this.previousData = data;
+    }
     //if needed launch the timer
-    if(launchTimer)
+    if(launchTimer){
+        this.toCommand = this.commandName;
         this.startRetrievingUpdate();
+    }
 }
 
 /**
  * flush the div html output and drawn processHtml in it
  */
-Command.prototype.draw = function(){
+Command.prototype.firstDraw = function(){
     this.div.html("");
     this.div.append(this.processHtml);
 }
@@ -98,6 +111,7 @@ Command.prototype.draw = function(){
  * fetch the standard command interface and make a life cycle
  */
 Command.prototype.process = function(){
+    this.previousData == null;
     this.fetchInterface();
 }
 /**
@@ -225,12 +239,12 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
         //draw a simple text output replacing \n to <br />
         case "TextOutput" :
                 if(data["message"]!=="")
-                    currentHtml = $("<h3>"+data["label"]+"</h3><p>"+data["message"].replace(/\n/g, "<br />")+"</p>");
+                    currentHtml = $("<h3>"+data["label"]+"</h3><p id='"+data["id"]+"'>"+data["message"].replace(/\n/g, "<br />")+"</p></p>");
             break;
         //draw a column object wich is a div who's contain
         //his children one under another
         case "Column" :
-                currentHtml = $("<div class='metaCol col-sm-12'></div>");
+                currentHtml = $("<div class='metaCol col-sm-12' id='"+data["id"]+"'></div>");
                 var content = data["content"];
                 if(content !== undefined){
                     for(var i=0; i<content.length; i++){
@@ -240,7 +254,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
             break;
         //draw a line object wich is a div who's contain his children side by side
         case "Line":
-                currentHtml = $("<div class='metaLine col-sm-12'></div>");
+                currentHtml = $("<div class='metaLine col-sm-12' '"+data["id"]+"'></div>");
                 var content = data["content"];
                 if(content !== undefined){
                     var colSm = content.length < 12 ? 12 / content.length : 1;
@@ -288,6 +302,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
  * execute the form on the right command
  */
 Command.prototype.submit = function (e){
+    this.previousData = null;
     e.preventDefault();
     //if another destination, terminate instance on server
     if(this.toCommand !== this.commandName){
@@ -309,4 +324,139 @@ Command.prototype.submit = function (e){
             this.div.append(data["responseText"]);
     }.bind(this));
 
+}
+
+/**
+ * Calculate differnces between oldDatas and new Datas
+ * and uptade only needed dom element
+ */
+Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
+    //try to get html element with an equal id than new data
+    var elementToUpdate = $("#"+data["id"]);
+    //if this element does not exist, create
+    if(elementToUpdate === undefined)
+        this.decodeJsonToHtml(data, elementParent, 12);//TODO col-sm
+    //otherwise update him following rules
+    else{
+        //There is no need to update directly attributes from them
+        if(data["type"] != "Column" && data["type"] != "Line"){
+            var type = data["type"];
+            switch(type){
+                case "radio" :
+                case "checkBox" :
+                    var elementchecked = elementToUpadte.is(":checked");
+                    var wasChecked     = oldData["checked"];
+                    var wantChecked    = data["checked"];
+
+                    //if previous data was checked and element has no changes
+                    //it's ok to take the new value, otherwhise, juste do no
+                    //touch it
+                    if(elementchecked && wasChecked)
+                        elementToUpdate.prop("checked", wantChecked)
+                    break;
+
+                //just update the label
+                case "radioList" :
+                case "checkBoxList" :
+                         $("label[for='"+data["id"]+"']").text(data["label"]);
+                    break;
+
+                case "selectList" :
+                         $("label[for='"+data["id"]+"']").text(data["label"])
+
+                        var boxes = data["content"];
+                        for(var i=0; i<boxes.length; i++){
+                            var elementchecked = elementToUpdate.is(":selected");
+                            var wasChecked     = oldData["selected"];
+                            var wantChecked    = data["selected"];
+
+                            //if previous data was checked and element has no changes
+                            //it's ok to take the new value, otherwhise, juste do no
+                            //touch it
+                            if(elementchecked && wasChecked)
+                                elementToUpdate.prop("checked", wantChecked)
+                        }
+                        for(var option in data["content"]){
+                            if($("#"+option["id"]) == undefined){
+                                var checked = option["selected"] ? "selected=selected" : "";
+                                currentHtml = $(
+                                          "<option "+checked+"  value='"+ option["id"]+ "'>"+option["label"]+"</option>");
+                                elementToUpdate.append(currentHtml);
+                            }
+                        }
+                    break;
+                case "selfSubmitButton" :
+                case "TextInput" :
+                case "DateInput" :
+                        var valueElement   = elementToUpdate.val();
+                        var wasValue       = oldData["value"];
+                        var wantValue      = data["value"];
+
+                        //if previous value is the same than element valuye
+                        //its ok to change it, otherwise, do not touch it
+                        if(valueElement == wasValue)
+                            elementToUpdate.val(wantValue);
+                    break;
+                //draw a simple text output replacing \n to <br />
+                case "TextOutput" :
+                        if(data["message"]!=="")
+                            elementToUpdate.html(data["message"].replace(/\n/g, "<br />"));
+                    break;
+                //draw a line object wich is a div who's contain his children side by side
+                case "Line":
+                    /* TODO col-sm
+                        currentHtml = $("<div class='metaLine col-sm-12'></div>");
+                        var content = data["content"];
+                        if(content !== undefined){
+                            var colSm = content.length < 12 ? 12 / content.length : 1;
+                            for(var i=0; i<content.length; i++){
+                                this.decodeJsonToHtml(content[i],currentHtml,colSm);
+                            }
+
+                        }*/
+                    break;
+                case "submitToButton" :
+                         elementToUpdate.click(function(destination, e){
+                            this.toCommand = destination;
+                         }.bind(this, data["destination"]));
+                    break;
+            }
+
+        }
+        //but we need to update there children
+        else{
+            var childrenSet = data["content"];
+            //for each child make a recursive call
+            if(childrenSet != undefined)
+                for(var i=0; i<childrenSet.length; i++){
+                    var child   = childrenSet[i];
+                    var childId = child["id"];
+                    var childOld = this.getOtherChild(childId, oldData["content"]);
+                    //doesn't matter if childOld doesn't exist here
+                    this.updateHtml(child, childOld, elementToUpdate)//TODO col-sm
+                }
+        }
+        //now we need to loop on the oldData to remove useless child
+        if(oldData !== null && oldData !== undefined && oldData["content"] !== undefined){
+            console.log(oldData)
+            console.log(data);
+            for(var i=0; i<oldData["content"].length; i++){
+                var child   = oldData["content"][i];
+                console.log(child);
+                if(this.getOtherChild(child["id"], data["content"]) == null){
+                    var elementToDelete = $("#"+child["id"]);
+                    elementToUpdate.remove();
+                }
+            }
+        }
+    }
+}
+Command.prototype.getOtherChild = function(id, childrenSet){
+    var found = null;
+    for(var i=0; i<childrenSet.length; i++){
+        var child   = childrenSet[i];
+        if(child["id"] == id)
+            found = child;
+     }
+    return found;
 }

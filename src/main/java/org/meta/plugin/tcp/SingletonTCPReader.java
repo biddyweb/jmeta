@@ -119,7 +119,8 @@ public class SingletonTCPReader extends Thread {
     public void kill() {
         work = false;
         try {
-            this.socket.close();
+            if(this.socket != null)
+                this.socket.close();
         } catch (IOException ex) {
             //No-op here, ex will occur but this is what we want to do.
         }

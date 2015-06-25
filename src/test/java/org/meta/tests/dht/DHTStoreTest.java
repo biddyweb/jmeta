@@ -17,15 +17,31 @@
  */
 package org.meta.tests.dht;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.meta.common.Identity;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
+import org.meta.configuration.DHTConfiguration;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.FindPeersOperation;
+import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 import org.meta.dht.StoreOperation;
-import static org.meta.tests.dht.BaseDHTTests.DHT1_PORT;
+import static org.meta.tests.MetaBaseTests.getLocalAddress;
+import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT1_PEER_ADDR;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT1_PEER_STRING;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT1_PORT;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT2_PEER_ADDR;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT2_PEER_STRING;
+import static org.meta.tests.dht.DHTBootstrapTest.DHT2_PORT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +50,60 @@ import org.slf4j.LoggerFactory;
  */
 public class DHTStoreTest extends BaseDHTTests {
 
+    private static final short DHT1_PORT = 15000;
+    private static final short DHT2_PORT = 15001;
+    private static String DHT1_ADDR;// = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT1_PORT;
+    private static String DHT2_ADDR;// = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT2_PORT;
+    public static String DHT1_PEER_STRING;
+    public static String DHT2_PEER_STRING;
+
+    private static final short FIRST_AMP_PORT = 4242;
+    private static final short SECOND_AMP_PORT = 4243;
+
+    private static final MetHash validHash = new MetHash(42);
+    private static final MetHash invalidHash = new MetHash(43);
+
     private static final Logger logger = LoggerFactory.getLogger(DHTStoreTest.class);
+
+    private static MetaDHT dhtNode1;
+    private static MetaDHT dhtNode2;
+    private static DHTConfiguration configurationDht1;
+    private static DHTConfiguration configurationDht2;
+
+    @BeforeClass
+    public static void initDHtNodes() throws IOException {
+
+        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
+        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
+
+        MetaConfiguration.getAmpConfiguration().setAmpPort((short) 4243);
+        configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+                DHT1_PORT,
+                DHTConfiguration.peersFromString(DHT2_PEER_STRING),
+                false,
+                true);
+        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+        dhtNode1.start();
+
+        configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+                DHT2_PORT,
+                DHTConfiguration.peersFromString(DHT1_PEER_STRING),
+                false,
+                true);
+        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+        dhtNode2.start();
+
+        bootstrapDht(dhtNode1, false);
+        bootstrapDht(dhtNode2, true);
+    }
+
+    @AfterClass
+    public static void shutDownDhtNodes() {
+        dhtNode1.stop();
+        dhtNode2.stop();
+    }
 
     /**
      * Test the store process in the DHT.
@@ -42,10 +111,10 @@ public class DHTStoreTest extends BaseDHTTests {
      * @throws java.net.UnknownHostException
      */
     @Test
-    public void testSimpleStore() throws UnknownHostException {
+    public void testSimpleStore() throws UnknownHostException, IOException {
 
-        this.bootstrapDht(dhtNode1, false);
-        this.bootstrapDht(dhtNode2, true);
+        //Forcing AMP Port
+        MetaConfiguration.getAmpConfiguration().setAmpPort(FIRST_AMP_PORT);
 
         StoreOperation storeOperation = dhtNode1.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
@@ -64,6 +133,8 @@ public class DHTStoreTest extends BaseDHTTests {
 
         storeOperation.awaitUninterruptibly();
 
+        //Re-setting AMP port to avoid duplicate entry in the DHT.
+        MetaConfiguration.getAmpConfiguration().setAmpPort(SECOND_AMP_PORT);
         storeOperation = dhtNode2.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
@@ -95,13 +166,15 @@ public class DHTStoreTest extends BaseDHTTests {
                 MetaPeer expectedMetaPeerDht2;
                 try {
                     logger.info("Find peer operation success!");
-                    expectedMetaPeerDht1 = new MetaPeer(null, InetAddress.getLocalHost(), DHT1_PORT);
-                    expectedMetaPeerDht2 = new MetaPeer(null, InetAddress.getLocalHost(), DHT2_PORT);
+                    expectedMetaPeerDht1 = new MetaPeer(null, InetAddress.getLocalHost(),
+                            FIRST_AMP_PORT);
+                    expectedMetaPeerDht2 = new MetaPeer(null, InetAddress.getLocalHost(),
+                            SECOND_AMP_PORT);
                     int matchedPeers = 0;
                     for (MetaPeer peer : operation.getPeers()) {
                         logger.debug("Got peer = " + peer.toString());
-                        if (expectedMetaPeerDht1.toString().equals(peer.toString())
-                                || peer.toString().equals(expectedMetaPeerDht2.toString())) {
+                        if (expectedMetaPeerDht1.equals(peer)
+                                || expectedMetaPeerDht2.equals(peer)) {
                             ++matchedPeers;
                         }
                     }

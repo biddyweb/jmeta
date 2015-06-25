@@ -22,7 +22,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import junit.framework.Assert;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import org.meta.common.MetHash;
@@ -44,26 +44,22 @@ public class BigDhtTest extends BaseDHTTests {
     private static final int NB_PEERS = 3;
     private static final MetaDHT[] dhts = new MetaDHT[NB_PEERS];
 
-    @Override
-    public void setUp() {
-        //Override AbstractDHTTests, we don't need it
-    }
-
-    @Override
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         for (int i = 0; i < NB_PEERS; ++i) {
             dhts[i].stop();
         }
     }
 
     /**
-     * 
-     * @throws IOException 
+     *
+     * @throws IOException
      */
+    @Test
     public void testManyNodesOneHash() throws IOException {
         try {
             short port = 15000;
-            Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, InetAddress.getLoopbackAddress(), port));
+            Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, getLocalAddress(), port));
 
             dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, null, false, true));
             dhts[0].start();

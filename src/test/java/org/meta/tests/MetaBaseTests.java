@@ -17,7 +17,14 @@
  */
 package org.meta.tests;
 
-import junit.framework.TestCase;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.BeforeClass;
 import org.meta.configuration.AMPConfiguration;
 import org.meta.configuration.DHTConfiguration;
 import org.meta.configuration.MetaConfiguration;
@@ -26,14 +33,22 @@ import org.meta.configuration.WSConfiguration;
 /**
  * Base class for tests to pre-configure the JMETA env
  */
-public abstract class MetaBaseTests extends TestCase {
+public abstract class MetaBaseTests {
 
-    @Override
-    public void setUp() {
+    public static void initConfigurations() {
         //Init all configs with default values manually
         MetaConfiguration.setAmpConfiguration(new AMPConfiguration());
         MetaConfiguration.setDhtConfiguration(new DHTConfiguration());
         MetaConfiguration.setWSConfiguration(new WSConfiguration());
     }
 
+    @BeforeClass
+    public static void setUp() {
+        initConfigurations();
+    }
+
+    public static InetAddress getLocalAddress() throws UnknownHostException, SocketException {
+        InetAddress addr = InetAddress.getLocalHost();
+        return addr;
+    }
 }

@@ -129,6 +129,16 @@ public class TomP2pDHT extends MetaDHT {
         if (peer == null) {
             return;
         }
+        FutureDone<Void> shutdownAnnounce = this.peer.announceShutdown().start();
+        shutdownAnnounce.addListener(new BaseFutureAdapter<BaseFuture>() {
+
+            @Override
+            public void operationComplete(BaseFuture future) throws Exception {
+                logger.debug("Successfully announced to peers we are shutting down");
+            }
+        });
+        shutdownAnnounce.awaitUninterruptibly();
+
         BaseFuture shutDownOperation = TomP2pDHT.this.peer.shutdown();
         shutDownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
 
@@ -138,15 +148,6 @@ public class TomP2pDHT extends MetaDHT {
             }
         });
         shutDownOperation.awaitUninterruptibly();
-//        FutureDone<Void> shutdownOperation = this.peer.announceShutdown().start();
-//        shutdownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
-//
-//            @Override
-//            public void operationComplete(BaseFuture future) throws Exception {
-//
-//            }
-//        });
-//        shutdownOperation.awaitUninterruptibly();
     }
 
     //BELOW STATIC UTILITY FUNCTIONS (Mostly conversion functions for meta <-> tomp2p entities)
@@ -180,7 +181,6 @@ public class TomP2pDHT extends MetaDHT {
      */
     public static MetaPeer toPeer(net.tomp2p.p2p.Peer peer) {
         Identity id = new Identity(toMetHash(peer.peerID()));
-        //TODO check if using only UDP port is correct!
         return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
     }
 }

@@ -129,20 +129,24 @@ public class TomP2pDHT extends MetaDHT {
         if (peer == null) {
             return;
         }
-        FutureDone<Void> shutdownOperation = this.peer.announceShutdown().start();
-        shutdownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
+        BaseFuture shutDownOperation = TomP2pDHT.this.peer.shutdown();
+        shutDownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
 
             @Override
             public void operationComplete(BaseFuture future) throws Exception {
-                TomP2pDHT.this.peer.shutdown().addListener(new BaseFutureAdapter<BaseFuture>() {
-
-                    @Override
-                    public void operationComplete(BaseFuture future) throws Exception {
-                        TomP2pDHT.this.logger.info("Meta DHT has shut down.");
-                    }
-                });
+                TomP2pDHT.this.logger.info("Meta DHT has shut down.");
             }
         });
+        shutDownOperation.awaitUninterruptibly();
+//        FutureDone<Void> shutdownOperation = this.peer.announceShutdown().start();
+//        shutdownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
+//
+//            @Override
+//            public void operationComplete(BaseFuture future) throws Exception {
+//
+//            }
+//        });
+//        shutdownOperation.awaitUninterruptibly();
     }
 
     //BELOW STATIC UTILITY FUNCTIONS (Mostly conversion functions for meta <-> tomp2p entities)

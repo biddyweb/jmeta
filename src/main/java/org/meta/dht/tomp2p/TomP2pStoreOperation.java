@@ -17,17 +17,11 @@
  */
 package org.meta.dht.tomp2p;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.util.logging.Level;
 import net.tomp2p.dht.AddBuilder;
-import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.FuturePut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.tomp2p.dht.PutBuilder;
-import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerSocketAddress;
@@ -81,16 +75,20 @@ public class TomP2pStoreOperation extends StoreOperation {
     @Override
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeerDHT().peerAddress().peerSocketAddress();
-        Data data = new Data(serializeAddress((short) peerAddr.udpPort(), peerAddr.inetAddress()));
+
+        logger.debug("StoreOperation: pushing peer addr = ", peerAddr.inetAddress().toString() + ":" + peerAddr.udpPort());
+        byte[] data = serializeAddress((short) peerAddr.udpPort(), peerAddr.inetAddress());
         AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
 
-        addBuilder.data(data).start().addListener(new BaseFutureListener<FuturePut>() {
+        addBuilder.data(new Data(data)).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override
             public void operationComplete(FuturePut future) throws Exception {
                 if (future.isSuccess() || future.isSuccessPartially()) {
+                    logger.debug("Store operation complete!!!");
                     TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
                 } else {
+                    logger.debug("Store operation failed!!!");
                     TomP2pStoreOperation.this.setState(OperationState.FAILED);
                 }
                 TomP2pStoreOperation.this.finish();
@@ -98,6 +96,7 @@ public class TomP2pStoreOperation extends StoreOperation {
 
             @Override
             public void exceptionCaught(Throwable t) throws Exception {
+                logger.error("Exception caught in store operation!", t);
                 TomP2pStoreOperation.this.setFailed(t.getMessage());
             }
         });

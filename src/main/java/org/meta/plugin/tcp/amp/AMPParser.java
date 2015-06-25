@@ -10,13 +10,13 @@ import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 public abstract class AMPParser {
     protected ModelFactory factory = null;
     public AMPParser(byte[] bs) throws NotAValidAMPCommand{
-        parse(bs);
         try {
             factory = Model.getInstance().getFactory();
         } catch (ModelException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        parse(bs);
     }
 
     /**

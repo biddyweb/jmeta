@@ -490,9 +490,4 @@ public class Model {
         boolean status = kyotoDB.remove(hash.toByteArray());
         return commitTransaction(status) && status;
     }
-
-    public MetHash hash(File file) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

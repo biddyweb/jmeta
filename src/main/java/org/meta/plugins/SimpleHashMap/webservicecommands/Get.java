@@ -67,10 +67,12 @@ public class Get extends AbstractWebService{
             try {
                 Search localResult =
                         (Search) Model.getInstance().get(contentSearch.getHash());
-                List<Data> localDatas = localResult.getLinkedData();
-                for(Data d : localDatas)
-                    if(d instanceof DataString)
-                        localResults.add((DataString) d);
+                if(localResult != null){
+                    List<Data> localDatas = localResult.getLinkedData();
+                    for(Data d : localDatas)
+                        if(d instanceof DataString)
+                            localResults.add((DataString) d);
+                }
                 redrawOutput();
             } catch (ModelException e) {
                 e.printStackTrace();

@@ -39,10 +39,12 @@ import org.meta.model.exceptions.ModelException;
 public class Model {
 
     private static Model instance;
+
     private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     private static final Logger logger = LoggerFactory.getLogger(Model.class);
-    DB kyotoDB;
-    ModelFactory factory;
+
+    private DB kyotoDB;
+    private ModelFactory factory;
 
     /**
      * Instanciate a new model. Init the dataBaseConnection.
@@ -50,6 +52,7 @@ public class Model {
      * @throws org.meta.model.exceptions.ModelException
      */
     private Model() throws ModelException {
+
         initDataBase();
         factory = new ModelFactory();
     }
@@ -64,14 +67,9 @@ public class Model {
      *
      * @return The model Instance.
      */
-    public synchronized static Model getInstance() {
+    public synchronized static Model getInstance() throws ModelException {
         if (instance == null) {
-            try {
-                instance = new Model();
-            } catch (ModelException ex) {
-                logger.error(null, ex);
-                return null;
-            }
+            instance = new Model();
         }
         return instance;
     }
@@ -84,8 +82,16 @@ public class Model {
         return this.factory;
     }
 
+    private void kyotoError() {
+        kyotocabinet.Error error = kyotoDB.error();
+
+        if (error != null) {
+            logger.error("Kyotocabinet error: " + error.code() + ":" + error.name() + " " + error.message());
+        }
+    }
+
     /**
-     * Initialize data base connection
+     * Initialize data base connection.
      *
      * @throws LibraryException
      */
@@ -96,7 +102,10 @@ public class Model {
             databaseDir.mkdir();
         }
         kyotoDB = new DB();
-        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET)) {
+
+        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET | DB.OTRYLOCK)) {
+            logger.error("Failed to open kyotocabinet database.");
+            kyotoError();
             throw new ModelException("Unable to start kyoto cabinet with database file : " + databaseFile);
         }
     }
@@ -302,11 +311,11 @@ public class Model {
             IllegalAccessException {
         Search search = (Search) searchable;
         //load the source from her hash
-        MetHash    hashSource = new MetHash(bsonObject.get("source").toString());
-        Searchable source     = load(hashSource.toByteArray());
+        MetHash hashSource = new MetHash(bsonObject.get("source").toString());
+        Searchable source = load(hashSource.toByteArray());
         //load results
-        MetHash    hashResult = new MetHash(bsonObject.get("result").toString());
-        MetaData   result     = (MetaData) load(hashResult.toByteArray());
+        MetHash hashResult = new MetHash(bsonObject.get("result").toString());
+        MetaData result = (MetaData) load(hashResult.toByteArray());
         //update search
         search.setSource(source);
         search.setResult(result);
@@ -345,8 +354,7 @@ public class Model {
 
     /**
      *
-     * @param commit if true commits the current transaction
-     * if false rollback.
+     * @param commit if true commits the current transaction if false rollback.
      *
      * @return true on success, false otherwise
      */
@@ -437,7 +445,7 @@ public class Model {
         if (search.getResult().getState() != Searchable.ObjectState.UP_TO_DATE) {
             status = status && this.set(search.getResult(), false);
         }
-        
+
         return status;
     }
 

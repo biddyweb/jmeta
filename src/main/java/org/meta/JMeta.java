@@ -19,6 +19,7 @@ package org.meta;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;
@@ -26,6 +27,7 @@ import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
+import org.meta.model.exceptions.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +83,8 @@ public class JMeta {
         } catch (IOException | URISyntaxException ex) {
             logger.error("Error while starting controler", ex);
             System.exit(1);
+        } catch (ModelException ex) {
+            logger.error("Failed to start the model", ex);
         }
     }
 }

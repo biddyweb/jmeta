@@ -6,6 +6,7 @@
 package org.meta.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +48,11 @@ public class ModelFactory {
         return (Search) pools.get(ModelType.SEARCH).getInstance();
     }
     
-    public Search createSearch(Searchable source, MetaData result){
+    public Search createSearch(Searchable source, MetaData result, List<Data> datas){
          Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
          search.setSource(source);
          search.setResult(result);
+         search.setLinkedData(datas);
          return search;
     }
 
@@ -106,9 +108,8 @@ public class ModelFactory {
      *
      * @return The fully-initialized MetaData.
      */
-    public MetaData createMetaData(List<Data> datas, TreeSet<MetaProperty> props) {
+    public MetaData createMetaData(TreeSet<MetaProperty> props) {
         MetaData metaData = this.getMetaData();
-        metaData.setLinkedData(datas);
         metaData.setProperties(props);
         return metaData;
     }

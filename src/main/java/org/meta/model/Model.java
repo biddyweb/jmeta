@@ -280,13 +280,7 @@ public class Model {
             InstantiationException,
             IllegalAccessException {
         MetaData metaData = (MetaData) searchable;
-        List<Data> linkedData = new ArrayList<Data>();
-        BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
-        for (String key : bsonLinkedData.keySet()) {
-            MetHash hash = new MetHash(bsonLinkedData.get(key).toString());
-            Data toAdd = (Data) load(hash.toByteArray());
-            linkedData.add(toAdd);
-        }
+        
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("properties");
         BSONObject tmp;
         TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
@@ -295,7 +289,7 @@ public class Model {
             MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
             properties.add(toAdd);
         }
-        metaData.setLinkedData(linkedData);
+        
         metaData.setProperties(properties);
     }
 
@@ -323,6 +317,15 @@ public class Model {
         //update search
         search.setSource(source);
         search.setResult(result);
+        
+        List<Data> linkedData = new ArrayList<Data>();
+        BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
+        for (String key : bsonLinkedData.keySet()) {
+            MetHash hash = new MetHash(bsonLinkedData.get(key).toString());
+            Data toAdd = (Data) load(hash.toByteArray());
+            linkedData.add(toAdd);
+        }
+        search.setLinkedData(linkedData);
     }
 
     /**
@@ -383,11 +386,9 @@ public class Model {
         //Based on the object's type, redirects to specific set method.
         switch (ModelType.fromClass(searchable.getClass())) {
             case DATAFILE:
+            case METADATA:
             case DATASTRING:
                 //Datas have no childs, nothing to do here
-                break;
-            case METADATA:
-                status = this.setMetaData((MetaData) searchable);
                 break;
             case SEARCH:
                 status = this.setSearch((Search) searchable);
@@ -450,24 +451,16 @@ public class Model {
             status = status && this.set(search.getResult(), false);
         }
 
-        return status;
-    }
-
-    /**
-     * Calls the 'set' method for each of the metaData's children.
-     *
-     * @param metaData The MetaData object
-     */
-    private boolean setMetaData(MetaData metaData) {
-        boolean status = true;
-
-        for (Data data : metaData.getLinkedData()) {
+        for (Data data : search.getLinkedData()) {
             if (data.getState() != Searchable.ObjectState.UP_TO_DATE) {
                 status = status && this.set(data, false);
             }
         }
+
+
         return status;
     }
+
 
     /**
      * Delete an object in DB

@@ -38,9 +38,9 @@ public class NetworkTest {
                             if (searchable instanceof Search) {
                                 Search search3 = (Search) searchable;
                                 System.out.println(search3.getTmpResultsHashes());
+                                System.out.println(search3.getTmpLinkedData());
                             } else if (searchable instanceof MetaData) {
                                 MetaData metaData3 = (MetaData) searchable;
-                                System.out.println(metaData3.getTmpLinkedData());
                             } else if (searchable instanceof DataFile) {
                                 DataFile dataFile3 = (DataFile) searchable;
                                 System.out.println(dataFile3.getFile().getName());

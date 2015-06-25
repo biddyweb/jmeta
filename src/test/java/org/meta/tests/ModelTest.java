@@ -90,7 +90,7 @@ public class ModelTest {
         properties.add(prop);
         ArrayList<Data> a = new ArrayList<Data>();
         a.add(data);
-        MetaData metaData = model.getFactory().createMetaData(a, properties);
+        MetaData metaData = model.getFactory().createMetaData(properties);
         Assert.assertTrue(model.set(metaData));
 
         Assert.assertTrue(model.set(metaData));
@@ -98,7 +98,7 @@ public class ModelTest {
         MetaData fromDb = model.getMetaData(metaData.getHash());
         Assert.assertNotNull(fromDb);
         Assert.assertEquals("value", ((MetaProperty)fromDb.getProperties().toArray()[0]).getValue());
-        Assert.assertEquals("data", ((DataString) fromDb.getLinkedData().get(0)).getString());
+        //Assert.assertEquals("data", ((DataString) fromDb.getLinkedData().get(0)).getStringCollections.singletonList((Data) dataMetaData), 
     }
 
     @Test
@@ -109,8 +109,8 @@ public class ModelTest {
             MetaProperty prop = new MetaProperty("prop", "value");
             TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
             props.addAll(Collections.singletonList(prop));
-            MetaData metaData = model.getFactory().createMetaData(Collections.singletonList((Data) dataMetaData), props);
-            Search search = model.getFactory().createSearch(source, metaData);
+            MetaData metaData = model.getFactory().createMetaData(props);
+            Search search = model.getFactory().createSearch(source, metaData, Collections.singletonList((Data) dataMetaData));
             Assert.assertTrue("1 model.set should be true!", model.set(search));
 
             Search fromDb = model.getSearch(search.getHash());
@@ -145,13 +145,13 @@ public class ModelTest {
 
             // -- MetaData answer
             
-            MetaData metaData = model.getFactory().createMetaData(linkedData, properties);
+            MetaData metaData = model.getFactory().createMetaData(properties);
 
             // -- MetaData source
             DataFile data2 = model.getFactory().createDataFile(new File("static/css/bootstrap-theme.css.map"));
 
             // -- Search
-            Search search = model.getFactory().createSearch(data2, metaData);
+            Search search = model.getFactory().createSearch(data2, metaData, linkedData);
 
             /**
              * *****************************************************************

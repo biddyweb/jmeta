@@ -63,14 +63,14 @@ public class SearchSubtitles extends AbstractWebService{
                 //instanciate a new MetaData st:<choosen language>
                 TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
                 properties.add(new MetaProperty("st", "fr"));
-                MetaData metaData = factory.createMetaData(null, properties);
+                MetaData metaData = factory.createMetaData(properties);
 
                 //instanciate a new DataFile Object
                 DataFile movie = factory.createDataFile(file);
 
                 //create a new search with in input the DataFile and in output
                 //the metaData
-                Search subtitleSearch = factory.createSearch(movie, metaData);
+                Search subtitleSearch = factory.createSearch(movie, metaData, null);
 
                 //lookup on the network to find the subtitles
                 super.controler.search(    subtitleSearch.getHash(),
@@ -97,9 +97,7 @@ public class SearchSubtitles extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-
-                MetaData metaData = search.getResult();
-                List<Data> linkDatas =    metaData.getLinkedData();
+                List<Data> linkDatas =    search.getLinkedData();
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     //TODO what to do with the output ?

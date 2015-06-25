@@ -1,8 +1,13 @@
 package org.meta.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.bson.BSONObject;
+import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
 
@@ -30,11 +35,13 @@ import org.meta.common.MetamphetUtils;
  */
 public class Search extends Searchable {
 
-    private Searchable source = null;
-    private MetaData   result = null;
+    private Searchable   source      = null;
+    private MetaData     result      = null;
+    private List<Data>   linkedData  = null;
+    private List<String> tmpLinkedData;
 
     private String tmpSourceHash  = null;
-    private String tmpResultHash = null;
+    private String tmpResultHash  = null;
 
     protected Search() {
         super();
@@ -50,6 +57,7 @@ public class Search extends Searchable {
     protected Search(
             MetHash hash,
             Searchable source,
+            List<Data> linkedData,
             MetaData result
     ) {
         super(hash);
@@ -66,6 +74,25 @@ public class Search extends Searchable {
     }
 
     /**
+     *
+     * @return A read-only list of every data linked to this metaData
+     */
+    public List<Data> getLinkedData() {
+        return Collections.unmodifiableList(linkedData);
+    }
+
+    /**
+     * Set linked data
+     *
+     * @param linkedData
+     */
+    protected void setLinkedData(List<Data> linkedData) {
+        this.linkedData = linkedData;
+        this.updateState();
+    }
+
+ 
+    /**
      * set the source
      *
      * @param source
@@ -73,6 +100,7 @@ public class Search extends Searchable {
     protected void setSource(Searchable source) {
         this.source = source;
         this.updateState();
+        reHash();
     }
 
     /**
@@ -108,6 +136,13 @@ public class Search extends Searchable {
      */
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
+
+        BasicBSONList bsonLinkedData = new BasicBSONList();
+        for (int i = 0; i < linkedData.size(); ++i) {
+            bsonLinkedData.put(i, linkedData.get(i).getHash().toString());
+        }
+        bsonObject.put("linkedData", bsonLinkedData);
+ 
         bsonObject.put("source", this.source.getHash().toString());
         bsonObject.put("result", this.result.getHash().toString());
         return bsonObject;
@@ -119,6 +154,13 @@ public class Search extends Searchable {
         fragment.put("_source",   source.getHash().toByteArray());
         fragment.put("_metaData", result.getHash().toByteArray());
 
+        //write every data's hash
+        fragment.put("_nbLinkedData", (linkedData.size() + "").getBytes());
+        for (int i = 0; i < linkedData.size(); i++) {
+            Data data = linkedData.get(i);
+            fragment.put("_i" + i + "_data", data.getHash().toByteArray());
+        }
+ 
     }
 
     @Override
@@ -128,15 +170,37 @@ public class Search extends Searchable {
         //over the network, so source = null and result = null
         source = null;
         result = null;
+        linkedData = null;
         //and the Search cannot be write or updated in database
 
         //extract the source and delete from the fragment
-        tmpSourceHash = new String(fragment.get("_source"));
+        tmpSourceHash = new MetHash(fragment.get("_source")).toString();
         fragment.remove("_source");
 
         //extract the metada and delete from fragment
         tmpResultHash = "";
-        tmpResultHash = new String(fragment.get("_metaData"));
+        tmpResultHash = new MetHash(fragment.get("_metaData")).toString();
+
+        //extract all linkedDatas and delete it from the fragment too
+        int nbLinkedData = Integer.parseInt(new String(fragment.get("_nbLinkedData")));
+        tmpLinkedData = new ArrayList<String>();
+        for (int i = 0; i < nbLinkedData; i++) {
+            String data = new MetHash(fragment.get("_i" + i + "_data")).toString();
+            fragment.remove("_i" + i + "_data");
+            tmpLinkedData.add(data);
+        }
+ 
+    }
+    /**
+     *
+     * @return a list of the futures results
+     */
+    public List<String> getTmpLinkedData() {
+        return tmpLinkedData;
+    }
+
+    public void set(ArrayList<Data> linked) {
+        this.linkedData = linked;
     }
 
     public String getTmpSourceHashes() {
@@ -152,6 +216,19 @@ public class Search extends Searchable {
         Search searchClone = new Search();
         searchClone.setSource(source.toOnlyTextData());
         searchClone.setResult((MetaData) result.toOnlyTextData());
+
+        ArrayList<Data> linkedDataClone = new ArrayList<Data>();
+        for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
+            Data data = i.next();
+            linkedDataClone.add((Data) data.toOnlyTextData());
+        }
+        searchClone.setLinkedData(linkedDataClone);
         return searchClone;
+    }
+
+    public void set(Searchable source, Searchable result, ArrayList<Data> linked) {
+        this.source = source;
+        this.result = (MetaData) result;
+        this.linkedData = linked;
     }
 }

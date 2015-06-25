@@ -42,9 +42,7 @@ import org.meta.common.MetamphetUtils;
  */
 public class MetaData extends Searchable {
 
-    private List<Data>            linkedData    = null;
     private TreeSet<MetaProperty> properties    = null;
-    private List<String>          tmpLinkedData;
 
     /**
      * needed for java Reflection
@@ -61,33 +59,12 @@ public class MetaData extends Searchable {
      */
     protected MetaData(
             MetHash hash,
-            List<Data> linkedData,
             TreeSet<MetaProperty> properties
     ) {
         super(hash);
-        this.setLinkedData(linkedData);
         this.setProperties(properties);
     }
-
-    /**
-     *
-     * @return A read-only list of every data linked to this metaData
-     */
-    public List<Data> getLinkedData() {
-        return Collections.unmodifiableList(linkedData);
-    }
-
-    /**
-     * Set linked data
-     *
-     * @param linkedData
-     */
-    protected void setLinkedData(List<Data> linkedData) {
-        this.linkedData = linkedData;
-        this.updateState();
-    }
-
-    /**
+   /**
      * this will only return copies.
      * @param name
      * @return
@@ -121,13 +98,7 @@ public class MetaData extends Searchable {
 
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
-
-        BasicBSONList bsonLinkedData = new BasicBSONList();
-        for (int i = 0; i < linkedData.size(); ++i) {
-            bsonLinkedData.put(i, linkedData.get(i).getHash().toString());
-        }
-        bsonObject.put("linkedData", bsonLinkedData);
-        //foreach proerties, get her value and name and put it in the json
+       //foreach proerties, get her value and name and put it in the json
         BasicBSONList bsonProperties = new BasicBSONList();
         int count = 0;
         for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();count++) {
@@ -145,25 +116,19 @@ public class MetaData extends Searchable {
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         //write every properties
         fragment.put("_nbProperties", (properties.size() + "").getBytes());
-        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
+        int count = 0;
+        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();count++) {
             MetaProperty property = i.next();
-            fragment.put("_i" + i + "_property_name", property.getValue().getBytes());
-            fragment.put("_i" + i + "_property_value", property.getName().getBytes());
+            fragment.put("_i" + count + "_property_name", property.getValue().getBytes());
+            fragment.put("_i" + count + "_property_value", property.getName().getBytes());
         }
-        //write every data's hash
-        fragment.put("_nbLinkedData", (linkedData.size() + "").getBytes());
-        for (int i = 0; i < linkedData.size(); i++) {
-            Data data = linkedData.get(i);
-            fragment.put("_i" + i + "_data", data.getHash().toByteArray());
-        }
-    }
+   }
 
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a metaData, her state is no more a real
         //MetaData but a temporary metaData, it means, it only represent what's
         //over the network, so source = null ans result = null
-        linkedData = null;
         //but not properties
         properties = new TreeSet<MetaProperty>();
         //and the Search cannot be write or updated in database
@@ -178,34 +143,9 @@ public class MetaData extends Searchable {
             fragment.remove("_i" + i + "_property_value");
             properties.add(property);
         }
-
-        //extract all linkedDatas and delete it from the fragment too
-        int nbLinkedData = Integer.parseInt(new String(fragment.get("_nbLinkedData")));
-        tmpLinkedData = new ArrayList<String>();
-        for (int i = 0; i < nbLinkedData; i++) {
-            String data = new String(fragment.get("_i" + i + "_data"));
-            fragment.remove("_i" + i + "_data");
-            tmpLinkedData.add(data);
-        }
-    }
-
-    /**
-     *
-     * @return a list of the futures results
-     */
-    public List<String> getTmpLinkedData() {
-        return tmpLinkedData;
-    }
-
+   }
     @Override
     public Searchable toOnlyTextData() {
-        MetaData metaDataClone = new MetaData();
-        ArrayList<Data> linkedDataClone = new ArrayList<Data>();
-        for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
-            Data data = i.next();
-            linkedDataClone.add((Data) data.toOnlyTextData());
-        }
-        metaDataClone.setLinkedData(linkedDataClone);
-        return metaDataClone;
+        return this;
     }
 }

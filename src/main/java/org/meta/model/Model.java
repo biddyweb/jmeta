@@ -4,9 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import kyotocabinet.DB;
+
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
@@ -285,7 +289,7 @@ public class Model {
         }
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("properties");
         BSONObject tmp;
-        List<MetaProperty> properties = new ArrayList<MetaProperty>();
+        TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
         for (String key : bsonProperties.keySet()) {
             tmp = (BSONObject) bsonProperties.get(key);
             MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());

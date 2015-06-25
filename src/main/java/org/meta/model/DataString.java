@@ -46,7 +46,7 @@ public class DataString extends Data {
      * @param hashCode
      * @param file
      */
-    public DataString(MetHash hash, String string) {
+    protected DataString(MetHash hash, String string) {
         super(hash);
         this.string = string;
     }
@@ -61,9 +61,15 @@ public class DataString extends Data {
     /**
      * @param file the file to set
      */
-    public void setString(String string) {
+    protected void setString(String string) {
         this.string = string;
         this.updateState();
+        reHash();
+    }
+    @Override
+    public MetHash reHash() {
+        hash = MetamphetUtils.makeSHAHash(string);
+        return hash;
     }
 
     /**

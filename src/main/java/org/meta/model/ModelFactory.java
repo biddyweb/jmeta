@@ -9,7 +9,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.meta.common.MetHash;
+import java.util.TreeSet;
+
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -41,59 +42,20 @@ public class ModelFactory {
     public Searchable getInstance(ModelType type) {
         return pools.get(type).getInstance();
     }
-
-    public Search getSearch() {
+    
+    protected Search getSearch() {
         return (Search) pools.get(ModelType.SEARCH).getInstance();
     }
-
-    /**
-     * Convenience search builder
-     *
-     * @param hash The hash of the created search
-     *
-     * @return The search with specified hash.
-     */
-    public Search getSearch(MetHash hash) {
-        Search search = this.getSearch();
-
-        search.setHash(hash);
-        return search;
+    
+    public Search createSearch(Searchable source, MetaData result){
+         Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
+         search.setSource(source);
+         search.setResult(result);
+         return search;
     }
 
-    /**
-     * Convenience Search builder.
-     *
-     * @param hash
-     * @param source
-     * @param results
-     *
-     * @return The fully-initialized search
-     */
-    public Search getSearch(MetHash hash, Searchable source, MetaData result) {
-        Search search = this.getSearch();
-
-        search.setHash(hash);
-        search.setSource(source);
-        search.setResult(result);
-        return search;
-    }
-
-    public DataString getDataString() {
+    protected DataString getDataString() {
         return (DataString) pools.get(ModelType.DATASTRING).getInstance();
-    }
-
-    /**
-     * Convenience datastring builder
-     *
-     * @param hash The hash of the created datastring
-     *
-     * @return The datastring with specified hash.
-     */
-    public DataString getDataString(MetHash hash) {
-        DataString data = this.getDataString();
-
-        data.setHash(hash);
-        return data;
     }
 
     /**
@@ -104,10 +66,8 @@ public class ModelFactory {
      *
      * @return The fully-initialized dataString
      */
-    public DataString getDataString(MetHash hash, String data) {
+    public DataString createDataString(String data) {
         DataString dataString = this.getDataString();
-
-        dataString.setHash(hash);
         dataString.setString(data);
         return dataString;
     }
@@ -115,22 +75,8 @@ public class ModelFactory {
     /**
      * @return An instance of DataFile.
      */
-    public DataFile getDataFile() {
+    protected DataFile getDataFile() {
         return (DataFile) pools.get(ModelType.DATAFILE).getInstance();
-    }
-
-    /**
-     * Convenience datafile builder
-     *
-     * @param hash The hash of the created datafile
-     *
-     * @return The datafile with specified hash.
-     */
-    public DataFile getDataFile(MetHash hash) {
-        DataFile data = this.getDataFile();
-
-        data.setHash(hash);
-        return data;
     }
 
     /**
@@ -141,30 +87,14 @@ public class ModelFactory {
      *
      * @return The fully-initialized dataFile
      */
-    public DataFile getDataFile(MetHash hash, File file) {
+    public DataFile createDataFile(File file) {
         DataFile dataFile = this.getDataFile();
-
-        dataFile.setHash(hash);
         dataFile.setFile(file);
         return dataFile;
     }
 
-    public MetaData getMetaData() {
+    protected MetaData getMetaData() {
         return (MetaData) pools.get(ModelType.METADATA).getInstance();
-    }
-
-    /**
-     * Convenience MetaData builder.
-     *
-     * @param hash
-     *
-     * @return An instance of metaData with specified hash.
-     */
-    public MetaData getMetaData(MetHash hash) {
-        MetaData metaData = this.getMetaData();
-
-        metaData.setHash(hash);
-        return metaData;
     }
 
     /**
@@ -176,10 +106,8 @@ public class ModelFactory {
      *
      * @return The fully-initialized MetaData.
      */
-    public MetaData getMetaData(MetHash hash, List<Data> datas, List<MetaProperty> props) {
+    public MetaData createMetaData(List<Data> datas, TreeSet<MetaProperty> props) {
         MetaData metaData = this.getMetaData();
-
-        metaData.setHash(hash);
         metaData.setLinkedData(datas);
         metaData.setProperties(props);
         return metaData;

@@ -54,7 +54,7 @@ public abstract class Searchable {
      *
      * @param hashCode
      */
-    public Searchable(MetHash hash) {
+    protected Searchable(MetHash hash) {
         this.hash = hash;
         state = ObjectState.CREATED;
     }
@@ -70,7 +70,7 @@ public abstract class Searchable {
     /**
      * @param hashCode the hashCode to set
      */
-    public void setHash(MetHash hash) {
+    protected void setHash(MetHash hash) {
         this.hash = hash;
     }
 
@@ -87,7 +87,7 @@ public abstract class Searchable {
      *
      * @param state ObjectState the state.
      */
-    public void setState(ObjectState state) {
+    protected void setState(ObjectState state) {
         this.state = state;
     }
 
@@ -102,6 +102,8 @@ public abstract class Searchable {
             state = ObjectState.DIRTY;
         }
     }
+    
+    public abstract MetHash reHash();
 
     /**
      *

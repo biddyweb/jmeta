@@ -1,8 +1,10 @@
 package org.meta.model;
 
 import java.util.LinkedHashMap;
+
 import org.bson.BSONObject;
 import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 
 /*
  *    JMeta - Meta's java implementation
@@ -45,7 +47,7 @@ public class Search extends Searchable {
      * @param source search's source
      * @param result search's results
      */
-    public Search(
+    protected Search(
             MetHash hash,
             Searchable source,
             MetaData result
@@ -68,10 +70,9 @@ public class Search extends Searchable {
      *
      * @param source
      */
-    public void setSource(Searchable source) {
+    protected void setSource(Searchable source) {
         this.source = source;
         this.updateState();
-        //TODO make the hash here only if source and results are sets
     }
 
     /**
@@ -86,10 +87,19 @@ public class Search extends Searchable {
      *
      * @param result
      */
-    public void setResult(MetaData result) {
+    protected void setResult(MetaData result) {
         this.result = result;
         this.updateState();
-        //TODO make the hash hehre only if source and results are sets
+        reHash();
+    }
+    
+    @Override
+    public MetHash reHash() {
+        String srcHash = source != null ? source.getHash().toString() : "";
+        String dstHash = result != null ? result.getHash().toString() : "";
+        String concat = srcHash+dstHash;
+        hash = MetamphetUtils.makeSHAHash(concat);
+        return hash;
     }
 
     /**

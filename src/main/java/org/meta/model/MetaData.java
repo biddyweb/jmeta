@@ -1,15 +1,18 @@
 package org.meta.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 
 /*
  *    JMeta - Meta's java implementation
@@ -39,9 +42,9 @@ import org.meta.common.MetHash;
  */
 public class MetaData extends Searchable {
 
-    private List<Data> linkedData = null;
-    private List<MetaProperty> properties = null;
-    private List<String> tmpLinkedData;
+    private List<Data>            linkedData    = null;
+    private TreeSet<MetaProperty> properties    = null;
+    private List<String>          tmpLinkedData;
 
     /**
      * needed for java Reflection
@@ -56,10 +59,10 @@ public class MetaData extends Searchable {
      * @param hashCode hash of this MetaData
      * @param linkedData every data linked to this metaData
      */
-    public MetaData(
+    protected MetaData(
             MetHash hash,
             List<Data> linkedData,
-            List<MetaProperty> properties
+            TreeSet<MetaProperty> properties
     ) {
         super(hash);
         this.setLinkedData(linkedData);
@@ -75,51 +78,45 @@ public class MetaData extends Searchable {
     }
 
     /**
-     *
-     * @param datas A list of data to add to the list.
-     */
-    public void addLinkedData(Data... datas) {
-        for (Data data : datas) {
-            this.linkedData.add(data);
-        }
-        this.updateState();
-    }
-
-    /**
      * Set linked data
      *
      * @param linkedData
      */
-    public void setLinkedData(List<Data> linkedData) {
+    protected void setLinkedData(List<Data> linkedData) {
         this.linkedData = linkedData;
         this.updateState();
     }
 
     /**
-     * @return A read-only list of the metadata's properties
+     * this will only return copies.
+     * @param name
+     * @return
      */
-    public List<MetaProperty> getProperties() {
-        return Collections.unmodifiableList(properties);
-    }
-
-    /**
-     *
-     * @param properties properties to add to the metatdata's property list
-     */
-    public void addProperties(MetaProperty ...properties) {
-        for (MetaProperty prop : properties) {
-            this.properties.add(prop);
+    public ArrayList<MetaProperty> getProperties(){
+        ArrayList<MetaProperty> property = new ArrayList<MetaProperty>();
+        for(Iterator<MetaProperty> i = properties.iterator(); i.hasNext();){
+            MetaProperty next = i.next();
+            property.add(new MetaProperty(next));
         }
-        this.updateState();
+        return property;
     }
-
     /**
      * @param properties the properties to set
      */
-    public void setProperties(List<MetaProperty> properties) {
+    protected void setProperties(TreeSet<MetaProperty> properties) {
         this.properties = properties;
         this.updateState();
-        //TODO make the hash here
+        reHash();
+    }
+    @Override
+    public MetHash reHash() {
+        String concat = "";
+        for(Iterator<MetaProperty> i = properties.iterator();i.hasNext();){
+            MetaProperty property = i.next();
+            concat = concat + property.getName()+":"+property.getValue()+";";
+        }
+        hash = MetamphetUtils.makeSHAHash(concat);
+        return null;
     }
 
     public BSONObject getBson() {
@@ -132,12 +129,13 @@ public class MetaData extends Searchable {
         bsonObject.put("linkedData", bsonLinkedData);
         //foreach proerties, get her value and name and put it in the json
         BasicBSONList bsonProperties = new BasicBSONList();
-        for (int i = 0; i < properties.size(); i++) {
-            MetaProperty property = properties.get(i);
+        int count = 0;
+        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();count++) {
+            MetaProperty property = i.next();
             BasicBSONObject bsonProperty = new BasicBSONObject();
             bsonProperty.put("name", property.getName());
             bsonProperty.put("value", property.getValue());
-            bsonProperties.put(i, bsonProperty);
+            bsonProperties.put(count, bsonProperty);
         }
         bsonObject.put("properties", bsonProperties);
         return bsonObject;
@@ -147,8 +145,8 @@ public class MetaData extends Searchable {
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         //write every properties
         fragment.put("_nbProperties", (properties.size() + "").getBytes());
-        for (int i = 0; i < properties.size(); i++) {
-            MetaProperty property = properties.get(i);
+        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
+            MetaProperty property = i.next();
             fragment.put("_i" + i + "_property_name", property.getValue().getBytes());
             fragment.put("_i" + i + "_property_value", property.getName().getBytes());
         }
@@ -167,7 +165,7 @@ public class MetaData extends Searchable {
         //over the network, so source = null ans result = null
         linkedData = null;
         //but not properties
-        properties = new ArrayList<MetaProperty>();
+        properties = new TreeSet<MetaProperty>();
         //and the Search cannot be write or updated in database
 
         //extract all linkedDatas and delete it from the fragment too

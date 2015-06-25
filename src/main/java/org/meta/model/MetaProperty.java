@@ -25,9 +25,9 @@ package org.meta.model;
  * key value unit. I know that a list of MetaProperty act more like an hashMap,
  * but I wanted to put them out of MetaData.
  */
-public class MetaProperty {
+public class MetaProperty implements Comparable<MetaProperty>{
 
-    private String name = "";
+    private String name  = "";
     private String value = "";
 
     /**
@@ -38,6 +38,16 @@ public class MetaProperty {
         super();
         this.name = name;
         this.value = value;
+    }
+    
+    /**
+     * copy constructor
+     * @param other
+     */
+    public MetaProperty(MetaProperty other){
+        super();
+        this.name = other.name;
+        this.value = other.value;
     }
 
     /**
@@ -67,5 +77,10 @@ public class MetaProperty {
     public void setValue(String value) {
         this.value = value;
     }
+
+     @Override
+     public int compareTo(MetaProperty o) {
+          return (name+":"+value).compareTo((o.name+":"+o.value));
+     }
 
 }

@@ -50,7 +50,7 @@ public class DataFile extends Data {
      * @param hashCode
      * @param file
      */
-    public DataFile(MetHash hash, File file) {
+    protected DataFile(MetHash hash, File file) {
         super(hash);
         this.file = file;
     }
@@ -65,10 +65,16 @@ public class DataFile extends Data {
     /**
      * @param file the file to set
      */
-    public void setFile(File file) {
+    protected void setFile(File file) {
         this.file = file;
         this.updateState();
-        //TODO make the hash here !
+        reHash();
+    }
+    
+    @Override
+    public MetHash reHash() {
+        hash = MetamphetUtils.makeSHAHash(file);
+        return hash;
     }
 
     public BSONObject getBson() {
@@ -161,9 +167,9 @@ public class DataFile extends Data {
                         //TODO write here the code needed to ask unCorrect blocs.
                     }
                 }
+                fos.close();
             }
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
     }

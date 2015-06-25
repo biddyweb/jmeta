@@ -43,6 +43,7 @@ public class Get extends AbstractWebService{
 
     @Override
     public void executeCommand(Map<String, String[]> map) {
+        results = new ArrayList<DataString>();
         String id = getParameter("id", map);
         
         if(id != ""){
@@ -54,10 +55,10 @@ public class Get extends AbstractWebService{
             DataString  source       = factory.createDataString("id");
             Search      contentSearch= factory.createSearch(source, metaData);
 
-//            super.controler.search(  contentSearch.getHash(),
-//                                    "SimpleHashMap",
-//                                    "getCommand",
-//                                    this);
+            super.controler.search(  contentSearch.getHash(),
+                                    "SimpleHashMap",
+                                    "getCommand",
+                                    this);
             
             try {
                 Search localResult =

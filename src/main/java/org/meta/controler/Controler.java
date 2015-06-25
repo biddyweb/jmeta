@@ -95,11 +95,9 @@ public class Controler {
                 String strTCPClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".TCPClass");
                 //load web service class
                 String strWSClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".WSClass");
-
                 try {
                     Class<?> clazzTCP = Class.forName(strTCPClass);
                     Class<?> clazzWS = Class.forName(strWSClass);
-
                     //load TCPControler
                     AbstractPluginTCPControler tcpControler
                             = (AbstractPluginTCPControler) clazzTCP.newInstance();

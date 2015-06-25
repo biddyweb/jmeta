@@ -51,7 +51,7 @@ public class Put extends AbstractWebService{
 
         if(content != null && id != null){
             output.flush();
-            DataString res = factory.createDataString("content");
+            DataString res = factory.createDataString(content);
             List<Data> lst = new ArrayList<Data>();
             lst.add(res);
             TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();

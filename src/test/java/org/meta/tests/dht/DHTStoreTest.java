@@ -38,6 +38,8 @@ public class DHTStoreTest extends BaseDHTTests {
 
     /**
      * Test the store process in the DHT.
+     *
+     * @throws java.net.UnknownHostException
      */
     @Test
     public void testSimpleStore() throws UnknownHostException {

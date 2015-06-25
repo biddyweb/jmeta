@@ -64,6 +64,12 @@ public abstract class BaseDHTTests extends MetaBaseTests {
         Logger.getLogger(BaseDHTTests.class.getCanonicalName()).log(Level.INFO, "Tests dht nodes Created.");
     }
 
+    @Override
+    public void tearDown() {
+        dhtNode1.stop();
+        dhtNode2.stop();
+    }
+
     public static DHTConfiguration createDhtConfig(Identity id, short port, Collection<MetaPeer> peers, boolean broadcast, boolean localOnly) {
         DHTConfiguration dhtConfig = new DHTConfiguration();
 
@@ -77,13 +83,15 @@ public abstract class BaseDHTTests extends MetaBaseTests {
 
     public static void setupDht1() {
         try {
-            dhtNode1 = MetaDHT.getInstance();
             //Hard-coded configuration
             configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
                     DHT1_PORT,
                     DHTConfiguration.peersFromString(DHT2_CONFIG),
                     DHT1_BROADCAST,
                     true);
+
+            dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+            
             dhtNode1.setConfiguration(configurationDht1);
             dhtNode1.start();
         } catch (IOException ex) {
@@ -94,25 +102,19 @@ public abstract class BaseDHTTests extends MetaBaseTests {
 
     public static void setupDht2() {
         try {
-            dhtNode2 = MetaDHT.getInstance();
             //Hard-coded configuration
             configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
                     DHT2_PORT,
                     DHTConfiguration.peersFromString(DHT1_CONFIG),
                     DHT2_BROADCAST,
                     true);
+            dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
             dhtNode2.setConfiguration(configurationDht2);
             dhtNode2.start();
         } catch (IOException ex) {
             Logger.getLogger(BaseDHTTests.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         }
-    }
-
-    @Override
-    public void tearDown() {
-        dhtNode1.stop();
-        dhtNode2.stop();
     }
 
     /**
@@ -133,7 +135,6 @@ public abstract class BaseDHTTests extends MetaBaseTests {
 
             @Override
             public void complete(BootstrapOperation operation) {
-                System.out.println("bootstrap complete!");
                 if (assertIfEmpty && operation.getBootstrapTo().isEmpty()) {
                     org.junit.Assert.fail("Bootstrap operation failed.");
                 }
@@ -157,7 +158,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
 
     /**
      * Utility function, store the given hash in the given DHT.
-     * 
+     *
      * @param dht
      * @param hash
      */

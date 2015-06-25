@@ -1,15 +1,12 @@
 package org.meta.plugin;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
-import org.meta.dht.DHTOperation;
 import org.meta.dht.FindPeersOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;

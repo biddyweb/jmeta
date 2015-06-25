@@ -21,7 +21,6 @@ import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
-import org.meta.plugin.webservice.forms.organizers.ColumnOrganizer;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 
 public class SearchSubtitles extends AbstractWebService{
@@ -104,8 +103,7 @@ public class SearchSubtitles extends AbstractWebService{
 
                 MetaData metaData = search.getResult();
                 List<Data> linkDatas =    metaData.getLinkedData();
-                for (Iterator<Data> k = linkDatas.iterator(); k
-                        .hasNext();) {
+                for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     //TODO what to do with the output ?
                     //I think, fill the interface with links, should be good

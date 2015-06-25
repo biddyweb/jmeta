@@ -67,13 +67,13 @@ public class TomP2pStoreOperation extends StoreOperation {
      */
     private byte[] serializeAddress(Short port, InetAddress addr) {
         byte[] addrBytes = addr.getAddress();
-        short dataSize = (short) (Short.BYTES + addrBytes.length);
+        short dataSize = (short) (2 + addrBytes.length);
         byte[] data = new byte[dataSize];
 
         data[0] = (byte) (port & 0x00ff);
         data[1] = (byte) ((port >> 8) & 0x00ff);
         for (short i = 2; i < dataSize; ++i) {
-            data[i] = addrBytes[i - Short.BYTES];
+            data[i] = addrBytes[i - 2];
         }
         return data;
     }

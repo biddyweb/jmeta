@@ -94,13 +94,13 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
      */
     private MetaPeer peerFromData(byte[] data) {
         MetaPeer peer = new MetaPeer();
-        short addrSize = (short) (data.length - Short.BYTES);
+        short addrSize = (short) (data.length - 2);
         byte addrBytes[] = new byte[addrSize];
         short port = (short) (((data[1] & 0xFF) << 8) | (data[0] & 0xFF));
 
         peer.setPort(port);
         for (int i = 0; i < addrSize; ++i) {
-            addrBytes[i] = data[i + Short.BYTES];
+            addrBytes[i] = data[i + 2];
         }
         try {
             InetAddress inetAddr = InetAddress.getByAddress(addrBytes);

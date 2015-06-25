@@ -2,9 +2,13 @@ package org.meta.tests;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
+
+import javax.swing.plaf.metal.MetalPopupMenuSeparatorUI;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,11 +46,13 @@ public class ModelTest {
         System.out.println("Took : " + (endTime - startTime) + "ms to instanciate model");
     }
 
+	private MetHash hash;
+
     @Test
     public void basicTest() {
         try {
-            MetHash hash = MetamphetUtils.makeSHAHash("hashData1");
-            DataFile data = model.getFactory().getDataFile(hash, new File("db/meta.kch"));
+            DataFile data = model.getFactory().createDataFile(new File("static/css/meta.css"));
+            hash = data.getHash();
             Assert.assertTrue(model.set(data));
             Assert.assertNotNull(model.get(hash));
         } catch (Exception ex) {
@@ -58,14 +64,16 @@ public class ModelTest {
     @Test
     public void testDataStringUpdate() {
         try {
-            MetHash hash = MetamphetUtils.makeSHAHash("hashDataUpdate");
-            DataString data = model.getFactory().getDataString(hash, "Data");
+            //update basicTest writed data
+            DataString data = model.getFactory().createDataString("Data");
             Assert.assertTrue(model.set(data));
-            data.setString("newData");
-            Assert.assertTrue(model.set(data));
+
+            //get new hash
+            hash = data.getHash();
+            //lookup in db
             DataString dataFromDb = model.getDataString(hash);
             Assert.assertNotNull(dataFromDb);
-            Assert.assertEquals("newData", dataFromDb.getString());
+            Assert.assertEquals("Data", dataFromDb.getString());
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
             logger.error(null, ex);
@@ -74,44 +82,40 @@ public class ModelTest {
 
     @Test
     public void testMetaDataUpdate() {
-        MetHash hash = MetamphetUtils.makeSHAHash("hashMetaDataUpdate");
-        DataString data = model.getFactory().getDataString(MetamphetUtils.makeSHAHash("hashLinkedData"), "data");
+        //create a strin data
+        DataString data = model.getFactory().createDataString("data");
+        //create a metaData
         MetaProperty prop = new MetaProperty("prop", "value");
-        List<MetaProperty> props = Collections.singletonList(prop);
-        MetaData metaData = model.getFactory().getMetaData(hash, Collections.singletonList((Data) data), props);
+        TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
+        properties.add(prop);
+        ArrayList<Data> a = new ArrayList<Data>();
+        a.add(data);
+        MetaData metaData = model.getFactory().createMetaData(a, properties);
         Assert.assertTrue(model.set(metaData));
 
-        props.get(0).setValue("newValue");
-        metaData.setProperties(props);
-        data = (DataString) metaData.getLinkedData().get(0);
-        data.setString("newData");
-        metaData.setLinkedData(Collections.singletonList((Data) data));
         Assert.assertTrue(model.set(metaData));
 
-        MetaData fromDb = model.getMetaData(hash);
+        MetaData fromDb = model.getMetaData(metaData.getHash());
         Assert.assertNotNull(fromDb);
-        Assert.assertEquals("newValue", fromDb.getProperties().get(0).getValue());
-        Assert.assertEquals("newData", ((DataString) fromDb.getLinkedData().get(0)).getString());
+        Assert.assertEquals("value", ((MetaProperty)fromDb.getProperties().toArray()[0]).getValue());
+        Assert.assertEquals("data", ((DataString) fromDb.getLinkedData().get(0)).getString());
     }
 
     @Test
     public void testSearchUpdate() {
         try {
-            MetHash hash = MetamphetUtils.makeSHAHash("hashSearchUpdate");
-            DataString source = model.getFactory().getDataString(MetamphetUtils.makeSHAHash("hashDataSource"), "data");
-            DataString dataMetaData = model.getFactory().getDataString(MetamphetUtils.makeSHAHash("hashLinkedDataResults"), "dataTest");
+            DataString source = model.getFactory().createDataString("data");
+            DataString dataMetaData = model.getFactory().createDataString("dataTest");
             MetaProperty prop = new MetaProperty("prop", "value");
-            List<MetaProperty> props = Collections.singletonList(prop);
-            MetHash metadataHash = MetamphetUtils.makeSHAHash("metadataHash");
-            MetaData metaData = model.getFactory().getMetaData(metadataHash, Collections.singletonList((Data) dataMetaData), props);
-            Search search = model.getFactory().getSearch(hash, source, metaData);
+            TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
+            props.addAll(Collections.singletonList(prop));
+            MetaData metaData = model.getFactory().createMetaData(Collections.singletonList((Data) dataMetaData), props);
+            Search search = model.getFactory().createSearch(source, metaData);
             Assert.assertTrue("1 model.set should be true!", model.set(search));
 
-            ((DataString) search.getSource()).setString("newSourceData");
-            Assert.assertTrue("2 model.set should be true!", model.set(search));
-            Search fromDb = model.getSearch(hash);
+            Search fromDb = model.getSearch(search.getHash());
             Assert.assertNotNull("object from db should be not null!", fromDb);
-            Assert.assertEquals("Source data should be the same!!", "newSourceData", ((DataString) fromDb.getSource()).getString());
+            Assert.assertEquals("Source data should be the same!!", "data", ((DataString) fromDb.getSource()).getString());
         } catch (Exception ex) {
             //System.err.println("ERROR IN testSearchUpdate");
             ex.printStackTrace();
@@ -130,32 +134,24 @@ public class ModelTest {
              *****************************************************************
              */
             // -- Data
-            MetHash dataHash = MetamphetUtils.makeSHAHash("hashData1");
-            DataFile data = model.getFactory().getDataFile(dataHash, new File("db/meta.kch"));
+            DataFile data = model.getFactory().createDataFile(new File("static/css/meta.css"));
             List<Data> linkedData = new ArrayList<Data>();
             linkedData.add(data);
 
             // -- MetaProperty
             MetaProperty property = new MetaProperty("st", "fr");
-            List<MetaProperty> properties = new ArrayList<MetaProperty>();
+            TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
             properties.add(property);
 
             // -- MetaData answer
-            MetHash metaDataHash = MetamphetUtils.makeSHAHash("hashMetaData");
-            MetaData metaData = model.getFactory().getMetaData(
-                    metaDataHash,
-                    linkedData,
-                    properties);
+            
+            MetaData metaData = model.getFactory().createMetaData(linkedData, properties);
 
             // -- MetaData source
-            MetHash data2Hash = MetamphetUtils.makeSHAHash("hashData2");
-            DataFile data2 = model.getFactory().getDataFile(
-                    data2Hash,
-                    new File("db/meta.kch"));
+            DataFile data2 = model.getFactory().createDataFile(new File("static/css/bootstrap-theme.css.map"));
 
             // -- Search
-            MetHash searchHash = MetamphetUtils.makeSHAHash("hashSearch");
-            Search search = model.getFactory().getSearch(searchHash, data2, metaData);
+            Search search = model.getFactory().createSearch(data2, metaData);
 
             /**
              * *****************************************************************
@@ -180,16 +176,16 @@ public class ModelTest {
              *
              *****************************************************************
              */
-            Search readSearch = model.getSearch(searchHash);
+            Search readSearch = model.getSearch(search.getHash());
             Assert.assertNotNull("readsearch", readSearch);
 
-            Data readData = model.getDataFile(dataHash);
+            Data readData = model.getDataFile(data.getHash());
             Assert.assertNotNull("readData", readData);
 
-            MetaData readMetaData = model.getMetaData(metaDataHash);
+            MetaData readMetaData = model.getMetaData(metaData.getHash());
             Assert.assertNotNull("readMetaData", readMetaData);
 
-            Data readData2 = model.getDataFile(data2Hash);
+            Data readData2 = model.getDataFile(data2.getHash());
             Assert.assertNotNull("readData2", readData2);
 
             /**
@@ -201,9 +197,9 @@ public class ModelTest {
              *
              *****************************************************************
              */
+            Assert.assertTrue(model.remove(readData));
             Assert.assertTrue(model.remove(readData2));
             Assert.assertTrue(model.remove(readMetaData));
-            Assert.assertTrue(model.remove(readData));
         } catch (Exception ex) {
             logger.error(null, ex);
         }
@@ -214,10 +210,10 @@ public class ModelTest {
         MetHash hash;
         int NB_IT = 100000;
         startTime = new Date().getTime();
-        File file = new File("db/meta.kch");
+        File file = new File("static/css/meta.css");
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            DataFile data = model.getFactory().getDataFile(hash, file);
+            DataFile data = model.getFactory().createDataFile(file);
             Assert.assertTrue("perf set" + hash, model.set(data));
         }
         endTime = new Date().getTime();
@@ -225,7 +221,7 @@ public class ModelTest {
         startTime = new Date().getTime();
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            DataFile data = model.getFactory().getDataFile(hash, file);
+            DataFile data = model.getFactory().createDataFile(file);
             Assert.assertTrue("perf set" + hash, model.set(data));
         }
         endTime = new Date().getTime();
@@ -253,25 +249,22 @@ public class ModelTest {
 
         class testThread extends Thread {
 
-            private MetHash hash;
             private DataString data;
             private Integer value;
             public boolean res;
 
             testThread(Integer id) {
-                value = 0;
-                hash = MetamphetUtils.makeSHAHash(id.toString());
-                data = model.getFactory().getDataString(hash, value.toString());
+                value = id;
+                data = model.getFactory().createDataString(value.toString());
                 res = true;
             }
 
             public void run() {
                 DataString tmp;
 
-                for (int i = 0; i < NB_IT && res; ++i, ++value) {
-                    data.setString(value.toString());
+                for (int i = 0; i < NB_IT && res; ++i) {
                     res = model.set(data);
-                    tmp = model.getDataString(hash);
+                    tmp = model.getDataString(data.getHash());
                     res = res && tmp != null;
                     res = res && value == Integer.valueOf(tmp.getString());
                 }

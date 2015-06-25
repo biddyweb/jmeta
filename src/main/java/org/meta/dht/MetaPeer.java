@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -18,19 +18,20 @@
 package org.meta.dht;
 
 import java.net.InetAddress;
+import java.util.Objects;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 
 /**
  *
- * Class representing a peer in the DHT. Must a least contain an ip address, a
- * port and a hash (see MetHash) to be contacted through the dht.
+ * Class representing a peer in the DHT.
+ *
+ * Must a least contain an ip address and a port.
  *
  * May also contain other information and operation related to a peer.
  *
- * @see MetHash
+ * @see {@link MetHash}
  *
- * @author nico
  */
 public class MetaPeer {
 
@@ -101,10 +102,30 @@ public class MetaPeer {
             sb.append(this.id.toString()).append(":");
         }
         if (this.getAddress() != null) {
-            sb.append(this.getAddress().getCanonicalHostName()).append(":");
+            sb.append(this.getAddress().getHostAddress()).append(":");
         }
-        sb.append(this.port).append("]");
+        sb.append(this.port).append(" ]");
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MetaPeer other = (MetaPeer) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.address, other.address)) {
+            return false;
+        }
+        if (this.port != other.port) {
+            return false;
+        }
+        return true;
+    }
 }

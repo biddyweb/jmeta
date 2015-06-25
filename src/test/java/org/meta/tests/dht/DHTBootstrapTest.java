@@ -27,7 +27,7 @@ import org.meta.dht.MetaPeer;
 /**
  * @author nico
  */
-public class DHTBootstrapTest extends AbstractDHTTests {
+public class DHTBootstrapTest extends BaseDHTTests {
 
     /**
      * Test the bootstrap process to another peer. Assumes the another node is
@@ -36,8 +36,8 @@ public class DHTBootstrapTest extends AbstractDHTTests {
     @Test
     public void testBootstrapSuccess() {
 
-        dht1.setConfiguration(configurationDht1); //Reset valid configuration
-        BootstrapOperation bootstrapOperation = (BootstrapOperation) dht1.bootstrap().awaitUninterruptibly();
+        dhtNode1.setConfiguration(configurationDht1); //Reset valid configuration
+        BootstrapOperation bootstrapOperation = (BootstrapOperation) dhtNode1.bootstrap().awaitUninterruptibly();
 
         if (bootstrapOperation.isFailure()) {
             Logger.getLogger(DHTBootstrapTest.class.getName()).log(Level.SEVERE,

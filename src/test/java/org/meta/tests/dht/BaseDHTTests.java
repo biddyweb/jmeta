@@ -18,6 +18,7 @@
 package org.meta.tests.dht;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,22 +31,24 @@ import org.meta.dht.BootstrapOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
+import org.meta.dht.StoreOperation;
+import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.tests.MetaBaseTests;
 
 /**
  *
  */
-public abstract class AbstractDHTTests extends MetaBaseTests {
+public abstract class BaseDHTTests extends MetaBaseTests {
 
     public static final short DHT1_PORT = 15000;
     public static final short DHT2_PORT = 15001;
-    public static final String DHT1_CONFIG = "127.0.0.1:" + DHT1_PORT;
-    public static final String DHT2_CONFIG = "127.0.0.1:" + DHT2_PORT;
+    public static final String DHT1_CONFIG = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT1_PORT;
+    public static final String DHT2_CONFIG = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT2_PORT;
     public static final Boolean DHT1_BROADCAST = false;
     public static final Boolean DHT2_BROADCAST = false;
 
-    protected static MetaDHT dht1;
-    protected static MetaDHT dht2;
+    protected static MetaDHT dhtNode1;
+    protected static MetaDHT dhtNode2;
     protected static DHTConfiguration configurationDht1;
     protected static DHTConfiguration configurationDht2;
 
@@ -55,13 +58,13 @@ public abstract class AbstractDHTTests extends MetaBaseTests {
     @Override
     public void setUp() {
         super.setUp();
-        Logger.getLogger(AbstractDHTTests.class.getCanonicalName()).log(Level.INFO, "Creating tests dht nodes...");
+        Logger.getLogger(BaseDHTTests.class.getCanonicalName()).log(Level.INFO, "Creating tests dht nodes...");
         setupDht1();
         setupDht2();
-        Logger.getLogger(AbstractDHTTests.class.getCanonicalName()).log(Level.INFO, "Tests dht nodes Created.");
+        Logger.getLogger(BaseDHTTests.class.getCanonicalName()).log(Level.INFO, "Tests dht nodes Created.");
     }
 
-    private static DHTConfiguration initDhtConfig(Identity id, short port, Collection<MetaPeer> peers, boolean broadcast, boolean localOnly) {
+    public static DHTConfiguration createDhtConfig(Identity id, short port, Collection<MetaPeer> peers, boolean broadcast, boolean localOnly) {
         DHTConfiguration dhtConfig = new DHTConfiguration();
 
         dhtConfig.setIdentity(id);
@@ -74,44 +77,50 @@ public abstract class AbstractDHTTests extends MetaBaseTests {
 
     public static void setupDht1() {
         try {
-            dht1 = MetaDHT.getInstance();
+            dhtNode1 = MetaDHT.getInstance();
             //Hard-coded configuration
-            configurationDht1 = initDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+            configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
                     DHT1_PORT,
                     DHTConfiguration.peersFromString(DHT2_CONFIG),
                     DHT1_BROADCAST,
                     true);
-            dht1.setConfiguration(configurationDht1);
-            dht1.start();
+            dhtNode1.setConfiguration(configurationDht1);
+            dhtNode1.start();
         } catch (IOException ex) {
-            Logger.getLogger(AbstractDHTTests.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseDHTTests.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         }
     }
 
     public static void setupDht2() {
         try {
-            dht2 = MetaDHT.getInstance();
+            dhtNode2 = MetaDHT.getInstance();
             //Hard-coded configuration
-            configurationDht2 = initDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+            configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
                     DHT2_PORT,
                     DHTConfiguration.peersFromString(DHT1_CONFIG),
                     DHT2_BROADCAST,
                     true);
-            dht2.setConfiguration(configurationDht2);
-            dht2.start();
+            dhtNode2.setConfiguration(configurationDht2);
+            dhtNode2.start();
         } catch (IOException ex) {
-            Logger.getLogger(AbstractDHTTests.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseDHTTests.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail(ex.getMessage());
         }
     }
 
     @Override
     public void tearDown() {
-        dht1.stop();
-        dht2.stop();
+        dhtNode1.stop();
+        dhtNode2.stop();
     }
 
+    /**
+     * Utility function to bootstrap the given dht.
+     *
+     * @param dht
+     * @param assertIfEmpty
+     */
     public void bootstrapDht(MetaDHT dht, final Boolean assertIfEmpty) {
         BootstrapOperation bootstrapOperation = dht.bootstrap();
 
@@ -119,16 +128,52 @@ public abstract class AbstractDHTTests extends MetaBaseTests {
 
             @Override
             public void failed(BootstrapOperation operation) {
-
+                org.junit.Assert.fail("Bootstrap operation failed.");
             }
 
             @Override
             public void complete(BootstrapOperation operation) {
+                System.out.println("bootstrap complete!");
                 if (assertIfEmpty && operation.getBootstrapTo().isEmpty()) {
-                    org.junit.Assert.fail("Bootstrap operation failed during store test.");
+                    org.junit.Assert.fail("Bootstrap operation failed.");
                 }
             }
         });
         bootstrapOperation.awaitUninterruptibly();
+    }
+
+    /**
+     * Utility function to create a dht node.
+     *
+     * @param config
+     * @return the created dht node.
+     */
+    public static MetaDHT createDHTNode(DHTConfiguration config) {
+        TomP2pDHT node = new TomP2pDHT(); //Ugly creation here for tests....
+
+        node.setConfiguration(config);
+        return (MetaDHT) node;
+    }
+
+    /**
+     * Utility function, store the given hash in the given DHT.
+     * 
+     * @param dht
+     * @param hash
+     */
+    public static void StoreIntoDht(MetaDHT dht, final MetHash hash) {
+        StoreOperation storeOperation = dht.store(hash);
+        storeOperation.addListener(new OperationListener<StoreOperation>() {
+
+            @Override
+            public void failed(StoreOperation operation) {
+                org.junit.Assert.fail("DHT Store operation failed for hash:" + hash.toString());
+            }
+
+            @Override
+            public void complete(StoreOperation operation) {
+            }
+        });
+        storeOperation.awaitUninterruptibly();
     }
 }

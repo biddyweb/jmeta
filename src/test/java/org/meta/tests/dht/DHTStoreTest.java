@@ -17,24 +17,22 @@
  */
 package org.meta.tests.dht;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.common.MetHash;
-import org.meta.common.MetamphetUtils;
-import org.meta.dht.BootstrapOperation;
 import org.meta.dht.FindPeersOperation;
-import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 import org.meta.dht.StoreOperation;
-import static org.meta.tests.dht.AbstractDHTTests.validHash;
+import static org.meta.tests.dht.BaseDHTTests.DHT1_PORT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author nico
  */
-public class DHTStoreTest extends AbstractDHTTests {
+public class DHTStoreTest extends BaseDHTTests {
 
     private static final Logger logger = LoggerFactory.getLogger(DHTStoreTest.class);
 
@@ -42,12 +40,12 @@ public class DHTStoreTest extends AbstractDHTTests {
      * Test the store process in the DHT.
      */
     @Test
-    public void testSimpleStore() {
+    public void testSimpleStore() throws UnknownHostException {
 
-        this.bootstrapDht(dht1, false);
-        this.bootstrapDht(dht2, true);
+        this.bootstrapDht(dhtNode1, false);
+        this.bootstrapDht(dhtNode2, true);
 
-        StoreOperation storeOperation = dht1.store(validHash);
+        StoreOperation storeOperation = dhtNode1.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
             @Override
@@ -64,24 +62,23 @@ public class DHTStoreTest extends AbstractDHTTests {
 
         storeOperation.awaitUninterruptibly();
 
-//        storeOperation = dht2.store(validHash);
-//        storeOperation.addListener(new OperationListener<StoreOperation>() {
-//
-//            @Override
-//            public void failed(StoreOperation operation) {
-//                logger.error("DHT2 Store operation failed.");
-//                Assert.fail("DHT2  Store operation failed.");
-//            }
-//
-//            @Override
-//            public void complete(StoreOperation operation) {
-//                logger.info("DHT2 Store operation success!");
-//            }
-//        });
-//
-//        storeOperation.awaitUninterruptibly();
+        storeOperation = dhtNode2.store(validHash);
+        storeOperation.addListener(new OperationListener<StoreOperation>() {
 
-        FindPeersOperation findPeersOperation = dht2.findPeers(validHash);
+            @Override
+            public void failed(StoreOperation operation) {
+                logger.error("DHT2 Store operation failed.");
+                Assert.fail("DHT2  Store operation failed.");
+            }
+
+            @Override
+            public void complete(StoreOperation operation) {
+                logger.info("DHT2 Store operation success!");
+            }
+        });
+        storeOperation.awaitUninterruptibly();
+
+        FindPeersOperation findPeersOperation = dhtNode2.findPeers(validHash);
         findPeersOperation.addListener(new OperationListener<FindPeersOperation>() {
 
             @Override
@@ -92,10 +89,24 @@ public class DHTStoreTest extends AbstractDHTTests {
 
             @Override
             public void complete(FindPeersOperation operation) {
-                logger.info("Find peer operation success!");
-                for (MetaPeer peer : operation.getPeers()) {
-                    //Assert.assertEquals("Stored and retrieved values are different!", peer.getID().toString());
-                    logger.debug("Got peer = " + peer.toString());
+                MetaPeer expectedMetaPeerDht1;
+                MetaPeer expectedMetaPeerDht2;
+                try {
+                    logger.info("Find peer operation success!");
+                    expectedMetaPeerDht1 = new MetaPeer(null, InetAddress.getLocalHost(), DHT1_PORT);
+                    expectedMetaPeerDht2 = new MetaPeer(null, InetAddress.getLocalHost(), DHT2_PORT);
+                    int matchedPeers = 0;
+                    for (MetaPeer peer : operation.getPeers()) {
+                        logger.debug("Got peer = " + peer.toString());
+                        if (expectedMetaPeerDht1.toString().equals(peer.toString())
+                                || peer.toString().equals(expectedMetaPeerDht2.toString())) {
+                            ++matchedPeers;
+                        }
+                    }
+                    Assert.assertTrue("We should have retrieved the two peers!", matchedPeers == 2);
+                } catch (UnknownHostException ex) {
+                    logger.error("", ex);
+                    Assert.fail();
                 }
             }
         });

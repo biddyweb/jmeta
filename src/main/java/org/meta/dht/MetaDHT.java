@@ -57,21 +57,24 @@ public abstract class MetaDHT {
     /**
      * Bootstrap the DHT to find nodes.
      *
-     * @return The asynchronous BootstrapOperation representing the outcome of the bootstrap.
+     * @return The asynchronous BootstrapOperation representing the outcome of
+     * the bootstrap.
      */
     public abstract BootstrapOperation bootstrap();
 
     /**
      * @param hash. The hash to find peers for.
      *
-     * @return The asynchronous FindPeersOperation representing the outcome of the operation.
+     * @return The asynchronous FindPeersOperation representing the outcome of
+     * the operation.
      */
     public abstract FindPeersOperation findPeers(MetHash hash);
 
     /**
      *
      * @param hash The hash to store on the DHT.
-     * @return The asynchronous StoreOperation representing the outcome of the operation.
+     * @return The asynchronous StoreOperation representing the outcome of the
+     * operation.
      */
     public abstract StoreOperation store(MetHash hash);
 
@@ -83,9 +86,9 @@ public abstract class MetaDHT {
     /**
      * Set the configuration of this DHT instance.
      *
-     * ! Once the DHT is started, re-defining the configuration
-     * will result in undefined behavior !
-     * 
+     * ! Once the DHT is started, re-defining the configuration will result in
+     * undefined behavior !
+     *
      * @param configuration. The configuration Object.
      */
     public void setConfiguration(DHTConfiguration configuration) {

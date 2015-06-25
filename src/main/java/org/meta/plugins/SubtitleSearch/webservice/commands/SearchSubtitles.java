@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,20 +61,16 @@ public class SearchSubtitles extends AbstractWebService{
                 initialTextOutput.flush();
 
                 //instanciate a new MetaData st:<choosen language>
-                ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+                TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
                 properties.add(new MetaProperty("st", "fr"));
-                MetaData metaData = factory.getMetaData();
-                metaData.setProperties(properties);
+                MetaData metaData = factory.createMetaData(null, properties);
 
                 //instanciate a new DataFile Object
-                DataFile movie = factory.getDataFile();
-                movie.setFile(file);
+                DataFile movie = factory.createDataFile(file);
 
                 //create a new search with in input the DataFile and in output
                 //the metaData
-                Search subtitleSearch = factory.getSearch();
-                subtitleSearch.setSource(movie);
-                subtitleSearch.setResult(metaData);
+                Search subtitleSearch = factory.createSearch(movie, metaData);
 
                 //lookup on the network to find the subtitles
                 super.controler.search(    subtitleSearch.getHash(),

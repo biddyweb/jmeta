@@ -2,7 +2,6 @@ package org.meta.tests;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 
 import org.junit.Assert;
 import org.junit.Test;

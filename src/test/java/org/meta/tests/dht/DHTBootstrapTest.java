@@ -17,38 +17,101 @@
  */
 package org.meta.tests.dht;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.net.InetAddress;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.meta.common.Identity;
+import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.BootstrapOperation;
+import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
+import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author nico
  */
 public class DHTBootstrapTest extends BaseDHTTests {
 
+    public static final short DHT1_PORT = 15000;
+    public static final short DHT2_PORT = 15001;
+    public static InetAddress DHT1_PEER_ADDR;
+    public static InetAddress DHT2_PEER_ADDR;
+    public static String DHT1_PEER_STRING;
+    public static String DHT2_PEER_STRING;
+
+    protected static MetHash validHash = new MetHash(42);
+    protected static MetHash invalidHash = new MetHash(43);
+
+    protected static MetaDHT dhtNode1;
+    protected static MetaDHT dhtNode2;
+    protected static DHTConfiguration configurationDht1;
+    protected static DHTConfiguration configurationDht2;
+
+    private static final Logger logger = LoggerFactory.getLogger(DHTBootstrapTest.class);
+
+    @BeforeClass
+    public static void initDHtNodes() throws IOException {
+
+        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
+        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
+
+        configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+                DHT1_PORT,
+                DHTConfiguration.peersFromString(DHT2_PEER_STRING),
+                false,
+                true);
+        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+        dhtNode1.start();
+
+        configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+                DHT2_PORT,
+                DHTConfiguration.peersFromString(DHT1_PEER_STRING),
+                false,
+                true);
+        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+        dhtNode2.start();
+    }
+
+    @AfterClass
+    public static void shutDownDhtNodes() {
+        dhtNode1.stop();
+        dhtNode2.stop();
+    }
+
     /**
-     * Test the bootstrap process to another peer. Assumes the another node is
-     * running!
+     * Test the bootstrap process to another peer. Assumes the two nodes are
+     * running.
      */
     @Test
     public void testBootstrapSuccess() {
 
-        dhtNode1.setConfiguration(configurationDht1); //Reset valid configuration
-        BootstrapOperation bootstrapOperation = (BootstrapOperation) dhtNode1.bootstrap().awaitUninterruptibly();
+        DHTBootstrapTest.bootstrapDht(dhtNode1, false);
+        //DHTBootstrapTest.bootstrapDht(dhtNode2, true);
+
+        BootstrapOperation bootstrapOperation = (BootstrapOperation) dhtNode2.bootstrap().awaitUninterruptibly();
 
         if (bootstrapOperation.isFailure()) {
-            Logger.getLogger(DHTBootstrapTest.class.getName()).log(Level.SEVERE,
-                    "Bootstrap operation failed, reason: {0}",
-                    bootstrapOperation.getFailureMessage());
+            logger.error("Bootstrap operation failed, reason: " + bootstrapOperation.getFailureMessage());
             Assert.fail("Bootstrap operation failed.");
         } else if (bootstrapOperation.isSuccess()) {
-            //TODO check that the peer we boostraped to is DHT2!
+            MetaPeer expectedPeer = new MetaPeer(null, DHT1_PEER_ADDR, DHT1_PORT);
+
             for (MetaPeer peer : bootstrapOperation.getBootstrapTo()) {
-                System.out.println("Bootstraped to : " + peer);
+                if (peer.equals(expectedPeer)) {
+                    logger.debug("Bootstraped to expected peer!");
+                    return;
+                }
             }
+            Assert.fail("Failed to bootstrap to expected peer");
         }
     }
 }

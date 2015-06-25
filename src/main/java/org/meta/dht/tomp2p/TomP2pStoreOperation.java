@@ -18,6 +18,9 @@
 package org.meta.dht.tomp2p;
 
 import java.net.InetAddress;
+import java.util.NavigableMap;
+import java.util.Random;
+import java.util.TreeMap;
 import net.tomp2p.dht.AddBuilder;
 import net.tomp2p.dht.FuturePut;
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.StoreOperation;
 
 /**
@@ -53,10 +57,10 @@ public class TomP2pStoreOperation extends StoreOperation {
     /**
      *
      * Serialize a ip/port couple into a byte array.
-     * 
+     *
      * @param port The udp port
      * @param addr The ipv4/ipv6 address
-     * 
+     *
      * @return the serialized ip/port couple
      */
     private byte[] serializeAddress(Short port, InetAddress addr) {
@@ -76,19 +80,22 @@ public class TomP2pStoreOperation extends StoreOperation {
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeerDHT().peerAddress().peerSocketAddress();
 
-        logger.debug("StoreOperation: pushing peer addr = ", peerAddr.inetAddress().toString() + ":" + peerAddr.udpPort());
-        byte[] data = serializeAddress((short) peerAddr.udpPort(), peerAddr.inetAddress());
-        AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
+        Short port = MetaConfiguration.getAmpConfiguration().getAmpPort();
+        byte[] data = serializeAddress(port, peerAddr.inetAddress());
 
+        NavigableMap<Number160, Data> dataMap = new TreeMap<>();
+        dataMap.put(hash, new Data(data));
+
+        AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
         addBuilder.data(new Data(data)).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override
             public void operationComplete(FuturePut future) throws Exception {
                 if (future.isSuccess() || future.isSuccessPartially()) {
-                    logger.debug("Store operation complete!!!");
+                    logger.debug("Store operation complete.");
                     TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
                 } else {
-                    logger.debug("Store operation failed!!!");
+                    logger.debug("Store operation failed.");
                     TomP2pStoreOperation.this.setState(OperationState.FAILED);
                 }
                 TomP2pStoreOperation.this.finish();

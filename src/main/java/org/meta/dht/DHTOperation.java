@@ -269,10 +269,8 @@ public abstract class DHTOperation {
             while (!this.hasFinished()) {
                 try {
                     lock.wait();
-                    System.err.println("awaitUninterruptibly got notified...");
                 } catch (final InterruptedException e) {
                     //Do nothing
-                    System.err.println("awaitUninterruptibly interrupted");
                 }
             }
             return this;

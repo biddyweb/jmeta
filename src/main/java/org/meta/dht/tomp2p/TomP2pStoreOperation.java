@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,20 @@
 package org.meta.dht.tomp2p;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import net.tomp2p.dht.AddBuilder;
+import net.tomp2p.dht.FutureGet;
+import net.tomp2p.dht.FuturePut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.tomp2p.dht.PutBuilder;
 import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
-import org.meta.common.MetHash;
 import org.meta.dht.StoreOperation;
 
 /**
@@ -35,9 +41,10 @@ import org.meta.dht.StoreOperation;
  */
 public class TomP2pStoreOperation extends StoreOperation {
 
-    private TomP2pDHT dht;
-    private Number160 hash;
+    private final TomP2pDHT dht;
+    private final Number160 hash;
     private static final Logger logger = LoggerFactory.getLogger(TomP2pStoreOperation.class);
+
     /**
      * Create the bootstrap operation with given arguments.
      *
@@ -49,33 +56,51 @@ public class TomP2pStoreOperation extends StoreOperation {
         this.hash = hash;
     }
 
+    /**
+     *
+     * Serialize a ip/port couple into a byte array.
+     * 
+     * @param port The udp port
+     * @param addr The ipv4/ipv6 address
+     * 
+     * @return the serialized ip/port couple
+     */
+    private byte[] serializeAddress(Short port, InetAddress addr) {
+        byte[] addrBytes = addr.getAddress();
+        short dataSize = (short) (Short.BYTES + addrBytes.length);
+        byte[] data = new byte[dataSize];
+
+        data[0] = (byte) (port & 0x00ff);
+        data[1] = (byte) ((port >> 8) & 0x00ff);
+        for (short i = 2; i < dataSize; ++i) {
+            data[i] = addrBytes[i - Short.BYTES];
+        }
+        return data;
+    }
+
     @Override
     public void start() {
-        logger.debug("Entering TomP2pStoreOperation method start");
-        try {
-            PutBuilder putBuilder;
-            putBuilder = new PutBuilder(this.dht.getPeerDHT(), hash);
-            putBuilder.data(new Data("test data")).start().addListener(new BaseFutureListener<BaseFuture>() {
+        PeerSocketAddress peerAddr = this.dht.getPeerDHT().peerAddress().peerSocketAddress();
+        Data data = new Data(serializeAddress((short) peerAddr.udpPort(), peerAddr.inetAddress()));
+        AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
 
-                @Override
-                public void operationComplete(BaseFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
-                    } else {
-                        TomP2pStoreOperation.this.setState(OperationState.FAILED);
-                    }
-                    TomP2pStoreOperation.this.finish();
-                }
+        addBuilder.data(data).start().addListener(new BaseFutureListener<FuturePut>() {
 
-                @Override
-                public void exceptionCaught(Throwable t) throws Exception {
+            @Override
+            public void operationComplete(FuturePut future) throws Exception {
+                if (future.isSuccess() || future.isSuccessPartially()) {
+                    TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
+                } else {
                     TomP2pStoreOperation.this.setState(OperationState.FAILED);
-                    TomP2pStoreOperation.this.finish();
                 }
-            });
-        } catch (IOException ex) {
-            logger.error(null, ex);
-        }
+                TomP2pStoreOperation.this.finish();
+            }
+
+            @Override
+            public void exceptionCaught(Throwable t) throws Exception {
+                TomP2pStoreOperation.this.setFailed(t.getMessage());
+            }
+        });
     }
 
     @Override

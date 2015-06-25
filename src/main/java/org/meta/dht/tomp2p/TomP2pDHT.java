@@ -26,12 +26,11 @@ import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.FutureDone;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerBuilder;
-import net.tomp2p.p2p.builder.RoutingBuilder;
 import net.tomp2p.peers.Number160;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
+import org.meta.common.MetamphetUtils;
 import org.meta.dht.BootstrapOperation;
-import org.meta.configuration.DHTConfiguration;
 import org.meta.dht.FindPeersOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
@@ -81,9 +80,14 @@ public class TomP2pDHT extends MetaDHT {
      * Initializes tomp2p2 and starts listening on the DHT.
      */
     private void startAndListen() throws IOException {
+        if (this.configuration.getIdentity() == null) {
+            Identity id = new Identity(MetamphetUtils.createRandomHash());
+            this.configuration.setIdentity(id);
+        }
         Number160 peerId = toNumber160(this.configuration.getIdentity());
         Bindings b = new Bindings(); //Bind to everything
         //TODO check and configure network properly
+        //Which interface are we binding ? etc...
         PeerBuilder peerBuilder = new PeerBuilder(peerId);
         peerBuilder.ports(this.configuration.getPort());
         peerBuilder.bindings(b);
@@ -104,7 +108,11 @@ public class TomP2pDHT extends MetaDHT {
 
     @Override
     public FindPeersOperation findPeers(MetHash hash) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Number160 contentHash = TomP2pDHT.toNumber160(hash);
+        TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
+
+        operation.start();
+        return operation;
     }
 
     @Override

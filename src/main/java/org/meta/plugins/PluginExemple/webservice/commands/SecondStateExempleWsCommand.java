@@ -50,11 +50,10 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
 
     public SecondStateExempleWsCommand(){
         // Describe a full interface for test
-        ColumnOrganizer column         = new ColumnOrganizer("column1");
         birthDate = new DateInput("birthDate", "Birth Date");
-        column.addChild(birthDate);
+        rootColumn.addChild(birthDate);
         LineOrganizer     line         = new LineOrganizer("ligne1");
-        column.addChild(line);
+        rootColumn.addChild(line);
         firstName = new TextInput("firstName", "First Name");
         line.addChild(firstName);
         lastName = new TextInput("lastName", "Last Name");
@@ -77,7 +76,7 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         option3 = new Select("option3", "option 3");
         buttons.add(option3);
         select = new SelectList("select", "select label", buttons);
-        column.addChild(select);
+        rootColumn.addChild(select);
 
         ArrayList<RadioButton> radio = new ArrayList<RadioButton>();
         radio1 = new RadioButton("radio1", "radio 1");
@@ -87,7 +86,7 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         radio3 = new RadioButton("radio3", "radio 3");
         radio.add(radio3);
         radioList = new RadioList("RadioList", "Radio list label", radio);
-        column.addChild(radioList);
+        rootColumn.addChild(radioList);
 
         ArrayList<CheckBox> check = new ArrayList<CheckBox>();
         check1 = new CheckBox("check1", "check 1");
@@ -97,20 +96,19 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         check3 = new CheckBox("check3", "check 3");
         check.add(check3);
         checklist = new CheckBoxLists("checklist", "CheckList label", check);
-        column.addChild(checklist);
+        rootColumn.addChild(checklist);
 
-        column.addChild(new SelfSubmitButton("submit", "submit form to me"));
-        column.addChild(new SubmitToButton("submitTo", "submit to an oth", "example"));
+        rootColumn.addChild(new SelfSubmitButton("submit", "submit form to me"));
+        rootColumn.addChild(new SubmitToButton("submitTo", "submit to an oth", "example"));
         output = new TextOutput("output", "Sortie");
         output.append("message");
 
-        column.addChild(output);
-        descriptor = new InterfaceDescriptor(column);
+        rootColumn.addChild(output);
     }
 
 
     @Override
-    public InterfaceDescriptor execute(Map<String, String[]> map) {
+    public void executeCommand(Map<String, String[]> map) {
         output.flush();
         birthDate.setValue(getParameter(birthDate.getId(), map));
         firstName.setValue(getParameter(firstName.getId(), map));
@@ -142,30 +140,16 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
             String key = (String) i.next();
             output.append(" - "+key+" : "+map.get(key));
         }
-        return descriptor;
     }
 
     @Override
-    public InterfaceDescriptor retrieveUpdate() {
+    public void applySmallUpdate() {
         nbRefresh++;
         output.append("refresh number"+nbRefresh);
-        return descriptor;
     }
 
     @Override
     public void callback(ArrayList<Searchable> results) {
         // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public InterfaceDescriptor getInterface(Map<String, String[]> map) {
-        return descriptor;
-    }
-
-    @Override
-    public BasicBSONObject getNextStep() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

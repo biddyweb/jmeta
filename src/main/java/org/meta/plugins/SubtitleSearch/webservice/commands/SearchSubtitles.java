@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.BasicBSONObject;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
@@ -29,27 +28,20 @@ public class SearchSubtitles extends AbstractWebService{
     ModelFactory         factory             = null;
     public SearchSubtitles(){
         //initial descriptor, used to initiate the subtitle search
-        ColumnOrganizer column = new ColumnOrganizer("center");
         TextInput path = new TextInput("path", "Path to the movie");
-        column.addChild(path);
+        rootColumn.addChild(path);
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
-        column.addChild(initialTextOutput);
+        rootColumn.addChild(initialTextOutput);
         //has a linked button on himself
-        column.addChild(new SelfSubmitButton("submitToMe", "Search"));
-        initialDescriptor = new InterfaceDescriptor(column);
+        rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
+        initialDescriptor = new InterfaceDescriptor(rootColumn);
         initialTextOutput.append("");
         //Second descriptor, used to show results
         factory = Model.getInstance().getFactory();
     }
 
     @Override
-    public InterfaceDescriptor getInterface(Map<String, String[]> map) {
-        return initialDescriptor;
-    }
-
-    @Override
-    public InterfaceDescriptor execute(Map<String, String[]> map) {
-        InterfaceDescriptor response = initialDescriptor;
+    public void executeCommand(Map<String, String[]> map) {
         //Get file path
         String[] pathes = map.get("path");
         String      path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
@@ -90,13 +82,10 @@ public class SearchSubtitles extends AbstractWebService{
             initialTextOutput.flush();
             initialTextOutput.append("Please set a valide path name");
         }
-        return response;
     }
 
     @Override
-    public InterfaceDescriptor retrieveUpdate() {
-        return initialDescriptor;
-    }
+    public void applySmallUpdate() {}
 
     @Override
     public void callback(ArrayList<Searchable> results) {
@@ -120,14 +109,4 @@ public class SearchSubtitles extends AbstractWebService{
             }
         }
     }
-
-    @Override
-    public BasicBSONObject getNextStep() {
-        BasicBSONObject nextStep = new BasicBSONObject();
-        nextStep.append("pluginName", "SubtitleSearch");
-        nextStep.append("commandName", "getSubtitles");
-        //TODO give parameters
-        return nextStep;
-    }
-
 }

@@ -7,8 +7,11 @@ import java.util.LinkedHashMap;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
+import org.meta.model.Model;
+import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
+import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
 
@@ -16,7 +19,7 @@ public class AMPAnswerParser extends AMPParser{
 
     //Do not initialize those variables, because it's made by the mumy
     //in her constructor ;) via the implement method "useContent"
-    private String                     answer        ;
+    private String                   answer        ;
     private ArrayList<Searchable>    datas         ;
 
     public AMPAnswerParser(byte[] bs) throws NotAValidAMPCommand {
@@ -82,7 +85,7 @@ public class AMPAnswerParser extends AMPParser{
             Class clazz;
             try {
                 clazz = Class.forName(new String(fragment.get("_type")));
-                Searchable searchable         = (Searchable) clazz.newInstance();
+                Searchable searchable = factory.newInstance(clazz);
 
                 //security check. In case of someone wo'll try to execute somthing
                 //on an other object than on of the model.

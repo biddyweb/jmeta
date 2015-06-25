@@ -2,12 +2,21 @@ package org.meta.plugin.tcp.amp;
 
 import java.util.LinkedHashMap;
 
+import org.meta.model.Model;
+import org.meta.model.ModelFactory;
+import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
 public abstract class AMPParser {
-
+    protected ModelFactory factory = null;
     public AMPParser(byte[] bs) throws NotAValidAMPCommand{
-            parse(bs);
+        parse(bs);
+        try {
+            factory = Model.getInstance().getFactory();
+        } catch (ModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**

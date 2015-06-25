@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.meta.dht.DHTOperation;
+import org.meta.dht.MetaDHT;
+import org.meta.dht.OperationListener;
 import org.meta.model.Data;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -56,15 +59,31 @@ public class Put extends AbstractWebService{
             lst.add(res);
             TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
             properties.add(new MetaProperty("hashmap", "value"));
-            MetaData metaData = factory.createMetaData(lst, properties);
-            DataString source = factory.createDataString("id");
-            Search hashM = factory.createSearch(source, metaData);
+            MetaData metaData = factory.createMetaData(properties);
+            DataString source = factory.createDataString(id);
+            Search hashM = factory.createSearch(source, metaData, lst);
+            System.out.println("put hash : "+hashM.getHash().toString());
+            
             
             //write into dataBase
+            //and store it to the DHT
             try {
                 Model.getInstance().set(hashM);
+                MetaDHT.getInstance().store(hashM.getHash()).addListener(
+                        new OperationListener<DHTOperation>() {
+
+                    @Override
+                    public void failed(DHTOperation operation) {
+                        output.append("fail to push");
+                    }
+
+                    @Override
+                    public void complete(DHTOperation operation) {
+                        output.append("succes to push");
+                    }
+                
+                });
             } catch (ModelException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }else{
@@ -86,8 +105,7 @@ public class Put extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                MetaData metaData = search.getResult();
-                List<Data> linkDatas =    metaData.getLinkedData();
+                List<Data> linkDatas =    search.getLinkedData();
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     if(data instanceof DataString)

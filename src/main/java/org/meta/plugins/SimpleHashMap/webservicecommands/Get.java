@@ -25,10 +25,11 @@ public class Get extends AbstractWebService{
     InterfaceDescriptor  initialDescriptor   = null;
     TextOutput           output              = null;
     ModelFactory         factory             = null;
-    ArrayList<DataString>results             = null;
+    ArrayList<DataString>distantResults      = null;
+    ArrayList<DataString>localResults        = null;
     
     public Get(){
-        results = new ArrayList<DataString>();
+        distantResults = new ArrayList<DataString>();
         TextInput path = new TextInput("id", "ID");
         rootColumn.addChild(path);
         output = new TextOutput("result", "Result");
@@ -43,7 +44,9 @@ public class Get extends AbstractWebService{
 
     @Override
     public void executeCommand(Map<String, String[]> map) {
-        results = new ArrayList<DataString>();
+    	distantResults = new ArrayList<DataString>();
+    	output.flush();
+        localResults = new ArrayList<DataString>();
         String id = getParameter("id", map);
         
         if(id != ""){
@@ -51,9 +54,10 @@ public class Get extends AbstractWebService{
             TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
             properties.add(new MetaProperty("hashmap", "value"));
             
-            MetaData    metaData     = factory.createMetaData(null, properties);
-            DataString  source       = factory.createDataString("id");
-            Search      contentSearch= factory.createSearch(source, metaData);
+            MetaData    metaData     = factory.createMetaData(properties);
+            DataString  source       = factory.createDataString(id);
+            Search      contentSearch= factory.createSearch(source, metaData, null);
+            System.out.print("get hash : "+contentSearch.getHash().toString());
 
             super.controler.search(  contentSearch.getHash(),
                                     "SimpleHashMap",
@@ -63,10 +67,10 @@ public class Get extends AbstractWebService{
             try {
                 Search localResult =
                         (Search) Model.getInstance().get(contentSearch.getHash());
-                List<Data> localDatas = localResult.getResult().getLinkedData();
+                List<Data> localDatas = localResult.getLinkedData();
                 for(Data d : localDatas)
                     if(d instanceof DataString)
-                        results.add((DataString) d);
+                        localResults.add((DataString) d);
                 redrawOutput();
             } catch (ModelException e) {
                 e.printStackTrace();
@@ -91,12 +95,11 @@ public class Get extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search   search   = (Search) searchable;
-                MetaData metaData = search.getResult();
-                List<Data> linkDatas =    metaData.getLinkedData();
+                List<Data> linkDatas =    search.getLinkedData();
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     if(data instanceof DataString)
-                        this.results.add((DataString) data);
+                        this.distantResults.add((DataString) data);
                 }
             }
         }
@@ -105,8 +108,11 @@ public class Get extends AbstractWebService{
 
     private void redrawOutput() {
         output.flush();
-        for(DataString result : this.results){
-            output.append(result.getString());
+        for(DataString result : this.distantResults){
+            output.append("distant : "+result.getString());
+        }
+        for(DataString result : this.localResults){
+            output.append("local : "+result.getString());
         }
         output.append("waiting for results");
     }

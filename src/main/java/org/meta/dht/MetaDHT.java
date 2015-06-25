@@ -28,13 +28,16 @@ import org.meta.dht.tomp2p.TomP2pDHT;
  */
 public abstract class MetaDHT {
 
+    private static MetaDHT instance;
+
     /**
-     * 
-     * @return An instance of the DHT.
-     * TODO change this!!
+     * @return The instance of the DHT.
      */
     public static MetaDHT getInstance() {
-        return new TomP2pDHT();
+        if (instance == null) {
+            instance = new TomP2pDHT();
+        }
+        return instance;
     }
 
     /**

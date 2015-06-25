@@ -113,4 +113,12 @@ public class ModelFactory {
         metaData.setProperties(props);
         return metaData;
     }
+
+    public Searchable newInstance(Class clazz) throws InstantiationException, IllegalAccessException {
+        return (Searchable) clazz.newInstance();
+    }
+
+    public void updateFromNewtork(Search search, Searchable source, Searchable result, ArrayList<Data> linked) {
+        search.set(source, result, linked);
+    }
 }

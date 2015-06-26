@@ -127,7 +127,7 @@ public abstract class AbstractPluginWebServiceControler {
                   MetaPeer peer = i.next();
                   InetAddress adress = peer.getAddress();
                   //TODO control ID validity
-                  writer.askTo(    adress,
+                  writer.askTo( adress,
                                 plugin,
                                 command,
                                 hash,

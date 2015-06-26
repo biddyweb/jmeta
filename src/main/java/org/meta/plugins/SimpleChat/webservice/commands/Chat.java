@@ -47,14 +47,18 @@ public class Chat extends AbstractWebService{
         
         path = new TextInput("channel", "Channel room");
         rootColumn.addChild(path);
+        
         nick = new TextInput("nickName", "Nick name");
-        rootColumn.addChild(path);
+        rootColumn.addChild(nick);
+
         output = new TextOutput("chat", "Chat");
-        rootColumn.addChild(new SelfSubmitButton("send", "Send"));
         rootColumn.addChild(output);
+        
         TextInput content = new TextInput("message", "Message");
         rootColumn.addChild(content);
 
+        rootColumn.addChild(new SelfSubmitButton("send", "Send"));
+        
         try {
             factory = Model.getInstance().getFactory();
         } catch (ModelException ex) {
@@ -79,6 +83,7 @@ public class Chat extends AbstractWebService{
             if(message != null || !message.equals("")){
                 Date timeStamp = new Date();
                 Data messageToSave = factory.createDataString(""+nickName+";"+timeStamp.getTime()+";"+message);
+                results.put(timeStamp, nickName +" : "+ message);
                 Search searchToSave = factory.createSearch(channelName, chat, Collections.singletonList(messageToSave));
                 //write into dataBase
                 //and store it to the DHT
@@ -106,8 +111,9 @@ public class Chat extends AbstractWebService{
                     "SimpleChat",
                     "getLastMessages",
                     this);
+            
         }
-        
+        redrawOutput();
     }
 
     @Override
@@ -121,7 +127,6 @@ public class Chat extends AbstractWebService{
 
     @Override
     public void callback(ArrayList<Searchable> results) {
-        output.flush();
         //Those results are incomplete
         for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
             Searchable searchable = i.next();
@@ -145,6 +150,11 @@ public class Chat extends AbstractWebService{
                 }
             }
         }
+        redrawOutput();
+    }
+    
+    private void redrawOutput(){
+        output.flush();
         for(Entry<Date, String> entry : this.results.entrySet()){
             output.append(sdf.format(entry.getKey())+ " "+ entry.getValue());	
         }

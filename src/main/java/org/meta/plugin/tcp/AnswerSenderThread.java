@@ -20,6 +20,8 @@ import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskFactory;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class AnswerSenderThread extends Thread {
@@ -30,6 +32,7 @@ public class AnswerSenderThread extends Thread {
     private int                     port        = 0;
     private TCPResponseCallbackInteface     listenner     = null;
     private ModelFactory           factory  = null;
+    private Logger                 log      = LoggerFactory.getLogger(AnswerSenderThread.class);
     /**
      *
      * @param listenner
@@ -94,7 +97,7 @@ public class AnswerSenderThread extends Thread {
             client.close();
             is.close();
         } catch (IOException | NotAValidAMPCommand e) {
-            e.printStackTrace();// TODO
+            log.warn(e.getMessage());
         }
 
         listenner.callback(results);

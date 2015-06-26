@@ -18,3 +18,7 @@ SubtitleSearch.WSClass:		org.meta.plugins.SubtitleSearch.PluginSubtitleSearchWeb
 SimpleHashMap.name:         SimpleHashMap
 SimpleHashMap.TCPClass:     org.meta.plugins.SimpleHashMap.SimpleHashMapTcpControler
 SimpleHashMap.WSClass:      org.meta.plugins.SimpleHashMap.SimpleHashMapWebServiceControler
+
+SimpleChat.name:         SimpleChat
+SimpleChat.TCPClass:     org.meta.plugins.SimpleChat.SimpleChatTcpControler
+SimpleChat.WSClass:      org.meta.plugins.SimpleChat.SimpleChatWebServiceControler

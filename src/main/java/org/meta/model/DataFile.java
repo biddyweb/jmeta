@@ -85,6 +85,7 @@ public class DataFile extends Data {
 
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+        super.fillFragment(fragment);
         //write hash source
         fragment.put("_fileName", file.getName().getBytes());
         //Send the file, it will surrely be bigger than 65 536o
@@ -147,6 +148,7 @@ public class DataFile extends Data {
 
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+        super.decodefragment(fragment);
         //TODO file name
         file = new File(System.getProperty("java.io.tmpdir") + "/" + super.hash);
 

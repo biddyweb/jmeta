@@ -70,6 +70,35 @@ public abstract class Data extends Searchable {
         bsonObject.put("description", bsonProperties);
         return bsonObject;
     }
+
+    @Override
+    protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+        //write every description
+        fragment.put("_nbProperties", (description.size() + "").getBytes());
+        int count = 0;
+        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext();count++) {
+            MetaProperty property = i.next();
+            fragment.put("_i" + count + "_property_name", property.getValue().getBytes());
+            fragment.put("_i" + count + "_property_value", property.getName().getBytes());
+        }
+    }
+
+    @Override
+    protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+        description = new ArrayList<MetaProperty>();
+        //and the Search cannot be write or updated in database
+        //extract all linkedDatas and delete it from the fragment too
+        int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
+        for (int i = 0; i < nbProperties; i++) {
+            String name = new String(fragment.get("_i" + i + "_property_name"));
+            String value = new String(fragment.get("_i" + i + "_property_value"));
+            MetaProperty property = new MetaProperty(name, value);
+            fragment.remove("_i" + i + "_property_name");
+            fragment.remove("_i" + i + "_property_value");
+            description.add(property);
+        }
+    }
+
     public void setDescription(ArrayList<MetaProperty> description) {
         this.description = description;
         updateState();

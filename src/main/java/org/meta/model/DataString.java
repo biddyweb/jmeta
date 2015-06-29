@@ -84,6 +84,7 @@ public class DataString extends Data {
 
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+        super.fillFragment(fragment);
         //TODO Move elsewhere.
         byte[] totalString = string.getBytes();
 
@@ -133,6 +134,7 @@ public class DataString extends Data {
 
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+        super.decodefragment(fragment);
         long size = Long.parseLong(new String(fragment.get("_size")));
         long count = Long.parseLong(new String(fragment.get("_count")));
         fragment.remove("_size");

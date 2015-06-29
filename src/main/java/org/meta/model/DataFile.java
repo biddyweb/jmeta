@@ -36,6 +36,7 @@ import org.meta.common.MetamphetUtils;
 public class DataFile extends Data {
 
     private File file = null;
+    private static final int MAX_BLOC_SIZE = 65536;
 
     /**
      * needed for java Reflexion
@@ -91,32 +92,32 @@ public class DataFile extends Data {
         //Send the file, it will surrely be bigger than 65 536o
 
         long size = file.length();
-        long count = size / 65536;
-        if (count < 1) {
-            count = 1;
+        long blocs = size / MAX_BLOC_SIZE;
+        if (blocs < 1) {
+            blocs = 1;
         }
 
         //set size
         fragment.put("_size", (size + "").getBytes());
         //set count
-        fragment.put("_count", (count + "").getBytes());
+        fragment.put("_count", (blocs + "").getBytes());
 
         FileInputStream stream;
         try {
             stream = new FileInputStream(file);
             //write every hash results
-            for (int i = 1; i <= count; i++) {
-                int offset = (i - 1) * 65536;
+            for (int i = 1; i <= blocs; i++) {
+                int offset = (i - 1) * MAX_BLOC_SIZE;
 
                 //size to read in the file
                 int sizeToRead = -1;
                 //if i < count, the size is 64ko
-                if (i < count) {
-                    sizeToRead = 65536;
+                if (i < blocs) {
+                    sizeToRead = MAX_BLOC_SIZE;
                 //if not but count was > 1, make the difference
-                    //original size - nb * 64ko
-                } else if (count > 1) {
-                    size = size - i * 65536;
+                //original size - nb * 64ko
+                } else if (blocs > 1) {
+                    size = size - i * MAX_BLOC_SIZE;
                 } else {
                     //else it's the orinial size
                     sizeToRead = (int) size;
@@ -136,6 +137,7 @@ public class DataFile extends Data {
                 fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
                 //bloc
                 fragment.put("_" + i + "_contentPart", bloc);
+                
             }
         } catch (FileNotFoundException e) {
             // TODO do something here

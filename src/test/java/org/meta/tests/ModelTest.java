@@ -2,13 +2,10 @@ package org.meta.tests;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
-
-import javax.swing.plaf.metal.MetalPopupMenuSeparatorUI;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -66,12 +63,22 @@ public class ModelTest {
         try {
             //update basicTest writed data
             DataString data = model.getFactory().createDataString("Data");
-            Assert.assertTrue(model.set(data));
 
+            MetaProperty titre = new MetaProperty("titre", "toto");
+            ArrayList<MetaProperty> description = new ArrayList<MetaProperty>();
+            description.add(titre);
+            data.setDescription(description);
+            
+            Assert.assertTrue(model.set(data));
             //get new hash
             hash = data.getHash();
             //lookup in db
             DataString dataFromDb = model.getDataString(hash);
+            Assert.assertEquals(1, dataFromDb.getDescription().size());
+            for(MetaProperty desc : dataFromDb.getDescription()){
+                Assert.assertEquals(titre.getName(), desc.getName());
+                Assert.assertEquals(titre.getValue(), desc.getValue());
+            }
             Assert.assertNotNull(dataFromDb);
             Assert.assertEquals("Data", dataFromDb.getString());
         } catch (Exception ex) {
@@ -80,6 +87,35 @@ public class ModelTest {
         }
     }
 
+    @Test
+    public void testDataFileUpdate() {
+        try {
+            DataFile data = model.getFactory().createDataFile(new File("db/meta.kch"));
+
+            MetaProperty titre = new MetaProperty("titre", "toto");
+            ArrayList<MetaProperty> description = new ArrayList<MetaProperty>();
+            description.add(titre);
+            data.setDescription(description);
+
+            Assert.assertTrue(model.set(data));
+            //get new hash
+            hash = data.getHash();
+            //lookup in db
+            DataFile dataFromDb = model.getDataFile(hash);
+            Assert.assertEquals(1, dataFromDb.getDescription().size());
+            for(MetaProperty desc : dataFromDb.getDescription()){
+                Assert.assertEquals(titre.getName(), desc.getName());
+                Assert.assertEquals(titre.getValue(), desc.getValue());
+            }
+            Assert.assertNotNull(dataFromDb);
+            Assert.assertEquals(true, dataFromDb.getFile().exists());
+            Assert.assertEquals("meta.kch", dataFromDb.getFile().getName());
+        } catch (Exception ex) {
+            Assert.fail(ex.getMessage());
+            logger.error(null, ex);
+        }
+    }
+    
     @Test
     public void testMetaDataUpdate() {
         //create a strin data

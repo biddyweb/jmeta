@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
@@ -28,20 +29,28 @@ public class AMPAnswerParserTest {
     private Data data;
     private ArrayList<Searchable> datas;
 	private DataFile dataFile;
+    private MetaProperty titre;
 
     public AMPAnswerParserTest(){
         try {
             Model.getInstance();
 
             ModelFactory factory = Model.getInstance().getFactory();
+            
+            titre = new MetaProperty("titre", "toto");
+            ArrayList<MetaProperty> description = new ArrayList<MetaProperty>();
+            description.add(titre);
+            
+            
             //Data File
-            dataFile = factory.createDataFile(new File("/home/faquin/done.txt"));
-
+            dataFile = factory.createDataFile(new File("LICENSE"));
+            dataFile.setDescription(description);
 
             // -- Data String
             data = factory.createDataString("Toto va à la plage");
             ArrayList<Data> linkedData = new ArrayList<Data>();
             linkedData.add(data);
+            data.setDescription(description);
 
             // -- MetaProperty
             property = new MetaProperty("st", "fr");
@@ -54,6 +63,7 @@ public class AMPAnswerParserTest {
 
             // -- MetaData source
             data2 = factory.createDataString("Ma super chaine");
+            data2.setDescription(description);
 
             // -- Search
             search = factory.createSearch(data2, metaData, linkedData);
@@ -111,10 +121,20 @@ public class AMPAnswerParserTest {
                     MetaData metaData = (MetaData) searchable;
                 }else if(searchable instanceof DataFile){
                     DataFile dataFile = (DataFile) searchable;
+                    Assert.assertEquals(1, dataFile.getDescription().size());
+                    for(MetaProperty desc : dataFile.getDescription()){
+                        Assert.assertEquals(titre.getName(), desc.getName());
+                        Assert.assertEquals(titre.getValue(), desc.getValue());
+                    }
                     System.out.println(dataFile.getFile().getName());
                 }else if(searchable instanceof DataString){
                     DataString dataString = (DataString) searchable;
                     System.out.println(dataString.getString());
+                    Assert.assertEquals(1, dataFile.getDescription().size());
+                    for(MetaProperty desc : dataFile.getDescription()){
+                        Assert.assertEquals(titre.getName(), desc.getName());
+                        Assert.assertEquals(titre.getValue(), desc.getValue());
+                    }
                 }
             }
         } catch (NotAValidAMPCommand e) {

@@ -78,8 +78,8 @@ public abstract class Data extends Searchable {
         int count = 0;
         for (Iterator<MetaProperty> i = description.iterator(); i.hasNext();count++) {
             MetaProperty property = i.next();
-            fragment.put("_i" + count + "_property_name", property.getValue().getBytes());
-            fragment.put("_i" + count + "_property_value", property.getName().getBytes());
+            fragment.put("_i" + count + "_property_value", property.getValue().getBytes());
+            fragment.put("_i" + count + "_property_name", property.getName().getBytes());
         }
     }
 

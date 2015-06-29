@@ -180,6 +180,7 @@ public class DataFile extends Data {
     public Searchable toOnlyTextData() {
         DataFile clone = new DataFile();
         clone.setHash(this.hash);
+        clone.setDescription(this.getDescription());
         return clone;
     }
 }

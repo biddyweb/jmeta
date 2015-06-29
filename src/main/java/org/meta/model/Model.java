@@ -249,6 +249,7 @@ public class Model {
      */
     private void extractDataString(Searchable searchable, BSONObject bsonObject) {
         DataString data = (DataString) searchable;
+        extractData(data, bsonObject);
         data.setString(bsonObject.get("string").toString());
     }
 
@@ -260,9 +261,23 @@ public class Model {
      */
     private void extractDataFile(Searchable searchable, BSONObject bsonObject) {
         DataFile data = (DataFile) searchable;
+        extractData(data, bsonObject);
         String filePath = bsonObject.get("file").toString();
         File file = new File(filePath);
         data.setFile(file);
+    }
+    
+    private void extractData(Data data, BSONObject bsonObject){
+        BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("description");
+        BSONObject tmp;
+        ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+        for (String key : bsonProperties.keySet()) {
+            tmp = (BSONObject) bsonProperties.get(key);
+            MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
+            properties.add(toAdd);
+        }
+        
+        data.setDescription(properties);
     }
 
     /**

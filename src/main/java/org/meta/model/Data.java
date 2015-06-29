@@ -55,6 +55,21 @@ public abstract class Data extends Searchable {
         super(hash);
     }
 
+    public BSONObject getBson() {
+        BSONObject bsonObject = super.getBson();
+       //foreach proerties, get her value and name and put it in the json
+        BasicBSONList bsonProperties = new BasicBSONList();
+        int count = 0;
+        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext();count++) {
+            MetaProperty property = i.next();
+            BasicBSONObject bsonProperty = new BasicBSONObject();
+            bsonProperty.put("name", property.getName());
+            bsonProperty.put("value", property.getValue());
+            bsonProperties.put(count, bsonProperty);
+        }
+        bsonObject.put("description", bsonProperties);
+        return bsonObject;
+    }
     public void setDescription(ArrayList<MetaProperty> description) {
         this.description = description;
         updateState();

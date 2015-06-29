@@ -1,5 +1,6 @@
 package org.meta.plugin.tcp.amp;
 
+import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 
 import org.meta.model.Model;
@@ -69,8 +70,8 @@ public abstract class AMPParser {
 
     protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPCommand;
 
-    private int parseSize(byte a, byte b) {
-        return ((int)a<<8)+((int)b);
+    private int parseSize(byte ... bytes) {
+        return ByteBuffer.wrap(bytes).getShort();
     }
 
 }

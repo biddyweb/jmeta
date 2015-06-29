@@ -1,5 +1,6 @@
 package org.meta.plugin.tcp.amp;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 /*
@@ -65,8 +66,9 @@ public abstract class AMPFactory {
         byte[]     subMessage         = new byte[4+keyLength+messageLength];
 
         //Write the key length on two bytes
-        subMessage[offSet] =  (byte) (keyLength >> 8);
-        subMessage[offSet+1] =  (byte) keyLength;
+        byte[] size = ByteBuffer.allocate(2).putShort((short)keyLength).array();
+        subMessage[offSet]      =  size[0];
+        subMessage[offSet+1]    =  size[1];
 
         //increase offset
         offSet += 2;
@@ -80,8 +82,9 @@ public abstract class AMPFactory {
         offSet += key.length();
 
         //write the message length on two bytes
-        subMessage[offSet]      =  (byte) (messageLength >> 8);
-        subMessage[offSet+1] =  (byte) messageLength;
+        size = ByteBuffer.allocate(2).putShort((short)messageLength).array();
+        subMessage[offSet]      =  size[0];
+        subMessage[offSet+1]    =  size[1]; 
 
         offSet += 2;
 

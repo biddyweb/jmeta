@@ -1,5 +1,12 @@
 package org.meta.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
+import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
 
 /*
@@ -26,15 +33,16 @@ import org.meta.common.MetHash;
  * This class correspond to a data on the hard drive. Pointed by a file.
  */
 public abstract class Data extends Searchable {
-
     //TODO add an optional description into the files -> not need to be added
     //in the hash operation
+    protected ArrayList<MetaProperty> description = null;
 
     /**
      * needed for java Reflexion
      */
     public Data() {
         super();
+        description = new ArrayList<MetaProperty>();
     }
 
     /**
@@ -47,4 +55,12 @@ public abstract class Data extends Searchable {
         super(hash);
     }
 
+    public void setDescription(ArrayList<MetaProperty> description) {
+        this.description = description;
+        updateState();
+    }
+
+    public ArrayList<MetaProperty> getDescription() {
+        return description;
+    }
 }

@@ -7,8 +7,8 @@ import org.meta.plugin.tcp.amp.AMPAskFactory;
 
 
 public class SingletonTCPWriter {
-    private static         SingletonTCPWriter     instance     = new SingletonTCPWriter();
-    private             int            lastAsk     = 0;
+    private static SingletonTCPWriter     instance     = new SingletonTCPWriter();
+    private        int                    lastAsk      = 0;
 
     private SingletonTCPWriter() {}
 
@@ -16,7 +16,7 @@ public class SingletonTCPWriter {
         return instance;
     }
 
-    public void askTo(    InetAddress adress,
+    public Thread askTo(    InetAddress adress,
                         String plugin,
                         String command,
                         MetHash hash,
@@ -29,5 +29,6 @@ public class SingletonTCPWriter {
                                                             port,
                                                             listenner);
         sender.start();
+        return sender;
     }
 }

@@ -1,6 +1,10 @@
 package org.meta.tests;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -26,10 +30,11 @@ public class AMPAnswerParserTest {
     private DataString data2;
     private MetaData metaData;
     private MetaProperty property;
-    private Data data;
+    private DataString dataString;
     private ArrayList<Searchable> datas;
 	private DataFile dataFile;
     private MetaProperty titre;
+    private ArrayList<Data> linkedData;
 
     public AMPAnswerParserTest(){
         try {
@@ -47,10 +52,10 @@ public class AMPAnswerParserTest {
             dataFile.setDescription(description);
 
             // -- Data String
-            data = factory.createDataString("Toto va à la plage");
-            ArrayList<Data> linkedData = new ArrayList<Data>();
-            linkedData.add(data);
-            data.setDescription(description);
+            dataString = factory.createDataString("Toto va à la plage");
+            linkedData = new ArrayList<Data>();
+            linkedData.add(dataString);
+            dataString.setDescription(description);
 
             // -- MetaProperty
             property = new MetaProperty("st", "fr");
@@ -69,7 +74,7 @@ public class AMPAnswerParserTest {
             search = factory.createSearch(data2, metaData, linkedData);
 
             datas = new ArrayList<Searchable>();
-            datas.add(data);
+            datas.add(dataString);
             datas.add(dataFile);
             datas.add(search);
             datas.add(metaData);
@@ -82,7 +87,7 @@ public class AMPAnswerParserTest {
     @Test
     public void test() {
         datas = new ArrayList<Searchable>();
-        datas.add(data);
+        datas.add(dataString);
     	testData(datas);
     	
     	datas = new ArrayList<Searchable>();
@@ -98,7 +103,7 @@ public class AMPAnswerParserTest {
         testData(datas);
         
         datas = new ArrayList<Searchable>();
-        datas.add(data);
+        datas.add(dataString);
         datas.add(dataFile);
         datas.add(search);
         datas.add(metaData);
@@ -115,23 +120,39 @@ public class AMPAnswerParserTest {
                 Searchable searchable = dataReceived.get(i);
                 if(searchable instanceof Search){
                     Search search = (Search) searchable;
-                    System.out.println(search.getTmpResultsHashes());
-                    System.out.println(search.getTmpLinkedData());
+                    Assert.assertEquals(this.search.getHash().toString(), search.getHash().toString());
+                    Assert.assertEquals(metaData.getHash().toString(), search.getTmpResultsHashes());
+                    int count=0;
+                    for(String linked : search.getTmpLinkedData()){
+                        Assert.assertEquals(linkedData.get(count).getHash().toString(), linked);
+                        count++;
+                    }
                 }else if(searchable instanceof MetaData){
                     MetaData metaData = (MetaData) searchable;
+                    Assert.assertEquals(this.metaData.getHash(), metaData.getHash());
                 }else if(searchable instanceof DataFile){
                     DataFile dataFile = (DataFile) searchable;
+                    Assert.assertEquals(this.dataFile.getHash(), dataFile.getHash());
                     Assert.assertEquals(1, dataFile.getDescription().size());
                     for(MetaProperty desc : dataFile.getDescription()){
                         Assert.assertEquals(titre.getName(), desc.getName());
                         Assert.assertEquals(titre.getValue(), desc.getValue());
                     }
-                    System.out.println(dataFile.getFile().getName());
+                    
+                    try {
+                        byte[] b1 = Files.readAllBytes(Paths.get(dataFile.getFile().getPath()));
+                        byte[] b2 = Files.readAllBytes(Paths.get(this.dataFile.getFile().getPath()));
+                        Assert.assertArrayEquals(b2, b1);
+                    } catch (IOException e) {
+                        Assert.fail(e.getMessage());
+                    }
                 }else if(searchable instanceof DataString){
                     DataString dataString = (DataString) searchable;
-                    System.out.println(dataString.getString());
-                    Assert.assertEquals(1, dataFile.getDescription().size());
-                    for(MetaProperty desc : dataFile.getDescription()){
+                    Assert.assertEquals(this.dataString.getHash(), dataString.getHash());
+                    Assert.assertEquals(this.dataString.getString(), dataString.getString());
+                    
+                    Assert.assertEquals(1, dataString.getDescription().size());
+                    for(MetaProperty desc : dataString.getDescription()){
                         Assert.assertEquals(titre.getName(), desc.getName());
                         Assert.assertEquals(titre.getValue(), desc.getValue());
                     }

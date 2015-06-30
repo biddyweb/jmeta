@@ -17,10 +17,14 @@
  */
 package org.meta.tests;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,8 +51,38 @@ public abstract class MetaBaseTests {
         initConfigurations();
     }
 
+    /**
+     * Look for a usable network interface address to use for tests. It must be
+     * routable (even locally). Falls back to 'localhost'
+     *
+     * //TODO better addr choice (no more randomness...)
+     *
+     * @return The local inetAddress for tests
+     *
+     * @throws UnknownHostException
+     * @throws SocketException
+     */
     public static InetAddress getLocalAddress() throws UnknownHostException, SocketException {
-        InetAddress addr = InetAddress.getLocalHost();
-        return addr;
+        InetAddress localAddr = null;
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+
+        for (NetworkInterface netIf : Collections.list(networkInterfaces)) {
+            if (netIf.isUp()) {
+                for (InetAddress ifAddr : Collections.list(netIf.getInetAddresses())) {
+                    if (ifAddr instanceof Inet4Address) {
+                        //We prefer ipv4 for tests...
+                        localAddr = ifAddr;
+                        break;
+                    }
+                }
+                if (localAddr != null) {
+                    break;
+                }
+            }
+        }
+        if (localAddr == null) {
+            localAddr = InetAddress.getByName("localhost");
+        }
+        return localAddr;
     }
 }

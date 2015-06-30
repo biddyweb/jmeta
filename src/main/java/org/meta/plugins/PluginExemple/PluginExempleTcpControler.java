@@ -10,7 +10,7 @@ public class PluginExempleTcpControler extends AbstractPluginTCPControler {
 
     @Override
     protected void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands) {
-        commands.put("toto", ExempleCommand.class);
+        commands.put("example", ExempleCommand.class);
     }
 
 

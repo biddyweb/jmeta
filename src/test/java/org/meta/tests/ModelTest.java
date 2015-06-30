@@ -278,7 +278,7 @@ public class ModelTest {
         System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
     }
 
-    @Test
+    //@Test
     public void threadTest() throws InterruptedException {
         final int NB_THREADS = 10;
         final int NB_IT = 100;

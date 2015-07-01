@@ -20,11 +20,22 @@ import java.util.LinkedHashMap;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * Build an AMP message
+ * @author faquin
+ */
 public abstract class AMPFactory {
     protected byte[]    message     =     null;
 
     /**
-     *
+     * build from a LinkedhashMap containing a key value
+     * where a key is well linked to a value as byte array
+     * 
+     * example
+     * 
+     * key   : _hash
+     * value : 0x0000à0000000000000 (as byte array)
+     * 
      * @param ask
      * @param command
      * @param map
@@ -33,14 +44,17 @@ public abstract class AMPFactory {
     protected void build(LinkedHashMap<String, byte[]> map)
     {
         message = new byte[0];
+        /*
+         * for each entry in the map, add information in the byte array
+         */
         for(String name : map.keySet())
             addPair(name, map.get(name));
-
+        //close message
         closeMessage();
     }
 
     /**
-     * Close the amp message
+     * Close the amp message with standard 0x00 0x00 ending
      */
     public void closeMessage() {
         byte[] tempMessage = Arrays.copyOf(this.message, this.message.length+2);

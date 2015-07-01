@@ -7,14 +7,16 @@ import java.util.LinkedHashMap;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
-import org.meta.model.Model;
-import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
-import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
 
+/**
+ * Parse an AMP answer
+ * @author faquin
+ *
+ */
 public class AMPAnswerParser extends AMPParser{
 
     //Do not initialize those variables, because it's made by the mumy
@@ -35,7 +37,8 @@ public class AMPAnswerParser extends AMPParser{
     }
 
     /**
-     * Extract {@link Searchable} from {@link LinkedHashMap}s
+     * Extract {@link Searchable} from {@link LinkedHashMap}
+     * 
      * @param content
      * @throws NotAValidAmpAnswerCommand
      * @throws ClassNotFoundException
@@ -82,7 +85,7 @@ public class AMPAnswerParser extends AMPParser{
             //Now that we have a rebuild fragment
             //We can invoke the object by his type
             //and feed him with this fragment.
-            Class clazz;
+            Class<?> clazz = null;
             try {
                 clazz = Class.forName(new String(fragment.get("_type")));
                 Searchable searchable = factory.newInstance(clazz);

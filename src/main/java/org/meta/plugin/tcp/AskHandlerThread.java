@@ -20,6 +20,10 @@ public class AskHandlerThread extends Thread{
     private Socket client = null;
     private SingletonTCPReader reader = SingletonTCPReader.getInstance();
 
+    /**
+     * Initiate the handler with given parameters
+     * @param client socket connection to dicuss with
+     */
     public AskHandlerThread(Socket client){
         this.client = client;
     }

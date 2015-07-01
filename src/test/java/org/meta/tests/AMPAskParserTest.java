@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
-import org.meta.plugin.tcp.amp.AMPAskFactory;
+import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
@@ -27,7 +27,7 @@ public class AMPAskParserTest {
             //e.printStackTrace();
         }
 
-        AMPAskFactory factory = new AMPAskFactory(
+        AMPAskBuilder factory = new AMPAskBuilder(
                                             "23", 
                                             "toto", 
                                             "cacahuete", 

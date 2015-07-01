@@ -6,17 +6,30 @@ import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.plugin.webservice.forms.InterfaceField;
 
+/**
+ * Correspond to a Select liste between optional elements
+ * Contains a list of {@link Select}
+ * @author faquin
+ *
+ */
 public class SelectList extends InterfaceField {
 
     private ArrayList<Select> selectList = null;
 
-    public SelectList(String id, String label, ArrayList<Select> buttons) {
+    /**
+     * 
+     * @param id        Unique ID
+     * @param label     Label
+     * @param selects   a list of {@link Select}
+     */
+    public SelectList(String id, String label, ArrayList<Select> selects) {
         super(id, label);
-        this.selectList = buttons;
+        this.selectList = selects;
     }
 
     @Override
     public BasicBSONObject toJson() {
+        //get mamas JSON and add the children
         BasicBSONObject selectList     = super.toJson();
         BasicBSONList   select = new BasicBSONList();
         for(int i=0; i<this.selectList.size(); i++){

@@ -79,10 +79,10 @@ public class Search extends Searchable {
     private Searchable   source      = null;
     private MetaData     metaData    = null;
     private List<Data>   linkedData  = null;
-    private List<String> tmpLinkedData;
-
-    private String tmpSourceHash  = null;
-    private String tmpResultHash  = null;
+    //Represent the state after network receiving
+    private List<String> tmpLinkedData  = null;
+    private String       tmpSourceHash  = null;
+    private String       tmpMetaDataHash  = null;
 
     protected Search() {
         super();
@@ -135,7 +135,8 @@ public class Search extends Searchable {
 
  
     /**
-     * set the source
+     * set the source;
+     * Not accessible outside Model package, because of hash processing triggered
      *
      * @param source
      */
@@ -165,6 +166,7 @@ public class Search extends Searchable {
     
     @Override
     public MetHash reHash() {
+        //Hash is composed of concatenation of sourcehash and metaData hash
         String srcHash = source != null ? source.getHash().toString() : "";
         String dstHash = metaData != null ? metaData.getHash().toString() : "";
         String concat = srcHash+dstHash;
@@ -245,7 +247,7 @@ public class Search extends Searchable {
         this.linkedData = linked;
     }
 
-    public String getTmpSourceHashes() {
+    public String getTmpSourceHash() {
         return tmpSourceHash;
     }
 
@@ -255,6 +257,9 @@ public class Search extends Searchable {
 
     @Override
     public Searchable toOnlyTextData() {
+        //the OnlyText will return
+        //a clone of this search only containing source, metada and a list
+        //of results in an onyText way
         Search searchClone = new Search();
         searchClone.setSource(source.toOnlyTextData());
         searchClone.setMetaData((MetaData) metaData.toOnlyTextData());

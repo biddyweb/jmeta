@@ -12,10 +12,14 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 
-
+/**
+ * Handle a request from the web server
+ * @author faquin
+ *
+ */
 public class WebRequestHandler extends AbstractHandler {
 
-    private SingletonWebServiceReader             webServiceReader     = null;
+    private SingletonWebServiceReader           webServiceReader     = null;
     private HashMap<String, AbstractWebService> instanceMap         = null;
     private int nbCommands = 0;
 
@@ -25,12 +29,12 @@ public class WebRequestHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(    String target,
+    public void handle( String target,
                         Request base,
                         HttpServletRequest request,
                         HttpServletResponse response)
-                                throws     IOException,
-                                        ServletException {
+            throws     IOException,
+                        ServletException {
         //Split the incomming url on every /
         String[]     urlParse     = target.split("/");
         String         action        = "";
@@ -40,15 +44,15 @@ public class WebRequestHandler extends AbstractHandler {
         if(urlParse.length == 4){
             //if theres 3 it means we've got two parameters, an action and
             //a command
-            action         = urlParse[urlParse.length-3];
-            plugin        = urlParse[urlParse.length-2];
-            command     = urlParse[urlParse.length-1];
+            action  = urlParse[urlParse.length-3];
+            plugin  = urlParse[urlParse.length-2];
+            command = urlParse[urlParse.length-1];
         }else if (urlParse.length == 3){
-            action         = urlParse[urlParse.length-2];
-            plugin        = urlParse[urlParse.length-1];
+            action  = urlParse[urlParse.length-2];
+            plugin  = urlParse[urlParse.length-1];
         }else{
             // otherwise just one System action
-            action     = urlParse[urlParse.length-1];
+            action  = urlParse[urlParse.length-1];
         }
 
         response.setContentType("application/json; charset=utf-8");

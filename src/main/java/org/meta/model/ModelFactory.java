@@ -20,7 +20,8 @@ import org.meta.model.Search;
 import org.meta.model.Searchable;
 
 /**
- *
+ * This factory allow anyone to interract safely with the model
+ * 
  * @author nico
  */
 public class ModelFactory {
@@ -44,10 +45,22 @@ public class ModelFactory {
         return pools.get(type).getInstance();
     }
     
+    /**
+     * 
+     * @return a fresh search from pool
+     */
     protected Search getSearch() {
         return (Search) pools.get(ModelType.SEARCH).getInstance();
     }
     
+    /**
+     * Create a Search with given params
+     * @param source    search's source
+     * @param metaData  search's metaData
+     * @param datas     search's results
+     * 
+     * @return a brand new search
+     */
     public Search createSearch(Searchable source, MetaData metaData, List<Data> datas){
          Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
          search.setSource(source);
@@ -56,15 +69,17 @@ public class ModelFactory {
          return search;
     }
 
+    /**
+     * 
+     * @return a fresh dataString
+     */
     protected DataString getDataString() {
         return (DataString) pools.get(ModelType.DATASTRING).getInstance();
     }
 
     /**
-     * Convenience DataString builder.
-     *
-     * @param hash
-     * @param data
+     * Build a new DataString with the given params
+     * @param data a string containing what it please you
      *
      * @return The fully-initialized dataString
      */
@@ -75,17 +90,16 @@ public class ModelFactory {
     }
 
     /**
-     * @return An instance of DataFile.
+     * @return a fresh DataFile
      */
     protected DataFile getDataFile() {
         return (DataFile) pools.get(ModelType.DATAFILE).getInstance();
     }
 
     /**
-     * Convenience DataFile builder.
+     * Build a new DataString with given params
      *
-     * @param hash
-     * @param file
+     * @param file  The file you want DataFile to point to
      *
      * @return The fully-initialized dataFile
      */
@@ -95,16 +109,18 @@ public class ModelFactory {
         return dataFile;
     }
 
+    /**
+     * 
+     * @return a fresh MetaData
+     */
     protected MetaData getMetaData() {
         return (MetaData) pools.get(ModelType.METADATA).getInstance();
     }
 
     /**
-     * Convenience MetaData builder.
+     * Build a MetaData with given params
      *
-     * @param hash
-     * @param datas
-     * @param props
+     * @param props the MetaProperties representing the metaData
      *
      * @return The fully-initialized MetaData.
      */
@@ -113,11 +129,31 @@ public class ModelFactory {
         metaData.setProperties(props);
         return metaData;
     }
-
+    
+    /**
+     * Create a new instance of a Content type
+     * Model object have protected constructor, so you can't call a 
+     * clazz.newinstance on those ? extends Searchable.class ;-)
+     * 
+     * @param clazz
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public Searchable newInstance(Class clazz) throws InstantiationException, IllegalAccessException {
         return (Searchable) clazz.newInstance();
     }
 
+    /**
+     * After retrieving an search from network, you may want to give him his childs
+     * Call this method.
+     * 
+     * TODO check that the given children have the same hash that the search want
+     * @param search
+     * @param source
+     * @param metaData
+     * @param linked
+     */
     public void updateFromNewtork(Search search, Searchable source, MetaData metaData, ArrayList<Data> linked) {
         search.set(source, metaData, linked);
     }

@@ -9,8 +9,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import org.meta.model.Data;
-import org.meta.model.DataFile;
-import org.meta.model.DataString;
 import org.meta.model.MetaData;
 import org.meta.model.Model;
 import org.meta.model.ModelFactory;
@@ -30,29 +28,32 @@ public class AnswerSenderThread extends Thread {
     private AMPAskFactory           ask         = null;
     private ArrayList<Searchable>   results     = null;
     private int                     port        = 0;
-    private TCPResponseCallbackInteface     listenner     = null;
-    private ModelFactory           factory  = null;
-    private Logger                 log      = LoggerFactory.getLogger(AnswerSenderThread.class);
+    private ModelFactory            factory     = null;
+    private Logger log      = LoggerFactory.getLogger(AnswerSenderThread.class);
+    private TCPResponseCallbackInteface listenner = null;
+    
     /**
-     *
-     * @param listenner
-     * @param answer
+     * 
+     * @param ask       Question
+     * @param adress    address to contact
+     * @param port      contact port
+     * @param listenner who to call back
      */
-    public AnswerSenderThread(    AMPAskFactory ask,
+    public AnswerSenderThread(  AMPAskFactory ask,
                                 InetAddress adress,
                                 int port,
                                 TCPResponseCallbackInteface listenner)
     {
-        this.ask         = ask;
-        this.adress     = adress;
-        this.port         = port;
-        this.listenner     = listenner;
-        this.results     = new ArrayList<Searchable>();
+        this.ask       = ask;
+        this.adress    = adress;
+        this.port      = port;
+        this.listenner = listenner;
+        this.results   = new ArrayList<Searchable>();
         try {
-			factory = Model.getInstance().getFactory();
-		} catch (ModelException e) {
-			e.printStackTrace();
-		}
+            factory = Model.getInstance().getFactory();
+        } catch (ModelException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
@@ -76,6 +77,12 @@ public class AnswerSenderThread extends Thread {
                 //parse it into an answer
                 AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray());
                 this.results = parser.getDatas();
+                /*
+                 * When results are retrieved.
+                 * Search objects are incompletes, 
+                 * Iterate, find search, and look if an Element inside the rest
+                 * of retrieved datas looks like the search's child data
+                 */
                 for(Searchable searchable : this.results){
                     if(searchable instanceof Search){
                         Search search = (Search) searchable;
@@ -103,17 +110,19 @@ public class AnswerSenderThread extends Thread {
         listenner.callback(results);
     }
 
+    /**
+     * Look if an element pointed by his hash is present in a searchable list
+     * @param results searchable list
+     * @param hash    hash we're lookin for
+     * @return the element if found, null otherwise
+     */
     private Searchable searchElement(ArrayList<Searchable> results, String hash) {
-    	Searchable element = null;
-    	for(int i=0; i<results.size() && element == null; i++){
-    		Searchable e = results.get(i);
-    		if(e.getHash().toString().equals(hash))
-    			element = e;
-    	}
-		return element;
-	}
-
-	public ArrayList<Searchable> getResults() {
-        return results;
+        Searchable element = null;
+        for(int i=0; i<results.size() && element == null; i++){
+            Searchable e = results.get(i);
+            if(e.getHash().toString().equals(hash))
+                element = e;
+        }
+        return element;
     }
 }

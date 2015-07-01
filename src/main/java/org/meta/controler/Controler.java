@@ -2,13 +2,11 @@ package org.meta.controler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.meta.common.MetHash;
 import org.meta.configuration.MetaProperties;
 import org.meta.model.Model;
 import org.meta.model.exceptions.ModelException;
@@ -88,9 +86,6 @@ public class Controler {
      */
     private void pluginInitialisation() {
         logger.debug("Controler: entering pluginInitialisation");
-        lstPluginsNames = new ArrayList<String>();
-        mapTCPControler = new HashMap<String, AbstractPluginTCPControler>();
-        mapWebServiceControler = new HashMap<String, AbstractPluginWebServiceControler>();
         //INitialize containing lists
 
         //Read plugin properties file, and iterate over it
@@ -135,27 +130,15 @@ public class Controler {
                     webServiceReader.registerPlugin(key, webServiceControler);
                     tcpReader.registerPlugin(key, tcpControler);
                 } catch (ClassNotFoundException e) {
-                    System.out.println("The plugin " + key + " is not available");
-                    mapTCPControler.remove(key);
-                    mapWebServiceControler.remove(key);
-                    lstPluginsNames.remove(key);
+                    logger.error("The plugin " + key + " is not available", e);
                 } catch (InstantiationException e) {
-                    System.out.println(
-                            "Error during instanciation of th plugin : " + key);
-                    mapTCPControler.remove(key);
-                    mapWebServiceControler.remove(key);
-                    lstPluginsNames.remove(key);
+                    logger.error(
+                            "Error during instanciation of th plugin : " + key, 
+                            e);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-    /**
-     * @return the model
-     */
-    public Model getModel() {
-        return model;
     }
 }

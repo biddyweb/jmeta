@@ -8,13 +8,17 @@ import org.meta.model.ModelFactory;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
+/**
+ * 
+ * Parse an AMP message 
+ * @author faquin
+ */
 public abstract class AMPParser {
     protected ModelFactory factory = null;
     public AMPParser(byte[] bs) throws NotAValidAMPCommand{
         try {
             factory = Model.getInstance().getFactory();
         } catch (ModelException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         parse(bs);
@@ -22,7 +26,10 @@ public abstract class AMPParser {
 
     /**
      * parse an byte[] as describe in the AMP Protocol
-     * @param bs
+     * Once the hashMap containing keyMap is rebuild, it call useContent
+     * wich has to be override in an extending class
+     * 
+     * @param bs the byte array to parse
      */
     private void parse(byte[] bs) throws NotAValidAMPCommand{
         LinkedHashMap<String, byte[]> content = new LinkedHashMap<String, byte[]>();
@@ -68,8 +75,20 @@ public abstract class AMPParser {
         useContent(content);
     }
 
+    /**
+     * use this content to rebuild what you want
+     * @param content an LinkedhashMap containing key value
+     * where key si the name of what the value represent
+     * 
+     * @throws NotAValidAMPCommand
+     */
     protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPCommand;
 
+    /**
+     * rebuild a short from a byte array
+     * @param bytes byte array containing two index
+     * @return a short
+     */
     private int parseSize(byte ... bytes) {
         return ByteBuffer.wrap(bytes).getShort();
     }

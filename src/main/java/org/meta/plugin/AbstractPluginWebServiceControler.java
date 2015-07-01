@@ -13,6 +13,7 @@ import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 import org.meta.model.Model;
 import org.meta.plugin.tcp.SingletonTCPWriter;
+import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.SingletonWebServiceReader;
 
@@ -134,7 +135,7 @@ public abstract class AbstractPluginWebServiceControler {
     public void search(final MetHash hash,
             final String plugin,
             final String command,
-            final AbstractWebService abstractWebService) {
+            final TCPResponseCallbackInteface abstractWebService) {
 
         //Find peers for the given hash
         FindPeersOperation peersOperation

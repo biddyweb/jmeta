@@ -16,7 +16,7 @@ import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
  * @author faquin
  *
  */
-public class AskHandlerThread extends Thread{
+public class AskHandlerThread implements Runnable{
 
     private Socket client = null;
     private SingletonTCPReader reader = SingletonTCPReader.getInstance();

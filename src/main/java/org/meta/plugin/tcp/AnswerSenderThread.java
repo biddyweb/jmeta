@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class AnswerSenderThread extends Thread {
+public class AnswerSenderThread implements Runnable {
 
     private InetAddress             adress      = null;
     private AMPAskBuilder           ask         = null;

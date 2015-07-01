@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,7 +58,7 @@ public class ControlerTest extends MetaBaseTests {
             InetAddress adress;
             try {
                 adress = InetAddress.getLocalHost();
-                Thread question = SingletonTCPWriter.getInstance().askTo(adress, "PluginExemple", "example", data.getHash(), new TCPResponseCallbackInteface() {
+                Future<?> question =SingletonTCPWriter.getInstance().askTo(adress, "PluginExemple", "example", data.getHash(), new TCPResponseCallbackInteface() {
 
                     @Override
                     public void callbackSuccess(ArrayList<Searchable> results) {
@@ -78,7 +79,7 @@ public class ControlerTest extends MetaBaseTests {
                     }
                     
                 },MetaConfiguration.getAmpConfiguration().getAmpPort());
-                question.join();
+                while(!question.isDone()){}
             } catch (UnknownHostException e) {
                 e.printStackTrace();
                 Assert.fail(e.getMessage());

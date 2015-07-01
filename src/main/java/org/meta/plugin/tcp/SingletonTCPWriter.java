@@ -1,6 +1,9 @@
 package org.meta.plugin.tcp;
 
 import java.net.InetAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
@@ -13,8 +16,12 @@ import org.meta.plugin.tcp.amp.AMPAskBuilder;
 public class SingletonTCPWriter {
     private static SingletonTCPWriter     instance     = new SingletonTCPWriter();
     private        int                    lastAsk      = 0;
+    private         ExecutorService       executor = null;
 
-    private SingletonTCPWriter() {}
+
+    private SingletonTCPWriter() {
+        executor = Executors.newFixedThreadPool(100);//TODO add to configuration
+    }
 
     public static SingletonTCPWriter getInstance() {
         return instance;
@@ -31,7 +38,7 @@ public class SingletonTCPWriter {
      * @param listenner after getting result, who is getting the callback ?
      * @return the sender thread for join purposes
      */
-    public Thread askTo(    InetAddress adress,
+    public Future<?> askTo(    InetAddress adress,
                         String plugin,
                         String command,
                         MetHash hash,
@@ -46,8 +53,6 @@ public class SingletonTCPWriter {
                                                             adress,
                                                             port,
                                                             listenner);
-        sender.start();
-        //return the sender for join() purposes
-        return sender;
+        return executor.submit(sender);
     }
 }

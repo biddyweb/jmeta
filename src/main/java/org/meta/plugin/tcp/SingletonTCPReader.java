@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.meta.configuration.MetaConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +35,8 @@ import org.meta.plugin.AbstractPluginTCPControler;
 public class SingletonTCPReader extends Thread {
 
     private static SingletonTCPReader instance = new SingletonTCPReader();
-
     private static final Logger logger = LoggerFactory.getLogger(SingletonTCPReader.class);
+    private ExecutorService executor = null;
 
     /**
      * True while we should run.
@@ -55,6 +58,7 @@ public class SingletonTCPReader extends Thread {
      */
     private SingletonTCPReader() {
         mapPlugin = new HashMap<>();
+        executor = Executors.newFixedThreadPool(100);//TODO add to configuration
     }
 
     @Override
@@ -67,7 +71,7 @@ public class SingletonTCPReader extends Thread {
                 //Once a connection is accepted, let AskHandlerThread take
                 //care of the rest
                 AskHandlerThread discussWith = new AskHandlerThread(client);
-                discussWith.start();
+                executor.submit(discussWith);
             }
         } catch (IOException e) {
             if (work == true) {

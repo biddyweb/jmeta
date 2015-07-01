@@ -34,7 +34,7 @@ public class AMPAskParser extends AMPParser{
         ask     = content.get("_ask")    != null ? new String(content.get("_ask"))     : null;
         plugin  = content.get("_plugin") != null ? new String(content.get("_plugin"))  : null;
         command = content.get("_command")!= null ? new String(content.get("_command")) : null;
-        hash    = content.get("_hash")   != null ? new MetHash(content.get("_hash"))   : null;
+        hash    = content.get("_hash")   != null ? new MetHash(new String(content.get("_hash"))) : null;
           
         //If one of those parameters is empty or null, throw an exception
         if( ask     == null || "".equals(ask)        ||

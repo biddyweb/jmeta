@@ -2,6 +2,7 @@ package org.meta.plugin.tcp.amp;
 
 import java.util.LinkedHashMap;
 
+import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPAskCommand;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
@@ -17,7 +18,7 @@ public class AMPAskParser extends AMPParser{
     private String    ask       ;
     private String    plugin    ;
     private String    command   ;
-    private String    hash      ;
+    private MetHash   hash      ;
 
     /**
      * Call parent
@@ -33,15 +34,19 @@ public class AMPAskParser extends AMPParser{
         ask     = content.get("_ask")    != null ? new String(content.get("_ask"))     : null;
         plugin  = content.get("_plugin") != null ? new String(content.get("_plugin"))  : null;
         command = content.get("_command")!= null ? new String(content.get("_command")) : null;
-        hash    = content.get("_hash")   != null ? new String(content.get("_hash"))    : null;
-
+        hash    = content.get("_hash")   != null ? new MetHash(content.get("_hash"))   : null;
+          
         //If one of those parameters is empty or null, throw an exception
         if( ask     == null || "".equals(ask)        ||
             plugin  == null || "".equals(plugin)     ||
             command == null || "".equals(command)    ||
             hash    == null || "".equals(hash)
         ){
-            throw new NotAValidAMPAskCommand(ask, plugin, command, hash);
+            throw new NotAValidAMPAskCommand(
+                    ask, 
+                    plugin, 
+                    command, 
+                    hash != null ? hash.toString() : null);
         }
 
     }
@@ -65,7 +70,7 @@ public class AMPAskParser extends AMPParser{
      * 
      * @return hash value
      */
-    public String getHash() {
+    public MetHash getHash() {
         return hash;
     }
 

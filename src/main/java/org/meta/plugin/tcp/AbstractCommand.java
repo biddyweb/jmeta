@@ -1,5 +1,6 @@
 package org.meta.plugin.tcp;
 
+import org.meta.common.MetHash;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 
@@ -20,10 +21,10 @@ public abstract class AbstractCommand {
      * an othe machine.
      * 
      * @param answer    the unique code defining the question
-     * @param hash      the string representation of the hash
+     * @param hash      the MetHash object of the question
      * @return
      */
-    public abstract AMPAnswerFactory execute(String answer, String hash);
+    public abstract AMPAnswerFactory execute(String answer, MetHash hash);
 
     /**
      * Who's my tcpControler ?

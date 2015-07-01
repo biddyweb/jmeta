@@ -12,11 +12,10 @@ import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 public class Get extends AbstractCommand {
 
     @Override
-    public AMPAnswerFactory execute(String answer, String hash) {
+    public AMPAnswerFactory execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();
-        MetHash metHash = new MetHash(hash);
-        Search s = (Search) myTCPControler.getInTheModel(metHash);
-        datas.add(myTCPControler.getInTheModel(metHash));
+        Search s = (Search) myTCPControler.getInTheModel(hash);
+        datas.add(myTCPControler.getInTheModel(hash));
         MetaData m = s.getMetaData();
         datas.addAll(s.getLinkedData());
         return new AMPAnswerFactory(answer, datas);

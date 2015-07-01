@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
@@ -57,8 +58,8 @@ public class AskHandlerThread extends Thread{
                         parser.getCommand());
                 if(command != null){
                     //execute it
-                    String hash = parser.getHash();
-                    String answer = parser.getAsk();
+                    MetHash hash = parser.getHash();
+                    String  answer = parser.getAsk();
                     byte[] response = command.execute(answer, hash).getMessage();
                     //finally, write the output to the client
                     OutputStream os = client.getOutputStream();

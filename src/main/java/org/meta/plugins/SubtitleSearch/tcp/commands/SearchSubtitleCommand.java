@@ -10,10 +10,9 @@ import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 public class SearchSubtitleCommand extends AbstractCommand {
 
     @Override
-    public AMPAnswerFactory execute(String answer, String hash) {
+    public AMPAnswerFactory execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();
-        MetHash metHash = new MetHash(hash);
-        datas.add(myTCPControler.getInTheModel(metHash).toOnlyTextData());
+        datas.add(myTCPControler.getInTheModel(hash).toOnlyTextData());
         return new AMPAnswerFactory(answer, datas);
     }
 

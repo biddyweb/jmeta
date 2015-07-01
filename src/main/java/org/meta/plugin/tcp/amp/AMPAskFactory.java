@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import org.meta.common.MetHash;
 
 /**
- *
+ * Build a new Ask
  * @author faquin
  *
  */
@@ -13,11 +13,11 @@ public class AMPAskFactory extends AMPFactory{
 
     /**
      *
-     * Create a new AMP Ask command
+     * Create a new AMP Ask command with the given parameters
      *
-     * @param ask the number for the question
-     * @param command the command to execute to the other pair
-     * @param hash the hash of the request
+     * @param ask       the number for the question
+     * @param command   the command to execute to the other pair
+     * @param hash      the hash of the request
      */
     public AMPAskFactory(String ask, String plugin, String command, MetHash hash) {
         LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();

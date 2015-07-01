@@ -136,7 +136,6 @@ public class DataString extends Data {
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         super.decodefragment(fragment);
-        long size = Long.parseLong(new String(fragment.get("_size")));
         long count = Long.parseLong(new String(fragment.get("_count")));
         fragment.remove("_size");
         fragment.remove("_count");

@@ -53,4 +53,13 @@ public abstract class InterfaceOrganizer extends InterfaceElement{
     public void addChild(InterfaceElement child){
         childs.add(child);
     }
+    
+    /**
+     * Does what arrayList.remove does
+     * @param child a child element to remove
+     * @return true if the element was found in the list
+     */
+    public boolean removeChild(InterfaceElement child){
+        return childs.remove(child);
+    }
 }

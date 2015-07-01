@@ -36,7 +36,8 @@ import org.meta.model.exceptions.ModelException;
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- *
+ * Model object is a singleton who's used to interact with KyotoDB
+ * 
  * @author Nicolas MICHON, Thomas LAVOCAT
  *
  */
@@ -70,6 +71,8 @@ public class Model {
      * Singleton instance getter.
      *
      * @return The model Instance.
+     * @throws ModelException if dataBase fail to init
+     * may only occured at first call.
      */
     public synchronized static Model getInstance() throws ModelException {
         if (instance == null) {
@@ -86,6 +89,9 @@ public class Model {
         return this.factory;
     }
 
+    /**
+     * Log why kyoto as failed
+     */
     private void kyotoError() {
         kyotocabinet.Error error = kyotoDB.error();
 
@@ -101,12 +107,13 @@ public class Model {
      */
     private void initDataBase() throws ModelException {
         String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
+        //avoid dummy error, if database file parent does not exist, create one
         File databaseDir = new File(databaseFile).getParentFile();
         if (!databaseDir.isDirectory()) {
             databaseDir.mkdir();
         }
         kyotoDB = new DB();
-
+        //Open DB with read/write wrights
         if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET | DB.OTRYLOCK)) {
             logger.error("Failed to open kyotocabinet database.");
             kyotoError();
@@ -196,6 +203,7 @@ public class Model {
 
     /**
      * Recursive synchronized method Load.
+     * This method will retrieve an Searchable object from DB.
      *
      * @param hash
      * @return a searchale object if found or null if not.
@@ -244,7 +252,8 @@ public class Model {
     }
 
     /**
-     *
+     * rebuild a DataString from BSON object
+     * call extractData to complete parent operations
      * @param searchable
      */
     private void extractDataString(Searchable searchable, BSONObject bsonObject) {
@@ -254,7 +263,8 @@ public class Model {
     }
 
     /**
-     * Extract a data from Searchable object
+     * rebuild a DataFile from BSON Object
+     * call extractData to complete parent operations
      *
      * @param searchable
      * @param jsonSearcheable
@@ -267,6 +277,12 @@ public class Model {
         data.setFile(file);
     }
     
+    /**
+     * rebuild a Data from BSONObject, 
+     * Data is a abstract class, this method only take care of common description
+     * @param data
+     * @param bsonObject
+     */
     private void extractData(Data data, BSONObject bsonObject){
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("description");
         BSONObject tmp;
@@ -281,7 +297,7 @@ public class Model {
     }
 
     /**
-     * Extract a metadata from a searchale object
+     * Extract a metadata from a BSONObject
      *
      * @param searchable
      * @param jsonSearcheable
@@ -309,7 +325,7 @@ public class Model {
     }
 
     /**
-     * Extract a search from a searchable object
+     * Extract a search from a BSONObject object
      *
      * @param searchable
      * @param jsonSearcheable
@@ -345,7 +361,7 @@ public class Model {
 
     /**
      *
-     * @param hash
+     * @param hash of something you want to find in the db
      * @return A searchable object, or null if not found.
      */
     public Searchable get(MetHash hash) {
@@ -359,7 +375,7 @@ public class Model {
     }
 
     /**
-     *
+     * Start a db transaction 
      * @param startTx
      * @return
      */

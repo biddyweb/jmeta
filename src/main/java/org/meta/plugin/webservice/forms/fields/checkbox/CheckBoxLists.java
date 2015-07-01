@@ -6,17 +6,31 @@ import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.plugin.webservice.forms.InterfaceField;
 
+
+/**
+ * A CheckBox list is a list of grouped {@link CheckBox}.
+ * 
+ * @author faquin
+ *
+ */
 public class CheckBoxLists extends InterfaceField {
 
     private ArrayList<CheckBox> checkBoxes = null;
 
-    public CheckBoxLists(String id, String label, ArrayList<CheckBox> buttons) {
+    /**
+     * 
+     * @param id            Unique ID
+     * @param label         label
+     * @param checkBoxes    list of {@link CheckBox}s
+     */
+    public CheckBoxLists(String id, String label, ArrayList<CheckBox> checkBoxes) {
         super(id, label);
-        this.checkBoxes = buttons;
+        this.checkBoxes = checkBoxes;
     }
 
     @Override
     public BasicBSONObject toJson() {
+        //get mama's json and add the list of checboxes
         BasicBSONObject checkBoxLists     = super.toJson();
         BasicBSONList   checkBox = new BasicBSONList();
         for(int i=0; i<checkBoxes.size(); i++){

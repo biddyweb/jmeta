@@ -26,26 +26,35 @@ import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.SingletonTCPReader;
 
 /**
- *
+ * You may extends {@link AbstractPluginTCPControler} to create the TCP part of 
+ * a plugin. It's allow you to register command to the tcp reader, that can be 
+ * executed by other peers
+ * 
+ * Basically, this class offer generic treatment to serve Data over P2P
+ * 
+ * You may extends registerCommands wich allow you to tel the {@link SingletonTCPReader}
+ * that you may have something to execute.
+ * 
+ * You may use getInTheModel to retrieve information from the DB
+ * 
  * @author Thomas LAVOCAT
  *
  */
 public abstract class AbstractPluginTCPControler {
 
-    protected Model model = null;
-    private SingletonTCPReader reader = null;
-    protected HashMap<String, Class<? extends AbstractCommand>> lstCommands = null;
-    private String pluginName = null;
+    protected   Model model = null;
+    protected   HashMap<String, Class<? extends AbstractCommand>> lstCommands = null;
+    protected   String pluginName = null;
 
     public AbstractPluginTCPControler() {
-        reader = SingletonTCPReader.getInstance();
         lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
     }
 
     /**
      * Fill the lstCommands with all the needed TCP commands.
      *
-     * @param lstCommands2
+     * @param commands is a HashMap containing a key wich is the command name
+     * and a Clas wich is the Class of the command.
      */
     protected abstract void registercommands(HashMap<String, Class<? extends AbstractCommand>> commands);
 
@@ -68,6 +77,13 @@ public abstract class AbstractPluginTCPControler {
         this.model = model;
     }
 
+    /**
+     * Instantiate (if found) a new Command.
+     * 
+     * @param commandName name of the command
+     * 
+     * @return A command to execute
+     */
     public AbstractCommand getCommand(String commandName) {
         AbstractCommand command = null;
 
@@ -83,6 +99,11 @@ public abstract class AbstractPluginTCPControler {
         return command;
     }
 
+    /**
+     * Search the given hash in the DB
+     * @param hash hash to search
+     * @return the searchable if found, nothing otherwise
+     */
     public Searchable getInTheModel(MetHash hash) {
         return model.getSearchable(hash);
     }

@@ -121,8 +121,6 @@ public class Controler {
                     //give a link to the model to the web service controler
                     webServiceControler.setModel(model);
                     //give a link to the tcp part of the plugin to the web 
-                    //service part
-                    webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
                     tcpControler.init(key);
                     webServiceControler.init(key);

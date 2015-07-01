@@ -36,26 +36,27 @@ import org.meta.plugin.webservice.SingletonWebServiceReader;
  */
 /**
  *
+ * Initialize JMeta's plugin part.
+ * Run TCPreader and Webservice
+ *
  * @author Thomas LAVOCAT
  *
  */
 public class Controler {
-
     private Model model = null;
     private String pluginsPropertiesFile = "conf/plugins.prop";
-    private ArrayList<String> lstPluginsNames = null;
-    private HashMap<String, AbstractPluginTCPControler> mapTCPControler = null;
-    private HashMap<String, AbstractPluginWebServiceControler> mapWebServiceControler = null;
     private SingletonWebServiceReader webServiceReader = null;
     private SingletonTCPReader tcpReader = null;
-    private static final Logger logger = LoggerFactory.getLogger(Controler.class);
+    private Logger logger = LoggerFactory.getLogger(Controler.class);
 
     /**
-     *
+     * Controler constructor.
+     * Start Model, tcpreader, webservice and initialize installed plugins.
+     * 
      * @throws LibraryException
      * @throws IOException
-     * @throws org.meta.model.exceptions.ModelException
-     * @throws URISyntaxException
+     * @throws org.meta.model.exceptions.ModelException see @{@link Model}
+     * @throws URISyntaxException 
      */
     public Controler()
             throws IOException,
@@ -68,13 +69,21 @@ public class Controler {
         webServiceReader = SingletonWebServiceReader.getInstance();
         pluginInitialisation();
     }
-
+    
+    /**
+     * Clean stop of controler
+     * Call kill methods on tcpReader and WebService reader.
+     */
     public void stop() {
         tcpReader.kill();
         webServiceReader.kill();
     }
 
     /**
+     * Initialize plugins.
+     * 
+     * To install a plugin, refer to the documentation inside conf/plugin.prop
+     * 
      * TODO add custom class loader
      */
     private void pluginInitialisation() {
@@ -82,22 +91,29 @@ public class Controler {
         lstPluginsNames = new ArrayList<String>();
         mapTCPControler = new HashMap<String, AbstractPluginTCPControler>();
         mapWebServiceControler = new HashMap<String, AbstractPluginWebServiceControler>();
+        //INitialize containing lists
 
+        //Read plugin properties file, and iterate over it
         Properties pluginsProperties = MetaProperties.get(pluginsPropertiesFile);
         Enumeration<Object> keys = pluginsProperties.keys();
+        
         while (keys.hasMoreElements()) {
+            //Look for the next plugin name wich is contained in KEY.name: KEY
             String key = ((String) keys.nextElement());
-            //TODO split on point &  take last element
             if (key.contains(".name")) {
+                key = key.replaceAll(".name", "");
                 //plugin founded
-                lstPluginsNames.add(pluginsProperties.getProperty(key));
-                //load TCP class
-                String strTCPClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".TCPClass");
-                //load web service class
-                String strWSClass = pluginsProperties.getProperty(key.replaceAll(".name", "") + ".WSClass");
+                //retrieve TCP class
+                String strTCPClass = pluginsProperties.getProperty(key+ ".TCPClass");
+                //retrieve web service class
+                String strWSClass = pluginsProperties.getProperty(key+ ".WSClass");
+                /*
+                 * Try to load the plugin, fail proof code.
+                 */
                 try {
-                    Class<?> clazzTCP = Class.forName(strTCPClass);
-                    Class<?> clazzWS = Class.forName(strWSClass);
+                    //TODO custom class loader ?
+                    Class<?> clazzTCP   = Class.forName(strTCPClass);
+                    Class<?> clazzWS    = Class.forName(strWSClass);
                     //load TCPControler
                     AbstractPluginTCPControler tcpControler
                             = (AbstractPluginTCPControler) clazzTCP.newInstance();
@@ -105,19 +121,19 @@ public class Controler {
                     AbstractPluginWebServiceControler webServiceControler
                             = (AbstractPluginWebServiceControler) clazzWS.newInstance();
 
-                    //Set parameters
+                    //give a link to the model to the TCP controler
                     tcpControler.setModel(model);
-                    //Set parameters
+                    //give a link to the model to the web service controler
                     webServiceControler.setModel(model);
-                    //TODO rebirth P2PControler ?
+                    //give a link to the tcp part of the plugin to the web 
+                    //service part
                     webServiceControler.setTcpControler(tcpControler);
                     //init TCP and WS parts
-                    tcpControler.init(key.replaceAll(".name", ""));
-                    tcpReader.registerPlugin(key.replaceAll(".name", ""), tcpControler);
-
-                    webServiceControler.init(key.replaceAll(".name", ""));
-                    webServiceReader.registerPlugin(key.replaceAll(".name", ""), webServiceControler);
-
+                    tcpControler.init(key);
+                    webServiceControler.init(key);
+                    //give the plugin to webservicereader and TcoReader
+                    webServiceReader.registerPlugin(key, webServiceControler);
+                    tcpReader.registerPlugin(key, tcpControler);
                 } catch (ClassNotFoundException e) {
                     System.out.println("The plugin " + key + " is not available");
                     mapTCPControler.remove(key);

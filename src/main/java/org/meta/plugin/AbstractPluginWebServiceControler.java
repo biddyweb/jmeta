@@ -36,22 +36,32 @@ import com.mongodb.util.ObjectSerializer;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
- *
+ * You may extends {@link AbstractPluginWebServiceControler} to create the WS
+ * part of a plugin. It's allow you to register command to the webservice reader, 
+ * that can be executed by the user on his interface.
+ * 
+ * Basically, this class offer generic treatment to serve interfaces and search
+ * over DHT
+ * 
+ * You may extends registerCommands wich allow you to tel the 
+ * {@link SingletonWebServiceReader} that you may have something to execute.
+ * 
+ * You may use search to search a hash in the DHT, the datas, if founded will
+ * arrive in the calback method.
+ * 
  * @author Thomas LAVOCAT
  *
  */
 public abstract class AbstractPluginWebServiceControler {
 
-    protected Model model = null;
-    private SingletonWebServiceReader reader = null;
-    protected LinkedHashMap<String, Class<? extends AbstractWebService>> 
+    protected   Model model = null;
+    protected   LinkedHashMap<String, Class<? extends AbstractWebService>> 
                                                             lstCommands = null;
-    protected AbstractPluginTCPControler tcpControler = null;
-    protected String pluginName = null;
+    protected   String pluginName = null;
 
     public AbstractPluginWebServiceControler() {
-        reader = SingletonWebServiceReader.getInstance();
         lstCommands = new LinkedHashMap<String, Class<? extends AbstractWebService>>();
     }
 
@@ -61,7 +71,10 @@ public abstract class AbstractPluginWebServiceControler {
     public void setModel(Model model) {
         this.model = model;
     }
-
+    
+    /**
+     * @return return the model object
+     */
     public Model getModel() {
         return model;
     }
@@ -75,22 +88,26 @@ public abstract class AbstractPluginWebServiceControler {
     }
 
     /**
-     * Fil the lstCommands with all the needed TCP commands.
+     * Fill the lstCommands with all the needed webservice commands.
      *
-     * @param lstCommands2
+     * @param commands is a HashMap containing a key wich is the command name
+     * and a Clas wich is the Class of the command.
      */
     protected abstract void registercommands(
-    		LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
+        LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
 
-    public void setTcpControler(AbstractPluginTCPControler tcpControler) {
-        this.tcpControler = tcpControler;
-
-    }
-
+    /**
+     * @param command name of the command
+     * @return the className of the command pointed by the given param
+     */
     public Class<? extends AbstractWebService> getCommand(String command) {
         return lstCommands.get(command);
     }
 
+    /**
+     * Serialize as JSON the list of commands
+     * @return a list of commands as BSON
+     */
     public String getJsonCommandList() {
         BasicBSONList list = new BasicBSONList();
         for (Iterator<String> i = lstCommands.keySet().iterator(); i.hasNext();) {
@@ -103,36 +120,51 @@ public abstract class AbstractPluginWebServiceControler {
         return json_serializer.serialize(list);
     }
 
+    /**
+     * Search something on the DHT.
+     * If you search a hash, you kown wich plugin and wich command to contact.
+     * It correspond to a command you've developp in TCP part
+     * 
+     * @param hash                  in fact something is this hash
+     * @param plugin                name of the plugin to call
+     * @param command               command to execute
+     * @param abstractWebService    an abstractWebService to call back with the
+     *                              results (or failure)
+     */
     public void search(final MetHash hash,
             final String plugin,
             final String command,
             final AbstractWebService abstractWebService) {
 
-
+        //Find peers for the given hash
         FindPeersOperation peersOperation
                                         = MetaDHT.getInstance().findPeers(hash);
+        //New opertaion
         peersOperation.addListener(new OperationListener<FindPeersOperation>() {
 
             @Override
             public void failed(FindPeersOperation operation) {
-                // TODO Auto-generated method stub
+                // TODO Callback failure
             }
 
             @Override
             public void complete(FindPeersOperation operation) {
-              SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
-              Collection<MetaPeer> peers =  operation.getPeers();
+                /*
+                 * foreach peer found, launch a contact wit TCPWriter
+                 */
+                SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
+                Collection<MetaPeer> peers =  operation.getPeers();
 
-              for(Iterator<MetaPeer> i = peers.iterator(); i.hasNext();){
-                  MetaPeer peer = i.next();
-                  InetAddress adress = peer.getAddress();
-                  //TODO control ID validity
-                  writer.askTo( adress,
-                                plugin,
-                                command,
-                                hash,
-                                abstractWebService,
-                                (int) peer.getPort());
+                for(Iterator<MetaPeer> i = peers.iterator(); i.hasNext();){
+                    MetaPeer peer = i.next();
+                    InetAddress adress = peer.getAddress();
+                    //TODO control ID validity
+                    writer.askTo( adress,
+                                  plugin,
+                                  command,
+                                  hash,
+                                  abstractWebService,
+                                  (int) peer.getPort());
               }
             }
         });

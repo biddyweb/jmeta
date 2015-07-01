@@ -70,6 +70,12 @@ public class ControlerTest extends MetaBaseTests {
                         }
                         close();
                     }
+
+                    @Override
+                    public void callbackFailure(String failureMessage) {
+                        // TODO Auto-generated method stub
+                        
+                    }
                     
                 },MetaConfiguration.getAmpConfiguration().getAmpPort());
                 question.join();

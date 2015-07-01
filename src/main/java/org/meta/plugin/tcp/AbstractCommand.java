@@ -4,7 +4,7 @@ import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.tcp.amp.AMPAnswerFactory;
 
 /**
- * Defin how need to work a tcp command in a plugin
+ * Define how need to work a tcp command in a plugin
  * @author faquin
  *
  */

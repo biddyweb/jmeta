@@ -79,8 +79,8 @@ public class AnswerSenderThread extends Thread {
                 for(Searchable searchable : this.results){
                     if(searchable instanceof Search){
                         Search search = (Search) searchable;
-                        Searchable source = searchElement(this.results, search.getTmpSourceHashes());
-                        Searchable result = searchElement(this.results, search.getTmpResultsHashes());
+                        Searchable source = searchElement(this.results, search.getTmpSourceHash());
+                        MetaData   result = (MetaData) searchElement(this.results, search.getTmpmetaDataHash());
                         ArrayList<Data> linked = new ArrayList<Data>();
                         for(String link : search.getTmpLinkedData()){
                             Searchable s = searchElement(this.results, link);

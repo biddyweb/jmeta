@@ -77,7 +77,7 @@ import org.meta.common.MetamphetUtils;
 public class Search extends Searchable {
 
     private Searchable   source      = null;
-    private MetaData     result      = null;
+    private MetaData     metaData    = null;
     private List<Data>   linkedData  = null;
     private List<String> tmpLinkedData;
 
@@ -91,19 +91,20 @@ public class Search extends Searchable {
     /**
      * Create a new Searchable object -> use in case of creation
      *
-     * @param hash this search hash
-     * @param source search's source
-     * @param result search's results
+     * @param hash       this search hash
+     * @param source     search's source
+     * @param metaData   search's metaData
+     * @param linkedData search's results
      */
     protected Search(
-            MetHash hash,
-            Searchable source,
-            List<Data> linkedData,
-            MetaData result
+            MetHash     hash,
+            Searchable  source,
+            List<Data>  linkedData,
+            MetaData    metaData
     ) {
         super(hash);
         this.setSource(source);
-        this.setResult(result);
+        this.setMetaData(metaData);
     }
 
     /**
@@ -149,15 +150,15 @@ public class Search extends Searchable {
      * @return return the list of results
      */
     public MetaData getResult() {
-        return result;
+        return metaData;
     }
     /**
-     * set the list of results
-     *
-     * @param result
+     * set the metaData.
+     * Not accessible outside Model package, because of hash processing triggered
+     * @param metaData
      */
-    protected void setResult(MetaData result) {
-        this.result = result;
+    protected void setMetaData(MetaData metaData) {
+        this.metaData = metaData;
         this.updateState();
         reHash();
     }
@@ -165,7 +166,7 @@ public class Search extends Searchable {
     @Override
     public MetHash reHash() {
         String srcHash = source != null ? source.getHash().toString() : "";
-        String dstHash = result != null ? result.getHash().toString() : "";
+        String dstHash = metaData != null ? metaData.getHash().toString() : "";
         String concat = srcHash+dstHash;
         hash = MetamphetUtils.makeSHAHash(concat);
         return hash;
@@ -185,7 +186,7 @@ public class Search extends Searchable {
         bsonObject.put("linkedData", bsonLinkedData);
  
         bsonObject.put("source", this.source.getHash().toString());
-        bsonObject.put("result", this.result.getHash().toString());
+        bsonObject.put("result", this.metaData.getHash().toString());
         return bsonObject;
     }
 
@@ -193,7 +194,7 @@ public class Search extends Searchable {
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         //write hash source
         fragment.put("_source",   source.getHash().toByteArray());
-        fragment.put("_metaData", result.getHash().toByteArray());
+        fragment.put("_metaData", metaData.getHash().toByteArray());
 
         //write every data's hash
         fragment.put("_nbLinkedData", (linkedData.size() + "").getBytes());
@@ -209,9 +210,9 @@ public class Search extends Searchable {
         //when this method is called in a Search, her state is no more a real
         //Search but a temporary search, it means, it only represent what's
         //over the network, so source = null and result = null
-        source = null;
-        result = null;
-        linkedData = null;
+        source      = null;
+        metaData    = null;
+        linkedData  = null;
         //and the Search cannot be write or updated in database
 
         //extract the source and delete from the fragment
@@ -219,8 +220,8 @@ public class Search extends Searchable {
         fragment.remove("_source");
 
         //extract the metada and delete from fragment
-        tmpResultHash = "";
-        tmpResultHash = new MetHash(fragment.get("_metaData")).toString();
+        tmpMetaDataHash = "";
+        tmpMetaDataHash = new MetHash(fragment.get("_metaData")).toString();
 
         //extract all linkedDatas and delete it from the fragment too
         int nbLinkedData = Integer.parseInt(new String(fragment.get("_nbLinkedData")));
@@ -248,15 +249,15 @@ public class Search extends Searchable {
         return tmpSourceHash;
     }
 
-    public String getTmpResultsHashes() {
-        return tmpResultHash;
+    public String getTmpmetaDataHash() {
+        return tmpMetaDataHash;
     }
 
     @Override
     public Searchable toOnlyTextData() {
         Search searchClone = new Search();
         searchClone.setSource(source.toOnlyTextData());
-        searchClone.setResult((MetaData) result.toOnlyTextData());
+        searchClone.setMetaData((MetaData) metaData.toOnlyTextData());
 
         ArrayList<Data> linkedDataClone = new ArrayList<Data>();
         for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
@@ -266,10 +267,16 @@ public class Search extends Searchable {
         searchClone.setLinkedData(linkedDataClone);
         return searchClone;
     }
-
-    public void set(Searchable source, Searchable result, ArrayList<Data> linked) {
+    
+    /**
+     * Set all information to the search 
+     * @param source
+     * @param metaData
+     * @param linked
+     */
+    protected void set(Searchable source, MetaData metaData, ArrayList<Data> linked) {
         this.source = source;
-        this.result = (MetaData) result;
+        this.metaData =  metaData;
         this.linkedData = linked;
     }
 }

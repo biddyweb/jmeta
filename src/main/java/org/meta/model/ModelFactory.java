@@ -51,7 +51,7 @@ public class ModelFactory {
     public Search createSearch(Searchable source, MetaData result, List<Data> datas){
          Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
          search.setSource(source);
-         search.setResult(result);
+         search.setMetaData(result);
          search.setLinkedData(datas);
          return search;
     }
@@ -118,7 +118,7 @@ public class ModelFactory {
         return (Searchable) clazz.newInstance();
     }
 
-    public void updateFromNewtork(Search search, Searchable source, Searchable result, ArrayList<Data> linked) {
-        search.set(source, result, linked);
+    public void updateFromNewtork(Search search, Searchable source, MetaData metaData, ArrayList<Data> linked) {
+        search.set(source, metaData, linked);
     }
 }

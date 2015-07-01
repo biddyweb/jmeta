@@ -121,7 +121,7 @@ public class AMPAnswerParserTest {
                 if(searchable instanceof Search){
                     Search search = (Search) searchable;
                     Assert.assertEquals(this.search.getHash().toString(), search.getHash().toString());
-                    Assert.assertEquals(metaData.getHash().toString(), search.getTmpResultsHashes());
+                    Assert.assertEquals(metaData.getHash().toString(), search.getTmpmetaDataHash());
                     int count=0;
                     for(String linked : search.getTmpLinkedData()){
                         Assert.assertEquals(linkedData.get(count).getHash().toString(), linked);

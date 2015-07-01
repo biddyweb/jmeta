@@ -331,7 +331,7 @@ public class Model {
         MetaData result = (MetaData) load(hashResult.toByteArray());
         //update search
         search.setSource(source);
-        search.setResult(result);
+        search.setMetaData(result);
         
         List<Data> linkedData = new ArrayList<Data>();
         BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");

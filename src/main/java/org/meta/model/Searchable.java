@@ -1,6 +1,8 @@
 package org.meta.model;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.meta.common.MetHash;
@@ -21,6 +23,12 @@ import org.meta.common.MetHash;
  *
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * Super class of all model types.
+ * Contain a hash and a state
+ * @author faquin
+ *
  */
 public abstract class Searchable {
 
@@ -68,6 +76,7 @@ public abstract class Searchable {
     }
 
     /**
+     * Only callable in model package
      * @param hashCode the hashCode to set
      */
     protected void setHash(MetHash hash) {
@@ -103,6 +112,10 @@ public abstract class Searchable {
         }
     }
     
+    /**
+     * Called for rebuilding the hash
+     * @return
+     */
     public abstract MetHash reHash();
 
     /**
@@ -115,7 +128,9 @@ public abstract class Searchable {
 
     /**
      *
-     * @return transform the Searchable object into a BSON object for serialization.
+     * transform the Searchable object into a BSON object for model 
+     * serialization. Meant to be object-recursive
+     * @return a BSON object filled with all neede information for the DB
      */
     public BSONObject getBson() {
         BasicBSONObject bsonObject = new BasicBSONObject("hash", this.hash.toString());
@@ -123,6 +138,16 @@ public abstract class Searchable {
         return bsonObject;
     }
 
+    /**
+     * build an AMP valid amp message part with the content of the Searchable
+     * object. Call "fillFragment" to add specialized content function of 
+     * implementing type.
+     * By default this method add two information in the AnswerPart : 
+     * - type
+     * - hash
+     * @return a {@link HashMap} containing a label for key and a byte[] for 
+     * content. The content will be translated in AMP message elsewhere.
+     */
     public LinkedHashMap<String, byte[]> getAmpAnswerPart() {
         LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<String, byte[]>();
         fragment.put("_type", (this.getClass().getName() + "").getBytes());
@@ -132,20 +157,41 @@ public abstract class Searchable {
     }
 
     /**
-     * Fill the fragment with useful informations
+     * Called when creating the answer part with the searchable object.
+     * Override this method to add usable content in your AMP answer
      *
      * @param fragment
      */
     protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);
-
+    
+    /**
+     * Rebuild a Searchable object from an Amp answer part.
+     * Basically, it did the reverse work of getAmpAnswerPart.
+     * @param fragment a {@link HashMap} containing a least the labels and values
+     * given in getAmpAnswerPart and fillFragment.
+     * 
+     * call decodeFragment wich allow implementing types to add somme usefull 
+     * code.
+     */
     public void unParseFromAmpFragment(LinkedHashMap<String, byte[]> fragment) {
         this.hash = new MetHash(fragment.get("_hash"));
         fragment.remove("_hash");
         decodefragment(fragment);
         fragment.clear();
     }
-
+    
+    /**
+     * Called when unParsing from AMP message.
+     * Retrieve information in the map as they where put in fillFragment method
+     * @param fragment same as unParseFromAmpFragment
+     */
     protected abstract void decodefragment(LinkedHashMap<String, byte[]> fragment);
-
+    
+    /**
+     * Allow implementing types to give a more textual version of themSelves
+     * This may be useful for {@link DataFile}, allowing them to create a copy
+     * of themselves containing everything but the final data.
+     * @return
+     */
     public abstract Searchable toOnlyTextData();
 }

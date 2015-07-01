@@ -31,15 +31,16 @@ import org.meta.common.MetamphetUtils;
  *
  * @author Thomas LAVOCAT
  *
- * This class correspond to a data on the hard drive. Pointed by a file.
+ * File implementation of Data objet.
+ * Point to a File on the hard drive.
  */
 public class DataFile extends Data {
 
-    private File file = null;
-    private static final int MAX_BLOC_SIZE = 65536;
+    private              File file          = null;
+    private static final int  MAX_BLOC_SIZE = 65536;
 
     /**
-     * needed for java Reflexion
+     * needed for java reflection
      */
     protected DataFile() {
         super();
@@ -57,14 +58,15 @@ public class DataFile extends Data {
     }
 
     /**
-     * @return the file
+     * @return a File object pointing the file
      */
     public File getFile() {
         return file;
     }
 
     /**
-     * @param file the file to set
+     * @param a file to set, this will change the final hash, only callable in
+     * the model.
      */
     protected void setFile(File file) {
         this.file = file;
@@ -79,6 +81,10 @@ public class DataFile extends Data {
     }
 
     public BSONObject getBson() {
+        /**
+         * The hash is simply processed with the entire File content.
+         * TODO add specific work depending on file extension
+         */
         BSONObject bsonObject = super.getBson();
         bsonObject.put("file", file.getAbsolutePath());
         return bsonObject;
@@ -87,26 +93,32 @@ public class DataFile extends Data {
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
-        //write hash source
+        //Put the fileName
         fragment.put("_fileName", file.getName().getBytes());
-        //Send the file, it will surrely be bigger than 65 536o
 
+        /*
+         * each data bloc is limited to 64kB in AMP protocol,
+         * get the number of the blocs needed to send the file 
+         */
         long size = file.length();
         long blocs = size / MAX_BLOC_SIZE;
         if (blocs < 1) {
             blocs = 1;
         }
 
-        //set size
+        //set total size of the fil
         fragment.put("_size", (size + "").getBytes());
-        //set count
+        //set number of blocks
         fragment.put("_count", (blocs + "").getBytes());
 
+        //Read the File and write as much blocks as needed
         FileInputStream stream;
         try {
             stream = new FileInputStream(file);
-            //write every hash results
+            
+            //For each blocks
             for (int i = 1; i <= blocs; i++) {
+                //Calculate the already read bytes
                 int offset = (i - 1) * MAX_BLOC_SIZE;
 
                 //size to read in the file
@@ -123,13 +135,13 @@ public class DataFile extends Data {
                     sizeToRead = (int) size;
                 }
 
-                //the byte arry where to put the data
+                //make a new array to store the read data
                 byte[] bloc = new byte[sizeToRead];
 
                 //read the bytes from the stream
                 stream.read(bloc, offset, sizeToRead);
 
-                //Make the hash from the bloc
+                //Make the hash from the bloc for integrity check
                 MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
 
                 //write informations to the fragment
@@ -140,10 +152,8 @@ public class DataFile extends Data {
                 
             }
         } catch (FileNotFoundException e) {
-            // TODO do something here
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO do something here
             e.printStackTrace();
         }
     }
@@ -151,10 +161,12 @@ public class DataFile extends Data {
     @Override
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         super.decodefragment(fragment);
-        //TODO file name
-        file = new File(System.getProperty("java.io.tmpdir") + "/" + super.hash);
+        //File is temporary create in the java.io.tmpdir
+        String fileName = new String(fragment.get("_fileName"));
+        file = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
 
         try {
+            //Create the file and write every blocks
             if (file.createNewFile()) {
                 FileOutputStream fos = new FileOutputStream(file);
                 long count = Long.parseLong(new String(fragment.get("_count")));
@@ -180,6 +192,7 @@ public class DataFile extends Data {
 
     @Override
     public Searchable toOnlyTextData() {
+        //Give a clone to this object, with no pointer to a File
         DataFile clone = new DataFile();
         clone.setHash(this.hash);
         clone.setDescription(this.getDescription());

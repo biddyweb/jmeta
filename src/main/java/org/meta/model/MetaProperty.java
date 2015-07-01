@@ -21,9 +21,15 @@ package org.meta.model;
  *
  * @author Thomas LAVOCAT
  *
- * MetaProperty is not storable in data base a a Searchable object. It define a
- * key value unit. I know that a list of MetaProperty act more like an hashMap,
- * but I wanted to put them out of MetaData.
+ * A MetaProperty is a key value object used in two cases :
+ * - add semantic to an objet (MetaData)
+ * - add information to an object (Data)
+ * 
+ * Since MetaProperty is not storable as is in the DB, it does not contain a hash
+ * value.
+ * 
+ * it implements Comparable to be ordered by key:value in a TreeSet or other 
+ * sorted collections.
  */
 public class MetaProperty implements Comparable<MetaProperty>{
 
@@ -80,7 +86,9 @@ public class MetaProperty implements Comparable<MetaProperty>{
 
      @Override
      public int compareTo(MetaProperty o) {
-          return (name+":"+value).compareTo((o.name+":"+o.value));
+         //compare to another property
+         // on key:value concatenation
+         return (name+":"+value).compareTo((o.name+":"+o.value));
      }
 
 }

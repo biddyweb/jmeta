@@ -27,11 +27,13 @@ import org.meta.common.MetamphetUtils;
  *
  * @author Thomas LAVOCAT
  *
- * This class correspond to a data on the hard drive. Pointed by a file.
+ * String implementation of a Data object
+ * used to carry a simple text message
  */
 public class DataString extends Data {
 
-    private String string = null;
+    private              String string        = null;
+    private static final int    MAX_BLOC_SIZE = 65536;
 
     /**
      * needed for java Reflexion
@@ -52,14 +54,16 @@ public class DataString extends Data {
     }
 
     /**
-     * @return the file
+     * @return the String
      */
     public String getString() {
         return string;
     }
 
     /**
-     * @param file the file to set
+     * As the String is used to process the hash calculation, this setter is
+     * only callable from the model package.
+     * @param file the file to set.
      */
     protected void setString(String string) {
         this.string = string;
@@ -68,14 +72,11 @@ public class DataString extends Data {
     }
     @Override
     public MetHash reHash() {
+        //hash is made by hashing the String value
         hash = MetamphetUtils.makeSHAHash(string);
         return hash;
     }
 
-    /**
-     *
-     * @override
-     */
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         bsonObject.put("string", string);
@@ -85,12 +86,12 @@ public class DataString extends Data {
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
-        //TODO Move elsewhere.
+        
         byte[] totalString = string.getBytes();
-
-        //Send the file, it will surrely be bigger than 65 536o
-        long size = totalString.length;
-        long count = size / 65536;
+        
+        //Count how many blocks we have in the String
+        long size  = totalString.length;
+        long count = size / MAX_BLOC_SIZE;
 
         if (count < 1) {
             count = 1;
@@ -103,19 +104,19 @@ public class DataString extends Data {
 
         //write every hash results
         for (int i = 1; i <= count; i++) {
-            int offset = (i - 1) * 65536;
+            int offset = (i - 1) * MAX_BLOC_SIZE;
 
-            //size to read in the file
+            //size to read in the String
             int sizeToRead = -1;
             if (i < count) {
-                sizeToRead = 65536;
+                sizeToRead = MAX_BLOC_SIZE;
             } else if (count > 1) {
-                size = size - i * 65536;
+                size = size - i * MAX_BLOC_SIZE;
             } else {
                 sizeToRead = (int) size;
             }
 
-            //the byte arry where to put the data
+            //the byte array where to put the data
             byte[] bloc = Arrays.copyOfRange(totalString, offset, sizeToRead);
 
             //Make the hash from the bloc
@@ -158,6 +159,7 @@ public class DataString extends Data {
 
     @Override
     public Searchable toOnlyTextData() {
+        //only return this
         return this;
     }
 

@@ -1,11 +1,8 @@
 package org.meta.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.TreeSet;
 
 import org.bson.BSONObject;
@@ -35,8 +32,8 @@ import org.meta.common.MetamphetUtils;
  *
  * @author Thomas LAVOCAT
  *
- * This class correspond to a Metadata. A MetaData is describe by a list of
- * properties. like {name:subtitles, value:vostfr} and a list of results.
+ * A MetaData is describe by a list of properties. like 
+ * {name:subtitles, value:vostfr} and a list of results.
  *
  * This class extends Searchable.
  */
@@ -79,6 +76,9 @@ public class MetaData extends Searchable {
     }
     /**
      * @param properties the properties to set
+     * Since the MetaProperties are used in the hash calculation
+     * This method is only callable in the model package;
+     * 
      */
     protected void setProperties(TreeSet<MetaProperty> properties) {
         this.properties = properties;
@@ -87,6 +87,8 @@ public class MetaData extends Searchable {
     }
     @Override
     public MetHash reHash() {
+        //The hash is the hash of the concatenation of every key:value
+        //separate by ;
         String concat = "";
         for(Iterator<MetaProperty> i = properties.iterator();i.hasNext();){
             MetaProperty property = i.next();
@@ -146,6 +148,7 @@ public class MetaData extends Searchable {
    }
     @Override
     public Searchable toOnlyTextData() {
+        //Only this
         return this;
     }
 }

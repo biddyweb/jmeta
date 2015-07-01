@@ -30,15 +30,17 @@ import org.meta.common.MetHash;
  *
  * @author Thomas LAVOCAT
  *
- * This class correspond to a data on the hard drive. Pointed by a file.
+ * A Data Object is an element who contained final result for a search.
+ * This is an abstract Data meant to be override to add a content.
+ * A Data object contains a list of MetaProperty who are complementary 
+ * information about the data.
+ * 
  */
 public abstract class Data extends Searchable {
-    //TODO add an optional description into the files -> not need to be added
-    //in the hash operation
     protected ArrayList<MetaProperty> description = null;
 
     /**
-     * needed for java Reflexion
+     * Instantiate Data, create an empty description list
      */
     public Data() {
         super();
@@ -99,11 +101,22 @@ public abstract class Data extends Searchable {
         }
     }
 
+    /**
+     * As description does not count in the Data hash calculation, this method
+     * is public and can be called by anyone.
+     * @param description an ArrayList of MetaProperty representing complementary
+     * information about the data.
+     * This may be a simple description, a title, a comment...
+     */
     public void setDescription(ArrayList<MetaProperty> description) {
         this.description = description;
         updateState();
     }
 
+    /**
+     * 
+     * @return the description of the Data
+     */
     public ArrayList<MetaProperty> getDescription() {
         return description;
     }

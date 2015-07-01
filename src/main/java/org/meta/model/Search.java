@@ -29,9 +29,50 @@ import org.meta.common.MetamphetUtils;
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- *
- * @author Thomas LAVOCAT this class correspond to a Search. with a source and
- * some results
+ * 
+ * A Search object is made to point to a list of results.
+ * It can be given as a question or as a response.
+ * 
+ * Basically, a search possessed 3 dependences :
+ * - the source object which correspond to the source of the interrogation
+ * - the metaData which correspond to the criteria of the question/response
+ * - the results who are all you now about the pair source/meteData
+ *  
+ * How to represent a search ? 
+ *  ---------------------------------------
+ * |              Search                   |
+ * ----------------------------------------
+ * |    Source      |      MetaData        |
+ * ----------------------------------------
+ *        
+ *        |
+ *        ----->  List OF Results
+ *  
+ * The search Hash is composed by the concatenation of the source hash and 
+ * the metaData hash. Wich allow anyone who as a source and question about it
+ * to built a Search (who will be in this case a question) and contact anyone
+ * who have declared knowing answers.
+ *  
+ * A quick example :
+ * To find a subtitle to a movie, you can build a search like this : 
+ * ---------------------------------------
+ * |              Unique search            |
+ * ----------------------------------------
+ * |    movie.avi  |      st:fr            |
+ * ----------------------------------------
+ * 
+ * You do no now if they are resuts, but you can give a try to look into the DHT.
+ * If someone as declared knowing answer to your question, so you will be able
+ * to contact him, retrieve the answer and add it in the result list of your 
+ * search. 
+ * 
+ * A search received over network is no longe in a full stable state.
+ * It only represent is potential linkedObject with tmp attrbutes.
+ * 
+ * If you really need to update your object, you can use the method
+ * UpdateFromNetwork in ModelFactory class
+ * 
+ * @author Thomas LAVOCAT 
  */
 public class Search extends Searchable {
 

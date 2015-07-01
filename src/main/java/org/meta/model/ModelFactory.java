@@ -48,10 +48,10 @@ public class ModelFactory {
         return (Search) pools.get(ModelType.SEARCH).getInstance();
     }
     
-    public Search createSearch(Searchable source, MetaData result, List<Data> datas){
+    public Search createSearch(Searchable source, MetaData metaData, List<Data> datas){
          Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
          search.setSource(source);
-         search.setMetaData(result);
+         search.setMetaData(metaData);
          search.setLinkedData(datas);
          return search;
     }

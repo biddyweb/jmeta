@@ -17,7 +17,7 @@ public class Get extends AbstractCommand {
         MetHash metHash = new MetHash(hash);
         Search s = (Search) myTCPControler.getInTheModel(metHash);
         datas.add(myTCPControler.getInTheModel(metHash));
-        MetaData m = s.getResult();
+        MetaData m = s.getMetaData();
         datas.addAll(s.getLinkedData());
         return new AMPAnswerFactory(answer, datas);
     }

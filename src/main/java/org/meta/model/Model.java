@@ -326,12 +326,12 @@ public class Model {
         //load the source from her hash
         MetHash hashSource = new MetHash(bsonObject.get("source").toString());
         Searchable source = load(hashSource.toByteArray());
-        //load results
-        MetHash hashResult = new MetHash(bsonObject.get("result").toString());
-        MetaData result = (MetaData) load(hashResult.toByteArray());
+        //load metaData
+        MetHash hashMetaData = new MetHash(bsonObject.get("metaData").toString());
+        MetaData metaData = (MetaData) load(hashMetaData.toByteArray());
         //update search
         search.setSource(source);
-        search.setMetaData(result);
+        search.setMetaData(metaData);
         
         List<Data> linkedData = new ArrayList<Data>();
         BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
@@ -462,8 +462,8 @@ public class Model {
         if (search.getSource().getState() != Searchable.ObjectState.UP_TO_DATE) {
             status = status && this.set(search.getSource(), false);
         }
-        if (search.getResult().getState() != Searchable.ObjectState.UP_TO_DATE) {
-            status = status && this.set(search.getResult(), false);
+        if (search.getMetaData().getState() != Searchable.ObjectState.UP_TO_DATE) {
+            status = status && this.set(search.getMetaData(), false);
         }
 
         for (Data data : search.getLinkedData()) {

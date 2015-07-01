@@ -152,7 +152,7 @@ public class Search extends Searchable {
      *
      * @return return the list of results
      */
-    public MetaData getResult() {
+    public MetaData getMetaData() {
         return metaData;
     }
     /**
@@ -190,7 +190,7 @@ public class Search extends Searchable {
         bsonObject.put("linkedData", bsonLinkedData);
  
         bsonObject.put("source", this.source.getHash().toString());
-        bsonObject.put("result", this.metaData.getHash().toString());
+        bsonObject.put("metaData", this.metaData.getHash().toString());
         return bsonObject;
     }
 
@@ -213,7 +213,7 @@ public class Search extends Searchable {
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a Search, her state is no more a real
         //Search but a temporary search, it means, it only represent what's
-        //over the network, so source = null and result = null
+        //over the network, so source = null, metaData = null and LinkedData = null;
         source      = null;
         metaData    = null;
         linkedData  = null;

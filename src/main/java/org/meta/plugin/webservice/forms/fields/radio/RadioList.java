@@ -6,17 +6,30 @@ import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.plugin.webservice.forms.InterfaceField;
 
+/**
+ * A radioList is a list of grouped radio buttons.
+ * 
+ * @author faquin
+ *
+ */
 public class RadioList extends InterfaceField {
 
     private ArrayList<RadioButton> buttons = null;
 
-    public RadioList(String id, String label, ArrayList<RadioButton> buttons) {
+    /**
+     * 
+     * @param id        Unique ID
+     * @param label     Label
+     * @param radios    list of {@link RadioButton}
+     */
+    public RadioList(String id, String label, ArrayList<RadioButton> radios) {
         super(id, label);
-        this.buttons = buttons;
+        this.buttons = radios;
     }
 
     @Override
     public BasicBSONObject toJson() {
+        //get mama's json and add the list of radio button
         BasicBSONObject radioList     = super.toJson();
         BasicBSONList   radios = new BasicBSONList();
         for(int i=0; i<buttons.size(); i++){

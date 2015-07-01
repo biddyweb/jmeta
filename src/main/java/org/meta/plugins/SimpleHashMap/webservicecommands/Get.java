@@ -90,7 +90,7 @@ public class Get extends AbstractWebService{
     
 
     @Override
-    public void callback(ArrayList<Searchable> results) {
+    public void callbackSuccess(ArrayList<Searchable> results) {
         output.flush();
         //Those results are incomplete
         for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {

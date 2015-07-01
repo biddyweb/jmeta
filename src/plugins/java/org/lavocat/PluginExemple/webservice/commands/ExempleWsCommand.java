@@ -82,7 +82,7 @@ public class ExempleWsCommand extends AbstractWebService {
     }
 
     @Override
-    public void callback(ArrayList<Searchable> results) {
+    public void callbackSuccess(ArrayList<Searchable> results) {
         // TODO Auto-generated method stub
 
     }

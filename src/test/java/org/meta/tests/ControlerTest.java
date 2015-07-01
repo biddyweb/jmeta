@@ -60,7 +60,7 @@ public class ControlerTest extends MetaBaseTests {
                 Thread question = SingletonTCPWriter.getInstance().askTo(adress, "PluginExemple", "example", data.getHash(), new TCPResponseCallbackInteface() {
 
                     @Override
-                    public void callback(ArrayList<Searchable> results) {
+                    public void callbackSuccess(ArrayList<Searchable> results) {
                         Assert.assertEquals(1, results.size());
                         
                         if(results.size() > 0){

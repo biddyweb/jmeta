@@ -16,6 +16,6 @@ public interface TCPResponseCallbackInteface {
 	 * if you are running an interface, you should change it here
 	 * @param results
 	 */
-    public void callback(ArrayList<Searchable> results);
+    public void callbackSuccess(ArrayList<Searchable> results);
 
 }

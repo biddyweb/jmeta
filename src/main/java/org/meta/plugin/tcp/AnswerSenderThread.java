@@ -107,7 +107,7 @@ public class AnswerSenderThread extends Thread {
             log.warn(e.getMessage());
         }
 
-        listenner.callback(results);
+        listenner.callbackSuccess(results);
     }
 
     /**

@@ -126,7 +126,7 @@ public class Chat extends AbstractWebService{
     
 
     @Override
-    public void callback(ArrayList<Searchable> results) {
+    public void callbackSuccess(ArrayList<Searchable> results) {
         //Those results are incomplete
         for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
             Searchable searchable = i.next();

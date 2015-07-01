@@ -105,6 +105,7 @@ public class Search extends Searchable {
         super(hash);
         this.setSource(source);
         this.setMetaData(metaData);
+        this.setLinkedData(linkedData);
     }
 
     /**
@@ -117,18 +118,19 @@ public class Search extends Searchable {
 
     /**
      *
-     * @return A read-only list of every data linked to this metaData
+     * @return the list of every data linked to this metaData
      */
     public List<Data> getLinkedData() {
-        return Collections.unmodifiableList(linkedData);
+        return linkedData;
     }
 
     /**
-     * Set linked data
+     * Set linked data. Accessible outside ModelPackage because the results
+     * does not count in the hash calculation
      *
      * @param linkedData
      */
-    protected void setLinkedData(List<Data> linkedData) {
+    public void setLinkedData(List<Data> linkedData) {
         this.linkedData = linkedData;
         this.updateState();
     }

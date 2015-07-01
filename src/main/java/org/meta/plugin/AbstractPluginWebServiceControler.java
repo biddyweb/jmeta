@@ -145,7 +145,7 @@ public abstract class AbstractPluginWebServiceControler {
 
             @Override
             public void failed(FindPeersOperation operation) {
-                // TODO Callback failure
+                abstractWebService.callbackFailure(operation.getFailureMessage());
             }
 
             @Override

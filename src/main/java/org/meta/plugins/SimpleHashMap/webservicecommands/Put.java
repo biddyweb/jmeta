@@ -118,4 +118,10 @@ public class Put extends AbstractWebService{
         }
         output.append("waiting for results");
     }
+
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
+    }
 }

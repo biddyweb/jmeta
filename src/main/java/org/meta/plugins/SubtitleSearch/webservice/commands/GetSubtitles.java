@@ -25,4 +25,10 @@ public class GetSubtitles extends AbstractWebService{
             // TODO Auto-generated method stub
             
     }
+
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
+    }
 }

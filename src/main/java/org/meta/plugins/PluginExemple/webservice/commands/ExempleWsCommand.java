@@ -55,4 +55,11 @@ public class ExempleWsCommand extends AbstractWebService {
     public void callbackSuccess(ArrayList<Searchable> results) {
         // TODO Auto-generated method stub
     }
+
+
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
+    }
 }

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
 import org.meta.model.Data;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -106,6 +107,12 @@ public class Get extends AbstractWebService{
             }
         }
         redrawOutput();
+    }
+
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
     }
 
     private void redrawOutput() {

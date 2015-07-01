@@ -109,4 +109,10 @@ public class SearchSubtitles extends AbstractWebService{
             }
         }
     }
+
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
+    }
 }

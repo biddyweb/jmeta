@@ -153,6 +153,12 @@ public class Chat extends AbstractWebService{
         redrawOutput();
     }
     
+    @Override
+    public void callbackFailure(String failureMessage) {
+        // TODO Auto-generated method stub
+        
+    }
+
     private void redrawOutput(){
         output.flush();
         for(Entry<Date, String> entry : this.results.entrySet()){

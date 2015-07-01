@@ -28,7 +28,6 @@ import org.meta.plugin.AbstractPluginTCPControler;
 
 /**
  * Class listening to peer-to-peer connections over TCP/AMP.
- *
  */
 public class SingletonTCPReader extends Thread {
 
@@ -51,6 +50,9 @@ public class SingletonTCPReader extends Thread {
      */
     private HashMap<String, AbstractPluginTCPControler> mapPlugin = null;
 
+    /**
+     * initiate a pluginMap
+     */
     private SingletonTCPReader() {
         mapPlugin = new HashMap<>();
     }
@@ -62,6 +64,8 @@ public class SingletonTCPReader extends Thread {
             socket = new ServerSocket(port);
             while (work) {
                 Socket client = socket.accept();
+                //Once a connection is accepted, let AskHandlerThread take
+                //care of the rest
                 AskHandlerThread discussWith = new AskHandlerThread(client);
                 discussWith.start();
             }
@@ -86,10 +90,10 @@ public class SingletonTCPReader extends Thread {
     }
 
     /**
-     * TODO
+     * Register a plugin to this TCPReader
      * 
-     * @param pluginName
-     * @param abstractPluginTCPControler 
+     * @param pluginName                    pluginName
+     * @param abstractPluginTCPControler    plugin tcp controler
      */
     public void registerPlugin(String pluginName,
             AbstractPluginTCPControler abstractPluginTCPControler) {
@@ -97,11 +101,12 @@ public class SingletonTCPReader extends Thread {
     }
 
     /**
-     * TODO 
+     * return the command pointed by pluginName and commandName
      * 
-     * @param pluginName
-     * @param commandName
-     * @return 
+     * @param pluginName    the plugin name
+     * @param commandName   the command Name
+     * 
+     * @return a command to execute if found, null otherwise 
      */
     public AbstractCommand getCommand(String pluginName, String commandName) {
         AbstractCommand command = null;
@@ -114,7 +119,9 @@ public class SingletonTCPReader extends Thread {
     }
 
     /**
-     * TODO
+     * kill the current listing on the server socket
+     * Remember there is a timeout for closing a socket
+     * Should only be called at the end of the program life cycle
      */
     public void kill() {
         work = false;

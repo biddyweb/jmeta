@@ -37,7 +37,7 @@ public class AMPAskParserTest {
             Assert.assertEquals("23", parser.getAsk());
             Assert.assertEquals("toto", parser.getPlugin());
             Assert.assertEquals("cacahuete", parser.getCommand());
-            Assert.assertEquals(MetamphetUtils.makeSHAHash("toto").toString(), parser.getHash());
+            Assert.assertEquals(MetamphetUtils.makeSHAHash("toto"), parser.getHash());
         } catch (NotAValidAMPCommand e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());

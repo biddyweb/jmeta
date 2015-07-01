@@ -4,13 +4,13 @@ import org.bson.BasicBSONObject;
 
 /**
  * Describe a simple interface to discuss with the web service
+ * Need an Interface organizer to exist
+ * 
  * @author faquin
  */
 public class InterfaceDescriptor {
 
     private InterfaceOrganizer root = null;
-
-    public InterfaceDescriptor(){}
 
     /**
      *

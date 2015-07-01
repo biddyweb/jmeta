@@ -41,16 +41,6 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
     }
     
     /**
-     * Build user interface
-     * @param controler
-     */
-    public AbstractWebService(AbstractPluginWebServiceControler controler){
-        rootColumn = new ColumnOrganizer("root");
-        descriptor = new InterfaceDescriptor(rootColumn);
-        this.controler = controler;
-    }
-
-    /**
      * 
      * @param controler give WebServiceControler
      */

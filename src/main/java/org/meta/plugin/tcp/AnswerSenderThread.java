@@ -16,7 +16,7 @@ import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
-import org.meta.plugin.tcp.amp.AMPAskFactory;
+import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class AnswerSenderThread extends Thread {
 
     private InetAddress             adress      = null;
-    private AMPAskFactory           ask         = null;
+    private AMPAskBuilder           ask         = null;
     private ArrayList<Searchable>   results     = null;
     private int                     port        = 0;
     private ModelFactory            factory     = null;
@@ -39,7 +39,7 @@ public class AnswerSenderThread extends Thread {
      * @param port      contact port
      * @param listenner who to call back
      */
-    public AnswerSenderThread(  AMPAskFactory ask,
+    public AnswerSenderThread(  AMPAskBuilder ask,
                                 InetAddress adress,
                                 int port,
                                 TCPResponseCallbackInteface listenner)

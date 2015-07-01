@@ -9,7 +9,7 @@ import org.meta.common.MetHash;
  * @author faquin
  *
  */
-public class AMPAskFactory extends AMPFactory{
+public class AMPAskBuilder extends AMPBuilder{
 
     /**
      *
@@ -19,7 +19,7 @@ public class AMPAskFactory extends AMPFactory{
      * @param command   the command to execute to the other pair
      * @param hash      the hash of the request
      */
-    public AMPAskFactory(String ask, String plugin, String command, MetHash hash) {
+    public AMPAskBuilder(String ask, String plugin, String command, MetHash hash) {
         LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();
         map.put("_ask", ask.getBytes());
         map.put("_plugin", plugin.getBytes());

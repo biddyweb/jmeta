@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
  * Build an AMP message
  * @author faquin
  */
-public abstract class AMPFactory {
+public abstract class AMPBuilder {
     protected byte[]    message     =     null;
 
     /**

@@ -3,7 +3,7 @@ package org.meta.plugin.tcp;
 import java.net.InetAddress;
 
 import org.meta.common.MetHash;
-import org.meta.plugin.tcp.amp.AMPAskFactory;
+import org.meta.plugin.tcp.amp.AMPAskBuilder;
 
 /**
  * Singleton used to contact peers
@@ -40,7 +40,7 @@ public class SingletonTCPWriter {
         //each command is "unique" at least where its send
         lastAsk++;
         //Forge a new AMP ask
-        AMPAskFactory ask = new AMPAskFactory(lastAsk+"", plugin, command, hash);
+        AMPAskBuilder ask = new AMPAskBuilder(lastAsk+"", plugin, command, hash);
         //Let the sender thread do the rest
         AnswerSenderThread sender = new AnswerSenderThread( ask,
                                                             adress,

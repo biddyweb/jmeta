@@ -3,6 +3,7 @@ package org.meta.tests;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.meta.common.MetHash;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
@@ -11,12 +12,12 @@ import org.meta.model.MetaProperty;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
-import org.meta.plugin.tcp.amp.AMPAnswerFactory;
+import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 
 public class CommanndTest extends AbstractCommand {
 
     @Override
-    public AMPAnswerFactory execute(String answer, String hash) {
+    public AMPAnswerBuilder execute(String answer, MetHash hash) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

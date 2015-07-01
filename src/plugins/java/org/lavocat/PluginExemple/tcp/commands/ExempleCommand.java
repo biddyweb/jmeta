@@ -1,14 +1,14 @@
 package org.lavocat.PluginExemple.tcp.commands;
 
 import org.meta.plugin.tcp.AbstractCommand;
-import org.meta.plugin.tcp.amp.AMPAnswerFactory;
+import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 
 public class ExempleCommand extends AbstractCommand {
 
     @Override
-    public AMPAnswerFactory execute(String answer, String hash) {
+    public AMPAnswerBuilder execute(String answer, String hash) {
         // TODO Auto-generated method stub
-        return new AMPAnswerFactory(answer, null);
+        return new AMPAnswerBuilder(answer, null);
     }
 
 }

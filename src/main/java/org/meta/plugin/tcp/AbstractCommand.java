@@ -2,7 +2,7 @@ package org.meta.plugin.tcp;
 
 import org.meta.common.MetHash;
 import org.meta.plugin.AbstractPluginTCPControler;
-import org.meta.plugin.tcp.amp.AMPAnswerFactory;
+import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 
 /**
  * Define how need to work a tcp command in a plugin
@@ -24,7 +24,7 @@ public abstract class AbstractCommand {
      * @param hash      the MetHash object of the question
      * @return
      */
-    public abstract AMPAnswerFactory execute(String answer, MetHash hash);
+    public abstract AMPAnswerBuilder execute(String answer, MetHash hash);
 
     /**
      * Who's my tcpControler ?

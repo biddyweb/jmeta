@@ -11,14 +11,14 @@ import org.meta.model.Searchable;
  * @author faquin
  *
  */
-public class AMPAnswerFactory extends AMPFactory {
+public class AMPAnswerBuilder extends AMPBuilder {
 
     /**
      *
      * @param answer the same number as the ask
      * @param datas the Searchable objects to send back
      */
-    public AMPAnswerFactory(String answer, ArrayList<Searchable> datas){
+    public AMPAnswerBuilder(String answer, ArrayList<Searchable> datas){
         //write the answer number and the count of datas send
         LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();
         map.put("_answer", answer.getBytes());

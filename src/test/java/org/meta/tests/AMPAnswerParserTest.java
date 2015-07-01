@@ -20,7 +20,7 @@ import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
-import org.meta.plugin.tcp.amp.AMPAnswerFactory;
+import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
 
@@ -111,7 +111,7 @@ public class AMPAnswerParserTest {
     }
 
 	private void testData(ArrayList<Searchable> datas) {
-        AMPAnswerFactory factory = new AMPAnswerFactory("12", datas);
+        AMPAnswerBuilder factory = new AMPAnswerBuilder("12", datas);
         AMPAnswerParser parser;
         try {
             parser = new AMPAnswerParser(factory.getMessage());

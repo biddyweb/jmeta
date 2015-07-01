@@ -14,7 +14,11 @@ import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
 import org.meta.configuration.MetaConfiguration;
 
-
+/**
+ * Singleton who's launch the web server
+ * @author faquin
+ *
+ */
 public class SingletonWebServiceReader extends Thread {
 
     private HashMap<String, AbstractPluginWebServiceControler> mapPlugins = null;
@@ -31,18 +35,25 @@ public class SingletonWebServiceReader extends Thread {
             instance = new SingletonWebServiceReader();
         return instance;
     }
-
-    public AbstractPluginWebServiceControler getPlugin(String commandName){
-        return mapPlugins.get(commandName);
+    
+    /**
+     * return the plugin pointed by the given parameters
+     * @param pluginName
+     * @return the plugin if found, null otherwise
+     */
+    public AbstractPluginWebServiceControler getPlugin(String pluginName){
+        return mapPlugins.get(pluginName);
     }
 
     @Override
     public void run() {
+        //Launch the server on the wright port (8080 per default)
         server = new Server(MetaConfiguration.getWSConfiguration().getWsPort());
 
         // serve statics files within 'static' directory
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setDirectoriesListed(true);
+        //give a way to serve the web site part
         resource_handler.setResourceBase("static");
 
         HandlerList handlers = new HandlerList();
@@ -50,8 +61,10 @@ public class SingletonWebServiceReader extends Thread {
                 resource_handler,
                 new WebRequestHandler()
         });
-
+        
+        //Give the webrequestHandler to the server
         server.setHandler(handlers);
+        //start and join the server
         try {
             server.start();
             server.join();
@@ -60,15 +73,27 @@ public class SingletonWebServiceReader extends Thread {
         }
     }
 
+    /**
+     * Start the thread
+     */
     public void initialiseAndRun() {
         this.start();
     }
 
+    /**
+     * Register a plugin pointed by plugin name
+     * @param pluginName                            plugin name
+     * @param abstractPluginWebServiceControler     plugin webservice controler
+     */
     public void registerPlugin(String pluginName,
             AbstractPluginWebServiceControler abstractPluginWebServiceControler) {
         mapPlugins.put(pluginName, abstractPluginWebServiceControler);
     }
 
+    /**
+     * 
+     * @return a plugin list as JSON
+     */
     public String getPluginListAsJson() {
         BasicBSONList list = new BasicBSONList();
         for (Iterator<String> i = mapPlugins.keySet().iterator(); i.hasNext();){
@@ -81,6 +106,9 @@ public class SingletonWebServiceReader extends Thread {
         return json_serializer.serialize(list);
     }
 
+    /**
+     * termintae the web server
+     */
     public void kill(){
          try {
             if(server != null)

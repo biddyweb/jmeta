@@ -22,6 +22,17 @@ public class RadioList extends InterfaceField {
      * @param label     Label
      * @param radios    list of {@link RadioButton}
      */
+    public RadioList(String id, String label) {
+        super(id, label);
+        this.buttons = new ArrayList<RadioButton>();
+    }
+    
+    /**
+     * 
+     * @param id        Unique ID
+     * @param label     Label
+     * @param radios    list of {@link RadioButton}
+     */
     public RadioList(String id, String label, ArrayList<RadioButton> radios) {
         super(id, label);
         this.buttons = radios;
@@ -44,4 +55,11 @@ public class RadioList extends InterfaceField {
         return "radioList";
     }
 
+    /**
+     * 
+     * @param buttons give a new lists of buttons
+     */
+    public void setButtons(ArrayList<RadioButton> buttons){
+        this.buttons = buttons;
+    }
 }

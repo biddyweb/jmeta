@@ -40,6 +40,7 @@ public class AddSubtitle extends AbstractWebService{
     
     public AddSubtitle(AbstractPluginWebServiceControler controler){
         super(controler);
+        factory = this.controler.getModel().getFactory();
         results = new ArrayList<DataString>();
         source = new TextInput("path", "Path to the movie");
         rootColumn.addChild(source);

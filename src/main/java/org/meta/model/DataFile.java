@@ -98,68 +98,71 @@ public class DataFile extends Data {
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
-        //Put the fileName
-        fragment.put("_fileName", file.getName().getBytes());
+        //Test if file exist
+        if(file != null && file.exists()){
+            //Put the fileName
+            fragment.put("_fileName", file.getName().getBytes());
 
-        /*
-         * each data bloc is limited to 64kB in AMP protocol,
-         * get the number of the blocs needed to send the file 
-         */
-        long size = file.length();
-        long blocs = size / MAX_BLOC_SIZE;
-        if (blocs < 1) {
-            blocs = 1;
-        }
-
-        //set total size of the fil
-        fragment.put("_size", (size + "").getBytes());
-        //set number of blocks
-        fragment.put("_count", (blocs + "").getBytes());
-
-        //Read the File and write as much blocks as needed
-        FileInputStream stream;
-        try {
-            stream = new FileInputStream(file);
-            
-            //For each blocks
-            for (int i = 1; i <= blocs; i++) {
-                //Calculate the already read bytes
-                int offset = (i - 1) * MAX_BLOC_SIZE;
-
-                //size to read in the file
-                int sizeToRead = -1;
-                //if i < count, the size is 64ko
-                if (i < blocs) {
-                    sizeToRead = MAX_BLOC_SIZE;
-                //if not but count was > 1, make the difference
-                //original size - nb * 64ko
-                } else if (blocs > 1) {
-                    size = size - i * MAX_BLOC_SIZE;
-                } else {
-                    //else it's the orinial size
-                    sizeToRead = (int) size;
-                }
-
-                //make a new array to store the read data
-                byte[] bloc = new byte[sizeToRead];
-
-                //read the bytes from the stream
-                stream.read(bloc, offset, sizeToRead);
-
-                //Make the hash from the bloc for integrity check
-                MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
-
-                //write informations to the fragment
-                //hash
-                fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
-                //bloc
-                fragment.put("_" + i + "_contentPart", bloc);
-                
+            /*
+             * each data bloc is limited to 64kB in AMP protocol,
+             * get the number of the blocs needed to send the file 
+             */
+            long size = file.length();
+            long blocs = size / MAX_BLOC_SIZE;
+            if (blocs < 1) {
+                blocs = 1;
             }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+
+            //set total size of the fil
+            fragment.put("_size", (size + "").getBytes());
+            //set number of blocks
+            fragment.put("_count", (blocs + "").getBytes());
+
+            //Read the File and write as much blocks as needed
+            FileInputStream stream;
+            try {
+                stream = new FileInputStream(file);
+                
+                //For each blocks
+                for (int i = 1; i <= blocs; i++) {
+                    //Calculate the already read bytes
+                    int offset = (i - 1) * MAX_BLOC_SIZE;
+
+                    //size to read in the file
+                    int sizeToRead = -1;
+                    //if i < count, the size is 64ko
+                    if (i < blocs) {
+                        sizeToRead = MAX_BLOC_SIZE;
+                    //if not but count was > 1, make the difference
+                    //original size - nb * 64ko
+                    } else if (blocs > 1) {
+                        size = size - i * MAX_BLOC_SIZE;
+                    } else {
+                        //else it's the orinial size
+                        sizeToRead = (int) size;
+                    }
+
+                    //make a new array to store the read data
+                    byte[] bloc = new byte[sizeToRead];
+
+                    //read the bytes from the stream
+                    stream.read(bloc, offset, sizeToRead);
+
+                    //Make the hash from the bloc for integrity check
+                    MetHash blocHash = MetamphetUtils.makeSHAHash(bloc);
+
+                    //write informations to the fragment
+                    //hash
+                    fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
+                    //bloc
+                    fragment.put("_" + i + "_contentPart", bloc);
+                    
+                }
+            } catch (FileNotFoundException e) {
+                logger.error(e.getMessage(), e);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -167,31 +170,34 @@ public class DataFile extends Data {
     protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
         super.decodefragment(fragment);
         //File is temporary create in the java.io.tmpdir
-        String fileName = new String(fragment.get("_fileName"));
-        file = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
+        //If no fileName, there is no file to recreate
+        if(fragment.containsKey("_fileName")){
+            String fileName = new String(fragment.get("_fileName"));
+            file = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
 
-        try {
-            //Create the file and write every blocks
-            if (file.createNewFile()) {
-                FileOutputStream fos = new FileOutputStream(file);
-                long count = Long.parseLong(new String(fragment.get("_count")));
-                fragment.remove("_size");
-                fragment.remove("_count");
+            try {
+                //Create the file and write every blocks
+                if (file.createNewFile()) {
+                    FileOutputStream fos = new FileOutputStream(file);
+                    long count = Long.parseLong(new String(fragment.get("_count")));
+                    fragment.remove("_size");
+                    fragment.remove("_count");
 
-                for (int i = 1; i <= count; i++) {
-                    String hash = new String(fragment.get("_" + i + "_blocHash"));
-                    fragment.remove("_" + i + "_blocHash");
-                    byte[] bloc = fragment.get("_" + i + "_contentPart");
-                    if (MetamphetUtils.checkHash(hash, bloc)) {
-                        fos.write(bloc);
-                    } else {
-                        //TODO write here the code needed to ask unCorrect blocs.
+                    for (int i = 1; i <= count; i++) {
+                        String hash = new String(fragment.get("_" + i + "_blocHash"));
+                        fragment.remove("_" + i + "_blocHash");
+                        byte[] bloc = fragment.get("_" + i + "_contentPart");
+                        if (MetamphetUtils.checkHash(hash, bloc)) {
+                            fos.write(bloc);
+                        } else {
+                            //TODO write here the code needed to ask unCorrect blocs.
+                        }
                     }
+                    fos.close();
                 }
-                fos.close();
+            } catch (IOException e1) {
+                logger.error(e1.getMessage(), e1);
             }
-        } catch (IOException e1) {
-            logger.error(e1.getMessage(), e1);
         }
     }
 

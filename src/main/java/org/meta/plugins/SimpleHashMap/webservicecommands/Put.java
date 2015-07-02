@@ -44,7 +44,7 @@ public class Put extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "put"));
         rootColumn.addChild(output);
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        super.controler.getModel().getFactory();
+        factory = super.controler.getModel().getFactory();
     }
 
     @Override

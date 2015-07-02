@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.bson.io.OutputBuffer;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
@@ -22,9 +23,10 @@ import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 
 public class SearchSubtitles extends AbstractWebService{
 
-    TextOutput    initialTextOutput   = null;
-    ModelFactory  factory             = null;
-     TextInput    path                = null;
+    TextOutput      initialTextOutput   = null;
+    ModelFactory    factory             = null;
+    TextInput       path                = null;
+    ArrayList<Data> results             = null;
     
     public SearchSubtitles(AbstractPluginWebServiceControler controler){
         super(controler);
@@ -41,6 +43,8 @@ public class SearchSubtitles extends AbstractWebService{
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
         factory = this.controler.getModel().getFactory();
+        
+        results = new ArrayList<Data>();
     }
 
     @Override
@@ -91,27 +95,29 @@ public class SearchSubtitles extends AbstractWebService{
 
     @Override
     public void callbackSuccess(ArrayList<Searchable> results) {
-        //Those results are incomplete
         for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                List<Data> linkDatas =    search.getLinkedData();
-                for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
-                    Data data = (Data) k.next();
-                    //TODO what to do with the output ?
-                    //I think, fill the interface with links, should be good
-                    //an idea is to build a request URL to the next step
-                    //with those links
-                    //data.getHashCode();
+                /*
+                 * SearchSubtitle TCP command as send the linked datas as
+                 * onlyText but we still have acces to the description
+                 */
+                if(search.getLinkedData() != null){
+                    results.addAll(search.getLinkedData());
                 }
             }
         }
+        redrawOutPut();
     }
 
     @Override
     public void callbackFailure(String failureMessage) {
-        // TODO Auto-generated method stub
+        initialTextOutput.append(failureMessage);
+    }
+
+    private void redrawOutPut() {
         
     }
+
 }

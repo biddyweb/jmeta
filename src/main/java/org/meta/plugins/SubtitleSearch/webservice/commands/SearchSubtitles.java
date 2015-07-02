@@ -57,7 +57,9 @@ public class SearchSubtitles extends AbstractWebService{
     public void executeCommand(Map<String, String[]> map) {
         //initiate state
         initialTextOutput.flush();
+        rootColumn.removeChild(resultsOutput);
         resultsOutput       = null;
+        rootColumn.removeChild(getSubtitleButton);
         getSubtitleButton   = null;
         //Get file path
         String path = getParameter(this.path.getId(), map);
@@ -120,7 +122,7 @@ public class SearchSubtitles extends AbstractWebService{
                  * onlyText but we still have acces to the description
                  */
                 if(search.getLinkedData() != null){
-                    results.addAll(search.getLinkedData());
+                    this.results.addAll(search.getLinkedData());
                 }
             }
         }
@@ -155,15 +157,16 @@ public class SearchSubtitles extends AbstractWebService{
             String description = extractDescription(data.getDescription());
             buttons.add(new RadioButton(data.getHash().toString(), description));
         }
+        resultsOutput.setButtons(buttons);
     }
 
     private String extractDescription(ArrayList<MetaProperty> properties) {
         String description = ""; 
         for(MetaProperty property : properties){
             if(property.getName().equals("description"))
-                description = description+" ; "+property.getValue();
+                description = description+property.getValue()+";";
         }
-        return "";
+        return description;
     }
 
 }

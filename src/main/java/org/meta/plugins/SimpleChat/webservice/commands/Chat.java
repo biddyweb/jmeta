@@ -83,7 +83,7 @@ public class Chat extends AbstractWebService{
         if(channel != null && !channel.equals("")){
             DataString channelName = factory.createDataString(channel);
             retrieveMessage = factory.createSearch(channelName, chat, null); 
-            if(message != null || !message.equals("")){
+            if(message != null && !message.equals("")){
                 Date timeStamp = new Date();
                 Data messageToSave = factory.createDataString(""+nickName+";"+timeStamp.getTime()+";"+message);
                 results.put(timeStamp, nickName +" : "+ message);

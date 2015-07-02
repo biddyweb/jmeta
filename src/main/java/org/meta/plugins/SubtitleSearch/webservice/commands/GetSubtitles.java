@@ -52,7 +52,7 @@ public class GetSubtitles extends AbstractWebService{
 
         //tex output
         successTextOutput = new TextOutput("successOutput", "Success");
-        rootColumn.addChild(errorTextOutput);
+        rootColumn.addChild(successTextOutput);
     }
 
     @Override
@@ -86,6 +86,7 @@ public class GetSubtitles extends AbstractWebService{
         
         
         String subtitleHash     = getParameter(this.subtitleHash.getId(), map);
+        this.subtitleHash.setValue(subtitleHash);
         if(subtitleHash != null && !subtitleHash.equals("")){
             MetHash hash = new MetHash(subtitleHash);
             

@@ -42,7 +42,7 @@ public class SearchSubtitles extends AbstractWebService{
         rootColumn.addChild(path);
 
         submitToMe = new SelfSubmitButton("submitToMe", "Search");
-        //has a linked button on himself
+        //had a linked button on himself
         rootColumn.addChild(submitToMe);
 
         //tex output
@@ -55,6 +55,10 @@ public class SearchSubtitles extends AbstractWebService{
 
     @Override
     public void executeCommand(Map<String, String[]> map) {
+        //initiate state
+        initialTextOutput.flush();
+        resultsOutput       = null;
+        getSubtitleButton   = null;
         //Get file path
         String path = getParameter(this.path.getId(), map);
 
@@ -82,7 +86,7 @@ public class SearchSubtitles extends AbstractWebService{
                 Search subtitleSearch = factory.createSearch(movie, metaData, null);
 
                 //lookup on the network to find the subtitles
-                super.controler.search(    subtitleSearch.getHash(),
+                super.controler.search(  subtitleSearch.getHash(),
                                         "SubtitleSearch",
                                         "SearchSubtitleCommand",
                                         this);

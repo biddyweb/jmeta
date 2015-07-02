@@ -1,6 +1,5 @@
 package org.meta.plugins.SubtitleSearch;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.meta.plugins.SubtitleSearch.webservice.commands.AddSubtitle;

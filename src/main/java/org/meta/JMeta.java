@@ -19,7 +19,6 @@ package org.meta;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;

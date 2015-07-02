@@ -18,16 +18,12 @@
 package org.meta.tests;
 
 import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.BeforeClass;
 import org.meta.configuration.AMPConfiguration;
 import org.meta.configuration.DHTConfiguration;

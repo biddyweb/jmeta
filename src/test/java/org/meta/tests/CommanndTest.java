@@ -1,16 +1,6 @@
 package org.meta.tests;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import org.meta.common.MetHash;
-import org.meta.model.Data;
-import org.meta.model.DataFile;
-import org.meta.model.DataString;
-import org.meta.model.MetaData;
-import org.meta.model.MetaProperty;
-import org.meta.model.Search;
-import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 import org.slf4j.Logger;

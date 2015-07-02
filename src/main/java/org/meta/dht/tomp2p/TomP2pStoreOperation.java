@@ -19,7 +19,6 @@ package org.meta.dht.tomp2p;
 
 import java.net.InetAddress;
 import java.util.NavigableMap;
-import java.util.Random;
 import java.util.TreeMap;
 import net.tomp2p.dht.AddBuilder;
 import net.tomp2p.dht.FuturePut;

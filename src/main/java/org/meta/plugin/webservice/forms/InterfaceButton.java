@@ -21,6 +21,16 @@ public abstract class InterfaceButton extends InterfaceElement {
     }
     
     /**
+     * Change the label of the button
+     * @param label the new label, will be set to an empty string if null
+     */
+    public void setLabel(String label){
+        this.label = label;
+        if(this.label == null)
+            this.label = "";
+    }
+    
+    /**
      * Render as simple json.
      */
     public BasicBSONObject toJson() {

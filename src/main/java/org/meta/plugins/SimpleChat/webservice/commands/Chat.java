@@ -23,6 +23,7 @@ import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
@@ -44,7 +45,8 @@ public class Chat extends AbstractWebService{
 	private SimpleDateFormat      sdf        = null;
     private Logger logger = LoggerFactory.getLogger(Chat.class);
     
-    public Chat(){
+    public Chat(AbstractPluginWebServiceControler controler){
+        super(controler);
         results = new TreeMap<Date, String>();
         sdf = new SimpleDateFormat("dd /MM / yyyy HH : mm : ss");
         

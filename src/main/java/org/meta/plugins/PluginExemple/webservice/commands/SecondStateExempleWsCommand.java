@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.meta.model.Searchable;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
-import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.DateInput;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
@@ -25,7 +25,6 @@ import org.meta.plugin.webservice.forms.submit.SubmitToButton;
 
 public class SecondStateExempleWsCommand extends AbstractWebService {
 
-    private InterfaceDescriptor descriptor     = null;
     private TextOutput          output         = null;
     private int                 nbRefresh      = 0;
 	private TextInput           firstName;
@@ -47,7 +46,8 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
 	private CheckBoxLists       checklist;
 	private DateInput birthDate;
 
-    public SecondStateExempleWsCommand(){
+    public SecondStateExempleWsCommand(AbstractPluginWebServiceControler controler){
+        super(controler);
         // Describe a full interface for test
         birthDate = new DateInput("birthDate", "Birth Date");
         rootColumn.addChild(birthDate);

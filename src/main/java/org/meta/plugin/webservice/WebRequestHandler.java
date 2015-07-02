@@ -86,10 +86,11 @@ public class WebRequestHandler extends AbstractHandler {
                     }
                     if(commandWs == null){
                         idCommand = getNewId();
-                        commandWs = (AbstractWebService) clazzWs.newInstance();
+                        commandWs = clazzWs.getConstructor(
+                                AbstractPluginWebServiceControler.class)
+                                                .newInstance(pluginInstance);
                         instanceMap.put(idCommand, commandWs);
                     }
-                    commandWs.setWebServiceControler(pluginInstance);
 
                     BasicBSONObject result = null;
 

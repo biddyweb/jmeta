@@ -16,6 +16,7 @@ import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
@@ -27,7 +28,8 @@ public class SearchSubtitles extends AbstractWebService{
     InterfaceDescriptor initialDescriptor     = null;
     TextOutput            initialTextOutput    = null;
     ModelFactory         factory             = null;
-    public SearchSubtitles(){
+    public SearchSubtitles(AbstractPluginWebServiceControler controler){
+        super(controler);
         //initial descriptor, used to initiate the subtitle search
         TextInput path = new TextInput("path", "Path to the movie");
         rootColumn.addChild(path);

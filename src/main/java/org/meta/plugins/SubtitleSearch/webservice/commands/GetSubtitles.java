@@ -4,9 +4,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.meta.model.Searchable;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 
 public class GetSubtitles extends AbstractWebService{
+
+    public GetSubtitles(AbstractPluginWebServiceControler controler) {
+        super(controler);
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public void callbackSuccess(ArrayList<Searchable> results) {

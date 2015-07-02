@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.meta.model.Searchable;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.fields.DateInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
@@ -17,7 +18,8 @@ public class ExempleWsCommand extends AbstractWebService {
     private int                 nbRefresh      = 0;
     private DateInput           birthDate      = null;
 
-    public ExempleWsCommand(){
+    public ExempleWsCommand(AbstractPluginWebServiceControler controler){
+        super(controler);
         // Describe a full interface for test
         birthDate = new DateInput("birthDate", "Birth Date");
         rootColumn.addChild(birthDate);

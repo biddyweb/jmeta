@@ -13,11 +13,10 @@ import org.meta.model.Data;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
-import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
-import org.meta.model.exceptions.ModelException;
+import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
@@ -34,7 +33,8 @@ public class Put extends AbstractWebService{
     ArrayList<DataString>results             = null;
     private Logger logger = LoggerFactory.getLogger(Put.class);
     
-    public Put(){
+    public Put(AbstractPluginWebServiceControler controler){
+        super(controler);
         results = new ArrayList<DataString>();
         TextInput path = new TextInput("id", "ID");
         rootColumn.addChild(path);

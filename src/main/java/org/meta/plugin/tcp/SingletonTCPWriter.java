@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 
 import org.meta.common.MetHash;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.model.ModelFactory;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 
 /**
@@ -17,7 +18,8 @@ import org.meta.plugin.tcp.amp.AMPAskBuilder;
 public class SingletonTCPWriter {
     private static SingletonTCPWriter     instance     = new SingletonTCPWriter();
     private        int                    lastAsk      = 0;
-    private         ExecutorService       executor     = null;
+    private        ExecutorService        executor     = null;
+    private        ModelFactory           factory      = null;
 
 
     private SingletonTCPWriter() {
@@ -25,6 +27,10 @@ public class SingletonTCPWriter {
                 MetaConfiguration.getAmpConfiguration().getSenderThPoolSize());
     }
 
+    public void setFactory(ModelFactory factory){
+        this.factory = factory;
+    }
+    
     public static SingletonTCPWriter getInstance() {
         return instance;
     }
@@ -54,7 +60,8 @@ public class SingletonTCPWriter {
         AnswerSenderThread sender = new AnswerSenderThread( ask,
                                                             adress,
                                                             port,
-                                                            listenner);
+                                                            listenner,
+                                                            factory);
         return executor.submit(sender);
     }
 }

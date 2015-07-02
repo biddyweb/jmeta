@@ -40,10 +40,7 @@ public class Get extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
         rootColumn.addChild(output);
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        try {
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException ex) {
-        }
+        factory = controler.getModel().getFactory();
     }
 
     @Override
@@ -68,19 +65,15 @@ public class Get extends AbstractWebService{
                                     "getCommand",
                                     this);
             
-            try {
-                Search localResult =
-                        (Search) Model.getInstance().get(contentSearch.getHash());
-                if(localResult != null){
-                    List<Data> localDatas = localResult.getLinkedData();
-                    for(Data d : localDatas)
-                        if(d instanceof DataString)
-                            localResults.add((DataString) d);
-                }
-                redrawOutput();
-            } catch (ModelException e) {
-                logger.error(e.getMessage(), e);
+            Search localResult =
+                    (Search) controler.getModel().get(contentSearch.getHash());
+            if(localResult != null){
+                List<Data> localDatas = localResult.getLinkedData();
+                for(Data d : localDatas)
+                    if(d instanceof DataString)
+                        localResults.add((DataString) d);
             }
+            redrawOutput();
         }else{
             output.flush();
             output.append("Please set an id");

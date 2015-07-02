@@ -44,10 +44,7 @@ public class Put extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "put"));
         rootColumn.addChild(output);
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        try {
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException ex) {
-        }
+        super.controler.getModel().getFactory();
     }
 
     @Override
@@ -70,25 +67,21 @@ public class Put extends AbstractWebService{
             
             //write into dataBase
             //and store it to the DHT
-            try {
-                Model.getInstance().set(hashM);
-                MetaDHT.getInstance().store(hashM.getHash()).addListener(
-                        new OperationListener<DHTOperation>() {
+            this.controler.getModel().set(hashM);
+            MetaDHT.getInstance().store(hashM.getHash()).addListener(
+                    new OperationListener<DHTOperation>() {
 
-                    @Override
-                    public void failed(DHTOperation operation) {
-                        output.append("fail to push");
-                    }
+                @Override
+                public void failed(DHTOperation operation) {
+                    output.append("fail to push");
+                }
 
-                    @Override
-                    public void complete(DHTOperation operation) {
-                        output.append("succes to push");
-                    }
-                
-                });
-            } catch (ModelException e) {
-                logger.error(e.getMessage(), e);
-            }
+                @Override
+                public void complete(DHTOperation operation) {
+                    output.append("succes to push");
+                }
+            
+            });
         }else{
             output.flush();
             output.append("Please set an id");

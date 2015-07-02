@@ -13,6 +13,7 @@ import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.SingletonTCPReader;
+import org.meta.plugin.tcp.SingletonTCPWriter;
 import org.meta.plugin.webservice.SingletonWebServiceReader;
 
 /*
@@ -60,12 +61,17 @@ public class Controler {
             throws IOException,
             URISyntaxException,
             ModelException {
-        this.model = Model.getInstance();
+        this.model = new Model();
         tcpReader = SingletonTCPReader.getInstance();
         tcpReader.start();
 
+        //init SingletonTCPWriter
+        SingletonTCPWriter.getInstance().setFactory(model.getFactory());
+        
         webServiceReader = SingletonWebServiceReader.getInstance();
         pluginInitialisation();
+        
+        
     }
     
     /**
@@ -75,6 +81,7 @@ public class Controler {
     public void stop() {
         tcpReader.kill();
         webServiceReader.kill();
+        this.model.closeDb();
     }
 
     /**
@@ -138,5 +145,9 @@ public class Controler {
                 }
             }
         }
+    }
+
+    public Model getModel() {
+        return model;
     }
 }

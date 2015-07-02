@@ -33,8 +33,8 @@ public class ModelTest {
     @BeforeClass
     public static void setUp() {
         startTime = new Date().getTime();
-        try {
-            model = Model.getInstance();
+        try{
+            model = new Model();
         } catch (ModelException ex) {
             logger.error(null, ex);
             Assert.fail();

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
+import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
@@ -24,8 +25,8 @@ public class AMPAnswerParser extends AMPParser{
     private String                   answer        ;
     private ArrayList<Searchable>    datas         ;
 
-    public AMPAnswerParser(byte[] bs) throws NotAValidAMPCommand {
-        super(bs);
+    public AMPAnswerParser(byte[] bs, ModelFactory factory) throws NotAValidAMPCommand {
+        super(bs, factory);
     }
 
     @Override

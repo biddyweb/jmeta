@@ -37,12 +37,14 @@ public class AMPAnswerParserTest {
     private MetaProperty titre;
     private ArrayList<Data> linkedData;
     private Logger logger = LoggerFactory.getLogger(AMPAnswerParserTest.class);
+    private Model  model  = null;
+    private ModelFactory factory;
 
     public AMPAnswerParserTest(){
         try {
-            Model.getInstance();
+            model = new Model();
 
-            ModelFactory factory = Model.getInstance().getFactory();
+            factory = model.getFactory();
             
             titre = new MetaProperty("titre", "toto");
             ArrayList<MetaProperty> description = new ArrayList<MetaProperty>();
@@ -116,7 +118,7 @@ public class AMPAnswerParserTest {
         AMPAnswerBuilder factory = new AMPAnswerBuilder("12", datas);
         AMPAnswerParser parser;
         try {
-            parser = new AMPAnswerParser(factory.getMessage());
+            parser = new AMPAnswerParser(factory.getMessage(), model.getFactory());
             ArrayList<Searchable> dataReceived = parser.getDatas();
             for (int i=0; i<dataReceived.size(); i++) {
                 Searchable searchable = dataReceived.get(i);

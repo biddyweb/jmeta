@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
  * @author faquin
  */
 public abstract class AMPParser {
-    protected ModelFactory factory = null;
     private Logger logger = LoggerFactory.getLogger(AMPParser.class);
+    protected ModelFactory factory = null;
+    
+    public AMPParser(byte[] bs, ModelFactory factory) throws NotAValidAMPCommand{
+        this.factory = factory;
+        parse(bs);
+    }
     public AMPParser(byte[] bs) throws NotAValidAMPCommand{
-        try {
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException e) {
-            logger.error(e.getMessage(), e);
-        }
         parse(bs);
     }
 

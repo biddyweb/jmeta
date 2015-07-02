@@ -42,18 +42,15 @@ public class AnswerSenderThread implements Runnable {
     public AnswerSenderThread(  AMPAskBuilder ask,
                                 InetAddress adress,
                                 int port,
-                                TCPResponseCallbackInteface listenner)
+                                TCPResponseCallbackInteface listenner,
+                                ModelFactory factory)
     {
         this.ask       = ask;
         this.adress    = adress;
         this.port      = port;
         this.listenner = listenner;
         this.results   = new ArrayList<Searchable>();
-        try {
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException e) {
-            logger.error(e.getMessage(), e);
-        }
+        this.factory   = factory;
     }
 
     public void run() {
@@ -75,7 +72,7 @@ public class AnswerSenderThread implements Runnable {
             }
             if(buffer.size() > 0){
                 //parse it into an answer
-                AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray());
+                AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray(), factory);
                 this.results = parser.getDatas();
                 /*
                  * When results are retrieved.

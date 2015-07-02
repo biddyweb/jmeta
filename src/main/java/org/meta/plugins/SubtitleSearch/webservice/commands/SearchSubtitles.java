@@ -37,12 +37,7 @@ public class SearchSubtitles extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
         initialDescriptor = new InterfaceDescriptor(rootColumn);
         initialTextOutput.append("");
-        try {
-            //Second descriptor, used to show results
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException ex) {
-            //TODO remove once we properly initialize the model
-        }
+        factory = this.controler.getModel().getFactory();
     }
 
     @Override

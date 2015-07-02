@@ -43,8 +43,6 @@ import org.meta.model.exceptions.ModelException;
  */
 public class Model {
 
-    private static Model instance;
-
     private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     private static final Logger logger = LoggerFactory.getLogger(Model.class);
 
@@ -56,29 +54,19 @@ public class Model {
      *
      * @throws org.meta.model.exceptions.ModelException
      */
-    private Model() throws ModelException {
+    public Model() throws ModelException {
 
         initDataBase();
         factory = new ModelFactory();
+    }
+    
+    public void closeDb(){
+        finalize();
     }
 
     @Override
     protected void finalize() {
         kyotoDB.close();
-    }
-
-    /**
-     * Singleton instance getter.
-     *
-     * @return The model Instance.
-     * @throws ModelException if dataBase fail to init
-     * may only occured at first call.
-     */
-    public synchronized static Model getInstance() throws ModelException {
-        if (instance == null) {
-            instance = new Model();
-        }
-        return instance;
     }
 
     /**

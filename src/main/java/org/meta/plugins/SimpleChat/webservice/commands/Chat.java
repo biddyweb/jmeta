@@ -62,10 +62,9 @@ public class Chat extends AbstractWebService{
 
         rootColumn.addChild(new SelfSubmitButton("send", "Send"));
         
-        try {
-            factory = Model.getInstance().getFactory();
-        } catch (ModelException ex) {
-        }
+        
+        factory = super.controler.getModel().getFactory();
+        
         TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
         props.add(new MetaProperty("chat", "channel"));
         chat = factory.createMetaData(props);
@@ -90,25 +89,22 @@ public class Chat extends AbstractWebService{
                 Search searchToSave = factory.createSearch(channelName, chat, Collections.singletonList(messageToSave));
                 //write into dataBase
                 //and store it to the DHT
-                try {
-                    Model.getInstance().set(searchToSave);
-                    MetaDHT.getInstance().store(searchToSave.getHash()).addListener(
-                            new OperationListener<DHTOperation>() {
+                
+                super.controler.getModel().set(searchToSave);
+                MetaDHT.getInstance().store(searchToSave.getHash()).addListener(
+                        new OperationListener<DHTOperation>() {
 
-                        @Override
-                        public void failed(DHTOperation operation) {
-                            output.append("fail to push");
-                        }
+                    @Override
+                    public void failed(DHTOperation operation) {
+                        output.append("fail to push");
+                    }
 
-                        @Override
-                        public void complete(DHTOperation operation) {
-                            output.append("succes to push");
-                        }
-                    
-                    });
-                } catch (ModelException e) {
-                    logger.error(e.getMessage(), e);
-                }
+                    @Override
+                    public void complete(DHTOperation operation) {
+                        output.append("succes to push");
+                    }
+                
+                });
             }
             super.controler.search(retrieveMessage.getHash(),
                     "SimpleChat",

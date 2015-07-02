@@ -40,14 +40,10 @@ public class ControlerTest extends MetaBaseTests {
         } catch (ModelException | IOException | URISyntaxException e1) {
             logger.error(e1.getMessage(), e1);
         }
-        try {
-            model = Model.getInstance();
-            ModelFactory Factory = model.getFactory();
-            data = Factory.createDataString("tutu");
-            Model.getInstance().set(data);
-        } catch (ModelException e) {
-            logger.error(e.getMessage(), e);
-        }
+        model = controler.getModel();
+        ModelFactory Factory = model.getFactory();
+        data = Factory.createDataString("tutu");
+        model.set(data);
     }
     
     @Test

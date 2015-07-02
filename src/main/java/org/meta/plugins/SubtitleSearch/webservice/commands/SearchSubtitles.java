@@ -46,12 +46,15 @@ public class SearchSubtitles extends AbstractWebService{
     @Override
     public void executeCommand(Map<String, String[]> map) {
         //Get file path
-        String[] pathes = map.get("path");
-        String      path   = pathes != null && pathes.length > 0 ? pathes[0] : "";
+        String path = getParameter(this.path.getId(), map);
+
+        //set retrieving path as new defaults value of path field
+        this.path.setValue(path);
 
         //if path is not empty, try to search othrerwise just return the main
         //interface
         if(path != ""){
+            //Only go further if the file exist
             File file = new File(path);
             if(file.exists()){
                 initialTextOutput.flush();

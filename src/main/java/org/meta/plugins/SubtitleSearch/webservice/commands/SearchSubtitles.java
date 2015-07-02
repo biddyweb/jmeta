@@ -40,7 +40,6 @@ public class SearchSubtitles extends AbstractWebService{
         //tex output
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
-        initialTextOutput.append("");
         factory = this.controler.getModel().getFactory();
     }
 

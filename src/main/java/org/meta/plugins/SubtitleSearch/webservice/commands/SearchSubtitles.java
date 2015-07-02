@@ -19,14 +19,19 @@ import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
+import org.meta.plugin.webservice.forms.fields.radio.RadioButton;
+import org.meta.plugin.webservice.forms.fields.radio.RadioList;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 
 public class SearchSubtitles extends AbstractWebService{
 
-    TextOutput      initialTextOutput   = null;
-    ModelFactory    factory             = null;
-    TextInput       path                = null;
-    ArrayList<Data> results             = null;
+    TextOutput       initialTextOutput   = null;
+    ModelFactory     factory             = null;
+    TextInput        path                = null;
+    ArrayList<Data>  results             = null;
+    SelfSubmitButton submitToMe          = null;
+    RadioList        resultsOutput       = null;
+    String           failure             = null;
     
     public SearchSubtitles(AbstractPluginWebServiceControler controler){
         super(controler);
@@ -36,8 +41,9 @@ public class SearchSubtitles extends AbstractWebService{
         path.setDescription("Point to the file on your hardrive");
         rootColumn.addChild(path);
 
+        submitToMe = new SelfSubmitButton("submitToMe", "Search");
         //has a linked button on himself
-        rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
+        rootColumn.addChild(submitToMe);
 
         //tex output
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
@@ -88,10 +94,16 @@ public class SearchSubtitles extends AbstractWebService{
             initialTextOutput.flush();
             initialTextOutput.append("Please set a valide path name");
         }
+        //Change the label of the selfSubmit to me to "make a new search"
+        submitToMe.setLabel("Make a new search");
     }
 
     @Override
-    public void applySmallUpdate() {}
+    public void applySmallUpdate() {
+        initialTextOutput.flush();
+        if(failure != null)
+            initialTextOutput.append(failure);
+    }
 
     @Override
     public void callbackSuccess(ArrayList<Searchable> results) {
@@ -108,16 +120,33 @@ public class SearchSubtitles extends AbstractWebService{
                 }
             }
         }
+        if(resultsOutput == null){
+            resultsOutput = new RadioList("results", "Pick a subtitle");
+            rootColumn.addChild(resultsOutput);
+        }
         redrawOutPut();
     }
-
+    
     @Override
     public void callbackFailure(String failureMessage) {
-        initialTextOutput.append(failureMessage);
+        failure = failureMessage;
     }
 
     private void redrawOutPut() {
-        
+        ArrayList<RadioButton> buttons = new ArrayList<RadioButton>();
+        for(Data data : results){
+            String description = extractDescription(data.getDescription());
+            buttons.add(new RadioButton(data.getHash().toString(), description));
+        }
+    }
+
+    private String extractDescription(ArrayList<MetaProperty> properties) {
+        String description = ""; 
+        for(MetaProperty property : properties){
+            if(property.getName().equals("description"))
+                description = description+" ; "+property.getValue();
+        }
+        return "";
     }
 
 }

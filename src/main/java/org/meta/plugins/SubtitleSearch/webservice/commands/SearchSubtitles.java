@@ -11,33 +11,31 @@ import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
-import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
-import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
-import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 
 public class SearchSubtitles extends AbstractWebService{
 
-    InterfaceDescriptor initialDescriptor     = null;
-    TextOutput            initialTextOutput    = null;
-    ModelFactory         factory             = null;
+    TextOutput    initialTextOutput   = null;
+    ModelFactory  factory             = null;
+     TextInput    path                = null;
+    
     public SearchSubtitles(AbstractPluginWebServiceControler controler){
         super(controler);
         //initial descriptor, used to initiate the subtitle search
-        TextInput path = new TextInput("path", "Path to the movie");
+        path = new TextInput("path", "Path to the movie");
+        path.setDescription("Point to the file on your hardrive");
         rootColumn.addChild(path);
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
         //has a linked button on himself
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
-        initialDescriptor = new InterfaceDescriptor(rootColumn);
         initialTextOutput.append("");
         factory = this.controler.getModel().getFactory();
     }

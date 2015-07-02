@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.meta.common.MetHash;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  *    JMeta - Meta's java implementation
@@ -34,6 +36,7 @@ public abstract class Searchable {
 
     protected MetHash hash = null;
     protected ObjectState state;
+    private Logger logger = LoggerFactory.getLogger(Searchable.class);
 
     /**
      * Enum to lists the different possible states of a model object.
@@ -107,7 +110,7 @@ public abstract class Searchable {
      */
     protected void updateState() {
         if (state == ObjectState.UP_TO_DATE) {
-            System.out.println("update state for " + this.hash.toString() + " set to dirty");
+            logger.info("update state for " + this.hash.toString() + " set to dirty");
             state = ObjectState.DIRTY;
         }
     }

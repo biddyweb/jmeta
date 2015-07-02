@@ -40,7 +40,7 @@ public class ModelTest {
             Assert.fail();
         }
         endTime = new Date().getTime();
-        System.out.println("Took : " + (endTime - startTime) + "ms to instanciate model");
+        logger.info("Took : " + (endTime - startTime) + "ms to instanciate model");
     }
 
 	private MetHash hash;
@@ -154,7 +154,7 @@ public class ModelTest {
             Assert.assertEquals("Source data should be the same!!", "data", ((DataString) fromDb.getSource()).getString());
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
-            //System.err.println("ERROR IN testSearchUpdate");
+            logger.error("ERROR IN testSearchUpdate");
         }
 
     }
@@ -253,7 +253,7 @@ public class ModelTest {
             Assert.assertTrue("perf set" + hash, model.set(data));
         }
         endTime = new Date().getTime();
-        System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations");
+        logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations");
         startTime = new Date().getTime();
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
@@ -261,21 +261,21 @@ public class ModelTest {
             Assert.assertTrue("perf set" + hash, model.set(data));
         }
         endTime = new Date().getTime();
-        System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations (updates)");
+        logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations (updates)");
         startTime = new Date().getTime();
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
             Assert.assertNotNull("perf get " + hash, model.getDataFile(hash));
         }
         endTime = new Date().getTime();
-        System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Deserializations");
+        logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Deserializations");
         startTime = new Date().getTime();
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
             Assert.assertTrue("perf set" + hash, model.remove(hash));
         }
         endTime = new Date().getTime();
-        System.out.println("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
+        logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
     }
 
     //@Test

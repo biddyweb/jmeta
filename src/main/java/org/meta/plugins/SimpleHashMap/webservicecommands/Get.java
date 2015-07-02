@@ -61,7 +61,7 @@ public class Get extends AbstractWebService{
             MetaData    metaData     = factory.createMetaData(properties);
             DataString  source       = factory.createDataString(id);
             Search      contentSearch= factory.createSearch(source, metaData, null);
-            System.out.print("get hash : "+contentSearch.getHash().toString());
+            logger.info("get hash : "+contentSearch.getHash().toString());
 
             super.controler.search(  contentSearch.getHash(),
                                     "SimpleHashMap",

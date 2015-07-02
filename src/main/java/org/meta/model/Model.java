@@ -384,7 +384,7 @@ public class Model {
             return true;
         }
         if (!kyotoDB.begin_transaction(false)) {
-            System.err.println("KYOTO FAILED TO START TX! " + kyotoDB.error());
+            logger.error("KYOTO FAILED TO START TX! " + kyotoDB.error());
             return false;
         }
         return true;
@@ -434,7 +434,7 @@ public class Model {
             data = BSON.encode(bsonObject);
             status = status && data != null;
         } catch (Exception e) {
-            System.err.println("ERROR ENCODE BSON object : " + bsonObject.toString());
+            logger.error("ERROR ENCODE BSON object : " + bsonObject.toString());
             logger.error(e.getMessage(), e);
             status = false;
         }

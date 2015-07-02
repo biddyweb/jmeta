@@ -65,7 +65,7 @@ public class Put extends AbstractWebService{
             MetaData metaData = factory.createMetaData(properties);
             DataString source = factory.createDataString(id);
             Search hashM = factory.createSearch(source, metaData, lst);
-            System.out.println("put hash : "+hashM.getHash().toString());
+            logger.info("put hash : "+hashM.getHash().toString());
             
             
             //write into dataBase

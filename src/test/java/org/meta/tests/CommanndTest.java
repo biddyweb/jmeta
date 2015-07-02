@@ -13,8 +13,11 @@ import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommanndTest extends AbstractCommand {
+    private Logger logger = LoggerFactory.getLogger(CommanndTest.class);
 
     @Override
     public AMPAnswerBuilder execute(String answer, MetHash hash) {
@@ -23,7 +26,7 @@ public class CommanndTest extends AbstractCommand {
 
 //    @Override
 //    public AMPAnswerFactory execute(String answer, String hash) {
-//        System.out.println("toto");
+//        logger.info("toto");
 //
 //        //Data File
 //        DataFile dataFile = new DataFile("toto va au cinéma", new File("/home/faquin/done.txt"));

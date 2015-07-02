@@ -84,6 +84,25 @@ public abstract class BaseConfiguration {
     }
 
     /**
+    *
+    * @param propKey The key in the property file.
+    *
+    * @return the integer value or null if not found.
+    */
+   public Integer getInt(String propKey) {
+       String val = this.getValue(propKey);
+
+       if (val == null) {
+           return null;
+       }
+       try {
+           return Integer.valueOf(val);
+       } catch (NumberFormatException ex) {
+           return null;
+       }
+   }
+
+    /**
      *
      * @param propKey The key in the property file.
      *

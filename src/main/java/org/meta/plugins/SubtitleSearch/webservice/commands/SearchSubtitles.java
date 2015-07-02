@@ -28,14 +28,18 @@ public class SearchSubtitles extends AbstractWebService{
     
     public SearchSubtitles(AbstractPluginWebServiceControler controler){
         super(controler);
-        //initial descriptor, used to initiate the subtitle search
+
+        //Path to the movie
         path = new TextInput("path", "Path to the movie");
         path.setDescription("Point to the file on your hardrive");
         rootColumn.addChild(path);
-        initialTextOutput = new TextOutput("initialStateOutput", "callback :");
-        rootColumn.addChild(initialTextOutput);
+
         //has a linked button on himself
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "Search"));
+
+        //tex output
+        initialTextOutput = new TextOutput("initialStateOutput", "callback :");
+        rootColumn.addChild(initialTextOutput);
         initialTextOutput.append("");
         factory = this.controler.getModel().getFactory();
     }

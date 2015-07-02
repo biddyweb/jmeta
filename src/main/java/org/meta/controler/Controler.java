@@ -134,7 +134,7 @@ public class Controler {
                             "Error during instanciation of th plugin : " + key, 
                             e);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

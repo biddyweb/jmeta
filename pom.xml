@@ -78,12 +78,12 @@
               <artifactId>umlgraph</artifactId>
               <version>5.6.6</version>
             </docletArtifact>
-            <additionalparam>-operations</additionalparam>
-            <additionalparam>-qualify</additionalparam>
-            <additionalparam>-types</additionalparam>
-            <additionalparam>-visibility</additionalparam>
-            <additionalparam>-collpackages</additionalparam>
-            <show>private</show>
+              <useStandardDocletOptions>true</useStandardDocletOptions>
+              <additionalparam>
+                -inferrel -inferdep -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
+                -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
+                -enumerations -enumconstants -views -useimports -inferdep
+              </additionalparam>
           </configuration>
         </plugin>
       </plugins>

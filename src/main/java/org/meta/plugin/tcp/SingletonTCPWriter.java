@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.meta.common.MetHash;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 
 /**
@@ -16,11 +17,12 @@ import org.meta.plugin.tcp.amp.AMPAskBuilder;
 public class SingletonTCPWriter {
     private static SingletonTCPWriter     instance     = new SingletonTCPWriter();
     private        int                    lastAsk      = 0;
-    private         ExecutorService       executor = null;
+    private         ExecutorService       executor     = null;
 
 
     private SingletonTCPWriter() {
-        executor = Executors.newFixedThreadPool(100);//TODO add to configuration
+        executor = Executors.newFixedThreadPool(
+                MetaConfiguration.getAmpConfiguration().getSenderThPoolSize());
     }
 
     public static SingletonTCPWriter getInstance() {

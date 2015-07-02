@@ -58,7 +58,8 @@ public class SingletonTCPReader extends Thread {
      */
     private SingletonTCPReader() {
         mapPlugin = new HashMap<>();
-        executor = Executors.newFixedThreadPool(100);//TODO add to configuration
+        executor = Executors.newFixedThreadPool(
+                MetaConfiguration.getAmpConfiguration().getServerThPoolSize());
     }
 
     @Override

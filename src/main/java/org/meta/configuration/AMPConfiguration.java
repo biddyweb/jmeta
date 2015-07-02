@@ -23,7 +23,27 @@ import java.util.Properties;
  *
  */
 public final class AMPConfiguration extends BaseConfiguration {
-
+    
+    /**
+     * The default size for Sender thread pool
+     */
+    public static final int DEFAULT_SENDER_THREAD_POOL_SIZE = 100;
+    /**
+     * The key for DEFAUL_SEND_THREAD_POOL_SIZE in amp.conf
+     */
+    public static final String SENDER_TH_POOL_KEY = "senderThreadPoolSize";
+    
+    /**
+     * The default size for Server thread pool
+     */
+    public static final int DEFAULT_SEVER_THREAD_POOL_SIZE = 100;
+    
+    /**
+     * The key for DEFAUL_SEVER_THREAD_POOL_SIZE in amp.conf
+     */
+    public static final String SERVER_TH_POOL_KEY = "serverThreadPoolSize";
+    
+    
     /**
      * The default port to listen to AMP messages.
      */
@@ -37,8 +57,9 @@ public final class AMPConfiguration extends BaseConfiguration {
     /**
      * The port the amp stack will listen to.
      */
-    private Short ampPort = DEFAULT_AMP_PORT;
-
+    private Short   ampPort = DEFAULT_AMP_PORT;
+    private Integer senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
+    private Integer serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
     /**
      * Empty initialization with default values.
      */
@@ -63,6 +84,14 @@ public final class AMPConfiguration extends BaseConfiguration {
         if (port != null) {
             this.ampPort = port;
         }
+        Integer senderThPoolSize = this.getInt(SENDER_TH_POOL_KEY);
+        if(senderThPoolSize != null){
+            this.senderThPoolSize = senderThPoolSize;
+        }
+        Integer serverThPoolSize = this.getInt(SERVER_TH_POOL_KEY);
+        if(senderThPoolSize != null){
+            this.serverThPoolSize = serverThPoolSize;
+        }
     }
 
     /**
@@ -79,5 +108,33 @@ public final class AMPConfiguration extends BaseConfiguration {
      */
     public void setAmpPort(Short ampPort) {
         this.ampPort = ampPort;
+    }
+
+    /**
+     * @return the senderThPoolSize
+     */
+    public Integer getSenderThPoolSize() {
+        return senderThPoolSize;
+    }
+
+    /**
+     * @param senderThPoolSize the senderThPoolSize to set
+     */
+    public void setSenderThPoolSize(Integer senderThPoolSize) {
+        this.senderThPoolSize = senderThPoolSize;
+    }
+
+    /**
+     * @return the serverThPoolSize
+     */
+    public Integer getServerThPoolSize() {
+        return serverThPoolSize;
+    }
+
+    /**
+     * @param serverThPoolSize the serverThPoolSize to set
+     */
+    public void setServerThPoolSize(Integer serverThPoolSize) {
+        this.serverThPoolSize = serverThPoolSize;
     }
 }

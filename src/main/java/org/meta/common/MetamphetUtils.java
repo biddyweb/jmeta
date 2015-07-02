@@ -15,6 +15,10 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.tomp2p.peers.Number160;
 
 /**
@@ -26,6 +30,7 @@ import net.tomp2p.peers.Number160;
 public class MetamphetUtils {
 
     private static final Random random = new Random();
+    private static Logger logger = LoggerFactory.getLogger(MetamphetUtils.class);
 
     public static Number160 toNumer160(MetHash hash) {
         return new Number160(hash.toByteArray());
@@ -49,14 +54,8 @@ public class MetamphetUtils {
             }
             byte[] digest = md.digest();
             return new MetHash(digest);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return MetHash.ZERO;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return MetHash.ZERO;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
             return MetHash.ZERO;
         } finally {
             close(channel, fis);
@@ -75,7 +74,7 @@ public class MetamphetUtils {
             byte[] digest = md.digest();
             return new MetHash(digest);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return new MetHash();
         }
     }
@@ -114,7 +113,7 @@ public class MetamphetUtils {
                 try {
                     closable.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

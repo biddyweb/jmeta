@@ -24,6 +24,8 @@ import org.meta.model.Model;
 import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
 import org.meta.plugin.tcp.SingletonTCPReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * You may extends {@link AbstractPluginTCPControler} to create the TCP part of 
@@ -45,6 +47,7 @@ public abstract class AbstractPluginTCPControler {
     protected   Model model = null;
     protected   HashMap<String, Class<? extends AbstractCommand>> lstCommands = null;
     protected   String pluginName = null;
+    private     Logger logger = LoggerFactory.getLogger(AbstractPluginTCPControler.class);
 
     public AbstractPluginTCPControler() {
         lstCommands = new HashMap<String, Class<? extends AbstractCommand>>();
@@ -93,7 +96,7 @@ public abstract class AbstractPluginTCPControler {
                 command = (AbstractCommand) clazz.newInstance();
                 command.setPluginTCPControler(this);
             } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
         return command;

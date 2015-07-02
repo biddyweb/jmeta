@@ -23,6 +23,8 @@ import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AMPAnswerParserTest {
 
@@ -35,6 +37,7 @@ public class AMPAnswerParserTest {
 	private DataFile dataFile;
     private MetaProperty titre;
     private ArrayList<Data> linkedData;
+    private Logger logger = LoggerFactory.getLogger(AMPAnswerParserTest.class);
 
     public AMPAnswerParserTest(){
         try {
@@ -80,7 +83,7 @@ public class AMPAnswerParserTest {
             datas.add(metaData);
         
         } catch (ModelException e1) {
-            e1.printStackTrace();
+            logger.error(e1.getMessage(), e1);
         }
     }
     
@@ -159,7 +162,7 @@ public class AMPAnswerParserTest {
                 }
             }
         } catch (NotAValidAMPCommand e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 	}
 }

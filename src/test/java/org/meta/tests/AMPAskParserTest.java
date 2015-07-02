@@ -7,8 +7,11 @@ import org.meta.common.MetamphetUtils;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AMPAskParserTest {
+    private Logger logger = LoggerFactory.getLogger(AMPAskParserTest.class);
 
     @Test
     public void ampPerserTest() {
@@ -24,7 +27,7 @@ public class AMPAskParserTest {
             System.out.println(parser.getCommand());
             System.out.println(parser.getHash());
         } catch (NotAValidAMPCommand e) {
-            //e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         AMPAskBuilder factory = new AMPAskBuilder(
@@ -39,7 +42,7 @@ public class AMPAskParserTest {
             Assert.assertEquals("cacahuete", parser.getCommand());
             Assert.assertEquals(MetamphetUtils.makeSHAHash("toto"), parser.getHash());
         } catch (NotAValidAMPCommand e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             Assert.fail(e.getMessage());
         }
     }

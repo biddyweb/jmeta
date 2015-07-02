@@ -153,8 +153,8 @@ public class ModelTest {
             Assert.assertNotNull("object from db should be not null!", fromDb);
             Assert.assertEquals("Source data should be the same!!", "data", ((DataString) fromDb.getSource()).getString());
         } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             //System.err.println("ERROR IN testSearchUpdate");
-            ex.printStackTrace();
         }
 
     }
@@ -319,7 +319,7 @@ public class ModelTest {
                 Assert.assertTrue(threads[i].res);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             Assert.fail(e.getMessage());
         }
     }

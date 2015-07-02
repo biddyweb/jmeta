@@ -29,7 +29,7 @@ public class AnswerSenderThread implements Runnable {
     private ArrayList<Searchable>   results     = null;
     private int                     port        = 0;
     private ModelFactory            factory     = null;
-    private Logger log      = LoggerFactory.getLogger(AnswerSenderThread.class);
+    private Logger logger      = LoggerFactory.getLogger(AnswerSenderThread.class);
     private TCPResponseCallbackInteface listenner = null;
     
     /**
@@ -52,7 +52,7 @@ public class AnswerSenderThread implements Runnable {
         try {
             factory = Model.getInstance().getFactory();
         } catch (ModelException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -104,7 +104,7 @@ public class AnswerSenderThread implements Runnable {
             client.close();
             is.close();
         } catch (IOException | NotAValidAMPCommand e) {
-            log.warn(e.getMessage());
+            logger.warn(e.getMessage());
         }
 
         listenner.callbackSuccess(results);

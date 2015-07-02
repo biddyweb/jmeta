@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.Future;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.meta.configuration.MetaConfiguration;
@@ -39,8 +38,7 @@ public class ControlerTest extends MetaBaseTests {
         try {
             controler = new Controler();
         } catch (ModelException | IOException | URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error(e1.getMessage(), e1);
         }
         try {
             model = Model.getInstance();
@@ -48,7 +46,7 @@ public class ControlerTest extends MetaBaseTests {
             data = Factory.createDataString("tutu");
             Model.getInstance().set(data);
         } catch (ModelException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
     
@@ -81,12 +79,12 @@ public class ControlerTest extends MetaBaseTests {
                 },MetaConfiguration.getAmpConfiguration().getAmpPort());
                 while(!question.isDone()){}
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 Assert.fail(e.getMessage());
             }
             
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             Assert.fail(e.getMessage());
         }
     }

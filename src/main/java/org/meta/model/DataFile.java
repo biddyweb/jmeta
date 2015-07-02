@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+
 import org.bson.BSONObject;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
+import org.meta.controler.Controler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  *    JMeta - Meta's java implementation
@@ -38,6 +42,7 @@ public class DataFile extends Data {
 
     private              File file          = null;
     private static final int  MAX_BLOC_SIZE = 65536;
+    private Logger logger = LoggerFactory.getLogger(DataFile.class);
 
     /**
      * needed for java reflection
@@ -152,9 +157,9 @@ public class DataFile extends Data {
                 
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -186,7 +191,7 @@ public class DataFile extends Data {
                 fos.close();
             }
         } catch (IOException e1) {
-            e1.printStackTrace();
+            logger.error(e1.getMessage(), e1);
         }
     }
 

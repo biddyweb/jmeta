@@ -20,6 +20,8 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Get extends AbstractWebService{
 
@@ -28,6 +30,7 @@ public class Get extends AbstractWebService{
     ModelFactory         factory             = null;
     ArrayList<DataString>distantResults      = null;
     ArrayList<DataString>localResults        = null;
+    private Logger logger = LoggerFactory.getLogger(Get.class);
     
     public Get(){
         distantResults = new ArrayList<DataString>();
@@ -76,7 +79,7 @@ public class Get extends AbstractWebService{
                 }
                 redrawOutput();
             } catch (ModelException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }else{
             output.flush();

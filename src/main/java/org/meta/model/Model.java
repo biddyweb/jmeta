@@ -133,7 +133,7 @@ public class Model {
             //Try to load the search in the data base
             search = (Search) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return search;
     }
@@ -149,7 +149,7 @@ public class Model {
         try {
             metaData = (MetaData) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return metaData;
     }
@@ -165,7 +165,7 @@ public class Model {
         try {
             data = (DataString) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return data;
     }
@@ -181,7 +181,7 @@ public class Model {
         try {
             data = (DataFile) load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return data;
     }
@@ -196,7 +196,7 @@ public class Model {
         try {
             foundedObject = load(hash.toByteArray());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return foundedObject;
     }
@@ -223,7 +223,7 @@ public class Model {
         try {
             bsonObject = BSON.decode(serializedData);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
         }
         Searchable searchable = null;
@@ -435,7 +435,7 @@ public class Model {
             status = status && data != null;
         } catch (Exception e) {
             System.err.println("ERROR ENCODE BSON object : " + bsonObject.toString());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             status = false;
         }
         if (status) {

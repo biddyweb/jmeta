@@ -23,6 +23,8 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Put extends AbstractWebService{
 
@@ -30,6 +32,7 @@ public class Put extends AbstractWebService{
     TextOutput           output              = null;
     ModelFactory         factory             = null;
     ArrayList<DataString>results             = null;
+    private Logger logger = LoggerFactory.getLogger(Put.class);
     
     public Put(){
         results = new ArrayList<DataString>();
@@ -84,7 +87,7 @@ public class Put extends AbstractWebService{
                 
                 });
             } catch (ModelException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }else{
             output.flush();

@@ -9,6 +9,8 @@ import java.net.Socket;
 import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +22,7 @@ public class AskHandlerThread implements Runnable{
 
     private Socket client = null;
     private SingletonTCPReader reader = SingletonTCPReader.getInstance();
+    private Logger logger = LoggerFactory.getLogger(AskHandlerThread.class);
 
     /**
      * Initiate the handler with given parameters
@@ -69,15 +72,15 @@ public class AskHandlerThread implements Runnable{
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();//TODO gérer cette exception
+            logger.error(e.getMessage(), e);
         } catch (NotAValidAMPCommand e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             if(inputStream != null)
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
         }
     }

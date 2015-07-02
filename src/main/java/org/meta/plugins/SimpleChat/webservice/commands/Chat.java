@@ -28,6 +28,8 @@ import org.meta.plugin.webservice.forms.InterfaceDescriptor;
 import org.meta.plugin.webservice.forms.fields.TextInput;
 import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Chat extends AbstractWebService{
 
@@ -40,6 +42,7 @@ public class Chat extends AbstractWebService{
 	private TextInput nick;
 	private TreeMap<Date, String> results    = null;
 	private SimpleDateFormat      sdf        = null;
+    private Logger logger = LoggerFactory.getLogger(Chat.class);
     
     public Chat(){
         results = new TreeMap<Date, String>();
@@ -104,7 +107,7 @@ public class Chat extends AbstractWebService{
                     
                     });
                 } catch (ModelException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
             super.controler.search(retrieveMessage.getHash(),

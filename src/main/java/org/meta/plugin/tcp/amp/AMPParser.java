@@ -7,6 +7,8 @@ import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -15,11 +17,12 @@ import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
  */
 public abstract class AMPParser {
     protected ModelFactory factory = null;
+    private Logger logger = LoggerFactory.getLogger(AMPParser.class);
     public AMPParser(byte[] bs) throws NotAValidAMPCommand{
         try {
             factory = Model.getInstance().getFactory();
         } catch (ModelException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         parse(bs);
     }

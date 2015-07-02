@@ -12,7 +12,10 @@ import org.meta.plugin.AbstractPluginWebServiceControler;
 
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
+
 import org.meta.configuration.MetaConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Singleton who's launch the web server
@@ -24,6 +27,7 @@ public class SingletonWebServiceReader extends Thread {
     private HashMap<String, AbstractPluginWebServiceControler> mapPlugins = null;
     private            Server                    server       = null;
     private static     SingletonWebServiceReader instance     = null;
+    private Logger logger = LoggerFactory.getLogger(SingletonWebServiceReader.class);
 
     private SingletonWebServiceReader() {
         mapPlugins = new HashMap<String, AbstractPluginWebServiceControler>();
@@ -69,7 +73,7 @@ public class SingletonWebServiceReader extends Thread {
             server.start();
             server.join();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -114,8 +118,7 @@ public class SingletonWebServiceReader extends Thread {
             if(server != null)
                 server.stop();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 }

@@ -3,11 +3,9 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.bson.io.OutputBuffer;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
@@ -22,6 +20,7 @@ import org.meta.plugin.webservice.forms.fields.TextOutput;
 import org.meta.plugin.webservice.forms.fields.radio.RadioButton;
 import org.meta.plugin.webservice.forms.fields.radio.RadioList;
 import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
+import org.meta.plugin.webservice.forms.submit.SubmitToButton;
 
 public class SearchSubtitles extends AbstractWebService{
 
@@ -30,6 +29,7 @@ public class SearchSubtitles extends AbstractWebService{
     TextInput        path                = null;
     ArrayList<Data>  results             = null;
     SelfSubmitButton submitToMe          = null;
+    SubmitToButton   getSubtitleButton   = null;
     RadioList        resultsOutput       = null;
     String           failure             = null;
     
@@ -120,10 +120,6 @@ public class SearchSubtitles extends AbstractWebService{
                 }
             }
         }
-        if(resultsOutput == null){
-            resultsOutput = new RadioList("results", "Pick a subtitle");
-            rootColumn.addChild(resultsOutput);
-        }
         redrawOutPut();
     }
     
@@ -133,6 +129,23 @@ public class SearchSubtitles extends AbstractWebService{
     }
 
     private void redrawOutPut() {
+        /*
+         * At first successful callback, initialize the resultOutput radioList
+         * and add the button to submit to the getCommand
+         */
+        if(resultsOutput == null){
+            resultsOutput = new RadioList("subtitleHash", "Pick a subtitle");
+            rootColumn.addChild(resultsOutput);
+        }
+        if(getSubtitleButton == null){
+            getSubtitleButton = new SubmitToButton(
+                                        "send", 
+                                        "Download selected subtitle", 
+                                        "getSubtitles");
+            rootColumn.addChild(getSubtitleButton);
+            
+        }
+        //Feed the output with the results
         ArrayList<RadioButton> buttons = new ArrayList<RadioButton>();
         for(Data data : results){
             String description = extractDescription(data.getDescription());

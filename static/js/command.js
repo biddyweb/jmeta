@@ -288,6 +288,10 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
     }
     //finally add the content to the parent
     parentHtml.append(currentHtml);
+    if(data["description"] !== undefined && data["description"] !== "" ){
+        parentHtml.append($('<p class="help-block '+data["id"]+'">'
+                    +data["description"]+'</p>'));
+    }
 }
 
 /**
@@ -340,6 +344,9 @@ Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
     else{
         //There is no need to update directly attributes from them
         if(data["type"] != "Column" && data["type"] != "Line"){
+
+            $(".help-block."+data["id"]).html(data["description"]);
+ 
             var type = data["type"];
             switch(type){
                 case "radio" :

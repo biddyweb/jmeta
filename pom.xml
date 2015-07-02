@@ -1,22 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.meta</groupId>
   <artifactId>jmeta</artifactId>
   <version>0.1</version>
   <packaging>jar</packaging>
-
   <name>jmeta</name>
   <url>http://maven.apache.org</url>
-
-    <repositories>
-      <repository>
-        <id>tomp2p.net</id>
-        <url>http://tomp2p.net/dev/mvn/</url>
-      </repository>
-    </repositories>
-
+  <repositories>
+    <repository>
+      <id>tomp2p.net</id>
+      <url>http://tomp2p.net/dev/mvn/</url>
+    </repository>
+  </repositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -31,11 +27,6 @@
             <source>1.7</source>
             <target>1.7</target>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.9.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -68,16 +59,42 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.7</version>
+          <configuration>
+            <links>
+              <link>http://java.sun.com/javase/6/docs/api/</link>
+            </links>
+            <detectOfflineLinks/>
+            <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+            <!--
+                  use this line or use the variable GRAPHVIZ_HOME
+                  <docletPath>/path/to/UmlGraph.jar</docletPath>
+                -->
+            <docletArtifact>
+              <groupId>org.umlgraph</groupId>
+              <artifactId>umlgraph</artifactId>
+              <version>5.6.6</version>
+            </docletArtifact>
+            <additionalparam>-operations</additionalparam>
+            <additionalparam>-qualify</additionalparam>
+            <additionalparam>-types</additionalparam>
+            <additionalparam>-visibility</additionalparam>
+            <additionalparam>-collpackages</additionalparam>
+            <show>private</show>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>net.tomp2p</groupId>
       <artifactId>tomp2p-dht</artifactId>
       <version>5.0-Beta8</version>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -114,18 +131,16 @@
       <artifactId>mongo-java-driver</artifactId>
       <version>2.12.1</version>
     </dependency>
-    
     <dependency>
       <groupId>com.fallabs</groupId>
       <artifactId>kyotocabinet-java</artifactId>
       <version>1.24</version>
       <type>jar</type>
     </dependency>
-   
     <dependency>
-    	<groupId>org.eclipse.jetty</groupId>
-    	<artifactId>jetty-server</artifactId>
-    	<version>9.2.0.M0</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>9.2.0.M0</version>
     </dependency>
   </dependencies>
 </project>

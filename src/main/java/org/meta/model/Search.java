@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
@@ -101,19 +102,25 @@ public class Search extends Searchable {
 
     /**
      *
-     * @return the list of every data linked to this metaData
+     * @return the list of every data linked to this metaData.
+     * Those are stored in an hashMap, but return a Collection, for
+     * simplicity purposes
      */
     public Collection<Data> getLinkedData() {
         return linkedData.values();
     }
 
     /**
-     * Set linked data. Accessible outside ModelPackage because the results
-     * does not count in the hash calculation
+     * Add linked datas to the search.
+     * Those are stored as an hashMap with the data's hash for key.
+     * 
+     * If a conflict on hash key occurred, the last one will be take.
      *
      * @param linkedData
      */
     public void addLinkedData(List<Data> linkedData) {
+        if(this.linkedData == null)
+            this.linkedData    = new HashMap<MetHash, Data>();
         for(Data d : linkedData)
             this.linkedData.put(d.getHash(), d);
         this.updateState();
@@ -126,6 +133,8 @@ public class Search extends Searchable {
      * if share same hash than another, will be overriding
      */
     public void setALinkedData(Data data){
+        if(linkedData == null)
+            linkedData    = new HashMap<MetHash, Data>();
         this.linkedData.put(data.getHash(), data);
         this.updateState();
     }
@@ -174,17 +183,21 @@ public class Search extends Searchable {
     /**
      *
      * @return transform the Search object into a BSON Object.
+     * 
+     * Linked datas are only pointed by their hash
      */
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
 
         BasicBSONList bsonLinkedData = new BasicBSONList();
-        for (int i = 0; i < linkedData.size(); ++i) {
-            bsonLinkedData.put(i, linkedData.get(i).getHash().toString());
+        int i=0;
+        for (Iterator<Entry<MetHash, Data>> it = linkedData.entrySet().iterator(); it.hasNext();i++) {
+            Data data = it.next().getValue();
+            bsonLinkedData.put(i, data.getHash().toString());
         }
         bsonObject.put("linkedData", bsonLinkedData);
  
-        bsonObject.put("source", this.source.getHash().toString());
+        bsonObject.put("source",   this.source.getHash().toString());
         bsonObject.put("metaData", this.metaData.getHash().toString());
         return bsonObject;
     }
@@ -197,8 +210,9 @@ public class Search extends Searchable {
 
         //write every data's hash
         fragment.put("_nbLinkedData", (linkedData.size() + "").getBytes());
-        for (int i = 0; i < linkedData.size(); i++) {
-            Data data = linkedData.get(i);
+        int i=0;
+        for (Iterator<Entry<MetHash, Data>> it = linkedData.entrySet().iterator(); it.hasNext();i++) {
+            Data data = it.next().getValue();
             fragment.put("_i" + i + "_data", data.getHash().toByteArray());
         }
  

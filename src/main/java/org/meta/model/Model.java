@@ -344,7 +344,7 @@ public class Model {
             Data toAdd = (Data) load(hash.toByteArray());
             linkedData.add(toAdd);
         }
-        search.setLinkedData(linkedData);
+        search.addLinkedData(linkedData);
     }
 
     /**

@@ -66,7 +66,7 @@ public class ModelFactory {
          search.setSource(source);
          search.setMetaData(metaData);
          if(datas != null)
-             search.setLinkedData(datas);
+             search.addLinkedData(datas);
          return search;
     }
 

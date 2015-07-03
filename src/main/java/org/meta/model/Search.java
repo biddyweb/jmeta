@@ -1,6 +1,8 @@
 package org.meta.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,9 +77,9 @@ import org.meta.common.MetamphetUtils;
  */
 public class Search extends Searchable {
 
-    private Searchable   source      = null;
-    private MetaData     metaData    = null;
-    private List<Data>   linkedData  = null;
+    private Searchable                  source      = null;
+    private MetaData                    metaData    = null;
+    private HashMap<MetHash, Data>      linkedData  = null;
     //Represent the state after network receiving
     private List<String> tmpLinkedData  = null;
     private String       tmpSourceHash  = null;
@@ -85,28 +87,8 @@ public class Search extends Searchable {
 
     protected Search() {
         super();
-        linkedData    = new ArrayList<Data>();
+        linkedData    = new HashMap<MetHash, Data>();
         tmpLinkedData = new ArrayList<String>();
-    }
-
-    /**
-     * Create a new Searchable object -> use in case of creation
-     *
-     * @param hash       this search hash
-     * @param source     search's source
-     * @param metaData   search's metaData
-     * @param linkedData search's results
-     */
-    protected Search(
-            MetHash     hash,
-            Searchable  source,
-            List<Data>  linkedData,
-            MetaData    metaData
-    ) {
-        super(hash);
-        this.setSource(source);
-        this.setMetaData(metaData);
-        this.setLinkedData(linkedData);
     }
 
     /**
@@ -121,8 +103,8 @@ public class Search extends Searchable {
      *
      * @return the list of every data linked to this metaData
      */
-    public List<Data> getLinkedData() {
-        return linkedData;
+    public Collection<Data> getLinkedData() {
+        return linkedData.values();
     }
 
     /**
@@ -131,8 +113,20 @@ public class Search extends Searchable {
      *
      * @param linkedData
      */
-    public void setLinkedData(List<Data> linkedData) {
-        this.linkedData = linkedData;
+    public void addLinkedData(List<Data> linkedData) {
+        for(Data d : linkedData)
+            this.linkedData.put(d.getHash(), d);
+        this.updateState();
+    }
+    
+    /**
+     * set a linked Data
+     * @param data the linked data to set
+     * 
+     * if share same hash than another, will be overriding
+     */
+    public void setALinkedData(Data data){
+        this.linkedData.put(data.getHash(), data);
         this.updateState();
     }
 
@@ -246,10 +240,6 @@ public class Search extends Searchable {
         return tmpLinkedData;
     }
 
-    public void set(ArrayList<Data> linked) {
-        this.linkedData = linked;
-    }
-
     public String getTmpSourceHash() {
         return tmpSourceHash;
     }
@@ -268,11 +258,11 @@ public class Search extends Searchable {
         searchClone.setMetaData((MetaData) metaData.toOnlyTextData());
 
         ArrayList<Data> linkedDataClone = new ArrayList<Data>();
-        for (Iterator<Data> i = linkedData.iterator(); i.hasNext();) {
+        for (Iterator<Data> i = linkedData.values().iterator(); i.hasNext();) {
             Data data = i.next();
             linkedDataClone.add((Data) data.toOnlyTextData());
         }
-        searchClone.setLinkedData(linkedDataClone);
+        searchClone.addLinkedData(linkedDataClone);
         return searchClone;
     }
     
@@ -285,6 +275,6 @@ public class Search extends Searchable {
     protected void set(Searchable source, MetaData metaData, ArrayList<Data> linked) {
         this.source = source;
         this.metaData =  metaData;
-        this.linkedData = linked;
+        addLinkedData(linked);
     }
 }

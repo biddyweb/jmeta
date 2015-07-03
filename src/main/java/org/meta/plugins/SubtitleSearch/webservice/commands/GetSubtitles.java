@@ -7,8 +7,6 @@ import java.util.TreeSet;
 
 import org.meta.common.MetHash;
 import org.meta.dht.DHTOperation;
-import org.meta.dht.MetaDHT;
-import org.meta.dht.OperationListener;
 import org.meta.model.DataFile;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
@@ -126,56 +124,15 @@ public class GetSubtitles extends AbstractWebService{
                  * In this case, it means adding a new subtitle in the dataBase
                  */
                 if(subtitleSearch != null){
-                    subtitleSearch.getLinkedData().add(subtitle);
-                    successTextOutput.append("serving now "+
-                                             subtitle.getFile().getName()
-                                             +" on DHT");
-                    //Save the search in DB
-                    super.controler.getModel().set(subtitleSearch);
-
-                    /*
-                     * Now, avert everyone that you've got a search with answers
-                     */
-                    MetaDHT.getInstance().store(subtitleSearch.
-                            getHash()).addListener(
-                            new OperationListener<DHTOperation>() {
-
-                        @Override
-                        public void failed(DHTOperation operation) {
-                            errorTextOutput.append("fail to push search"+
-                                            operation.getFailureMessage());
-                        }
-
-                        @Override
-                        public void complete(DHTOperation operation) {
-                            successTextOutput.append("succes to push search");
-                        }
-                    });
+                    subtitleSearch = super.updateSearch(subtitleSearch, subtitle);
+                    //TODO megeDataDescriptions
+                    super.saveAndPush(subtitleSearch);
                 }else{
-                    /*
-                     * If there was just an only shot request, just store
-                     * the received data
-                     */
-                    super.controler.getModel().set(subtitle);
+                    subtitle = (DataFile) super.updateResult(subtitle);
+                    //TODO merge Data description
+                    super.onlySave(subtitle);
                 }
-                /*
-                 * In all the cases, tell everyone that you have a DataFile to
-                 * give.
-                 */
-                MetaDHT.getInstance().store(subtitle. getHash()).addListener(
-                        new OperationListener<DHTOperation>() {
-
-                    @Override
-                    public void failed(DHTOperation operation) {
-                        errorTextOutput.append("fail to push subtitle"+
-                                        operation.getFailureMessage());
-                    }
-
-                    @Override
-                    public void complete(DHTOperation operation) {
-                        successTextOutput.append("succes to push subtitle");
-                    }
-                });
+                super.onlyPush(subtitle);
             }
         }
     }
@@ -183,5 +140,13 @@ public class GetSubtitles extends AbstractWebService{
     @Override
     public void callbackFailure(String failureMessage) {
         errorTextOutput.append(failure);
+    }
+    @Override
+    protected void callbackFailedToPush(DHTOperation operation, Searchable s) {
+        errorTextOutput.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
+    }
+    @Override
+    protected void callbackSuccessToPush(DHTOperation operation, Searchable s) {
+        successTextOutput.append("Success to push "+s.getHash());
     }
 }

@@ -2,14 +2,10 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
 import org.meta.dht.DHTOperation;
-import org.meta.dht.MetaDHT;
-import org.meta.dht.OperationListener;
-import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
@@ -82,59 +78,42 @@ public class AddSubtitle extends AbstractWebService{
         }
     }
 
+    /**
+     * Process DataFile creation for source and result.
+     * Process Search creation.
+     * 
+     *  
+     *  process a save action to the search
+     *  process a DHT push on the search
+     *  process a push action on the content
+     *  
+     * @param fResult
+     * @param fSource
+     * @param description
+     */
     private void processCreation(File fResult, File fSource, String description){
-        DataFile res = factory.createDataFile(fResult);
-        if(description != null){
-            ArrayList<MetaProperty> properties  = new ArrayList<MetaProperty>();
-            properties.add(new MetaProperty("description", description));
-            res.setDescription(properties);
-        }
-        List<Data> lst = new ArrayList<Data>();
-        lst.add(res);
-
+        //Create the empty search 
         TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
         properties.add(new MetaProperty("st", "fr"));
 
         MetaData metaData = factory.createMetaData(properties);
         DataFile src = factory.createDataFile(fSource);
 
-        Search hashM = factory.createSearch(src, metaData, lst);
-        logger.info("put hash : "+hashM.getHash().toString());
+        Search newSearch = factory.createSearch(src, metaData, null);
 
-        //write into dataBase
-        //and store it to the DHT
-        this.controler.getModel().set(hashM);
-
-        //store search into DHT 
-        MetaDHT.getInstance().store(hashM.getHash()).addListener(
-                new OperationListener<DHTOperation>() {
-
-            @Override
-            public void failed(DHTOperation operation) {
-                output.append("fail to push search");
-            }
-
-            @Override
-            public void complete(DHTOperation operation) {
-                output.append("succes to push search");
-            }
+        DataFile newResult = factory.createDataFile(fResult);
         
-        });
-
-        //store result into DHT 
-        MetaDHT.getInstance().store(res.getHash()).addListener(
-                new OperationListener<DHTOperation>() {
-
-            @Override
-            public void failed(DHTOperation operation) {
-                output.append("fail to push res");
-            }
-
-            @Override
-            public void complete(DHTOperation operation) {
-                output.append("succes to push res");
-            }
-        });
+        newSearch = super.updateSearch(newSearch, newResult);
+        /*
+         * Update description of newResult, at this point if newResult may have
+         * changed is reference
+         */
+        if(description != null){
+            ArrayList<MetaProperty> descriptions  = newResult.getDescription();
+            descriptions.add(new MetaProperty("description", description));
+        }
+        super.saveAndPush(newSearch);
+        super.onlyPush(newResult);
     }
 
     @Override
@@ -143,4 +122,13 @@ public class AddSubtitle extends AbstractWebService{
     public void callbackSuccess(ArrayList<Searchable> results) {}
     @Override
     public void callbackFailure(String failureMessage) {}
+    
+    @Override
+    protected void callbackFailedToPush(DHTOperation operation, Searchable s) {
+        output.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
+    }
+    @Override
+    protected void callbackSuccessToPush(DHTOperation operation, Searchable s) {
+        output.append("Success to push "+s.getHash());
+    }
 }

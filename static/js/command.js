@@ -14,25 +14,28 @@ var Command = function (commandName, plugin, div){
     this.data          = null;
     this.previousData  = null;
 }
-Command.prototype.commandName  = null;
-Command.prototype.plugin       = null;
-Command.prototype.div          = null;
-Command.prototype.processHtml  = null;
-Command.prototype.toCommand    = null;
-Command.prototype.timer        = null;
-Command.prototype.previousData = null;
+Command.prototype.commandName           = null;
+Command.prototype.plugin                = null;
+Command.prototype.div                   = null;
+Command.prototype.processHtml           = null;
+Command.prototype.toCommand             = null;
+Command.prototype.timer                 = null;
+Command.prototype.previousData          = null;
+Command.prototype.executeTimerCallback  = null;
 
 /**
  * strat a timer to retrieve regular updates on the server (every
  * 500 harcoded ms)
  */
 Command.prototype.startRetrievingUpdate = function(){
+    this.executeTimerCallback = true;
     this.timer = window.setInterval(this.retrieveUpdate.bind(this),  500);
 }
 /**
  * stop the current timer
  */
 Command.prototype.stopTimer = function(){
+    this.executeTimerCallback = false;
     window.clearInterval(this.timer);
 }
 
@@ -41,6 +44,7 @@ Command.prototype.stopTimer = function(){
  * do something with it
  */
 Command.prototype.fetchInterface = function(){
+    console.log("-> Command : "+this.commandName+" fetchInterface");
     this.previousData = null;
     var pluginsNames =
         $.getJSON('interface/'+this.plugin.pluginName+'/'+this.commandName)
@@ -49,22 +53,26 @@ Command.prototype.fetchInterface = function(){
                this.div.html("");
                this.div.append(data["responseText"]);
            }.bind(this));
+    console.log("<- Command : "+this.commandName+" fetchInterface");
 }
 /**
  * launch a retrieveupdate (called by the timer) to get the last state of the
  * severside command
  */
 Command.prototype.retrieveUpdate = function(){
-    //get the main form parameters
-    var parameter = $("#formCommand").serialize();
-    var pluginsNames =
-        $.getJSON('retrieveUpdate/'+this.plugin.pluginName+'/'+this.commandName+
-                '?'+parameter)
-           .done(this.handleJsonResponse.bind(this, false))
-           .fail(function(data) {
-               this.div.html("");
-               this.div.append(data["responseText"]);
-           }.bind(this));
+    console.log("-> Command :"+this.commandName+" retrieveUpdate");
+    if(this.executeTimerCallback){
+        //get the main form parameters
+        var parameter = $("#formCommand").serialize();
+        var pluginsNames =
+            $.getJSON('retrieveUpdate/'+this.plugin.pluginName+'/'+this.commandName+
+                    '?'+parameter)
+               .done(this.handleJsonResponse.bind(this, false))
+               .fail(function(data) {
+                   this.div.html("");
+                   this.div.append(data["responseText"]);
+               }.bind(this));
+    }
 }
 
 /**
@@ -73,6 +81,7 @@ Command.prototype.retrieveUpdate = function(){
  * @param data        data to parse to draw the interface
  */
 Command.prototype.handleJsonResponse = function(launchTimer, data){
+    console.log("-> Command :"+this.commandName+" -> handleJsonResponse");
     //add a form to the main div
     this.processHtml = $("<form id='formCommand'></form>");
     //bind is submit to a custom proper submit function
@@ -103,6 +112,7 @@ Command.prototype.handleJsonResponse = function(launchTimer, data){
  * flush the div html output and drawn processHtml in it
  */
 Command.prototype.firstDraw = function(){
+    console.log("-> Command :"+this.commandName+" firstDraw");
     this.div.html("");
     this.div.append(this.processHtml);
 }
@@ -111,6 +121,7 @@ Command.prototype.firstDraw = function(){
  * fetch the standard command interface and make a life cycle
  */
 Command.prototype.process = function(){
+    console.log("-> Command :"+this.commandName+" process");
     this.previousData == null;
     this.fetchInterface();
 }
@@ -121,6 +132,7 @@ Command.prototype.process = function(){
  * @param colsm         width (in a bootstrap way) of that stuff
  */
 Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
+    console.log("-> Command :"+this.commandName+" decodeJsonToHtml");
     //for style purposes add a div form group
     var divGroup = $("<div class='form-group col-sm col-sm-"+colsm+"'>");
     parentHtml.append(divGroup);
@@ -306,6 +318,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
  * execute the form on the right command
  */
 Command.prototype.submit = function (e){
+    console.log("-> Command :"+this.commandName+" submit");
     this.previousData = null;
     e.preventDefault();
     //if another destination, terminate instance on server
@@ -335,6 +348,7 @@ Command.prototype.submit = function (e){
  * and uptade only needed dom element
  */
 Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
+    console.log("-> Command :"+this.commandName+" updateHtml");
     //try to get html element with an equal id than new data
     var elementToUpdate = $("#"+data["id"]);
     //if this element does not exist, create
@@ -457,6 +471,7 @@ Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
     }
 }
 Command.prototype.getOtherChild = function(id, childrenSet){
+    console.log("-> Command :"+this.commandName+" getOtherChild");
     var found = null;
     for(var i=0; i<childrenSet.length; i++){
         var child   = childrenSet[i];

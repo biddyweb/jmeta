@@ -18,6 +18,7 @@ Plugin.prototype.objCommandlst  = null;
  * call the web service to get the command list
  */
 Plugin.prototype.fetchCommands = function(){
+    console.log("-> Plugin :"+this.pluginName+" fetchCommands");
      var pluginsNames = $.getJSON('interface/'+this.pluginName)
             .done(this.handleJsonResponse.bind(this))
             //in case of failure append an invisble message TODO
@@ -31,6 +32,7 @@ Plugin.prototype.fetchCommands = function(){
  * @param data json response
  */
 Plugin.prototype.handleJsonResponse = function(data){
+    console.log("-> Plugin :"+this.pluginName+" handleJsonResponse");
     //For each data parse it
     $.each( data,  this.handleJsonFragmentResponse.bind(this));
 }
@@ -42,6 +44,7 @@ Plugin.prototype.handleJsonResponse = function(data){
  * @param item a json data object
  */
 Plugin.prototype.handleJsonFragmentResponse = function(i, item){
+    console.log("-> Plugin :"+this.pluginName+" handleJsonFragmentResponse");
     var command = item;
     this.commandList.push(command);
 }
@@ -50,6 +53,7 @@ Plugin.prototype.handleJsonFragmentResponse = function(i, item){
  * @param div, a jquery div item already append somewhere in the dom
  */
 Plugin.prototype.loadInto = function(div){
+    console.log("-> Plugin :"+this.pluginName+" loadInto");
     //append in H2 the plugin name
     div.append("<h2>"+this.pluginName+"</h2>");
     //add a navBar for all the commands
@@ -88,6 +92,7 @@ Plugin.prototype.loadInto = function(div){
  * @param e a click event
  */
 Plugin.prototype.displayCommand = function(command, e){
+    console.log("-> Plugin :"+this.pluginName+" displayCommand");
     this.switchTo(command);
     command.process();
 }
@@ -99,6 +104,7 @@ Plugin.prototype.displayCommand = function(command, e){
  * @param data json response
  */
 Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
+    console.log("-> Plugin :"+this.pluginName+" handleCommandJsonResponse");
     //destination command is pointed by strCommand
     var objCommand = this.objCommandlst[strCommand];
     //make the switch and let the command handle his response
@@ -112,6 +118,7 @@ Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
  * @param command a command objet
  */
 Plugin.prototype.switchTo = function(command){
+    console.log("-> Plugin :"+this.pluginName+" switchTo");
     this.killAllCommandsTimer();
     $("li.navcommand").each(function(i, item){$(item).removeClass("active")});
     $("#"+command.commandName).toggleClass("active");
@@ -120,6 +127,7 @@ Plugin.prototype.switchTo = function(command){
  * kill all the running timers
  */
 Plugin.prototype.killAllCommandsTimer = function(){
+    console.log("-> Plugin :"+this.pluginName+" killAllCommandsTimer");
     //kill al commands timer
     for(var i=0; i<this.commandList.length; i++){
         var command = this.objCommandlst[this.commandList[i]];

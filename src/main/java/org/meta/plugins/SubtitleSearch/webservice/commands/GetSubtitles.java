@@ -123,13 +123,11 @@ public class GetSubtitles extends AbstractWebService{
                  * We need to change the search value in DB
                  * In this case, it means adding a new subtitle in the dataBase
                  */
+                subtitle = (DataFile) super.updateResult(subtitle);
                 if(subtitleSearch != null){
                     subtitleSearch = super.updateSearch(subtitleSearch, subtitle);
-                    //TODO megeDataDescriptions
                     super.saveAndPush(subtitleSearch);
                 }else{
-                    subtitle = (DataFile) super.updateResult(subtitle);
-                    //TODO merge Data description
                     super.onlySave(subtitle);
                 }
                 super.onlyPush(subtitle);

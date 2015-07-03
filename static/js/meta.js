@@ -92,10 +92,11 @@ MetaJs.prototype.rebindLinkClicks = function(){
 MetaJs.prototype.loadPlugin = function(plugin, e){
     console.log("-> loadPlugin");
     e.preventDefault();
-    //in case of plugin change, kill all the timers
+    //Destroy current command of the plugin
     for(var i=0; i<this.pluginList.length; i++)
-        if(this.pluginList[i] !== undefined)
-            this.pluginList[i].killAllCommandsTimer();
+        if(this.pluginList[i] !== undefined){
+            this.pluginList[i].destroyCurrent();
+        }
     var main = $("#main");
     //flush zone
     main.html("");

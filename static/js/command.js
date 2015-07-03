@@ -40,6 +40,31 @@ Command.prototype.stopTimer = function(){
 }
 
 /**
+ * Destroy the current command by stop timer and put all the attributes
+ * to void, and all prototype to new function
+ */
+Command.prototype.destroy = function(){
+    this.stopTimer();
+    this.commandName           = null;
+    this.plugin                = null;
+    this.div                   = null;
+    this.processHtml           = null;
+    this.toCommand             = null;
+    this.timer                 = null;
+    this.previousData          = null;
+    this.executeTimerCallback  = null;
+    this.fetchInterface        = function(){}
+    this.retrieveUpdate        = function(){}
+    this.handleJsonResponse    = function(){}
+    this.firstDraw             = function(){}
+    this.process               = function(){}
+    this.decodeJsonToHtml      = function(){}
+    this.submit                = function(){}
+    this.updateHtml            = function(){}
+    this.getOtherChild         = function(){}
+}
+
+/**
  * fetch the standard interface as JSON and execute a handleJsonResponse to
  * do something with it
  */

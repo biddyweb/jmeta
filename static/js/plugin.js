@@ -6,13 +6,15 @@
 var Plugin = function (pluginName){
     this.pluginName   = pluginName;
     this.commandList  = new Array(0);
-    this.objCommandlst= {};
+    this.currentCmd   = null;
+    this.divDisplay   = null;
     //get plugin list
     this.fetchCommands();
 }
 Plugin.prototype.commandList    = null;
 Plugin.prototype.pluginName     = null;
-Plugin.prototype.objCommandlst  = null;
+Plugin.prototype.currentCmd     = null;
+Plugin.prototype.divDisplay     = null;
 
 /**
  * call the web service to get the command list
@@ -46,6 +48,7 @@ Plugin.prototype.handleJsonResponse = function(data){
 Plugin.prototype.handleJsonFragmentResponse = function(i, item){
     console.log("-> Plugin :"+this.pluginName+" handleJsonFragmentResponse");
     var command = item;
+    //Construct command list as String list
     this.commandList.push(command);
 }
 /**
@@ -60,8 +63,8 @@ Plugin.prototype.loadInto = function(div){
     var divNavigation = $("<ul id='navBarCommands' class='nav nav-tabs'></ul>");
     div.append(divNavigation);
     //add a div to display the commands content
-    var divDisplay    =  $("<div class='container-fluid' style='clear:both'></div>");
-    div.append(divDisplay);
+    this.divDisplay    =  $("<div class='container-fluid' style='clear:both'></div>");
+    div.append(this.divDisplay);
     //for each commands, create one and display the first one
     for(var i=0; i<this.commandList.length;i++){
         //get command name from command name list
@@ -74,12 +77,8 @@ Plugin.prototype.loadInto = function(div){
                 + command
                 + '</a></li>');
         liRole.append(linkCom);
-        //create a new Command object
-        var objCommand = new Command(command, this, divDisplay);
-        //add this objet to the object command list (for reusing purposes)
-        this.objCommandlst[command] = objCommand;
-        //bind a click event to draw the command 
-        linkCom.click(this.displayCommand.bind(this, objCommand));
+        //attach displayCommand to the new link, giving it command name
+        linkCom.click(this.displayCommand.bind(this, command));
         //for the first element, lets draw it
         if(i==0)
             linkCom.click();
@@ -91,10 +90,10 @@ Plugin.prototype.loadInto = function(div){
  * @param command a command object
  * @param e a click event
  */
-Plugin.prototype.displayCommand = function(command, e){
+Plugin.prototype.displayCommand = function(commandName, e){
     console.log("-> Plugin :"+this.pluginName+" displayCommand");
-    this.switchTo(command);
-    command.process();
+    this.switchTo(commandName);
+    this.currentCmd.process();
 }
 /**
  * when a command need to make a request it ask to his parent plugin to 
@@ -105,11 +104,9 @@ Plugin.prototype.displayCommand = function(command, e){
  */
 Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
     console.log("-> Plugin :"+this.pluginName+" handleCommandJsonResponse");
-    //destination command is pointed by strCommand
-    var objCommand = this.objCommandlst[strCommand];
     //make the switch and let the command handle his response
-    this.switchTo(objCommand);
-    objCommand.handleJsonResponse(true, data);
+    this.switchTo(strCommand);
+    this.currentCmd.handleJsonResponse(true, data);
 }
 /**
  * kill all the timers running (1 if it's in a non buggy state)
@@ -117,21 +114,27 @@ Plugin.prototype.handleCommandJsonResponse = function(strCommand, data){
  * add an active class to the current command
  * @param command a command objet
  */
-Plugin.prototype.switchTo = function(command){
+Plugin.prototype.switchTo = function(commandName){
     console.log("-> Plugin :"+this.pluginName+" switchTo");
-    this.killAllCommandsTimer();
+    //if currentCmd.commandName != commandName
+    //then destroy precedent command and create the new one
+    //if currentCmd is null, just create the new one
+    var currCmdName  = this.currentCmd != null ? this.currentCmd.commandName : "";
+    if(currCmdName != commandName){
+        //if current command != null, destroy it
+        this.destroyCurrent();
+        this.currentCmd = new Command(commandName, this,this.divDisplay);
+    }
+
     $("li.navcommand").each(function(i, item){$(item).removeClass("active")});
-    $("#"+command.commandName).toggleClass("active");
+    $("#"+this.currentCmd.commandName).toggleClass("active");
 }
+
 /**
- * kill all the running timers
+ * If exsist, detroy the current command
  */
-Plugin.prototype.killAllCommandsTimer = function(){
-    console.log("-> Plugin :"+this.pluginName+" killAllCommandsTimer");
-    //kill al commands timer
-    for(var i=0; i<this.commandList.length; i++){
-        var command = this.objCommandlst[this.commandList[i]];
-        if(command !== undefined)
-            command.stopTimer();
+Plugin.prototype.destroyCurrent = function(){
+    if(this.currentCmd != null){
+        this.currentCmd.destroy();
     }
 }

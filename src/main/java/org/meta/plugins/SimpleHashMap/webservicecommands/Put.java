@@ -1,6 +1,7 @@
 package org.meta.plugins.SimpleHashMap.webservicecommands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class Put extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                List<Data> linkDatas =    search.getLinkedData();
+                Collection<Data> linkDatas =    search.getLinkedData();
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     if(data instanceof DataString)

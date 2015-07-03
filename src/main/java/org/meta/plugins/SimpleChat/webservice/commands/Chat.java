@@ -2,6 +2,7 @@ package org.meta.plugins.SimpleChat.webservice.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -134,7 +135,7 @@ public class Chat extends AbstractWebService{
             
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                List<Data> linkDatas =    search.getLinkedData();
+                Collection<Data> linkDatas =    search.getLinkedData();
                 
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();

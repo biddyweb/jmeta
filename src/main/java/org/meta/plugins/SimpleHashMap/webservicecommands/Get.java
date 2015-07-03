@@ -1,6 +1,7 @@
 package org.meta.plugins.SimpleHashMap.webservicecommands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class Get extends AbstractWebService{
             Search localResult =
                     (Search) controler.getModel().get(contentSearch.getHash());
             if(localResult != null){
-                List<Data> localDatas = localResult.getLinkedData();
+                Collection<Data> localDatas = localResult.getLinkedData();
                 for(Data d : localDatas)
                     if(d instanceof DataString)
                         localResults.add((DataString) d);
@@ -94,7 +95,7 @@ public class Get extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search   search   = (Search) searchable;
-                List<Data> linkDatas =    search.getLinkedData();
+                Collection<Data> linkDatas =    search.getLinkedData();
                 for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
                     Data data = (Data) k.next();
                     if(data instanceof DataString)

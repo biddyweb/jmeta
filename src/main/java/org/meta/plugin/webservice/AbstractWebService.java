@@ -1,7 +1,7 @@
 package org.meta.plugin.webservice;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
@@ -10,6 +10,7 @@ import org.meta.dht.DHTOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.OperationListener;
 import org.meta.model.Data;
+import org.meta.model.MetaProperty;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
 import org.meta.plugin.AbstractPluginTCPControler;
@@ -192,12 +193,16 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
         if(searchDB != null){
             newSearch = searchDB;
         }
+        newSearch.setALinkedData(newResult);
         return newSearch;
     }
     
     /**
      * Look if the content already exist in the DB, and update the reference
      * in this case.
+     * 
+     * Auto merge the Data description objects
+     * 
      * @param newResult newResultToUpdate
      */
     protected Data updateResult(Data newResult) {
@@ -207,10 +212,27 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
                                         .getDataFile(newResult.getHash());
         //if result exist in the DB, just adjust newResult reference
         //to point to it
+        
+        //get new description
+        ArrayList<MetaProperty> newDescription = newResult.getDescription();
+        
         if(resultDB != null)
             newResult = resultDB;
         
-        //TODO auto merge metaProperties
+        //get db description
+        ArrayList<MetaProperty> mergeDescription = newResult.getDescription();
+        
+        //for each description of the new one
+        for(MetaProperty desc : newDescription){
+            boolean alreadyExist = false;
+            for(Iterator<MetaProperty> i = mergeDescription.iterator(); !alreadyExist && i.hasNext();){
+                alreadyExist = desc.compareTo(i.next()) == 0;
+            }
+            //if do not exists, add it
+            if(!alreadyExist)
+                mergeDescription.add(desc);
+        }
+        newResult.setDescription(mergeDescription);
         
         return newResult;
     }

@@ -1,9 +1,17 @@
 package org.meta.plugin.webservice;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
+import org.meta.dht.DHTOperation;
+import org.meta.dht.MetaDHT;
+import org.meta.dht.OperationListener;
+import org.meta.model.Data;
+import org.meta.model.Search;
+import org.meta.model.Searchable;
 import org.meta.plugin.AbstractPluginTCPControler;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
@@ -163,4 +171,116 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
             parameter = parameters[0];
         return parameter;
     }
+    
+    /**
+     * Update a search with the new result
+     * 
+     * Will check in DB if the Data are already here, in these case, it 
+     * will not override the data, but just apply changes.
+     * 
+     * In case of an existing search.
+     * - we assume that the source already exist
+     * - check if the result exist
+     * - if result exit, 
+     *      - update the object by overriding it in the result list
+     * - else
+     *      - add the result to the result list
+     *      
+     * In this case, try to
+     * @param newSearch
+     * @param newResult
+     * @return 
+     */
+    protected Search updateSearch(Search newSearch, Data newResult) {
+        //try to get the same from model
+        Search searchDB = controler.getModel().getSearch(newSearch.getHash());
+        if(searchDB != null){
+            newSearch = searchDB;
+        }
+
+        List<Data> results = newSearch.getLinkedData();
+        
+        newResult = updateResult(newResult);
+        
+        //Check if the results list of search contain newResult, if not
+        //add it to results.
+        if(!containing(results, newResult))
+            results.add(newResult);
+        
+        return newSearch;
+    }
+    
+    /**
+     * Test if a List<Data> is containing a Data (equlas by hash)
+     * @param results   Data list   
+     * @param newResult result to search into
+     * @return
+     */
+    private boolean containing(List<Data> results, Data newResult) {
+        boolean containing = false;
+        for(Iterator<Data> i = results.iterator(); i.hasNext() && !containing;)
+            containing = i.next().getHash().equals(newResult.getHash());
+        return containing;
+    }
+
+    /**
+     * Look if the content already exist in the DB, and update the reference
+     * in this case.
+     * @param newResult newResultToUpdate
+     */
+    protected Data updateResult(Data newResult) {
+        //If dbResult was not null, remove it and add the new result instead
+        //try to get it in the DB
+        Data resultDB =controler.getModel()
+                                        .getDataFile(newResult.getHash());
+        //if result exist in the DB, just adjust newResult reference
+        //to point to it
+        if(resultDB != null)
+            newResult = resultDB;
+        return newResult;
+    }
+
+    /**
+     * Save the searchable in the DB and push his hash to the DHT
+     * @param seachable
+     */
+    protected void saveAndPush(Searchable searchable) {
+        //write into dataBase
+        onlySave(searchable);
+        //and store it to the DHT
+        onlyPush(searchable);
+    }
+    
+    /**
+     * Only save the searchable in the db
+     * @param searchable
+     */
+    protected void onlySave(Searchable searchable){
+        this.controler.getModel().set(searchable);
+    }
+    
+    /**
+     * push the hash of the searchable to the DHT
+     * @param searchable
+     */
+    protected void onlyPush(final Searchable searchable) {
+        //store search into DHT 
+        MetaDHT.getInstance().store(searchable.getHash()).addListener(
+                new OperationListener<DHTOperation>() {
+
+            @Override
+            public void failed(DHTOperation operation) {
+                callbackFailedToPush(operation, searchable);
+            }
+
+            @Override
+            public void complete(DHTOperation operation) {
+                callbackSuccessToPush(operation, searchable);
+            }
+        
+        });
+    }
+
+    protected void callbackFailedToPush(DHTOperation operation, Searchable searchable) {}
+    protected void callbackSuccessToPush(DHTOperation operation, Searchable searchable) {}
 }

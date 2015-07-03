@@ -178,14 +178,9 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
      * Will check in DB if the Data are already here, in these case, it 
      * will not override the data, but just apply changes.
      * 
-     * In case of an existing search.
-     * - we assume that the source already exist
-     * - check if the result exist
-     * - if result exit, 
-     *      - update the object by overriding it in the result list
-     * - else
-     *      - add the result to the result list
-     *      
+     * After calling this method newSearch will contain newResult has hi list
+     * of results.
+     * 
      * In this case, try to
      * @param newSearch
      * @param newResult
@@ -197,32 +192,9 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
         if(searchDB != null){
             newSearch = searchDB;
         }
-
-        List<Data> results = newSearch.getLinkedData();
-        
-        newResult = updateResult(newResult);
-        
-        //Check if the results list of search contain newResult, if not
-        //add it to results.
-        if(!containing(results, newResult))
-            results.add(newResult);
-        
         return newSearch;
     }
     
-    /**
-     * Test if a List<Data> is containing a Data (equlas by hash)
-     * @param results   Data list   
-     * @param newResult result to search into
-     * @return
-     */
-    private boolean containing(List<Data> results, Data newResult) {
-        boolean containing = false;
-        for(Iterator<Data> i = results.iterator(); i.hasNext() && !containing;)
-            containing = i.next().getHash().equals(newResult.getHash());
-        return containing;
-    }
-
     /**
      * Look if the content already exist in the DB, and update the reference
      * in this case.
@@ -237,6 +209,9 @@ public abstract class AbstractWebService implements TCPResponseCallbackInteface 
         //to point to it
         if(resultDB != null)
             newResult = resultDB;
+        
+        //TODO auto merge metaProperties
+        
         return newResult;
     }
 

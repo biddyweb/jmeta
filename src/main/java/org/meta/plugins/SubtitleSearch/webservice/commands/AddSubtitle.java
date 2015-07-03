@@ -102,16 +102,13 @@ public class AddSubtitle extends AbstractWebService{
         Search newSearch = factory.createSearch(src, metaData, null);
 
         DataFile newResult = factory.createDataFile(fResult);
+        ArrayList<MetaProperty> d = newResult.getDescription();
+        d.add(new MetaProperty("description", description));
+        newResult.setDescription(d);
         
+        newResult = (DataFile) super.updateResult(newResult);
         newSearch = super.updateSearch(newSearch, newResult);
-        /*
-         * Update description of newResult, at this point if newResult may have
-         * changed is reference
-         */
-        if(description != null){
-            ArrayList<MetaProperty> descriptions  = newResult.getDescription();
-            descriptions.add(new MetaProperty("description", description));
-        }
+        
         super.saveAndPush(newSearch);
         super.onlyPush(newResult);
     }

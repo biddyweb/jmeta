@@ -85,6 +85,8 @@ public class Search extends Searchable {
 
     protected Search() {
         super();
+        linkedData    = new ArrayList<Data>();
+        tmpLinkedData = new ArrayList<String>();
     }
 
     /**

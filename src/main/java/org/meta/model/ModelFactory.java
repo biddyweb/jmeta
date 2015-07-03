@@ -65,7 +65,8 @@ public class ModelFactory {
          Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
          search.setSource(source);
          search.setMetaData(metaData);
-         search.setLinkedData(datas);
+         if(datas != null)
+             search.setLinkedData(datas);
          return search;
     }
 

@@ -105,11 +105,7 @@ public class SearchSubtitles extends AbstractWebService{
     }
 
     @Override
-    public void applySmallUpdate() {
-        initialTextOutput.flush();
-        if(failure != null)
-            initialTextOutput.append(failure);
-    }
+    public void applySmallUpdate() {}
 
     @Override
     public void callbackSuccess(ArrayList<Searchable> results) {

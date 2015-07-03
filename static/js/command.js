@@ -147,7 +147,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
         //wich is the checkboxlist oject id
         case "checkBoxList" :
                  currentHtml =
-                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                         $("<label for='"+ data["id"]+ "' id='"+data["id"]+"'>"+ data["label"]+ "</label>");
                     divGroup.append(currentHtml);
                 var boxes = data["content"];
                 var parentData = data;
@@ -180,7 +180,7 @@ Command.prototype.decodeJsonToHtml = function(data, parentHtml, colsm){
         //wich is the radio list oject id
         case "radioList" :
                  currentHtml =
-                         $("<label for='"+ data["id"]+ "'>"+ data["label"]+ "</label>");
+                         $("<label for='"+ data["id"]+ "' id='"+data["id"]+"'>"+ data["label"]+ "</label>");
                     divGroup.append(currentHtml);
                 var boxes = data["content"];
                 var parentData = data;
@@ -338,8 +338,9 @@ Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
     //try to get html element with an equal id than new data
     var elementToUpdate = $("#"+data["id"]);
     //if this element does not exist, create
-    if(elementToUpdate === undefined)
+    if(document.getElementById(data["id"])==null){
         this.decodeJsonToHtml(data, elementParent, 12);//TODO col-sm
+    }
     //otherwise update him following rules
     else{
         //There is no need to update directly attributes from them
@@ -445,11 +446,8 @@ Command.prototype.updateHtml = function(data, oldData, elementParent, colsm){
         }
         //now we need to loop on the oldData to remove useless child
         if(oldData !== null && oldData !== undefined && oldData["content"] !== undefined){
-            console.log(oldData)
-            console.log(data);
             for(var i=0; i<oldData["content"].length; i++){
                 var child   = oldData["content"][i];
-                console.log(child);
                 if(this.getOtherChild(child["id"], data["content"]) == null){
                     var elementToDelete = $("#"+child["id"]);
                     elementToUpdate.remove();

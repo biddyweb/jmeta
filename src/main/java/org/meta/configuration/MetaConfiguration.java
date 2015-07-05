@@ -21,16 +21,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import org.meta.configuration.exceptions.InvalidConfigurationFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The main configuration class,
- * holding sub-configuration objects per components
+ * The main configuration class, holding sub-configuration objects per
+ * components(amp, webservices, model, dht).
  */
 public class MetaConfiguration {
 
-    private static Logger logger = LoggerFactory.getLogger(MetaConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaConfiguration.class);
 
     /**
      * Default dht config file path.
@@ -48,19 +49,29 @@ public class MetaConfiguration {
     private static final String AMP_CONFIG_PATH = "conf/amp.conf";
 
     /**
-     * The class responsible for the dht configuration
+     * Default Model config file path.
+     */
+    private static final String MODEL_CONFIG_PATH = "conf/model.conf";
+
+    /**
+     * The class responsible for the dht configuration.
      */
     private static DHTConfiguration dhtConfiguration;
 
     /**
-     * The class responsible for the web service configuration
+     * The class responsible for the web service configuration.
      */
     private static WSConfiguration wsConfiguration;
 
     /**
-     * The class responsible for the amp stack configuration
+     * The class responsible for the amp stack configuration.
      */
     private static AMPConfiguration ampConfiguration;
+
+    /**
+     * The class responsible for the model configuration.
+     */
+    private static ModelConfiguration modelConfiguration;
 
     /**
      * Default private constructor
@@ -73,15 +84,23 @@ public class MetaConfiguration {
      *
      * @throws java.io.IOException
      */
-    public static void initConfiguration() throws IOException {
-        Properties dhtProps = createProperties(DHT_CONFIG_PATH);
-        dhtConfiguration = new DHTConfiguration(dhtProps);
+    public static void initConfiguration() throws InvalidConfigurationFileException {
 
-        Properties wsProps = createProperties(WS_CONFIG_PATH);
-        wsConfiguration = new WSConfiguration(wsProps);
+        try {
+            Properties dhtProps = createProperties(DHT_CONFIG_PATH);
+            dhtConfiguration = new DHTConfiguration(dhtProps);
 
-        Properties ampProps = createProperties(AMP_CONFIG_PATH);
-        ampConfiguration = new AMPConfiguration(ampProps);
+            Properties wsProps = createProperties(WS_CONFIG_PATH);
+            wsConfiguration = new WSConfiguration(wsProps);
+
+            Properties ampProps = createProperties(AMP_CONFIG_PATH);
+            ampConfiguration = new AMPConfiguration(ampProps);
+
+            Properties modelProps = createProperties(MODEL_CONFIG_PATH);
+            modelConfiguration = new ModelConfiguration(modelProps);
+        } catch (IOException ex) {
+            throw new InvalidConfigurationFileException(ex);
+        }
     }
 
     /**
@@ -92,41 +111,56 @@ public class MetaConfiguration {
     }
 
     /**
-     * @return The web service configuration object
+     * @return The web service configuration object.
      */
     public static WSConfiguration getWSConfiguration() {
         return wsConfiguration;
     }
 
     /**
-     * @return The amp stack configuration object
+     * @return The amp stack configuration object.
      */
     public static AMPConfiguration getAmpConfiguration() {
         return ampConfiguration;
     }
 
     /**
-     * 
-     * @param dhtConfiguration 
+     * @return The model configuration object.
+     */
+    public static ModelConfiguration getModelConfiguration() {
+        return modelConfiguration;
+    }
+
+    /**
+     *
+     * @param dhtConfiguration
      */
     public static void setDhtConfiguration(DHTConfiguration dhtConfiguration) {
         MetaConfiguration.dhtConfiguration = dhtConfiguration;
     }
 
     /**
-     * 
-     * @param wSConfiguration 
+     *
+     * @param wSConfiguration
      */
     public static void setWSConfiguration(WSConfiguration wSConfiguration) {
         MetaConfiguration.wsConfiguration = wSConfiguration;
     }
 
     /**
-     * 
-     * @param ampConfiguration 
+     *
+     * @param ampConfiguration
      */
     public static void setAmpConfiguration(AMPConfiguration ampConfiguration) {
         MetaConfiguration.ampConfiguration = ampConfiguration;
+    }
+
+    /**
+     * 
+     * @param modelConfiguration 
+     */
+    public static void setModelConfiguration(ModelConfiguration modelConfiguration) {
+        MetaConfiguration.modelConfiguration = modelConfiguration;
     }
 
     /**
@@ -142,5 +176,4 @@ public class MetaConfiguration {
         newProperties.load(fis);
         return newProperties;
     }
-
 }

@@ -1,3 +1,20 @@
+/*
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 JMeta
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.meta.model;
 
 import java.io.File;
@@ -15,39 +32,22 @@ import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
-import org.meta.configuration.MetaProperties;
+import org.meta.configuration.MetaConfiguration;
+import org.meta.configuration.ModelConfiguration;
 import org.meta.model.exceptions.ModelException;
 
-/*
- *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Thomas LAVOCAT
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU Affero General Public License as
- *    published by the Free Software Foundation, either version 3 of the
- *    License, or (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU Affero General Public License for more details.
- *
- *    You should have received a copy of the GNU Affero General Public License
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 /**
- * Model object is a singleton who's used to interact with KyotoDB
  * 
- * @author Nicolas MICHON, Thomas LAVOCAT
+ * Model object is a singleton who's used to interact with KyotoDB.
  *
  */
 public class Model {
 
-    private static final String DEFAULT_DATABASE_FILE = "db/jmeta.kch";
     private static final Logger logger = LoggerFactory.getLogger(Model.class);
 
     private DB kyotoDB;
-    private ModelFactory factory;
+    private final ModelFactory factory;
+    private static Model instance;
 
     /**
      * Instanciate a new model. Init the dataBaseConnection.
@@ -55,17 +55,27 @@ public class Model {
      * @throws org.meta.model.exceptions.ModelException
      */
     public Model() throws ModelException {
-
         initDataBase();
         factory = new ModelFactory();
     }
-    
-    public void closeDb(){
-        finalize();
+
+    /**
+     * Singleton instance getter.
+     *
+     * @return The model Instance.
+     * @throws org.meta.model.exceptions.ModelException
+     */
+    public synchronized static Model getInstance() throws ModelException {
+        if (instance == null) {
+            instance = new Model();
+        }
+        return instance;
     }
 
-    @Override
-    protected void finalize() {
+    /**
+     * Close the model and do some clean-up
+     */
+    public void close() {
         kyotoDB.close();
     }
 
@@ -93,15 +103,16 @@ public class Model {
      *
      * @throws LibraryException
      */
+    @SuppressWarnings("PointlessBitwiseExpression")
     private void initDataBase() throws ModelException {
-        String databaseFile = MetaProperties.getProperty("database_path", DEFAULT_DATABASE_FILE);
+        String databaseFile = MetaConfiguration.getModelConfiguration().getDatabasePath();
         //avoid dummy error, if database file parent does not exist, create one
         File databaseDir = new File(databaseFile).getParentFile();
         if (!databaseDir.isDirectory()) {
             databaseDir.mkdir();
         }
         kyotoDB = new DB();
-        //Open DB with read/write wrights
+        //Open DB with read/write rights
         if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET | DB.OTRYLOCK)) {
             logger.error("Failed to open kyotocabinet database.");
             kyotoError();
@@ -190,8 +201,8 @@ public class Model {
     }
 
     /**
-     * Recursive synchronized method Load.
-     * This method will retrieve an Searchable object from DB.
+     * Recursive synchronized method Load. This method will retrieve an
+     * Searchable object from DB.
      *
      * @param hash
      * @return a searchale object if found or null if not.
@@ -240,8 +251,9 @@ public class Model {
     }
 
     /**
-     * rebuild a DataString from BSON object
-     * call extractData to complete parent operations
+     * rebuild a DataString from BSON object call extractData to complete parent
+     * operations
+     *
      * @param searchable
      */
     private void extractDataString(Searchable searchable, BSONObject bsonObject) {
@@ -251,8 +263,8 @@ public class Model {
     }
 
     /**
-     * rebuild a DataFile from BSON Object
-     * call extractData to complete parent operations
+     * rebuild a DataFile from BSON Object call extractData to complete parent
+     * operations
      *
      * @param searchable
      * @param jsonSearcheable
@@ -264,14 +276,15 @@ public class Model {
         File file = new File(filePath);
         data.setFile(file);
     }
-    
+
     /**
-     * rebuild a Data from BSONObject, 
-     * Data is a abstract class, this method only take care of common description
+     * rebuild a Data from BSONObject, Data is a abstract class, this method
+     * only take care of common description
+     *
      * @param data
      * @param bsonObject
      */
-    private void extractData(Data data, BSONObject bsonObject){
+    private void extractData(Data data, BSONObject bsonObject) {
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("description");
         BSONObject tmp;
         ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
@@ -280,7 +293,7 @@ public class Model {
             MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
             properties.add(toAdd);
         }
-        
+
         data.setDescription(properties);
     }
 
@@ -299,7 +312,7 @@ public class Model {
             InstantiationException,
             IllegalAccessException {
         MetaData metaData = (MetaData) searchable;
-        
+
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("properties");
         BSONObject tmp;
         TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
@@ -308,7 +321,7 @@ public class Model {
             MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
             properties.add(toAdd);
         }
-        
+
         metaData.setProperties(properties);
     }
 
@@ -336,7 +349,7 @@ public class Model {
         //update search
         search.setSource(source);
         search.setMetaData(metaData);
-        
+
         List<Data> linkedData = new ArrayList<Data>();
         BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
         for (String key : bsonLinkedData.keySet()) {
@@ -363,7 +376,8 @@ public class Model {
     }
 
     /**
-     * Start a db transaction 
+     * Start a db transaction
+     *
      * @param startTx
      * @return
      */
@@ -475,11 +489,8 @@ public class Model {
                 status = status && this.set(data, false);
             }
         }
-
-
         return status;
     }
-
 
     /**
      * Delete an object in DB

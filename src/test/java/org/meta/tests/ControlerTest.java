@@ -30,12 +30,6 @@ public class ControlerTest extends MetaBaseTests {
 
     public ControlerTest(){
         try {
-            MetaConfiguration.initConfiguration();
-        } catch (IOException ex) {
-            logger.error("Failed to initialize configuration, exiting.", ex);
-            System.exit(1);
-        }
-        try {
             controler = new Controler();
         } catch (ModelException | IOException | URISyntaxException e1) {
             logger.error(e1.getMessage(), e1);

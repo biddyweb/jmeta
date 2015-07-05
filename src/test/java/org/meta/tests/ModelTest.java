@@ -23,7 +23,7 @@ import org.meta.model.exceptions.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ModelTest {
+public class ModelTest extends MetaBaseTests {
 
     protected static Model model;
     protected static Long startTime;
@@ -31,7 +31,7 @@ public class ModelTest {
     private static final Logger logger = LoggerFactory.getLogger(ModelTest.class);
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpModel() {
         startTime = new Date().getTime();
         try{
             model = new Model();

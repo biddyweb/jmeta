@@ -35,13 +35,13 @@ import org.meta.plugin.webservice.SingletonWebServiceReader;
  */
 /**
  *
- * Initialize JMeta's plugin part.
- * Run TCPreader and Webservice
+ * Initialize JMeta's plugin part. Run TCPreader and Webservice
  *
  * @author Thomas LAVOCAT
  *
  */
 public class Controler {
+
     private Model model = null;
     private String pluginsPropertiesFile = "conf/plugins.prop";
     private SingletonWebServiceReader webServiceReader = null;
@@ -49,13 +49,13 @@ public class Controler {
     private Logger logger = LoggerFactory.getLogger(Controler.class);
 
     /**
-     * Controler constructor.
-     * Start Model, tcpreader, webservice and initialize installed plugins.
-     * 
+     * Controler constructor. Start Model, tcpreader, webservice and initialize
+     * installed plugins.
+     *
      * @throws LibraryException
      * @throws IOException
      * @throws org.meta.model.exceptions.ModelException see @{@link Model}
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public Controler()
             throws IOException,
@@ -67,28 +67,26 @@ public class Controler {
 
         //init SingletonTCPWriter
         SingletonTCPWriter.getInstance().setFactory(model.getFactory());
-        
+
         webServiceReader = SingletonWebServiceReader.getInstance();
         pluginInitialisation();
-        
-        
     }
-    
+
     /**
-     * Clean stop of controler
-     * Call kill methods on tcpReader and WebService reader.
+     * Clean stop of controler Call kill methods on tcpReader and WebService
+     * reader.
      */
     public void stop() {
         tcpReader.kill();
         webServiceReader.kill();
-        this.model.closeDb();
+        this.model.close();
     }
 
     /**
      * Initialize plugins.
-     * 
+     *
      * To install a plugin, refer to the documentation inside conf/plugin.prop
-     * 
+     *
      * TODO add custom class loader
      */
     private void pluginInitialisation() {
@@ -98,7 +96,7 @@ public class Controler {
         //Read plugin properties file, and iterate over it
         Properties pluginsProperties = MetaProperties.get(pluginsPropertiesFile);
         Enumeration<Object> keys = pluginsProperties.keys();
-        
+
         while (keys.hasMoreElements()) {
             //Look for the next plugin name wich is contained in KEY.name: KEY
             String key = ((String) keys.nextElement());
@@ -106,16 +104,16 @@ public class Controler {
                 key = key.replaceAll(".name", "");
                 //plugin founded
                 //retrieve TCP class
-                String strTCPClass = pluginsProperties.getProperty(key+ ".TCPClass");
+                String strTCPClass = pluginsProperties.getProperty(key + ".TCPClass");
                 //retrieve web service class
-                String strWSClass = pluginsProperties.getProperty(key+ ".WSClass");
+                String strWSClass = pluginsProperties.getProperty(key + ".WSClass");
                 /*
                  * Try to load the plugin, fail proof code.
                  */
                 try {
                     //TODO custom class loader ?
-                    Class<?> clazzTCP   = Class.forName(strTCPClass);
-                    Class<?> clazzWS    = Class.forName(strWSClass);
+                    Class<?> clazzTCP = Class.forName(strTCPClass);
+                    Class<?> clazzWS = Class.forName(strWSClass);
                     //load TCPControler
                     AbstractPluginTCPControler tcpControler
                             = (AbstractPluginTCPControler) clazzTCP.newInstance();
@@ -138,7 +136,7 @@ public class Controler {
                     logger.error("The plugin " + key + " is not available", e);
                 } catch (InstantiationException e) {
                     logger.error(
-                            "Error during instanciation of th plugin : " + key, 
+                            "Error during instanciation of th plugin : " + key,
                             e);
                 } catch (IllegalAccessException e) {
                     logger.error(e.getMessage(), e);

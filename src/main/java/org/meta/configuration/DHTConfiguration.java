@@ -27,9 +27,9 @@ import org.meta.common.MetamphetUtils;
 import org.meta.dht.MetaPeer;
 
 /**
- *
+ * 
  * Class holding general configuration entries for the DHT.
- *
+ * 
  */
 public final class DHTConfiguration extends BaseConfiguration {
 
@@ -81,7 +81,7 @@ public final class DHTConfiguration extends BaseConfiguration {
     /**
      * If we broadcast to bootstrap or not.
      */
-    private boolean bootstrapBroadcast = true;
+    private boolean bootstrapBroadcast = false;
 
     /**
      * If we only listen to local peers

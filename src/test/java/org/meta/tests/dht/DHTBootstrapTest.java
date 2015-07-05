@@ -88,14 +88,12 @@ public class DHTBootstrapTest extends BaseDHTTests {
     }
 
     /**
-     * Test the bootstrap process to another peer. Assumes the two nodes are
-     * running.
+     * Test the bootstrap process to another peer.
      */
     @Test
     public void testBootstrapSuccess() {
 
         DHTBootstrapTest.bootstrapDht(dhtNode1, false);
-        //DHTBootstrapTest.bootstrapDht(dhtNode2, true);
 
         BootstrapOperation bootstrapOperation = (BootstrapOperation) dhtNode2.bootstrap().awaitUninterruptibly();
 

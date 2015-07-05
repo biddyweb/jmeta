@@ -20,30 +20,30 @@ package org.meta.configuration;
 import java.util.Properties;
 
 /**
- *
+ * Class holding general configuration entries for the amp stack.
  */
 public final class AMPConfiguration extends BaseConfiguration {
-    
+
     /**
-     * The default size for Sender thread pool
+     * The default size for Sender thread pool.
      */
     public static final int DEFAULT_SENDER_THREAD_POOL_SIZE = 100;
+
     /**
-     * The key for DEFAUL_SEND_THREAD_POOL_SIZE in amp.conf
+     * The key for DEFAUL_SEND_THREAD_POOL_SIZE in amp.conf.
      */
     public static final String SENDER_TH_POOL_KEY = "senderThreadPoolSize";
-    
+
     /**
-     * The default size for Server thread pool
+     * The default size for Server thread pool.
      */
     public static final int DEFAULT_SEVER_THREAD_POOL_SIZE = 100;
-    
+
     /**
-     * The key for DEFAUL_SEVER_THREAD_POOL_SIZE in amp.conf
+     * The key for DEFAUL_SEVER_THREAD_POOL_SIZE in amp.conf.
      */
     public static final String SERVER_TH_POOL_KEY = "serverThreadPoolSize";
-    
-    
+
     /**
      * The default port to listen to AMP messages.
      */
@@ -57,9 +57,10 @@ public final class AMPConfiguration extends BaseConfiguration {
     /**
      * The port the amp stack will listen to.
      */
-    private Short   ampPort = DEFAULT_AMP_PORT;
+    private Short ampPort = DEFAULT_AMP_PORT;
     private Integer senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
     private Integer serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
+
     /**
      * Empty initialization with default values.
      */
@@ -85,11 +86,11 @@ public final class AMPConfiguration extends BaseConfiguration {
             this.ampPort = port;
         }
         Integer senderThPoolSize = this.getInt(SENDER_TH_POOL_KEY);
-        if(senderThPoolSize != null){
+        if (senderThPoolSize != null) {
             this.senderThPoolSize = senderThPoolSize;
         }
         Integer serverThPoolSize = this.getInt(SERVER_TH_POOL_KEY);
-        if(senderThPoolSize != null){
+        if (senderThPoolSize != null) {
             this.serverThPoolSize = serverThPoolSize;
         }
     }

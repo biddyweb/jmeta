@@ -32,7 +32,7 @@ public abstract class BootstrapOperation extends DHTOperation {
     protected Collection<MetaPeer> bootstrapTo;
 
     public BootstrapOperation() {
-        this.bootstrapTo = new ArrayList<MetaPeer>();
+        this.bootstrapTo = new ArrayList<>();
     }
 
     /**

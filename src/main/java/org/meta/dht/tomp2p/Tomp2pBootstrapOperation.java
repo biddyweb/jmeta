@@ -37,9 +37,9 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
     private static final Logger logger = LoggerFactory.getLogger(Tomp2pBootstrapOperation.class);
     private final TomP2pDHT dht;
-    private Collection<MetaPeer> knownPeers;
+    private final Collection<MetaPeer> knownPeers;
     private final boolean broadcast;
-    private final Tomp2pFutureBootstrapListener bootstrapListener;
+    private Tomp2pFutureBootstrapListener bootstrapListener;
 
     /**
      * Create the bootstrap operation with given arguments.
@@ -52,14 +52,17 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         this.dht = dht;
         this.knownPeers = knownPeers;
         this.broadcast = broadcast;
-        if (this.knownPeers == null) {
-            this.knownPeers = new ArrayList<>();
-        }
-        this.bootstrapListener = new Tomp2pFutureBootstrapListener(broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
     }
 
     @Override
     public void start() {
+        if (!broadcast && (knownPeers == null || knownPeers.isEmpty())) {
+            //Finish early as we have no one to bootstrap to...
+            //Later we might want to find peers another way ?
+            this.finish();
+            return;
+        }
+        this.bootstrapListener = new Tomp2pFutureBootstrapListener(broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
         this.setState(OperationState.WAITING);
         PeerAddress localAddr = this.dht.getPeerDHT().peer().peerAddress();
 
@@ -86,18 +89,20 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     }
 
     @Override
-    public void finish() {
-        for (FutureBootstrap bootstrapFuture : this.bootstrapListener.getOperations()) {
-            if (bootstrapFuture.isFailed()) {
-                logger.debug("BootstrapFuture failure : " + bootstrapFuture.failedReason());
-                continue;
-            }
-            for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
-                MetaPeer peer = new MetaPeer();
-                peer.setAddress(addr.inetAddress());
-                peer.setPort((short) addr.udpPort());
-                this.bootstrapTo.add(peer);
-                logger.debug("DHT bootstraped to a peer!" + peer.toString());
+    public final void finish() {
+        if (this.bootstrapListener != null) {
+            for (FutureBootstrap bootstrapFuture : this.bootstrapListener.getOperations()) {
+                if (bootstrapFuture.isFailed()) {
+                    logger.debug("BootstrapFuture failure : " + bootstrapFuture.failedReason());
+                    continue;
+                }
+                for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
+                    MetaPeer peer = new MetaPeer();
+                    peer.setAddress(addr.inetAddress());
+                    peer.setPort((short) addr.udpPort());
+                    this.bootstrapTo.add(peer);
+                    logger.debug("DHT bootstraped to a peer!" + peer.toString());
+                }
             }
         }
         if (this.bootstrapTo.isEmpty()) {
@@ -121,16 +126,11 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
             announceBuilder.port(DHTConfiguration.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
         }
-        if (!broadcast && knownPeers.isEmpty()) {
-            //Finish early as we have no one to bootstrap to...
-            this.finish();
-        } else {
-            for (MetaPeer peer : knownPeers) {
-                //Start the bootstrap operation on 'peer'
-                logger.debug("Starting bootstrap to peer : " +  peer);
-                this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
-                        .start().addListener(this.bootstrapListener);
-            }
+        for (MetaPeer peer : knownPeers) {
+            //Start the bootstrap operation on 'peer'
+            logger.debug("Starting bootstrap to peer : " + peer);
+            this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
+                    .start().addListener(this.bootstrapListener);
         }
     }
 

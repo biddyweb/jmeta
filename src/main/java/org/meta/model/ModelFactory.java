@@ -12,17 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.meta.model.DataFile;
-import org.meta.model.DataString;
-import org.meta.model.MetaData;
-import org.meta.model.ModelType;
-import org.meta.model.Search;
-import org.meta.model.Searchable;
-
 /**
- * This factory allow anyone to interract safely with the model
+ * This factory allow anyone to interact safely with the model
  * 
- * @author nico
  */
 public class ModelFactory {
 

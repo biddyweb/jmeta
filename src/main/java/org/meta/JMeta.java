@@ -23,9 +23,9 @@ import java.net.URISyntaxException;
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.configuration.exceptions.InvalidConfigurationFileException;
 import org.meta.dht.MetaDHT;
-import org.meta.dht.MetaPeer;
-import org.meta.dht.OperationListener;
+import org.meta.dht.exceptions.BootstrapException;
 import org.meta.model.exceptions.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,15 +37,7 @@ public class JMeta {
 
     private static final Logger logger = LoggerFactory.getLogger(JMeta.class);
 
-    public static void main(String[] args) {
-
-        try {
-            MetaConfiguration.initConfiguration();
-        } catch (IOException ex) {
-            logger.error("Failed to initialize configuration, exiting.", ex);
-            System.exit(1);
-        }
-
+    private static void initDht() throws BootstrapException {
         MetaDHT dht = MetaDHT.getInstance();
         dht.setConfiguration(MetaConfiguration.getDHTConfiguration());
 
@@ -57,24 +49,21 @@ public class JMeta {
         }
 
         BootstrapOperation bootstrapOperation = dht.bootstrap();
-        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
-
-            @Override
-            public void failed(BootstrapOperation operation) {
-                logger.error("Bootstrap oeration failed, exiting.");
-                System.exit(1);
-            }
-
-            @Override
-            public void complete(BootstrapOperation operation) {
-                for (MetaPeer peer : operation.getBootstrapTo()) {
-                    logger.debug("Bootstraped to : " + peer);
-                }
-            }
-        });
-
         //Wait for boostraping to finish.
         bootstrapOperation.awaitUninterruptibly();
+        if (bootstrapOperation.isFailure()) {
+            throw new BootstrapException("Bootstrap operation failed");
+        }
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            MetaConfiguration.initConfiguration();
+        } catch (InvalidConfigurationFileException ex) {
+            logger.error("Failed to initialize configuration from files.", ex);
+            System.exit(1);
+        }
 
         try {
             logger.debug("Starting controler");

@@ -57,7 +57,7 @@ public abstract class MetaDHT {
     /**
      * Bootstrap the DHT to find nodes.
      *
-     * @return The asynchronous BootstrapOperation representing the outcome of
+     * @return The asynchronous {@link BootstrapOperation} representing the outcome of
      * the bootstrap.
      */
     public abstract BootstrapOperation bootstrap();
@@ -65,7 +65,7 @@ public abstract class MetaDHT {
     /**
      * @param hash. The hash to find peers for.
      *
-     * @return The asynchronous FindPeersOperation representing the outcome of
+     * @return The asynchronous {@link FindPeersOperation} representing the outcome of
      * the operation.
      */
     public abstract FindPeersOperation findPeers(MetHash hash);
@@ -73,7 +73,7 @@ public abstract class MetaDHT {
     /**
      *
      * @param hash The hash to store on the DHT.
-     * @return The asynchronous StoreOperation representing the outcome of the
+     * @return The asynchronous {@link StoreOperation} representing the outcome of the
      * operation.
      */
     public abstract StoreOperation store(MetHash hash);

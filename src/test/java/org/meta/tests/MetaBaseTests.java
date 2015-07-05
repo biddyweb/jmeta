@@ -28,6 +28,7 @@ import org.junit.BeforeClass;
 import org.meta.configuration.AMPConfiguration;
 import org.meta.configuration.DHTConfiguration;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.configuration.ModelConfiguration;
 import org.meta.configuration.WSConfiguration;
 
 /**
@@ -40,6 +41,7 @@ public abstract class MetaBaseTests {
         MetaConfiguration.setAmpConfiguration(new AMPConfiguration());
         MetaConfiguration.setDhtConfiguration(new DHTConfiguration());
         MetaConfiguration.setWSConfiguration(new WSConfiguration());
+        MetaConfiguration.setModelConfiguration(new ModelConfiguration());
     }
 
     @BeforeClass
@@ -59,26 +61,27 @@ public abstract class MetaBaseTests {
      * @throws SocketException
      */
     public static InetAddress getLocalAddress() throws UnknownHostException, SocketException {
-        InetAddress localAddr = null;
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-
-        for (NetworkInterface netIf : Collections.list(networkInterfaces)) {
-            if (netIf.isUp()) {
-                for (InetAddress ifAddr : Collections.list(netIf.getInetAddresses())) {
-                    if (ifAddr instanceof Inet4Address) {
-                        //We prefer ipv4 for tests...
-                        localAddr = ifAddr;
-                        break;
-                    }
-                }
-                if (localAddr != null) {
-                    break;
-                }
-            }
-        }
-        if (localAddr == null) {
-            localAddr = InetAddress.getByName("localhost");
-        }
-        return localAddr;
+//        InetAddress localAddr = null;
+//        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+//
+//        for (NetworkInterface netIf : Collections.list(networkInterfaces)) {
+//            if (netIf.isUp()) {
+//                for (InetAddress ifAddr : Collections.list(netIf.getInetAddresses())) {
+//                    if (ifAddr instanceof Inet4Address) {
+//                        //We prefer ipv4 for tests...
+//                        localAddr = ifAddr;
+//                        break;
+//                    }
+//                }
+//                if (localAddr != null) {
+//                    break;
+//                }
+//            }
+//        }
+//        if (localAddr == null) {
+//            localAddr = InetAddress.getByName("localhost");
+//        }
+        return InetAddress.getByName("127.0.0.1");
+        //return localAddr;
     }
 }

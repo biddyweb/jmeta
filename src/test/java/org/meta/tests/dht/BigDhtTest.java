@@ -59,7 +59,7 @@ public class BigDhtTest extends BaseDHTTests {
     public void testManyNodesOneHash() throws IOException {
         try {
             short port = 15000;
-            Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, getLocalAddress(), port));
+            Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, InetAddress.getByName("127.0.0.1"), port));
 
             dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, null, false, true));
             dhts[0].start();

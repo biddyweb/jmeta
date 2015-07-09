@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
@@ -21,11 +22,11 @@ import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerBuilder;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AMPAnswerParserTest {
+public class AMPAnswerParserTest extends MetaBaseTests {
 
     private Search search;
     private DataString data2;
@@ -42,7 +43,7 @@ public class AMPAnswerParserTest {
 
     public AMPAnswerParserTest(){
         try {
-            model = new Model();
+            model = new Model(MetaConfiguration.getModelConfiguration());
 
             factory = model.getFactory();
             
@@ -56,7 +57,7 @@ public class AMPAnswerParserTest {
             dataFile.setDescription(description);
 
             // -- Data String
-            dataString = factory.createDataString("Toto va à la plage");
+            dataString = factory.createDataString("Toto va a la plage");
             linkedData = new ArrayList<Data>();
             linkedData.add(dataString);
             dataString.setDescription(description);
@@ -162,7 +163,7 @@ public class AMPAnswerParserTest {
                     }
                 }
             }
-        } catch (NotAValidAMPCommand e) {
+        } catch (InvalidAMPCommand e) {
             logger.error(e.getMessage(), e);
         }
 	}

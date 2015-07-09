@@ -32,11 +32,12 @@ import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.common.MetHash;
-import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.ModelConfiguration;
 import org.meta.model.exceptions.ModelException;
 
 /**
+ *
+ * TODO more description.
  * 
  * Model object is a singleton who's used to interact with KyotoDB.
  *
@@ -45,31 +46,34 @@ public class Model {
 
     private static final Logger logger = LoggerFactory.getLogger(Model.class);
 
+    /**
+     * The kyoto DB object.
+     */
     private DB kyotoDB;
-    private final ModelFactory factory;
-    private static Model instance;
 
     /**
-     * Instanciate a new model. Init the dataBaseConnection.
+     * The model configuration.
+     */
+    private ModelConfiguration configuration;
+
+    /**
+     * 
+     */
+    private final ModelFactory factory;
+
+    /**
+     * Instanciate a new model with the given configuration.
+     * 
+     * Init the dataBase connection.
      *
+     * @param config
+     * 
      * @throws org.meta.model.exceptions.ModelException
      */
-    public Model() throws ModelException {
+    public Model(ModelConfiguration config) throws ModelException {
+        this.configuration = config;
         initDataBase();
         factory = new ModelFactory();
-    }
-
-    /**
-     * Singleton instance getter.
-     *
-     * @return The model Instance.
-     * @throws org.meta.model.exceptions.ModelException
-     */
-    public synchronized static Model getInstance() throws ModelException {
-        if (instance == null) {
-            instance = new Model();
-        }
-        return instance;
     }
 
     /**
@@ -101,11 +105,11 @@ public class Model {
     /**
      * Initialize data base connection.
      *
-     * @throws LibraryException
+     * @throws ModelException
      */
     @SuppressWarnings("PointlessBitwiseExpression")
     private void initDataBase() throws ModelException {
-        String databaseFile = MetaConfiguration.getModelConfiguration().getDatabasePath();
+        String databaseFile = this.configuration.getDatabasePath();
         //avoid dummy error, if database file parent does not exist, create one
         File databaseDir = new File(databaseFile).getParentFile();
         if (!databaseDir.isDirectory()) {

@@ -17,18 +17,13 @@
  */
 package org.meta;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
+import org.meta.common.exceptions.MetaException;
 
-import org.meta.controler.Controler;
-import org.meta.dht.BootstrapOperation;
+import org.meta.controler.MetaController;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.configuration.exceptions.InvalidConfigurationFileException;
-import org.meta.dht.MetaDHT;
-import org.meta.dht.exceptions.BootstrapException;
-import org.meta.model.exceptions.ModelException;
+import org.meta.plugin.PluginLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,49 +34,30 @@ public class JMeta {
 
     private static final Logger logger = LoggerFactory.getLogger(JMeta.class);
 
-    private static void initDht() throws BootstrapException {
-        MetaDHT dht = MetaDHT.getInstance();
-        dht.setConfiguration(MetaConfiguration.getDHTConfiguration());
-
-        try {
-            dht.start();
-        } catch (IOException ex) {
-            logger.error("DHT failed to start, exiting.", ex);
-            System.exit(1);
-        }
-
-        BootstrapOperation bootstrapOperation = dht.bootstrap();
-        //Wait for boostraping to finish.
-        bootstrapOperation.awaitUninterruptibly();
-        if (bootstrapOperation.isFailure()) {
-            throw new BootstrapException("Bootstrap operation failed");
-        }
-    }
-
     public static void main(String[] args) {
 
         try {
+            logger.info("Reading configuration files");
             MetaConfiguration.initConfiguration();
         } catch (InvalidConfigurationFileException | InvalidConfigurationException ex) {
             logger.error("Failed to initialize configuration from files.", ex);
             System.exit(1);
         }
 
-        try {
-            initDht();
-        } catch (BootstrapException ex) {
-            java.util.logging.Logger.getLogger(JMeta.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
-        }
+        logger.info("Starting META");
+
+        MetaController controller = new MetaController();
 
         try {
-            logger.debug("Starting controler");
-            Controler controler = new Controler();
-        } catch (IOException | URISyntaxException ex) {
-            logger.error("Error while starting controler", ex);
-            System.exit(1);
-        } catch (ModelException ex) {
-            logger.error("Failed to start the model", ex);
+            controller.initAndStartAll();
+        } catch (MetaException ex) {
+            logger.error("Failed to start JMeta!", ex);
         }
+
+        logger.info("Loading plugins...");
+        PluginLoader pluginLoader = new PluginLoader(null, controller);
+        pluginLoader.initPlugins();
+
+        logger.info("META started!");
     }
 }

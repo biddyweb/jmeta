@@ -10,22 +10,23 @@ import org.meta.model.MetaData;
 import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
 
 /**
  * Parse an AMP answer
+ *
  * @author faquin
  *
  */
-public class AMPAnswerParser extends AMPParser{
+public class AMPAnswerParser extends AMPParser {
 
     //Do not initialize those variables, because it's made by the mumy
     //in her constructor ;) via the implement method "useContent"
-    private String                   answer        ;
-    private ArrayList<Searchable>    datas         ;
+    private String answer;
+    private ArrayList<Searchable> datas;
 
-    public AMPAnswerParser(byte[] bs, ModelFactory factory) throws NotAValidAMPCommand {
+    public AMPAnswerParser(byte[] bs, ModelFactory factory) throws InvalidAMPCommand {
         super(bs, factory);
     }
 
@@ -39,32 +40,32 @@ public class AMPAnswerParser extends AMPParser{
 
     /**
      * Extract {@link Searchable} from {@link LinkedHashMap}
-     * 
+     *
      * @param content
      * @throws NotAValidAmpAnswerCommand
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    private void extractDatas(LinkedHashMap<String, byte[]> content) throws NotAValidAmpAnswerCommand{
+    private void extractDatas(LinkedHashMap<String, byte[]> content) throws NotAValidAmpAnswerCommand {
         //get the count of datas
         int nbDatas = Integer.parseInt(new String(content.get("_nbDatas")));
         //and remove it
         content.remove("_nbDatas");
 
         //Now, for each datas
-        for(int i=0; i<nbDatas; i++){
+        for (int i = 0; i < nbDatas; i++) {
             //re-create the fragment
             LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<>();
             //extract the next type
-            String type = new String(content.get("_"+i+"_type"));
+            String type = new String(content.get("_" + i + "_type"));
             //add it in the fragment
-            fragment.put("_type", content.get("_"+i+"_type"));
+            fragment.put("_type", content.get("_" + i + "_type"));
             //remove it from the content.
-            content.remove("_"+i+"_type");
+            content.remove("_" + i + "_type");
 
-            boolean             nextTypeFound     = false;
-            Iterator<String>     j                 = content.keySet().iterator();
+            boolean nextTypeFound = false;
+            Iterator<String> j = content.keySet().iterator();
 
             //Until we find the next type, it means we are in the same object
             //So for each element in content
@@ -73,13 +74,13 @@ public class AMPAnswerParser extends AMPParser{
                 String key = j.next();
                 byte[] value = content.get(key);
                 //if it's a type stop the loop
-                if(key.contains("_type")){
+                if (key.contains("_type")) {
                     nextTypeFound = true;
-                }else{
+                } else {
                     //otherwise, remove the key from content
                     content.put(key, null);
                     //and add the fragment
-                    fragment.put(key.replaceFirst("_"+i, ""), value);
+                    fragment.put(key.replaceFirst("_" + i, ""), value);
                 }
             }
 
@@ -93,18 +94,16 @@ public class AMPAnswerParser extends AMPParser{
 
                 //security check. In case of someone wo'll try to execute somthing
                 //on an other object than on of the model.
-                if(    searchable instanceof Search   ||
-                    searchable instanceof MetaData ||
-                    searchable instanceof DataFile ||
-                    searchable instanceof DataString
-                ){
+                if (searchable instanceof Search
+                        || searchable instanceof MetaData
+                        || searchable instanceof DataFile
+                        || searchable instanceof DataString) {
                     searchable.unParseFromAmpFragment(fragment);
                     datas.add(searchable);
                 }
             } catch (ClassNotFoundException |
                     InstantiationException |
-                    IllegalAccessException e)
-            {
+                    IllegalAccessException e) {
                 throw new NotAValidAmpAnswerCommand(type);
             }
 

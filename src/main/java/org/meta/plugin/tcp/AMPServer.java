@@ -23,8 +23,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.meta.configuration.AMPConfiguration;
 
-import org.meta.configuration.MetaConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.meta.plugin.AbstractPluginTCPControler;
@@ -32,10 +32,10 @@ import org.meta.plugin.AbstractPluginTCPControler;
 /**
  * Class listening to peer-to-peer connections over TCP/AMP.
  */
-public class SingletonTCPReader extends Thread {
+public class AMPServer extends Thread {
 
-    private static SingletonTCPReader instance = new SingletonTCPReader();
-    private static final Logger logger = LoggerFactory.getLogger(SingletonTCPReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AMPServer.class);
+
     private ExecutorService executor = null;
 
     /**
@@ -49,29 +49,39 @@ public class SingletonTCPReader extends Thread {
     private ServerSocket socket = null;
 
     /**
-     * The list of plugins TCP handlers
+     * The AMP configuration.
+     */
+    private final AMPConfiguration configuration;
+
+    /**
+     * The list of plugins TCP handlers.
      */
     private HashMap<String, AbstractPluginTCPControler> mapPlugin = null;
 
     /**
      * initiate a pluginMap
+     *
+     * @param config
      */
-    private SingletonTCPReader() {
-        mapPlugin = new HashMap<>();
-        executor = Executors.newFixedThreadPool(
-                MetaConfiguration.getAmpConfiguration().getServerThPoolSize());
+    public AMPServer(AMPConfiguration config) {
+        this.configuration = config;
+        this.mapPlugin = new HashMap<>();
+        this.executor = Executors.newFixedThreadPool(
+                this.configuration.getServerThPoolSize());
     }
 
     @Override
     public void run() {
         try {
-            Short port = MetaConfiguration.getAmpConfiguration().getAmpPort();
+            Short port = this.configuration.getAmpPort();
+
             socket = new ServerSocket(port);
+            logger.info("AMPServer listening on port " + port);
             while (work) {
                 Socket client = socket.accept();
                 //Once a connection is accepted, let AskHandlerThread take
                 //care of the rest
-                AskHandlerThread discussWith = new AskHandlerThread(client);
+                AskHandlerThread discussWith = new AskHandlerThread(this, client);
                 executor.submit(discussWith);
             }
         } catch (IOException e) {
@@ -79,26 +89,16 @@ public class SingletonTCPReader extends Thread {
                 //TODO Handle correcty this error
                 logger.error("Socket error.", e);
             } else {
-                logger.info("Tcp thread exiting");
+                logger.info("AMP thread exiting");
             }
         }
     }
 
     /**
-     * @return the SingletonTCPReader instance
-     */
-    public static SingletonTCPReader getInstance() {
-        if (instance == null) {
-            instance = new SingletonTCPReader();
-        }
-        return instance;
-    }
-
-    /**
      * Register a plugin to this TCPReader
-     * 
-     * @param pluginName                    pluginName
-     * @param abstractPluginTCPControler    plugin tcp controler
+     *
+     * @param pluginName pluginName
+     * @param abstractPluginTCPControler plugin tcp controler
      */
     public void registerPlugin(String pluginName,
             AbstractPluginTCPControler abstractPluginTCPControler) {
@@ -107,11 +107,11 @@ public class SingletonTCPReader extends Thread {
 
     /**
      * return the command pointed by pluginName and commandName
-     * 
-     * @param pluginName    the plugin name
-     * @param commandName   the command Name
-     * 
-     * @return a command to execute if found, null otherwise 
+     *
+     * @param pluginName the plugin name
+     * @param commandName the command Name
+     *
+     * @return a command to execute if found, null otherwise
      */
     public AbstractCommand getCommand(String pluginName, String commandName) {
         AbstractCommand command = null;
@@ -124,15 +124,17 @@ public class SingletonTCPReader extends Thread {
     }
 
     /**
-     * kill the current listing on the server socket
-     * Remember there is a timeout for closing a socket
-     * Should only be called at the end of the program life cycle
+     * Kills the server socket.
+     *
+     * Remember there is a timeout for closing a socket. Should only be called
+     * at the end of the program life cycle.
      */
     public void kill() {
         work = false;
         try {
-            if(this.socket != null)
+            if (this.socket != null) {
                 this.socket.close();
+            }
         } catch (IOException ex) {
             //No-op here, ex will occur but this is what we want to do.
         }

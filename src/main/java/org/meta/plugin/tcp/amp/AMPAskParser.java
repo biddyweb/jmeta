@@ -3,8 +3,8 @@ package org.meta.plugin.tcp.amp;
 import java.util.LinkedHashMap;
 
 import org.meta.common.MetHash;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPAskCommand;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPAskCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 
 /**
  * parse an AMP ask
@@ -23,14 +23,14 @@ public class AMPAskParser extends AMPParser{
     /**
      * Call parent
      * @param bs
-     * @throws NotAValidAMPCommand
+     * @throws InvalidAMPCommand
      */
-    public AMPAskParser(byte[] bs) throws NotAValidAMPCommand{
+    public AMPAskParser(byte[] bs) throws InvalidAMPCommand{
         super(bs);
     }
 
     @Override
-    protected void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPAskCommand {
+    protected void useContent(LinkedHashMap<String, byte[]> content) throws InvalidAMPAskCommand {
         ask     = content.get("_ask")    != null ? new String(content.get("_ask"))     : null;
         plugin  = content.get("_plugin") != null ? new String(content.get("_plugin"))  : null;
         command = content.get("_command")!= null ? new String(content.get("_command")) : null;
@@ -42,7 +42,7 @@ public class AMPAskParser extends AMPParser{
             command == null || "".equals(command)    ||
             hash    == null || "".equals(hash)
         ){
-            throw new NotAValidAMPAskCommand(
+            throw new InvalidAMPAskCommand(
                     ask, 
                     plugin, 
                     command, 

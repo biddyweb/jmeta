@@ -52,11 +52,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @return the created dht node.
      */
     public static MetaDHT createDHTNode(DHTConfiguration config) {
-        //Ugly creation here, for tests...
-        TomP2pDHT node = new TomP2pDHT();
-
-        node.setConfiguration(config);
-        return (MetaDHT) node;
+        return (MetaDHT)new TomP2pDHT(config);
     }
 
     /**

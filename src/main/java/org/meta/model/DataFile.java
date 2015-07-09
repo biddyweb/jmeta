@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import org.bson.BSONObject;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
-import org.meta.controler.Controler;
+import org.meta.controler.MetaController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

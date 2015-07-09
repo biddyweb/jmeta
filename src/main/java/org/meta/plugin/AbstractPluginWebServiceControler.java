@@ -12,10 +12,10 @@ import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
 import org.meta.dht.OperationListener;
 import org.meta.model.Model;
-import org.meta.plugin.tcp.SingletonTCPWriter;
+import org.meta.plugin.tcp.AmpWriter;
 import org.meta.plugin.tcp.TCPResponseCallbackInteface;
 import org.meta.plugin.webservice.AbstractWebService;
-import org.meta.plugin.webservice.SingletonWebServiceReader;
+import org.meta.plugin.webservice.WebServiceReader;
 
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
@@ -37,47 +37,36 @@ import com.mongodb.util.ObjectSerializer;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  * You may extends {@link AbstractPluginWebServiceControler} to create the WS
- * part of a plugin. It's allow you to register command to the webservice reader, 
- * that can be executed by the user on his interface.
- * 
+ * part of a plugin. It's allow you to register command to the webservice
+ * reader, that can be executed by the user on his interface.
+ *
  * Basically, this class offer generic treatment to serve interfaces and search
  * over DHT
- * 
- * You may extends registerCommands wich allow you to tel the 
- * {@link SingletonWebServiceReader} that you may have something to execute.
- * 
+ *
+ * You may extends registerCommands wich allow you to tel the
+ * {@link WebServiceReader} that you may have something to execute.
+ *
  * You may use search to search a hash in the DHT, the datas, if founded will
  * arrive in the calback method.
- * 
+ *
  * @author Thomas LAVOCAT
  *
  */
 public abstract class AbstractPluginWebServiceControler {
 
-    protected   Model model = null;
-    protected   LinkedHashMap<String, Class<? extends AbstractWebService>> 
-                                                            lstCommands = null;
-    protected   String pluginName = null;
+    protected Model model = null;
+
+    protected MetaDHT dht = null;
+
+    protected AmpWriter ampWriter = null;
+
+    protected LinkedHashMap<String, Class<? extends AbstractWebService>> lstCommands = null;
+    protected String pluginName = null;
 
     public AbstractPluginWebServiceControler() {
         lstCommands = new LinkedHashMap<String, Class<? extends AbstractWebService>>();
-    }
-
-    /**
-     * @param model the model to set
-     */
-    public void setModel(Model model) {
-        this.model = model;
-    }
-    
-    /**
-     * @return return the model object
-     */
-    public Model getModel() {
-        return model;
     }
 
     /**
@@ -95,7 +84,7 @@ public abstract class AbstractPluginWebServiceControler {
      * and a Clas wich is the Class of the command.
      */
     protected abstract void registercommands(
-        LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
+            LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
 
     /**
      * @param command name of the command
@@ -107,6 +96,7 @@ public abstract class AbstractPluginWebServiceControler {
 
     /**
      * Serialize as JSON the list of commands
+     *
      * @return a list of commands as BSON
      */
     public String getJsonCommandList() {
@@ -122,15 +112,15 @@ public abstract class AbstractPluginWebServiceControler {
     }
 
     /**
-     * Search something on the DHT.
-     * If you search a hash, you kown wich plugin and wich command to contact.
-     * It correspond to a command you've developp in TCP part
-     * 
-     * @param hash                  in fact something is this hash
-     * @param plugin                name of the plugin to call
-     * @param command               command to execute
-     * @param abstractWebService    an abstractWebService to call back with the
-     *                              results (or failure)
+     * Search something on the DHT. If you search a hash, you kown wich plugin
+     * and wich command to contact. It correspond to a command you've developp
+     * in TCP part
+     *
+     * @param hash in fact something is this hash
+     * @param plugin name of the plugin to call
+     * @param command command to execute
+     * @param abstractWebService an abstractWebService to call back with the
+     * results (or failure)
      */
     public void search(final MetHash hash,
             final String plugin,
@@ -138,8 +128,8 @@ public abstract class AbstractPluginWebServiceControler {
             final TCPResponseCallbackInteface abstractWebService) {
 
         //Find peers for the given hash
-        FindPeersOperation peersOperation
-                                        = MetaDHT.getInstance().findPeers(hash);
+        FindPeersOperation peersOperation = this.dht.findPeers(hash);
+
         //New opertaion
         peersOperation.addListener(new OperationListener<FindPeersOperation>() {
 
@@ -153,22 +143,51 @@ public abstract class AbstractPluginWebServiceControler {
                 /*
                  * foreach peer found, launch a contact wit TCPWriter
                  */
-                SingletonTCPWriter writer = SingletonTCPWriter.getInstance();
-                Collection<MetaPeer> peers =  operation.getPeers();
 
-                for(Iterator<MetaPeer> i = peers.iterator(); i.hasNext();){
+                Collection<MetaPeer> peers = operation.getPeers();
+
+                for (Iterator<MetaPeer> i = peers.iterator(); i.hasNext();) {
                     MetaPeer peer = i.next();
                     InetAddress adress = peer.getAddress();
                     //TODO control ID validity
-                    writer.askTo( adress,
-                                  plugin,
-                                  command,
-                                  hash,
-                                  abstractWebService,
-                                  (int) peer.getPort());
-              }
+                    AbstractPluginWebServiceControler.this.ampWriter.askTo(adress,
+                            plugin,
+                            command,
+                            hash,
+                            abstractWebService,
+                            (int) peer.getPort());
+                }
             }
         });
     }
 
+    /**
+     * @param model the model to set
+     */
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
+    /**
+     * @return return the model object
+     */
+    public Model getModel() {
+        return model;
+    }
+
+    public MetaDHT getDht() {
+        return dht;
+    }
+
+    public void setDht(MetaDHT dht) {
+        this.dht = dht;
+    }
+
+    public AmpWriter getAmpWriter() {
+        return ampWriter;
+    }
+
+    public void setAmpWriter(AmpWriter ampWriter) {
+        this.ampWriter = ampWriter;
+    }
 }

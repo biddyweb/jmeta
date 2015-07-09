@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -19,11 +18,9 @@ import org.meta.model.Data;
 import org.meta.model.DataString;
 import org.meta.model.MetaData;
 import org.meta.model.MetaProperty;
-import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.Search;
 import org.meta.model.Searchable;
-import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.AbstractPluginWebServiceControler;
 import org.meta.plugin.webservice.AbstractWebService;
 import org.meta.plugin.webservice.forms.InterfaceDescriptor;
@@ -33,41 +30,40 @@ import org.meta.plugin.webservice.forms.submit.SelfSubmitButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Chat extends AbstractWebService{
+public class Chat extends AbstractWebService {
 
-    InterfaceDescriptor  initialDescriptor   = null;
-    TextOutput           output              = null;
-    ModelFactory         factory             = null;
-    MetaData             chat                = null;
-	private Search       retrieveMessage     = null;
-	private TextInput path;
-	private TextInput nick;
-	private TreeMap<Date, String> results    = null;
-	private SimpleDateFormat      sdf        = null;
+    InterfaceDescriptor initialDescriptor = null;
+    TextOutput output = null;
+    ModelFactory factory = null;
+    MetaData chat = null;
+    private Search retrieveMessage = null;
+    private TextInput path;
+    private TextInput nick;
+    private TreeMap<Date, String> results = null;
+    private SimpleDateFormat sdf = null;
     private Logger logger = LoggerFactory.getLogger(Chat.class);
-    
-    public Chat(AbstractPluginWebServiceControler controler){
+
+    public Chat(AbstractPluginWebServiceControler controler) {
         super(controler);
         results = new TreeMap<Date, String>();
         sdf = new SimpleDateFormat("dd /MM / yyyy HH : mm : ss");
-        
+
         path = new TextInput("channel", "Channel room");
         rootColumn.addChild(path);
-        
+
         nick = new TextInput("nickName", "Nick name");
         rootColumn.addChild(nick);
 
         output = new TextOutput("chat", "Chat");
         rootColumn.addChild(output);
-        
+
         TextInput content = new TextInput("message", "Message");
         rootColumn.addChild(content);
 
         rootColumn.addChild(new SelfSubmitButton("send", "Send"));
-        
-        
+
         factory = super.controler.getModel().getFactory();
-        
+
         TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
         props.add(new MetaProperty("chat", "channel"));
         chat = factory.createMetaData(props);
@@ -75,45 +71,44 @@ public class Chat extends AbstractWebService{
 
     @Override
     public void executeCommand(Map<String, String[]> map) {
-        String channel  = getParameter(path.getId(), map);
-        String message  = getParameter("message", map);
+        String channel = getParameter(path.getId(), map);
+        String message = getParameter("message", map);
         String nickName = getParameter(nick.getId(), map);
-        
+
         path.setValue(channel);
         nick.setValue(nickName);
 
-        if(channel != null && !channel.equals("")){
+        if (channel != null && !channel.equals("")) {
             DataString channelName = factory.createDataString(channel);
-            retrieveMessage = factory.createSearch(channelName, chat, null); 
-            if(message != null && !message.equals("")){
+            retrieveMessage = factory.createSearch(channelName, chat, null);
+            if (message != null && !message.equals("")) {
                 Date timeStamp = new Date();
-                Data messageToSave = factory.createDataString(""+nickName+";"+timeStamp.getTime()+";"+message);
-                results.put(timeStamp, nickName +" : "+ message);
+                Data messageToSave = factory.createDataString("" + nickName + ";" + timeStamp.getTime() + ";" + message);
+                results.put(timeStamp, nickName + " : " + message);
                 Search searchToSave = factory.createSearch(channelName, chat, Collections.singletonList(messageToSave));
                 //write into dataBase
                 //and store it to the DHT
-                
                 super.controler.getModel().set(searchToSave);
-                MetaDHT.getInstance().store(searchToSave.getHash()).addListener(
+                super.controler.getDht().store(searchToSave.getHash()).addListener(
                         new OperationListener<DHTOperation>() {
 
-                    @Override
-                    public void failed(DHTOperation operation) {
-                        output.append("fail to push");
-                    }
+                            @Override
+                            public void failed(DHTOperation operation) {
+                                output.append("fail to push");
+                            }
 
-                    @Override
-                    public void complete(DHTOperation operation) {
-                        output.append("succes to push");
-                    }
-                
-                });
+                            @Override
+                            public void complete(DHTOperation operation) {
+                                output.append("succes to push");
+                            }
+
+                        });
             }
             super.controler.search(retrieveMessage.getHash(),
                     "SimpleChat",
                     "getLastMessages",
                     this);
-            
+
         }
         redrawOutput();
     }
@@ -125,46 +120,45 @@ public class Chat extends AbstractWebService{
                 "getLastMessages",
                 this);
     }
-    
 
     @Override
     public void callbackSuccess(ArrayList<Searchable> results) {
-        //Those results are incomplete
+        //Those results are incomplete ==> why ?
         for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
             Searchable searchable = i.next();
-            
+
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                Collection<Data> linkDatas =    search.getLinkedData();
-                
-                for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
+                Collection<Data> linkDatas = search.getLinkedData();
+
+                for (Iterator<Data> k = linkDatas.iterator(); k.hasNext();) {
                     Data data = (Data) k.next();
-                    if(data instanceof DataString){
+                    if (data instanceof DataString) {
                         DataString distantMessage = (DataString) data;
                         String baseMessage = distantMessage.getString();
                         String[] split = baseMessage.split(";");
                         String pseudo = split[0];
-                        Date   sDate  = new Date(Long.parseLong(split[1]));
-                        String msg    = split[2];
-                        this.results.put(sDate, pseudo +" : "+msg);
+                        Date sDate = new Date(Long.parseLong(split[1]));
+                        String msg = split[2];
+                        this.results.put(sDate, pseudo + " : " + msg);
                     }
-                    
+
                 }
             }
         }
         redrawOutput();
     }
-    
+
     @Override
     public void callbackFailure(String failureMessage) {
         // TODO Auto-generated method stub
-        
+
     }
 
-    private void redrawOutput(){
+    private void redrawOutput() {
         output.flush();
-        for(Entry<Date, String> entry : this.results.entrySet()){
-            output.append(sdf.format(entry.getKey())+ " "+ entry.getValue());	
+        for (Entry<Date, String> entry : this.results.entrySet()) {
+            output.append(sdf.format(entry.getKey()) + " " + entry.getValue());
         }
     }
 }

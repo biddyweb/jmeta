@@ -8,27 +8,30 @@ import java.net.Socket;
 
 import org.meta.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskParser;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This thread only listen to AMP Command
+ *
  * @author faquin
  *
  */
-public class AskHandlerThread implements Runnable{
+public class AskHandlerThread implements Runnable {
 
     private Socket client = null;
-    private SingletonTCPReader reader = SingletonTCPReader.getInstance();
+    private AMPServer reader = null;
     private Logger logger = LoggerFactory.getLogger(AskHandlerThread.class);
 
     /**
      * Initiate the handler with given parameters
-     * @param client socket connection to dicuss with
+     *
+     * @param server the AMP server that created us.
+     * @param client socket connection to dicuss with.
      */
-    public AskHandlerThread(Socket client){
+    public AskHandlerThread(AMPServer server, Socket client) {
+        this.reader = server;
         this.client = client;
     }
 
@@ -53,35 +56,35 @@ public class AskHandlerThread implements Runnable{
             //Get the _command parameter from the amp command
             //If not null, it means we speak the same langage, if not
             //do nothing
-            if(parser.getCommand() != null &&
-                  parser.getPlugin() != null
-            ) {
+            if (parser.getCommand() != null
+                    && parser.getPlugin() != null) {
                 AbstractCommand command = this.reader.getCommand(
                         parser.getPlugin(),
                         parser.getCommand());
-                if(command != null){
+                if (command != null) {
                     //execute it
                     MetHash hash = parser.getHash();
-                    String  answer = parser.getAsk();
+                    String answer = parser.getAsk();
                     byte[] response = command.execute(answer, hash).getMessage();
                     //finally, write the output to the client
                     OutputStream os = client.getOutputStream();
                     for (int i = 0; i < response.length; i++) {
-                        os.write((int)response[i]);
+                        os.write((int) response[i]);
                     }
                 }
             }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
-        } catch (NotAValidAMPCommand e) {
+        } catch (InvalidAMPCommand e) {
             logger.error(e.getMessage(), e);
         } finally {
-            if(inputStream != null)
+            if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
+            }
         }
     }
 }

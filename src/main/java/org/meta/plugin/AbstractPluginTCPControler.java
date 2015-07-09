@@ -23,7 +23,7 @@ import org.meta.common.MetHash;
 import org.meta.model.Model;
 import org.meta.model.Searchable;
 import org.meta.plugin.tcp.AbstractCommand;
-import org.meta.plugin.tcp.SingletonTCPReader;
+import org.meta.plugin.tcp.AMPServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * 
  * Basically, this class offer generic treatment to serve Data over P2P
  * 
- * You may extends registerCommands wich allow you to tel the {@link SingletonTCPReader}
+ * You may extends registerCommands wich allow you to tel the {@link AMPServer}
  * that you may have something to execute.
  * 
  * You may use getInTheModel to retrieve information from the DB

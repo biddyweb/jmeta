@@ -20,31 +20,25 @@ package org.meta.dht;
 import org.meta.configuration.DHTConfiguration;
 import java.io.IOException;
 import org.meta.common.MetHash;
-import org.meta.dht.tomp2p.TomP2pDHT;
 
 /**
- *
  * @author nico
  */
 public abstract class MetaDHT {
-
-    private static MetaDHT instance;
-
-    /**
-     * @return The instance of the DHT.
-     */
-    public static MetaDHT getInstance() {
-        if (instance == null) {
-            instance = new TomP2pDHT();
-        }
-        return instance;
-    }
 
     /**
      * The DHTConfiguration object.
      */
     protected DHTConfiguration configuration;
 
+    /**
+     * 
+     * @param config The dht configuration.
+     */
+    public MetaDHT(DHTConfiguration config) {
+        this.configuration = config;
+    }
+    
     /**
      * Initializes and starts the DHT.
      *

@@ -20,6 +20,7 @@ package org.meta.dht.tomp2p;
 import java.io.IOException;
 import java.net.InetAddress;
 import net.tomp2p.connection.Bindings;
+import net.tomp2p.connection.ChannelServerConfiguration;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.BaseFuture;
@@ -31,6 +32,7 @@ import net.tomp2p.peers.Number160;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
+import org.meta.configuration.DHTConfiguration;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.NetworkConfiguration;
 import org.meta.dht.BootstrapOperation;
@@ -64,9 +66,12 @@ public class TomP2pDHT extends MetaDHT {
     private Peer peer;
 
     /**
-     * Empty constructor (should not be called directly)
+     * Create the tomp2p DHT with given configuration.
+     * 
+     * @param config The DHT configuration to use.
      */
-    public TomP2pDHT() {
+    public TomP2pDHT(DHTConfiguration config) {
+        super(config);
     }
 
     /**
@@ -92,8 +97,8 @@ public class TomP2pDHT extends MetaDHT {
     /**
      * Create the bindings for tomp2p based on the dht configuration.
      *
-     * If Network configuration has empty addresses or interfaces, it will bind to
-     * everything.
+     * If Network configuration has empty addresses or interfaces, it will bind
+     * to everything.
      *
      * @return The bindings.
      */
@@ -124,8 +129,11 @@ public class TomP2pDHT extends MetaDHT {
 
         //PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(null)
         PeerBuilder peerBuilder = new PeerBuilder(peerId);
+//        peerBuilder.
         peerBuilder.ports(MetaConfiguration.getDHTConfiguration().getNetworkConfig().getPort());
         peerBuilder.bindings(configureBindings());
+        ChannelServerConfiguration c = new ChannelServerConfiguration();
+        //c.forceTCP()
         this.peer = peerBuilder.start();
 
         this.peerDHT = new PeerBuilderDHT(peer).start();

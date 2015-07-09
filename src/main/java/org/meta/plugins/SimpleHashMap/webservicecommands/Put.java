@@ -69,7 +69,7 @@ public class Put extends AbstractWebService{
             //write into dataBase
             //and store it to the DHT
             this.controler.getModel().set(hashM);
-            MetaDHT.getInstance().store(hashM.getHash()).addListener(
+            this.controler.getDht().store(hashM.getHash()).addListener(
                     new OperationListener<DHTOperation>() {
 
                 @Override

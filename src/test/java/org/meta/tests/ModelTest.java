@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.model.Data;
 import org.meta.model.DataFile;
 import org.meta.model.DataString;
@@ -34,7 +35,7 @@ public class ModelTest extends MetaBaseTests {
     public static void setUpModel() {
         startTime = new Date().getTime();
         try{
-            model = new Model();
+            model = new Model(MetaConfiguration.getModelConfiguration());
         } catch (ModelException ex) {
             logger.error(null, ex);
             Assert.fail();

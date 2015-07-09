@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import org.meta.model.Model;
 import org.meta.model.ModelFactory;
 import org.meta.model.exceptions.ModelException;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +19,11 @@ public abstract class AMPParser {
     private Logger logger = LoggerFactory.getLogger(AMPParser.class);
     protected ModelFactory factory = null;
     
-    public AMPParser(byte[] bs, ModelFactory factory) throws NotAValidAMPCommand{
+    public AMPParser(byte[] bs, ModelFactory factory) throws InvalidAMPCommand{
         this.factory = factory;
         parse(bs);
     }
-    public AMPParser(byte[] bs) throws NotAValidAMPCommand{
+    public AMPParser(byte[] bs) throws InvalidAMPCommand{
         parse(bs);
     }
 
@@ -34,7 +34,7 @@ public abstract class AMPParser {
      * 
      * @param bs the byte array to parse
      */
-    private void parse(byte[] bs) throws NotAValidAMPCommand{
+    private void parse(byte[] bs) throws InvalidAMPCommand{
         LinkedHashMap<String, byte[]> content = new LinkedHashMap<String, byte[]>();
         int readIndex = 0;
 
@@ -73,7 +73,7 @@ public abstract class AMPParser {
                 content.put(name, value);
             }
         }else{
-            throw new NotAValidAMPCommand("content cannot be null");
+            throw new InvalidAMPCommand("content cannot be null");
         }
         useContent(content);
     }
@@ -83,9 +83,9 @@ public abstract class AMPParser {
      * @param content an LinkedhashMap containing key value
      * where key si the name of what the value represent
      * 
-     * @throws NotAValidAMPCommand
+     * @throws InvalidAMPCommand
      */
-    protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAMPCommand;
+    protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws InvalidAMPCommand;
 
     /**
      * rebuild a short from a byte array

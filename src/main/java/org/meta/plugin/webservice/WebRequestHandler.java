@@ -14,53 +14,53 @@ import org.meta.plugin.AbstractPluginWebServiceControler;
 
 /**
  * Handle a request from the web server
+ *
  * @author faquin
  *
  */
 public class WebRequestHandler extends AbstractHandler {
 
-    private SingletonWebServiceReader           webServiceReader     = null;
-    private HashMap<String, AbstractWebService> instanceMap         = null;
+    private WebServiceReader webServiceReader = null;
+    private HashMap<String, AbstractWebService> instanceMap = null;
     private int nbCommands = 0;
 
-    public WebRequestHandler() {
-        webServiceReader     = SingletonWebServiceReader.getInstance();
-        instanceMap         = new HashMap<String, AbstractWebService>();
+    public WebRequestHandler(WebServiceReader webServiceServer) {
+        webServiceReader = webServiceServer;
+        instanceMap = new HashMap<String, AbstractWebService>();
     }
 
     @Override
-    public void handle( String target,
-                        Request base,
-                        HttpServletRequest request,
-                        HttpServletResponse response)
-            throws     IOException,
-                        ServletException {
+    public void handle(String target,
+            Request base,
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws IOException,
+            ServletException {
         //Split the incomming url on every /
-        String[]     urlParse     = target.split("/");
-        String         action        = "";
-        String         plugin        = "";
-        String        command        = "";
+        String[] urlParse = target.split("/");
+        String action = "";
+        String plugin = "";
+        String command = "";
 
-        if(urlParse.length == 4){
+        if (urlParse.length == 4) {
             //if theres 3 it means we've got two parameters, an action and
             //a command
-            action  = urlParse[urlParse.length-3];
-            plugin  = urlParse[urlParse.length-2];
-            command = urlParse[urlParse.length-1];
-        }else if (urlParse.length == 3){
-            action  = urlParse[urlParse.length-2];
-            plugin  = urlParse[urlParse.length-1];
-        }else{
+            action = urlParse[urlParse.length - 3];
+            plugin = urlParse[urlParse.length - 2];
+            command = urlParse[urlParse.length - 1];
+        } else if (urlParse.length == 3) {
+            action = urlParse[urlParse.length - 2];
+            plugin = urlParse[urlParse.length - 1];
+        } else {
             // otherwise just one System action
-            action  = urlParse[urlParse.length-1];
+            action = urlParse[urlParse.length - 1];
         }
 
         response.setContentType("application/json; charset=utf-8");
 
-
         AbstractPluginWebServiceControler pluginInstance = null;
 
-        if(plugin != ""){
+        if (plugin != "") {
             pluginInstance = webServiceReader.getPlugin(plugin);
         }
 
@@ -68,60 +68,60 @@ public class WebRequestHandler extends AbstractHandler {
         // we have a command and a plugin
         // we only have a plugin
         // we have nothing
-
-        if(command != "" && pluginInstance != null){
+        if (command != "" && pluginInstance != null) {
             //First case, get the associated command
 
-            Class<? extends AbstractWebService> clazzWs =
-                                        pluginInstance.getCommand(command);
+            Class<? extends AbstractWebService> clazzWs
+                    = pluginInstance.getCommand(command);
             //if clazzWs is not null it means it was found and executable
-            if(clazzWs != null){
+            if (clazzWs != null) {
                 try {
 
                     String idCommand = request.getParameter("idCommand");
                     AbstractWebService commandWs = null;
 
-                    if(idCommand != null && idCommand != ""){
+                    if (idCommand != null && idCommand != "") {
                         commandWs = instanceMap.get(idCommand);
                     }
-                    if(commandWs == null){
+                    if (commandWs == null) {
                         idCommand = getNewId();
                         commandWs = clazzWs.getConstructor(
                                 AbstractPluginWebServiceControler.class)
-                                                .newInstance(pluginInstance);
+                                .newInstance(pluginInstance);
                         instanceMap.put(idCommand, commandWs);
                     }
 
                     BasicBSONObject result = null;
 
                     switch (action) {
-                    //fflush memory
-                    case "terminate" :
-                        commandWs =instanceMap.get(idCommand);
-                        if(commandWs != null)
-                            commandWs.kill();
-                        instanceMap.remove(idCommand);
-                        break;
+                        //fflush memory
+                        case "terminate":
+                            commandWs = instanceMap.get(idCommand);
+                            if (commandWs != null) {
+                                commandWs.kill();
+                            }
+                            instanceMap.remove(idCommand);
+                            break;
 
-                    //getNextResults from network
-                    case "retrieveUpdate" :
-                        result = commandWs.retrieveUpdate().toJson();
-                        break ;
+                        //getNextResults from network
+                        case "retrieveUpdate":
+                            result = commandWs.retrieveUpdate().toJson();
+                            break;
 
-                    //execute command
-                    case "execute":
-                        result = commandWs.execute(request.getParameterMap())
-                        .toJson();
-                        break;
+                        //execute command
+                        case "execute":
+                            result = commandWs.execute(request.getParameterMap())
+                                    .toJson();
+                            break;
 
-                    //default case : get the interface descriptor
-                    case "interface":
-                    default:
-                        result = commandWs.getInterface().toJson();
-                        break;
+                        //default case : get the interface descriptor
+                        case "interface":
+                        default:
+                            result = commandWs.getInterface().toJson();
+                            break;
                     }
 
-                    if(result != null){
+                    if (result != null) {
                         result.append("idCommand", idCommand);
                         response.getWriter().print(result.toString());
                     }
@@ -129,33 +129,32 @@ public class WebRequestHandler extends AbstractHandler {
                     base.setHandled(true);
                 } catch (Exception e) {
                     response.getWriter().write(e.getMessage());
-                    response.setStatus(HttpServletResponse
-                                                    .SC_INTERNAL_SERVER_ERROR);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     base.setHandled(true);
                 }
-            }else{
+            } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 base.setHandled(true);
             }
-        } else if(plugin != "" && pluginInstance != null){
+        } else if (plugin != "" && pluginInstance != null) {
             //second case, we only have a plugin
-            switch (action){
-            case "getCommandList":
-            default:
-                response.getWriter().print(pluginInstance.getJsonCommandList());
-            break;
+            switch (action) {
+                case "getCommandList":
+                default:
+                    response.getWriter().print(pluginInstance.getJsonCommandList());
+                    break;
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
             base.setHandled(true);
-        }else{
+        } else {
             //last case
-             switch (action) {
-            case "getPluginsList":
-            default:
-                response.getWriter().print(webServiceReader
-                        .getPluginListAsJson());
-                break;
+            switch (action) {
+                case "getPluginsList":
+                default:
+                    response.getWriter().print(webServiceReader
+                            .getPluginListAsJson());
+                    break;
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
@@ -165,7 +164,7 @@ public class WebRequestHandler extends AbstractHandler {
 
     private String getNewId() {
         nbCommands++;
-        return "command"+nbCommands;
+        return "command" + nbCommands;
     }
 
 }

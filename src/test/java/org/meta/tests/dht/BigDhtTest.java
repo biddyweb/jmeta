@@ -55,7 +55,7 @@ public class BigDhtTest extends BaseDHTTests {
      *
      * @throws IOException
      */
-    @Test
+    //@Test
     public void testManyNodesOneHash() throws IOException {
         try {
             short port = 15000;

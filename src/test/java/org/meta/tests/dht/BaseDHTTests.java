@@ -21,7 +21,6 @@ import java.util.Collection;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.configuration.DHTConfiguration;
-import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
@@ -39,7 +38,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
         DHTConfiguration dhtConfig = new DHTConfiguration();
 
         dhtConfig.setIdentity(id);
-        dhtConfig.setPort(port);
+        dhtConfig.getNetworkConfig().setPort(port);
         dhtConfig.setKnwonPeers(peers);
         dhtConfig.setBootstrapBroadcast(broadcast);
         dhtConfig.setDhtLocalOnly(localOnly);

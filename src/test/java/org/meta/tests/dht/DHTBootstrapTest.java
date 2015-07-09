@@ -19,6 +19,7 @@ package org.meta.tests.dht;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.logging.Level;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -26,7 +27,9 @@ import org.junit.Test;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
+import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfiguration;
+import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.MetaPeer;
@@ -59,26 +62,31 @@ public class DHTBootstrapTest extends BaseDHTTests {
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
-        DHT1_PEER_ADDR = getLocalAddress();
-        DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
-        DHT2_PEER_ADDR = getLocalAddress();
-        DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
+        try {
+            DHT1_PEER_ADDR = getLocalAddress();
+            DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
+            DHT2_PEER_ADDR = getLocalAddress();
+            DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
 
-        configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
-                DHT1_PORT,
-                DHTConfiguration.peersFromString(DHT2_PEER_STRING),
-                false,
-                true);
-        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
-        dhtNode1.start();
+            configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+                    DHT1_PORT,
+                    ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
+                    false,
+                    true);
+            dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+            dhtNode1.start();
 
-        configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
-                DHT2_PORT,
-                DHTConfiguration.peersFromString(DHT1_PEER_STRING),
-                false,
-                true);
-        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
-        dhtNode2.start();
+            configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+                    DHT2_PORT,
+                    ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
+                    false,
+                    true);
+            dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+            dhtNode2.start();
+        } catch (InvalidConfigurationException ex) {
+            java.util.logging.Logger.getLogger(DHTBootstrapTest.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.fail(ex.getMessage());
+        }
     }
 
     @AfterClass
@@ -90,7 +98,7 @@ public class DHTBootstrapTest extends BaseDHTTests {
     /**
      * Test the bootstrap process to another peer.
      */
-    @Test
+    //@Test
     public void testBootstrapSuccess() {
 
         DHTBootstrapTest.bootstrapDht(dhtNode1, false);

@@ -21,13 +21,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.configuration.exceptions.InvalidConfigurationFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The main configuration class, holding sub-configuration objects per
- * components(amp, webservices, model, dht).
+ * components (amp, webservices, model, dht).
  */
 public class MetaConfiguration {
 
@@ -84,7 +85,7 @@ public class MetaConfiguration {
      *
      * @throws java.io.IOException
      */
-    public static void initConfiguration() throws InvalidConfigurationFileException {
+    public static void initConfiguration() throws InvalidConfigurationFileException, InvalidConfigurationException {
 
         try {
             Properties dhtProps = createProperties(DHT_CONFIG_PATH);

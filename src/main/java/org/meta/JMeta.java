@@ -19,10 +19,12 @@ package org.meta;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 
 import org.meta.controler.Controler;
 import org.meta.dht.BootstrapOperation;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.configuration.exceptions.InvalidConfigurationFileException;
 import org.meta.dht.MetaDHT;
 import org.meta.dht.exceptions.BootstrapException;
@@ -60,8 +62,15 @@ public class JMeta {
 
         try {
             MetaConfiguration.initConfiguration();
-        } catch (InvalidConfigurationFileException ex) {
+        } catch (InvalidConfigurationFileException | InvalidConfigurationException ex) {
             logger.error("Failed to initialize configuration from files.", ex);
+            System.exit(1);
+        }
+
+        try {
+            initDht();
+        } catch (BootstrapException ex) {
+            java.util.logging.Logger.getLogger(JMeta.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
 

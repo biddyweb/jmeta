@@ -18,6 +18,7 @@
 package org.meta.configuration;
 
 import java.util.Properties;
+import org.meta.configuration.exceptions.InvalidConfigurationException;
 
 /**
  *
@@ -36,7 +37,7 @@ public abstract class BaseConfiguration {
      *
      * @param properties The properties instance related to the configuration
      * file.
-     */
+     */ 
     public BaseConfiguration(Properties properties) {
         this.properties = properties;
     }
@@ -50,7 +51,7 @@ public abstract class BaseConfiguration {
     /**
      * Initializes this configuration content with the given properties.
      */
-    abstract void initFromProperties();
+    abstract void initFromProperties() throws InvalidConfigurationException;
 
     /**
      * @param propKey The key in the property file to fetch.

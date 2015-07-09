@@ -15,73 +15,69 @@
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.meta.tests.dht;
+package org.meta.tests.config;
 
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.configuration.DHTConfiguration;
+import org.meta.configuration.ConfigurationUtils;
+import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.dht.MetaPeer;
+import org.meta.tests.MetaBaseTests;
 
 /**
- * @author nico
+ * Tests for the DHT configuration.
  */
-public class DHTConfigTest {
+public class DHTConfigTest extends MetaBaseTests {
 
-    @Test
     /**
      * Test the parsing of DHT bootstrap peers in the configuration file.
      */
+    @Test
     public void testPeersParsing() {
         String testString1 = "127.0.0.1:4000";
         String testString2 = "127.0.0.1:4000,";
         String testString3 = "127.0.0.1:4000,127.0.0.1:4001";
-        String testString4 = "127.0.0.1:4000, dsfds";
+        String testString4 = "127.0.0.1:4000, dsfds:4";
         String testString5 = "127.0.0.14000";
 
         Collection<MetaPeer> tmp;
         try {
-            tmp = DHTConfiguration.peersFromString(testString1);
+            tmp = ConfigurationUtils.peersFromString(testString1);
             Assert.assertNotNull("Test string1 should not fail.", tmp);
-            Assert.assertEquals("Test string1 should contain 1 peer", tmp.size(), 1);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(DHTConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+            Assert.assertEquals("Test string1 should contain 1 peer", 1, tmp.size());
+        } catch (InvalidConfigurationException ex) {
             Assert.fail("Test string1 host should be known.");
         }
         try {
-            tmp = DHTConfiguration.peersFromString(testString2);
+            tmp = ConfigurationUtils.peersFromString(testString2);
             Assert.assertNotNull("Test string2 should not fail.", tmp);
-            Assert.assertEquals("Test string2 should contain 1 peer", tmp.size(), 1);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(DHTConfigTest.class.getName()).log(Level.SEVERE, null, ex);
-            Assert.fail("Test string1 host should be known.");
+            Assert.assertEquals("Test string2 should contain 1 peer", 1, tmp.size());
+        } catch (InvalidConfigurationException ex) {
+            Assert.fail("Test string2 host should be known.");
         }
         try {
-            tmp = DHTConfiguration.peersFromString(testString3);
+            tmp = ConfigurationUtils.peersFromString(testString3);
             Assert.assertNotNull("Test string3 should not fail.", tmp);
             Assert.assertEquals("Test string3 should contain 2 peers", 2, tmp.size());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(DHTConfigTest.class.getName()).log(Level.SEVERE, null, ex);
-            Assert.fail("Test string1 host should be known.");
+        } catch (InvalidConfigurationException ex) {
+            Assert.fail("Test string3 host should be known.");
         }
         try {
-            tmp = DHTConfiguration.peersFromString(testString4);
-            Assert.assertNotNull("Test string4 result should not be null.", tmp);
-            Assert.assertEquals("Test string4 should contain 1 peer", 1, tmp.size());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(DHTConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+            ConfigurationUtils.peersFromString(testString4);
+            Assert.fail("Test string 4 should have failed...");
+        } catch (InvalidConfigurationException ex) {
+            //No-op, it's normal if we are here.
         }
         try {
-            tmp = DHTConfiguration.peersFromString(testString5);
+            tmp = ConfigurationUtils.peersFromString(testString5);
             Assert.assertNotNull("Test string5 result should not be null.", tmp);
             Assert.assertEquals("Test string5 result should not be null.", 0, tmp.size());
-        } catch (UnknownHostException ex) {
+        } catch (InvalidConfigurationException ex) {
             Logger.getLogger(DHTConfigTest.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail("Test string5 should not throw");
         }
     }
-
 }

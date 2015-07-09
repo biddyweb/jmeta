@@ -1,6 +1,6 @@
 /*
  *    JMeta - Meta's java implementation
- *    Copyright (C) 2013 Nicolas Michon
+ *    Copyright (C) 2013 JMeta
  *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 package org.meta.dht.tomp2p;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
@@ -30,10 +31,11 @@ import net.tomp2p.peers.Number160;
 import org.meta.common.Identity;
 import org.meta.common.MetHash;
 import org.meta.common.MetamphetUtils;
+import org.meta.configuration.MetaConfiguration;
+import org.meta.configuration.NetworkConfiguration;
 import org.meta.dht.BootstrapOperation;
 import org.meta.dht.FindPeersOperation;
 import org.meta.dht.MetaDHT;
-import org.meta.dht.MetaPeer;
 import org.meta.dht.StoreOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,6 @@ import org.slf4j.LoggerFactory;
  *
  * It is a first implementation and will improve with time.
  *
- * @author nico
  */
 public class TomP2pDHT extends MetaDHT {
 
@@ -55,8 +56,12 @@ public class TomP2pDHT extends MetaDHT {
     /**
      * The tomp2p peer representing our node.
      */
-    private Peer peer;
     private PeerDHT peerDHT;
+
+    /**
+     *
+     */
+    private Peer peer;
 
     /**
      * Empty constructor (should not be called directly)
@@ -65,15 +70,46 @@ public class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     * @return The {@link net.tomp2p.p2p.PeerDHT} representing our node.
+     * @return The {@link net.tomp2p.dht.PeerDHT} representing our node.
      */
     public PeerDHT getPeerDHT() {
         return this.peerDHT;
     }
 
+    /**
+     *
+     * @return The {@link net.tomp2p.p2p.Peer} representing our node.
+     */
+    public Peer getPeer() {
+        return peer;
+    }
+
     @Override
     public void start() throws IOException {
         this.startAndListen();
+    }
+
+    /**
+     * Create the bindings for tomp2p based on the dht configuration.
+     *
+     * If Network configuration has empty addresses or interfaces, it will bind to
+     * everything.
+     *
+     * @return The bindings.
+     */
+    private Bindings configureBindings() {
+        NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
+        Bindings b = new Bindings();
+
+        for (InetAddress addr : nwConfig.getAddresses()) {
+            logger.debug("DHT binding to address: " + addr);
+            b.addAddress(addr);
+        }
+        for (String iface : nwConfig.getInterfaces()) {
+            logger.debug("DHT binding to interface: " + iface);
+            b.addInterface(iface);
+        }
+        return b;
     }
 
     /**
@@ -84,18 +120,16 @@ public class TomP2pDHT extends MetaDHT {
             Identity id = new Identity(MetamphetUtils.createRandomHash());
             this.configuration.setIdentity(id);
         }
-        Number160 peerId = toNumber160(this.configuration.getIdentity());
-        Bindings b = new Bindings(); //Bind to everything
-        //TODO check and configure network properly
-        //Which interface are we binding ? etc...
-        PeerBuilder peerBuilder = new PeerBuilder(peerId);
-        peerBuilder.ports(this.configuration.getPort());
-        peerBuilder.bindings(b);
-        this.peer = peerBuilder.start();
-        //RoutingBuilder rb = new RoutingBuilder();
+        Number160 peerId = TomP2pUtils.toNumber160(this.configuration.getIdentity());
 
-        PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
-        this.peerDHT = peerBuilderDHT.start();
+        //PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(null)
+        PeerBuilder peerBuilder = new PeerBuilder(peerId);
+        peerBuilder.ports(MetaConfiguration.getDHTConfiguration().getNetworkConfig().getPort());
+        peerBuilder.bindings(configureBindings());
+        this.peer = peerBuilder.start();
+
+        this.peerDHT = new PeerBuilderDHT(peer).start();
+        //Here define custom storage layer for routing table etc...
     }
 
     @Override
@@ -108,7 +142,7 @@ public class TomP2pDHT extends MetaDHT {
 
     @Override
     public FindPeersOperation findPeers(MetHash hash) {
-        Number160 contentHash = TomP2pDHT.toNumber160(hash);
+        Number160 contentHash = TomP2pUtils.toNumber160(hash);
         TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
 
         operation.start();
@@ -117,7 +151,7 @@ public class TomP2pDHT extends MetaDHT {
 
     @Override
     public StoreOperation store(MetHash hash) {
-        Number160 tomp2pHash = toNumber160(hash);
+        Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
         TomP2pStoreOperation storeOperation = new TomP2pStoreOperation(this, tomp2pHash);
 
         storeOperation.start();
@@ -148,39 +182,5 @@ public class TomP2pDHT extends MetaDHT {
             }
         });
         shutDownOperation.awaitUninterruptibly();
-    }
-
-    //BELOW STATIC UTILITY FUNCTIONS (Mostly conversion functions for meta <-> tomp2p entities)
-    //TODO Move to utility class ?
-    /**
-     * Utility function to convert a MetHash to a Number160 used by TomP2p lib.
-     *
-     * @param hash The hash to convert.
-     *
-     * @return The created Number160.
-     */
-    public static Number160 toNumber160(MetHash hash) {
-        return new Number160(hash.toByteArray());
-    }
-
-    /**
-     * Convert a tomp2p hash ({@link  Number160}) to a {@link MetHash}
-     *
-     * @param hash The tomp2p hash to convert.
-     * @return The created MetHash.
-     */
-    public static MetHash toMetHash(Number160 hash) {
-        return new MetHash(hash.toByteArray());
-    }
-
-    /**
-     * Convert a tomp2p peer to a meta peer.
-     *
-     * @param peer The tomp2p peer to convert
-     * @return The created Meta Peer.
-     */
-    public static MetaPeer toPeer(net.tomp2p.p2p.Peer peer) {
-        Identity id = new Identity(toMetHash(peer.peerID()));
-        return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
     }
 }

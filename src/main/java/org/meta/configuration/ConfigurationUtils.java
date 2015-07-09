@@ -17,6 +17,9 @@
  */
 package org.meta.configuration;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -24,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.dht.MetaPeer;
 import org.slf4j.Logger;
@@ -143,6 +147,20 @@ public class ConfigurationUtils {
             }
         }
         return addresses;
+    }
+
+    /**
+     * @param propertiesPath The path to create the properties from.
+     * @return The created Properties object
+     *
+     * @throws FileNotFoundException If invalid path given
+     * @throws IOException If a file error occur
+     */
+    public static Properties createProperties(String propertiesPath) throws FileNotFoundException, IOException {
+        FileInputStream fis = new FileInputStream(propertiesPath);
+        Properties newProperties = new Properties();
+        newProperties.load(fis);
+        return newProperties;
     }
 
 }

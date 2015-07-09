@@ -17,8 +17,6 @@
  */
 package org.meta.configuration;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import org.meta.configuration.exceptions.InvalidConfigurationException;
@@ -80,24 +78,24 @@ public class MetaConfiguration {
     private MetaConfiguration() {
     }
 
-    /* 
+    /**
      * Initializes all configurations.
-     *
-     * @throws java.io.IOException
+     * 
+     * @throws InvalidConfigurationFileException
+     * @throws InvalidConfigurationException
      */
     public static void initConfiguration() throws InvalidConfigurationFileException, InvalidConfigurationException {
-
         try {
-            Properties dhtProps = createProperties(DHT_CONFIG_PATH);
+            Properties dhtProps = ConfigurationUtils.createProperties(DHT_CONFIG_PATH);
             dhtConfiguration = new DHTConfiguration(dhtProps);
 
-            Properties wsProps = createProperties(WS_CONFIG_PATH);
+            Properties wsProps = ConfigurationUtils.createProperties(WS_CONFIG_PATH);
             wsConfiguration = new WSConfiguration(wsProps);
 
-            Properties ampProps = createProperties(AMP_CONFIG_PATH);
+            Properties ampProps = ConfigurationUtils.createProperties(AMP_CONFIG_PATH);
             ampConfiguration = new AMPConfiguration(ampProps);
 
-            Properties modelProps = createProperties(MODEL_CONFIG_PATH);
+            Properties modelProps = ConfigurationUtils.createProperties(MODEL_CONFIG_PATH);
             modelConfiguration = new ModelConfiguration(modelProps);
         } catch (IOException ex) {
             throw new InvalidConfigurationFileException(ex);
@@ -162,19 +160,5 @@ public class MetaConfiguration {
      */
     public static void setModelConfiguration(ModelConfiguration modelConfiguration) {
         MetaConfiguration.modelConfiguration = modelConfiguration;
-    }
-
-    /**
-     * @param propertiesPath The path to create the properties from.
-     * @return The created Properties object
-     *
-     * @throws FileNotFoundException If invalid path given
-     * @throws IOException If a file error occur
-     */
-    private static Properties createProperties(String propertiesPath) throws FileNotFoundException, IOException {
-        FileInputStream fis = new FileInputStream(propertiesPath);
-        Properties newProperties = new Properties();
-        newProperties.load(fis);
-        return newProperties;
     }
 }

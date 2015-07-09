@@ -94,6 +94,7 @@ public final class DHTConfiguration extends BaseConfiguration {
      * Initializes the dht config from properties.
      *
      * @param properties
+     * @throws org.meta.configuration.exceptions.InvalidConfigurationException
      */
     public DHTConfiguration(Properties properties) throws InvalidConfigurationException {
         super(properties);

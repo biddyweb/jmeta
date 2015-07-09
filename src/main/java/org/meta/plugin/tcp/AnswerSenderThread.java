@@ -17,7 +17,7 @@ import org.meta.model.Searchable;
 import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
-import org.meta.plugin.tcp.amp.exception.NotAValidAMPCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +100,7 @@ public class AnswerSenderThread implements Runnable {
             buffer.close();
             client.close();
             is.close();
-        } catch (IOException | NotAValidAMPCommand e) {
+        } catch (IOException | InvalidAMPCommand e) {
             logger.warn(e.getMessage());
         }
 

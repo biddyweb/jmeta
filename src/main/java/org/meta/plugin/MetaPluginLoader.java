@@ -26,11 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  */
-public class PluginLoader {
+public class MetaPluginLoader {
 
-    private final Logger logger = LoggerFactory.getLogger(PluginLoader.class);
+    private final Logger logger = LoggerFactory.getLogger(MetaPluginLoader.class);
 
     /**
      * The plugin configuration.
@@ -48,7 +48,7 @@ public class PluginLoader {
      * @param config The plugins configuration.
      * @param controller The initialized global Meta controller.
      */
-    public PluginLoader(PluginConfiguration config, MetaController controller) {
+    public MetaPluginLoader(PluginConfiguration config, MetaController controller) {
         this.configuration = config;
         this.controller = controller;
     }

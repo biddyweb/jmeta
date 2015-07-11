@@ -23,7 +23,7 @@ import org.meta.controler.MetaController;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.exceptions.InvalidConfigurationException;
 import org.meta.configuration.exceptions.InvalidConfigurationFileException;
-import org.meta.plugin.PluginLoader;
+import org.meta.plugin.MetaPluginLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class JMeta {
         }
 
         logger.info("Loading plugins...");
-        PluginLoader pluginLoader = new PluginLoader(null, controller);
+        MetaPluginLoader pluginLoader = new MetaPluginLoader(null, controller);
         pluginLoader.initPlugins();
 
         logger.info("META started!");

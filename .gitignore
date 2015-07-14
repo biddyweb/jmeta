@@ -1,12 +1,13 @@
+bin
 .classpath
 .project
 .settings
-/target/
 db
 3rdparty
 nb-configuration.xml
 nativelib
 *~
 docs
-mvnTest.sh
 *.swp
+/plugins
+**/*target

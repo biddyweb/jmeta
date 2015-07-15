@@ -53,6 +53,11 @@ public class MetaConfiguration {
     private static final String MODEL_CONFIG_PATH = "conf/model.conf";
 
     /**
+     * Default Plugins config file path.
+     */
+    private static final String PLUGINS_CONFIG_PATH = "conf/plugins.conf";
+
+    /**
      * The class responsible for the dht configuration.
      */
     private static DHTConfigurationImpl dhtConfiguration;
@@ -73,6 +78,11 @@ public class MetaConfiguration {
     private static ModelConfigurationImpl modelConfiguration;
 
     /**
+     * The class responsible for the plugins configuration.
+     */
+    private static PluginConfigurationImpl pluginsConfiguration;
+
+    /**
      * Default private constructor
      */
     private MetaConfiguration() {
@@ -80,7 +90,7 @@ public class MetaConfiguration {
 
     /**
      * Initializes all configurations.
-     * 
+     *
      * @throws InvalidConfigurationFileException
      * @throws InvalidConfigurationException
      */
@@ -97,6 +107,9 @@ public class MetaConfiguration {
 
             Properties modelProps = ConfigurationUtils.createProperties(MODEL_CONFIG_PATH);
             modelConfiguration = new ModelConfigurationImpl(modelProps);
+
+            Properties pluginsProps = ConfigurationUtils.createProperties(PLUGINS_CONFIG_PATH);
+            pluginsConfiguration = new PluginConfigurationImpl(pluginsProps);
         } catch (IOException ex) {
             throw new InvalidConfigurationFileException(ex);
         }
@@ -131,6 +144,13 @@ public class MetaConfiguration {
     }
 
     /**
+     * @return The Plugins configuration object.
+     */
+    public static PluginConfigurationImpl getPluginsConfiguration() {
+        return pluginsConfiguration;
+    }
+
+    /**
      *
      * @param dhtConfiguration
      */
@@ -155,10 +175,19 @@ public class MetaConfiguration {
     }
 
     /**
-     * 
-     * @param modelConfiguration 
+     *
+     * @param modelConfiguration
      */
     public static void setModelConfiguration(ModelConfigurationImpl modelConfiguration) {
         MetaConfiguration.modelConfiguration = modelConfiguration;
     }
+
+    /**
+     * 
+     * @param pluginsConfiguration 
+     */
+    public static void setPluginsConfiguration(PluginConfigurationImpl pluginsConfiguration) {
+        MetaConfiguration.pluginsConfiguration = pluginsConfiguration;
+    }
+
 }

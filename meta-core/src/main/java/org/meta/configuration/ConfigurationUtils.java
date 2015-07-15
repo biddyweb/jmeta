@@ -59,6 +59,17 @@ public class ConfigurationUtils {
     }
 
     /**
+     * Explode the given string using the ',' delimiter.
+     * 
+     * @param value The input string to split.
+     * 
+     * @return The exploded parts.
+     */
+    public static String[] asList(String value) {
+        return value.split(",");
+    }
+    
+    /**
      * Utility function to create peers from a string representation.
      *
      * For now the following format is supported :
@@ -75,7 +86,7 @@ public class ConfigurationUtils {
      */
     public static Collection<MetaPeer> peersFromString(String peersString) throws InvalidConfigurationException {
         Collection<MetaPeer> peers = new ArrayList<>();
-        String[] knownPeersStringList = peersString.split(",");
+        String[] knownPeersStringList = asList(peersString);
 
         for (String peerString : knownPeersStringList) {
             String[] peerInfo = peerString.split(":");
@@ -105,7 +116,7 @@ public class ConfigurationUtils {
      */
     public static Collection<String> interfacesFromString(String interfacesString) throws InvalidConfigurationException {
         Collection<String> interfaces = new ArrayList<>();
-        String[] ifs = interfacesString.split(",");
+        String[] ifs = asList(interfacesString);
 
         for (String iface : ifs) {
             try {
@@ -137,7 +148,7 @@ public class ConfigurationUtils {
      */
     public static Collection<InetAddress> addressesFromString(String addressesString) throws InvalidConfigurationException {
         Collection<InetAddress> addresses = new ArrayList<>();
-        String[] addrs = addressesString.split(",");
+        String[] addrs = asList(addressesString);
         for (String addrStr : addrs) {
             try {
                 InetAddress addr = InetAddress.getByName(addrStr);

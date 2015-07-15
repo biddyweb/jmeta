@@ -27,9 +27,28 @@ import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 public class PluginConfigurationImpl extends PropertiesConfiguration {
 
     /**
-     * 
+     * The entry key in the properties files for load directory.
+     */
+    public static final String LOAD_DIRECTORY_KEY = "loadDirectory";
+
+    /**
+     * The default plugins to exclude.
+     */
+    public static final String[] DEFAULT_EXCLUDE = null;
+
+    /**
+     * The entry key in the properties files for exclude.
+     */
+    public static final String EXCLUDE_KEY = "exclude";
+
+    private String loadDirectory = null;
+    private String[] excludes = null;
+
+    /**
+     *
      * @param properties
-     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException
+     * @throws
+     * org.meta.api.configuration.exceptions.InvalidConfigurationException
      */
     public PluginConfigurationImpl(Properties properties) throws InvalidConfigurationException {
         super(properties);
@@ -38,6 +57,32 @@ public class PluginConfigurationImpl extends PropertiesConfiguration {
 
     @Override
     final void initFromProperties() throws InvalidConfigurationException {
-        //TODO
+        String excludeVal = this.getValue(EXCLUDE_KEY);
+        if (excludeVal != null) {
+            this.excludes = ConfigurationUtils.asList(excludeVal);
+        }
+        String loadDir = this.getValue(LOAD_DIRECTORY_KEY);
+        if (loadDir == null) {
+            throw new InvalidConfigurationException("The entry '" + LOAD_DIRECTORY_KEY + "' is mandatory for plugins configuration");
+        }
+        System.out.println("PLUGINS CONFIG, LOAD DIR = " + this.loadDirectory);
+        this.loadDirectory = loadDir;
     }
+
+    public String getLoadDirectory() {
+        return loadDirectory;
+    }
+
+    public void setLoadDirectory(String loadDirectory) {
+        this.loadDirectory = loadDirectory;
+    }
+
+    public String[] getExcludes() {
+        return excludes;
+    }
+
+    public void setExcludes(String[] excludes) {
+        this.excludes = excludes;
+    }
+
 }

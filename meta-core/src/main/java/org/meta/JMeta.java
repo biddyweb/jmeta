@@ -24,6 +24,7 @@ import org.meta.configuration.MetaConfiguration;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.configuration.exceptions.InvalidConfigurationFileException;
 import org.meta.plugin.MetaPluginLoader;
+import org.meta.plugin.exceptions.PluginLoadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +54,14 @@ public class JMeta {
         } catch (MetaException ex) {
             logger.error("Failed to start JMeta!", ex);
         }
-
         logger.info("Loading plugins...");
-        MetaPluginLoader pluginLoader = new MetaPluginLoader(null, controller);
-        pluginLoader.initPlugins();
-
+        MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(), controller);
+        try {
+            pluginLoader.loadPlugins();
+        } catch (PluginLoadException ex) {
+            logger.error("Failed to load plugins!", ex);
+            System.exit(1);
+        }
         logger.info("META started!");
     }
 }

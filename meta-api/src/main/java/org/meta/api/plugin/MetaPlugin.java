@@ -15,13 +15,36 @@
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.meta.plugin;
+package org.meta.api.plugin;
+
+import org.meta.api.amp.PluginAMPController;
+import org.meta.api.ws.AbstractPluginWebServiceControler;
 
 /**
- * Class representing a plugin in META.
- * 
+ * Plugin interface to be implemented by plugins for META.
+ *
  * @author nico
  */
-public class MetaPlugin {
-    
+public interface MetaPlugin {
+
+    /**
+     * @return The name of the plugin.
+     */
+    String getName();
+
+    /**
+     * Return the instance of {@link AbstractPluginWebServiceControler} defined
+     * by this plugin.
+     *
+     * @return the web service controller.
+     */
+    AbstractPluginWebServiceControler getWebServiceController();
+
+    /**
+     * Return the instance of {@link PluginAMPController} defined by this
+     * plugin.
+     * 
+     * @return the AMP controller.
+     */
+    PluginAMPController getAMPController();
 }

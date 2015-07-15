@@ -1,4 +1,0 @@
-#JMeta configuration file
-
-#The local database file.
-database_path: db/meta.kch

@@ -10,4 +10,9 @@
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>META-INF</directory>
+    </fileSet>
+  </fileSets>
 </assembly>

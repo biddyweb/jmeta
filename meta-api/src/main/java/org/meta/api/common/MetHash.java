@@ -8,77 +8,64 @@ package org.meta.api.common;
 import java.util.Random;
 
 /**
- *
- * Class representing a Hash (either an object's hash, or a piece of data's
+ * Class representing a Hash (either a model object's hash, or a piece of data's
  * hash, or anything really), to be used throughout the application.
  */
 public class MetHash extends Number implements Comparable<MetHash> {
 
-    // This key has *always* 160 bit. Do not change.
-
     /**
-     *
+     * This key has *always* 160 bit. Do not change.
      */
-        public final static int BITS = 160;
+    public final static int BITS = 160;
 
     /**
-     *
+     * The max value of a hash.
      */
     public final static MetHash MAX_VALUE = new MetHash(new int[]{-1, -1, -1, -1, -1});
 
     /**
-     *
+     * Bitwise mask for long.
      */
     protected final static long LONG_MASK = 0xffffffffL;
 
     /**
-     *
+     * Bitwise mask for byte.
      */
     protected final static int BYTE_MASK = 0xff;
 
     /**
-     *
+     * Bitwise mask for char.
      */
     protected final static int CHAR_MASK = 0xf;
 
-    // a map used for String <-> Key conversion
-
     /**
-     *
+     * a map used for String <-> Key conversion.
      */
-        protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+    protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
         'f'};
 
-    // size of the backing integer array
-
     /**
-     *
+     * size of the backing integer array.
      */
-        public final static int INT_ARRAY_SIZE = BITS / 32;
-
-    // size of a byte array
+    public final static int INT_ARRAY_SIZE = BITS / 32;
 
     /**
-     *
+     * size of a byte array.
      */
-        public final static int BYTE_ARRAY_SIZE = BITS / 8;
-
-    // backing integer array
+    public final static int BYTE_ARRAY_SIZE = BITS / 8;
 
     /**
-     *
+     * backing integer array.
      */
-        protected final int[] val;
-
-    // constants
+    protected final int[] val;
 
     /**
-     *
+     * Constants zero hash.
      */
-        public final static MetHash ZERO = new MetHash(0);
+    public final static MetHash ZERO = new MetHash(0);
 
     /**
-     *
+     * Constants one hash.
      */
     public final static MetHash ONE = new MetHash(1);
 
@@ -109,8 +96,8 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Create a Key from a string. The string has to be of length 40 to fit into
-     * the backing array. Note that this string is *always* in hexadecimal,
+     * Create a Hash from a string. The string has to be of length 40 to fit
+     * into the backing array. Note that this string is *always* in hexadecimal,
      * there is no 0x... required before the number.
      *
      * @param val The characters allowed are [0-9a-f], which is in hexadecimal
@@ -138,7 +125,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Creates a Key with the integer value
+     * Creates a Hash with the integer value.
      *
      * @param val integer value
      */
@@ -148,6 +135,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * Creates a Hash with the long value.
      *
      * @param val
      */
@@ -158,7 +146,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Creates a new Key using the byte array. The array is copied to the
+     * Creates a new Hash using the byte array. The array is copied to the
      * backing int[]
      *
      * @param val
@@ -168,7 +156,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Creates a new Key using the byte array. The array is copied to the
+     * Creates a new Hash using the byte array. The array is copied to the
      * backing int[] starting at the given offest.
      *
      * @param val
@@ -188,7 +176,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Creates a new Key with random values in it.
+     * Creates a new Hash with random values in it.
      *
      * @param random The object to create pseudo random numbers. For testing and
      * debugging, the seed in the random class can be set to make the random
@@ -215,10 +203,12 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Fills the byte array with this number
+     * Fills the given byte array with this number.
      *
-     * @param me
-     * @return 
+     * @param me The byte array to fill.
+     * @param offset The offset in the byte array.
+     *
+     * @return the last index written in the array.
      */
     public int toByteArray(byte[] me, int offset) {
         if (offset + BYTE_ARRAY_SIZE > me.length) {
@@ -264,7 +254,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Checks if this number is zero
+     * Checks if this number is zero.
      *
      * @return True if this number is zero, false otherwise
      */
@@ -296,8 +286,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * The string representation of a hash.
      *
-     * @return
+     * @return the string representation.
      */
     @Override
     public String toString() {
@@ -305,8 +296,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * The double representation of this hash.
      *
-     * @return
+     * @return The double representation.
      */
     @Override
     public double doubleValue() {
@@ -319,8 +311,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * The float representation of this hash.
      *
-     * @return
+     * @return The float representation.
      */
     @Override
     public float floatValue() {
@@ -328,8 +321,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * The int representation of this hash.
      *
-     * @return
+     * @return The int representation.
      */
     @Override
     public int intValue() {
@@ -337,8 +331,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * The long representation of this hash.
      *
-     * @return
+     * @return The long representation.
      */
     @Override
     public long longValue() {
@@ -346,8 +341,9 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     *
-     * @param o
+     * Comparison with the given hash.
+     * 
+     * @param o 
      * @return
      */
     @Override

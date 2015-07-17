@@ -36,17 +36,17 @@ import org.meta.api.common.MetHash;
 public class MetaPeer {
 
     /**
-     *
+     * The identity of the peer on the DHT.
      */
     protected Identity id;
 
     /**
-     *
+     * The InetAddress to contact this peer.
      */
     protected InetAddress address;
 
     /**
-     *
+     * The port to contact this peer.
      */
     protected short port;
 
@@ -80,56 +80,59 @@ public class MetaPeer {
     }
 
     /**
-     *
-     * @return
+     * @return the identity of this peer.
      */
-    public MetHash getID() {
+    public Identity getID() {
         return id;
     }
 
     /**
+     * Set the identity of this peer.
      *
-     * @param id
+     * @param id The new identity.
      */
     public void setId(Identity id) {
         this.id = id;
     }
 
     /**
+     * Get the address of this peer.
      *
-     * @return
+     * @return The InetAddress.
      */
     public InetAddress getAddress() {
         return address;
     }
 
     /**
+     * Set the address of this peer.
      *
-     * @param address
+     * @param address The new address.
      */
     public void setAddress(InetAddress address) {
         this.address = address;
     }
 
     /**
+     * Get the port of this peer.
      *
-     * @return
+     * @return The port.
      */
     public short getPort() {
         return port;
     }
 
     /**
+     * Set the port of this peer.
      *
-     * @param port
+     * @param port The new port.
      */
     public void setPort(short port) {
         this.port = port;
     }
 
     /**
-     *
-     * @return
+     * @return The string representation of this peer.
      */
     @Override
     public String toString() {

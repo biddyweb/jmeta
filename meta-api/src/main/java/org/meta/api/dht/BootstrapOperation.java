@@ -26,25 +26,25 @@ import java.util.Collection;
  * An asynchronous DHT operation representing the bootstrap process.
  *
  * The implementation details is let to the extending class.
+ * 
  * @author nico
  */
 public abstract class BootstrapOperation extends AsyncOperation {
 
     /**
-     *
+     * The peers we have bootstraped to.
      */
     protected Collection<MetaPeer> bootstrapTo;
 
     /**
-     *
+     * Default constructor.
      */
     public BootstrapOperation() {
         this.bootstrapTo = new ArrayList<>();
     }
 
     /**
-     *
-     * @return The list of peers the bootstrap process actually found.
+     * @return The list of peers we actually bootstraped to.
      */
     public Collection<MetaPeer> getBootstrapTo() {
         return bootstrapTo;

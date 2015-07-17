@@ -55,27 +55,27 @@ public abstract class AsyncOperation {
     };
 
     /**
-     *
+     * The lock object.
      */
     protected final Object lock = new Object();
 
     /**
-     *
+     * The Throwable that make the operation failed.
      */
     protected Throwable failedReason;
 
     /**
-     *
+     * The failure message.
      */
     protected String failedMessage;
 
     /**
-     *
+     * The current state of the operation.
      */
     protected OperationState state;
 
     /**
-     *
+     * The listeners of this operation.
      */
     protected Collection<OperationListener<? extends AsyncOperation>> listeners;
 
@@ -287,8 +287,10 @@ public abstract class AsyncOperation {
     }
 
     /**
-     *
-     * @return
+     * Wait until the operation has completed.
+     * Ignores interruptions.
+     * 
+     * @return The operation.
      */
     public AsyncOperation awaitUninterruptibly() {
         synchronized (lock) {

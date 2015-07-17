@@ -32,6 +32,7 @@ public abstract class MetaDHT {
     protected DHTConfiguration configuration;
 
     /**
+     * Initialize the DHT with the given configuration.
      * 
      * @param config The dht configuration.
      */
@@ -65,8 +66,8 @@ public abstract class MetaDHT {
     public abstract FindPeersOperation findPeers(MetHash hash);
 
     /**
-     *
      * @param hash The hash to store on the DHT.
+     * 
      * @return The asynchronous {@link StoreOperation} representing the outcome of the
      * operation.
      */

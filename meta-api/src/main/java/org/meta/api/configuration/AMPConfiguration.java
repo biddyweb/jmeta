@@ -12,13 +12,11 @@ package org.meta.api.configuration;
 public interface AMPConfiguration {
 
     /**
-     *
      * @return The amp port
      */
     Short getAmpPort();
 
     /**
-     *
      * @return The network configuration.
      */
     NetworkConfiguration getNetworkConfig();
@@ -54,5 +52,5 @@ public interface AMPConfiguration {
      * @param serverThPoolSize the serverThPoolSize to set
      */
     void setServerThPoolSize(Integer serverThPoolSize);
-    
+
 }

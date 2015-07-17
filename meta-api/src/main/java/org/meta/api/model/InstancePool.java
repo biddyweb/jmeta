@@ -1,7 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 Nicolas Michon
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.meta.api.model;
 
@@ -11,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
  *
  * @author nico
  *
@@ -23,24 +36,26 @@ public class InstancePool<T extends Searchable> {
     private static final Logger logger = LoggerFactory.getLogger(InstancePool.class);
 
     Class<T> clazz;
-    private Queue<T> instances;
+    private final Queue<T> instances;
 
     /**
+     * Creates an instance pool for the given Class.
      *
-     * @param claz
+     * @param claz The Class.
      */
     public InstancePool(Class<T> claz) {
         clazz = claz;
         instances = new LinkedList<>();
     }
 
+    /**
+     * Fills the instance pool until it is full.
+     */
     private void createInstances() {
         for (int i = 0; i < MAX_INSTANCES - instances.size(); ++i) {
             try {
                 instances.add(clazz.newInstance());
-            } catch (InstantiationException ex) {
-                logger.error(null, ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 logger.error(null, ex);
             }
         }
@@ -48,7 +63,7 @@ public class InstancePool<T extends Searchable> {
 
     /**
      *
-     * @return
+     * @return An instance of the defined class.
      */
     public T getInstance() {
         synchronized (instances) {

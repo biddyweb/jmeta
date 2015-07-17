@@ -23,37 +23,34 @@ import org.meta.api.dht.MetaPeer;
 
 /**
  * Interface for DHT configuration entries.
- * TODO javadoc
+ * 
  * @author nico
  */
 public interface DHTConfiguration {
 
     /**
-     *
-     * @return
+     * @return The configured {@link Identity}.
      */
     Identity getIdentity();
 
     /**
-     *
-     * @return
+     * @return A Collection of known peers.
      */
     Collection<MetaPeer> getKnownPeers();
 
     /**
-     *
-     * @return
+     * @return The {@link NetworkConfiguration} for the DHT.
      */
     NetworkConfiguration getNetworkConfig();
 
     /**
-     *
+     * TODO remove and always broadcast ?
      * @return
      */
     boolean isBootstrapBroadcast();
 
     /**
-     *
+     * TODO REMOVE
      * @return
      */
     boolean isDhtLocalOnly();

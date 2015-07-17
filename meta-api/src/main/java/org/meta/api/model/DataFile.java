@@ -1,17 +1,3 @@
-package org.meta.api.model;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import org.bson.BSONObject;
-import org.meta.api.common.MetHash;
-import org.meta.api.common.MetamphetUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
  *    JMeta - Meta's java implementation
  *    Copyright (C) 2013 Thomas LAVOCAT
@@ -29,17 +15,30 @@ import org.slf4j.LoggerFactory;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.api.model;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import org.bson.BSONObject;
+import org.meta.api.common.MetHash;
+import org.meta.api.common.MetamphetUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Thomas LAVOCAT
  *
- * File implementation of Data objet.
- * Point to a File on the hard drive.
+ * File implementation of Data object. Point to a File on the hard drive.
  */
 public class DataFile extends Data {
 
-    private              File file          = null;
-    private static final int  MAX_BLOC_SIZE = 65536;
+    private File file = null;
+    private static final int MAX_BLOC_SIZE = 65536;
     private Logger logger = LoggerFactory.getLogger(DataFile.class);
 
     /**
@@ -50,11 +49,11 @@ public class DataFile extends Data {
     }
 
     /**
-     * Instantiate a new Data -> use in case of creation
+     * Instantiate a new DataFile with given hash and file. Used in case of
+     * creation.
      *
-     * @param hash
-     * @param hashCode
-     * @param file
+     * @param hash The has of the DataFile.
+     * @param file The underlying File.
      */
     protected DataFile(MetHash hash, File file) {
         super(hash);
@@ -62,23 +61,23 @@ public class DataFile extends Data {
     }
 
     /**
-     * @return a File object pointing the file
+     * @return The File object pointing the file
      */
     public File getFile() {
         return file;
     }
 
     /**
-     * @param file
-     * @param a file to set, this will change the final hash, only callable in
-     * the model.
+     * @param file The new file for this DataFile.
+     *
+     * This will change the final hash, only callable in the model.
      */
     public void setFile(File file) {
         this.file = file;
         this.updateState();
         reHash();
     }
-    
+
     @Override
     public MetHash reHash() {
         hash = MetamphetUtils.makeSHAHash(file);
@@ -87,8 +86,8 @@ public class DataFile extends Data {
 
     public BSONObject getBson() {
         /**
-         * The hash is simply processed with the entire File content.
-         * TODO add specific work depending on file extension
+         * The hash is simply processed with the entire File content. TODO add
+         * specific work depending on file extension
          */
         BSONObject bsonObject = super.getBson();
         bsonObject.put("file", file.getAbsolutePath());
@@ -99,7 +98,7 @@ public class DataFile extends Data {
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
         //Test if file exist
-        if(file != null && file.exists()){
+        if (file != null && file.exists()) {
             //Put the fileName
             fragment.put("_fileName", file.getName().getBytes());
 
@@ -122,7 +121,7 @@ public class DataFile extends Data {
             FileInputStream stream;
             try {
                 stream = new FileInputStream(file);
-                
+
                 //For each blocks
                 for (int i = 1; i <= blocs; i++) {
                     //Calculate the already read bytes
@@ -133,8 +132,8 @@ public class DataFile extends Data {
                     //if i < count, the size is 64ko
                     if (i < blocs) {
                         sizeToRead = MAX_BLOC_SIZE;
-                    //if not but count was > 1, make the difference
-                    //original size - nb * 64ko
+                        //if not but count was > 1, make the difference
+                        //original size - nb * 64ko
                     } else if (blocs > 1) {
                         size = size - i * MAX_BLOC_SIZE;
                     } else {
@@ -156,7 +155,7 @@ public class DataFile extends Data {
                     fragment.put("_" + i + "_blocHash", blocHash.toByteArray());
                     //bloc
                     fragment.put("_" + i + "_contentPart", bloc);
-                    
+
                 }
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage(), e);
@@ -171,7 +170,7 @@ public class DataFile extends Data {
         super.decodefragment(fragment);
         //File is temporary create in the java.io.tmpdir
         //If no fileName, there is no file to recreate
-        if(fragment.containsKey("_fileName")){
+        if (fragment.containsKey("_fileName")) {
             String fileName = new String(fragment.get("_fileName"));
             file = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
 

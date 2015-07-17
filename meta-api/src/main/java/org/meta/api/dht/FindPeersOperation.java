@@ -22,8 +22,8 @@ import java.util.Collection;
 
 /**
  *
- * An asynchronous DHT operation representing the process of finding peers
- * for a given hash.
+ * An asynchronous DHT operation representing the process of finding peers for a
+ * given hash.
  *
  * The implementation details is let to the extending class.
  *
@@ -32,13 +32,12 @@ import java.util.Collection;
 public abstract class FindPeersOperation extends AsyncOperation {
 
     /**
-     *
+     * The peers found.
      */
     protected Collection<MetaPeer> peers;
 
     /**
-     *
-     * @return
+     * @return The peers found.
      */
     public Collection<MetaPeer> getPeers() {
         return peers;

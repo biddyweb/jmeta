@@ -17,9 +17,8 @@ public interface WSConfiguration {
     NetworkConfiguration getNetworkConfig();
 
     /**
-     *
      * @param networkConfig the network configuration to use.
      */
     void setNetworkConfig(NetworkConfiguration networkConfig);
-    
+
 }

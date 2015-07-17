@@ -22,23 +22,22 @@ import org.slf4j.LoggerFactory;
  *
  * :D
  *
- * Class holding static Utility methods.
+ * Class holding static Utility methods for hash and SHA1.
  */
 public class MetamphetUtils {
 
     private static final Random random = new Random();
-    private static Logger logger = LoggerFactory.getLogger(MetamphetUtils.class);
-
-//    public static Number160 toNumer160(MetHash hash) {
-//        return new Number160(hash.toByteArray());
-//    }
+    private static final Logger logger = LoggerFactory.getLogger(MetamphetUtils.class);
 
     /**
+     * Computes a {@link MetHash} for the given file.
      *
-     * @param file
-     * @return
+     *
+     * @param file The file to hash.
+     *
+     * @return the hash of the file, or the ZERO value of a MetHash if an error
+     * occurs.
      */
-    
     public static MetHash makeSHAHash(File file) {
         FileInputStream fis = null;
         FileChannel channel = null;
@@ -66,9 +65,12 @@ public class MetamphetUtils {
     }
 
     /**
+     * Computes a {@link MetHash} for the given file.
      *
-     * @param strInput
-     * @return
+     * @param strInput The string to hash.
+     *
+     * @return the hash of the file, or the ZERO value of a MetHash if an error
+     * occurs.
      */
     public static MetHash makeSHAHash(String strInput) {
         byte[] buffer = strInput.getBytes();
@@ -76,9 +78,12 @@ public class MetamphetUtils {
     }
 
     /**
+     * Computes a {@link MetHash} for the given byte buffer.
      *
-     * @param buffer
-     * @return
+     * @param buffer The buffer to hash.
+     *
+     * @return the hash of the buffer, or the ZERO value of a MetHash if an
+     * error occurs.
      */
     public static MetHash makeSHAHash(ByteBuffer buffer) {
         try {
@@ -88,33 +93,43 @@ public class MetamphetUtils {
             return new MetHash(digest);
         } catch (NoSuchAlgorithmException e) {
             logger.error(e.getMessage(), e);
-            return new MetHash();
+            return MetHash.ZERO;
         }
     }
 
     /**
+     * Computes a {@link MetHash} for the given byte array.
      *
-     * @param buffer
-     * @return
+     * @param buffer The array to hash.
+     *
+     * @return the hash of the byte array, or the ZERO value of a MetHash if an
+     * error occurs.
      */
     public static MetHash makeSHAHash(byte[] buffer) {
         return makeSHAHash(ByteBuffer.wrap(buffer));
     }
 
     /**
+     * Computes a {@link MetHash} for the given byte array with given offset and
+     * length.
      *
-     * @param buffer
-     * @param offset
-     * @param length
-     * @return
+     * @param buffer The array to hash.
+     * @param offset The offset in buffer.
+     * @param length The length of the portion to be hashed inside buffer.
+     *
+     * @return the hash of the byte array, or the ZERO value of a MetHash if an
+     * error occurs.
      */
     public static MetHash makeSHAHash(byte[] buffer, int offset, int length) {
         return makeSHAHash(ByteBuffer.wrap(buffer, offset, length));
     }
 
     /**
-     *
-     * @return
+     * Creates a random hash.
+     * 
+     * TODO improve random ?
+     * 
+     * @return The randomly initialized hash.
      */
     public static MetHash createRandomHash() {
         // TODO: this hardcoded, bad style
@@ -125,19 +140,23 @@ public class MetamphetUtils {
     }
 
     /**
+     * Checks if the given hash equals the hash of the given byte array.
+     * 
+     * @param hash The hash to check.
+     * @param bloc The block to hash and check.
      *
-     * @param hash
-     * @param bloc
-     *
-     * @return true if the bloc's hash matches the given expected hash, false otherwise.
+     * @return true if the bloc's hash matches the given expected hash, false
+     * otherwise.
      */
     public static boolean checkHash(String hash, byte[] bloc) {
+        //TODO
         return true;
     }
 
     /**
-     *
-     * @param closables
+     * Utility function to close all given Closeable at once.
+     * 
+     * @param closables The closeable array to close.
      */
     public static void close(Closeable... closables) {
         // best effort close;

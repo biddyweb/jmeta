@@ -1,11 +1,3 @@
-package org.meta.api.model;
-
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import org.bson.BSONObject;
-import org.meta.api.common.MetHash;
-import org.meta.api.common.MetamphetUtils;
-
 /*
  *    JMeta - Meta's java implementation
  *    Copyright (C) 2013 Thomas LAVOCAT
@@ -23,17 +15,24 @@ import org.meta.api.common.MetamphetUtils;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program. HashMap If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.api.model;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import org.bson.BSONObject;
+import org.meta.api.common.MetHash;
+import org.meta.api.common.MetamphetUtils;
+
 /**
  *
  * @author Thomas LAVOCAT
  *
- * String implementation of a Data object
- * used to carry a simple text message
+ * String implementation of a Data object used to carry a simple text message.
  */
 public class DataString extends Data {
 
-    private              String string        = null;
-    private static final int    MAX_BLOC_SIZE = 65536;
+    private String string = null;
+    private static final int MAX_BLOC_SIZE = 65536;
 
     /**
      * needed for java Reflexion
@@ -64,6 +63,7 @@ public class DataString extends Data {
     /**
      * As the String is used to process the hash calculation, this setter is
      * only callable from the model package.
+     *
      * @param string
      * @param file the file to set.
      */
@@ -72,6 +72,7 @@ public class DataString extends Data {
         this.updateState();
         reHash();
     }
+
     @Override
     public MetHash reHash() {
         //hash is made by hashing the String value
@@ -88,11 +89,11 @@ public class DataString extends Data {
     @Override
     protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
-        
+
         byte[] totalString = string.getBytes();
-        
+
         //Count how many blocks we have in the String
-        long size  = totalString.length;
+        long size = totalString.length;
         long count = size / MAX_BLOC_SIZE;
 
         if (count < 1) {

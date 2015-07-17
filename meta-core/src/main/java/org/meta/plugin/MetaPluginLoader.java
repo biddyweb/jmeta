@@ -40,9 +40,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The META plugin load mechanism.
  *
- * Takes a directory from the configuration and tries to load plugins 
- * from all jars found.
- * TODO add exclude property.
+ * Takes a directory from the configuration and tries to load plugins from all
+ * jars found. TODO add exclude property.
  */
 public class MetaPluginLoader {
 
@@ -90,8 +89,8 @@ public class MetaPluginLoader {
 
         if (!loadFileDir.isDirectory()) {
             throw new InvalidConfigurationException("Provided loadDirectory ('"
-                    + this.configuration.getLoadDirectory()
-                    + "') is not a directory!");
+                + this.configuration.getLoadDirectory()
+                + "') is not a directory!");
         }
         File[] files = loadFileDir.listFiles(new FileFilter() {
 
@@ -103,12 +102,13 @@ public class MetaPluginLoader {
                 return file.getName().endsWith(".jar");
             }
         });
-        if (files.length == 0) {
-            throw new InvalidConfigurationException("No plugins found in loadDirectory ('"
-                    + this.configuration.getLoadDirectory()
-                    + "')");
-        }
         ArrayList<URL> jarUrls = new ArrayList<>();
+        if (files.length == 0) {
+//            throw new InvalidConfigurationException("No plugins found in loadDirectory ('"
+//                    + this.configuration.getLoadDirectory()
+//                    + "')");
+            logger.warn("No plugins found!");
+        }
         for (File jar : files) {
             jarUrls.add(jar.toURI().toURL());
         }

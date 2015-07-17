@@ -24,14 +24,27 @@ import org.meta.api.common.exceptions.MetaException;
  */
 public class ModelException extends MetaException {
 
+    /**
+     *
+     * @param message
+     */
     public ModelException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param t
+     */
     public ModelException(Throwable t) {
         super(t);
     }
 
+    /**
+     *
+     * @param message
+     * @param t
+     */
     public ModelException(String message, Throwable t) {
         super(t);
     }

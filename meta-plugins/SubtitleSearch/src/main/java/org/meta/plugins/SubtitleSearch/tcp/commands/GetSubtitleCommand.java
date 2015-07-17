@@ -7,6 +7,10 @@ import org.meta.api.common.MetHash;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.Searchable;
 
+/**
+ *
+ * @author nico
+ */
 public class GetSubtitleCommand extends PluginAMPCommand{
 
     @Override

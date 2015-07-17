@@ -9,8 +9,14 @@ import org.meta.api.common.MetHash;
  */
 public abstract class PluginAMPCommand {
 
+    /**
+     *
+     */
     protected PluginAMPController myTCPControler = null;
 
+    /**
+     *
+     */
     public PluginAMPCommand(){}
     
     /**

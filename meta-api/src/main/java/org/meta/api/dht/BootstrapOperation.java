@@ -30,8 +30,14 @@ import java.util.Collection;
  */
 public abstract class BootstrapOperation extends AsyncOperation {
 
+    /**
+     *
+     */
     protected Collection<MetaPeer> bootstrapTo;
 
+    /**
+     *
+     */
     public BootstrapOperation() {
         this.bootstrapTo = new ArrayList<>();
     }

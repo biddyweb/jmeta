@@ -5,6 +5,10 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SimpleChat.webservice.commands.Chat;
 
+/**
+ *
+ * @author nico
+ */
 public class SimpleChatWebServiceControler extends AbstractPluginWebServiceControler{
 
     @Override

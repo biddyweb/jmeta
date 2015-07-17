@@ -19,7 +19,6 @@ public class RadioList extends InterfaceField {
      * 
      * @param id        Unique ID
      * @param label     Label
-     * @param radios    list of {@link RadioButton}
      */
     public RadioList(String id, String label) {
         super(id, label);

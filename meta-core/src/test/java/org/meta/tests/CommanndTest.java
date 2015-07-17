@@ -6,6 +6,10 @@ import org.meta.api.common.MetHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class CommanndTest extends PluginAMPCommand {
     private Logger logger = LoggerFactory.getLogger(CommanndTest.class);
 

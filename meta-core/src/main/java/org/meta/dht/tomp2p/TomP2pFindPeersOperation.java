@@ -42,6 +42,11 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
     private final TomP2pDHT dht;
     private final Number160 hash;
 
+    /**
+     *
+     * @param dht
+     * @param hash
+     */
     public TomP2pFindPeersOperation(TomP2pDHT dht, Number160 hash) {
         this.dht = dht;
         this.hash = hash;

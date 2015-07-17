@@ -25,6 +25,10 @@ import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class AMPAnswerParserTest extends MetaBaseTests {
 
     private Search search;
@@ -40,6 +44,9 @@ public class AMPAnswerParserTest extends MetaBaseTests {
     private KyotoCabinetModel  model  = null;
     private ModelFactory factory;
 
+    /**
+     *
+     */
     public AMPAnswerParserTest(){
         try {
             model = new KyotoCabinetModel(MetaConfiguration.getModelConfiguration());
@@ -88,6 +95,9 @@ public class AMPAnswerParserTest extends MetaBaseTests {
         }
     }
     
+    /**
+     *
+     */
     @Test
     public void test() {
         datas = new ArrayList<Searchable>();

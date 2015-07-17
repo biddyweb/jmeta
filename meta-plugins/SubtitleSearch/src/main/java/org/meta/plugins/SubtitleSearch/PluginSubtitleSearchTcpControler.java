@@ -6,6 +6,10 @@ import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.SubtitleSearch.tcp.commands.GetSubtitleCommand;
 import org.meta.plugins.SubtitleSearch.tcp.commands.SearchSubtitleCommand;
 
+/**
+ *
+ * @author nico
+ */
 public class PluginSubtitleSearchTcpControler extends PluginAMPController {
 
     @Override

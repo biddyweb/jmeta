@@ -35,6 +35,9 @@ public class AskHandlerThread implements Runnable {
         this.client = client;
     }
 
+    /**
+     *
+     */
     @Override
     public void run() {
         InputStream inputStream = null;

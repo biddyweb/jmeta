@@ -21,6 +21,10 @@ import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class AddSubtitle extends AbstractWebService{
 
     InterfaceDescriptor  initialDescriptor   = null;
@@ -33,6 +37,10 @@ public class AddSubtitle extends AbstractWebService{
     
     private Logger logger = LoggerFactory.getLogger(AddSubtitle.class);
     
+    /**
+     *
+     * @param controler
+     */
     public AddSubtitle(AbstractPluginWebServiceControler controler){
         super(controler);
         factory = this.controler.getModel().getFactory();
@@ -119,10 +127,21 @@ public class AddSubtitle extends AbstractWebService{
     @Override
     public void callbackFailure(String failureMessage) {}
     
+    /**
+     *
+     * @param operation
+     * @param s
+     */
     @Override
     protected void callbackFailedToPush(AsyncOperation operation, Searchable s) {
         output.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
     }
+
+    /**
+     *
+     * @param operation
+     * @param s
+     */
     @Override
     protected void callbackSuccessToPush(AsyncOperation operation, Searchable s) {
         output.append("Success to push "+s.getHash());

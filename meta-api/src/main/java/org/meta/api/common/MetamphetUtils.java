@@ -33,6 +33,12 @@ public class MetamphetUtils {
 //        return new Number160(hash.toByteArray());
 //    }
 
+    /**
+     *
+     * @param file
+     * @return
+     */
+    
     public static MetHash makeSHAHash(File file) {
         FileInputStream fis = null;
         FileChannel channel = null;
@@ -59,11 +65,21 @@ public class MetamphetUtils {
         }
     }
 
+    /**
+     *
+     * @param strInput
+     * @return
+     */
     public static MetHash makeSHAHash(String strInput) {
         byte[] buffer = strInput.getBytes();
         return makeSHAHash(buffer);
     }
 
+    /**
+     *
+     * @param buffer
+     * @return
+     */
     public static MetHash makeSHAHash(ByteBuffer buffer) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -76,14 +92,30 @@ public class MetamphetUtils {
         }
     }
 
+    /**
+     *
+     * @param buffer
+     * @return
+     */
     public static MetHash makeSHAHash(byte[] buffer) {
         return makeSHAHash(ByteBuffer.wrap(buffer));
     }
 
+    /**
+     *
+     * @param buffer
+     * @param offset
+     * @param length
+     * @return
+     */
     public static MetHash makeSHAHash(byte[] buffer, int offset, int length) {
         return makeSHAHash(ByteBuffer.wrap(buffer, offset, length));
     }
 
+    /**
+     *
+     * @return
+     */
     public static MetHash createRandomHash() {
         // TODO: this hardcoded, bad style
         byte[] me = new byte[20];
@@ -103,6 +135,10 @@ public class MetamphetUtils {
         return true;
     }
 
+    /**
+     *
+     * @param closables
+     */
     public static void close(Closeable... closables) {
         // best effort close;
         for (Closeable closable : closables) {

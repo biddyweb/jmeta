@@ -36,6 +36,10 @@ import org.meta.api.common.MetHash;
  * 
  */
 public abstract class Data extends Searchable {
+
+    /**
+     *
+     */
     protected ArrayList<MetaProperty> description = null;
 
     /**
@@ -49,6 +53,7 @@ public abstract class Data extends Searchable {
     /**
      * Instantiate a new Data -> use in case of creation
      *
+     * @param hash
      * @param hashCode
      * @param file
      */

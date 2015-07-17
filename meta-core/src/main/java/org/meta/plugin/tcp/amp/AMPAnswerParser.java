@@ -25,6 +25,12 @@ public class AMPAnswerParser extends AMPParser {
     private String answer;
     private ArrayList<Searchable> datas;
 
+    /**
+     *
+     * @param bs
+     * @param factory
+     * @throws InvalidAMPCommand
+     */
     public AMPAnswerParser(byte[] bs, ModelFactory factory) throws InvalidAMPCommand {
         super(bs, factory);
     }

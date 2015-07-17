@@ -14,9 +14,24 @@ package org.meta.api.model;
  */
 public enum ModelType {
 
+    /**
+     *
+     */
     SEARCH(Search.class),
+
+    /**
+     *
+     */
     DATASTRING(DataString.class),
+
+    /**
+     *
+     */
     DATAFILE(DataFile.class),
+
+    /**
+     *
+     */
     METADATA(MetaData.class);
 
     private Class<?> clazz;
@@ -25,10 +40,19 @@ public enum ModelType {
         this.clazz = claz;
     }
 
+    /**
+     *
+     * @return
+     */
     public Class<?> getTypeClass() {
         return this.clazz;
     }
 
+    /**
+     *
+     * @param claz
+     * @return
+     */
     public static ModelType fromClass(Class<?> claz) {
         for (ModelType type : ModelType.values()) {
             if (type.getTypeClass() == claz) {

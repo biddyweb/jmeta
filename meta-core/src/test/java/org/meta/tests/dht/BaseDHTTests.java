@@ -31,9 +31,19 @@ import org.meta.tests.MetaBaseTests;
 
 /**
  *
+ * @author nico
  */
 public abstract class BaseDHTTests extends MetaBaseTests {
 
+    /**
+     *
+     * @param id
+     * @param port
+     * @param peers
+     * @param broadcast
+     * @param localOnly
+     * @return
+     */
     public static DHTConfigurationImpl createDhtConfig(Identity id, short port, Collection<MetaPeer> peers, boolean broadcast, boolean localOnly) {
         DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
 

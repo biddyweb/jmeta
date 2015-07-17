@@ -9,9 +9,16 @@ import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class AMPAskParserTest {
     private Logger logger = LoggerFactory.getLogger(AMPAskParserTest.class);
 
+    /**
+     *
+     */
     @Test
     public void ampPerserTest() {
         AMPAskBuilder factory = new AMPAskBuilder(

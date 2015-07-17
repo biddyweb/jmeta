@@ -8,6 +8,10 @@ import org.meta.api.model.Data;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 
+/**
+ *
+ * @author nico
+ */
 public class SearchSubtitleCommand extends PluginAMPCommand {
 
     @Override

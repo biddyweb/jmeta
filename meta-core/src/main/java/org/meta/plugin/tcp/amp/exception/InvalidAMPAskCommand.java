@@ -1,5 +1,9 @@
 package org.meta.plugin.tcp.amp.exception;
 
+/**
+ *
+ * @author nico
+ */
 public class InvalidAMPAskCommand extends InvalidAMPCommand {
 
     /**
@@ -7,6 +11,13 @@ public class InvalidAMPAskCommand extends InvalidAMPCommand {
      */
     private static final long serialVersionUID = 1L;
 
+    /**
+     *
+     * @param ask
+     * @param plugin
+     * @param command
+     * @param hash
+     */
     public InvalidAMPAskCommand(    String ask,
                                     String plugin,
                                     String command,

@@ -6,6 +6,10 @@ import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SimpleHashMap.webservicecommands.Get;
 import org.meta.plugins.SimpleHashMap.webservicecommands.Put;
 
+/**
+ *
+ * @author nico
+ */
 public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceControler{
 
     @Override

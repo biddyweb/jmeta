@@ -31,8 +31,15 @@ import java.util.Collection;
  */
 public abstract class FindPeersOperation extends AsyncOperation {
 
+    /**
+     *
+     */
     protected Collection<MetaPeer> peers;
 
+    /**
+     *
+     * @return
+     */
     public Collection<MetaPeer> getPeers() {
         return peers;
     }

@@ -5,6 +5,10 @@ import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.SimpleChat.tcp.commands.GetLastMessage;
 
+/**
+ *
+ * @author nico
+ */
 public class SimpleChatTcpControler extends PluginAMPController {
 
     @Override

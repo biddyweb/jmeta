@@ -15,6 +15,9 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class SimpleHashMap implements MetaPlugin {
 
+    /**
+     *
+     */
     public static String NAME = "SimpleHashMap";
 
     private PluginAMPController ampController;

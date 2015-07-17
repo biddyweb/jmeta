@@ -131,51 +131,91 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Collection<MetaPeer> getKnownPeers() {
         return knownPeers;
     }
 
+    /**
+     *
+     * @param knwonPeers
+     */
     @Override
     public void setKnwonPeers(Collection<MetaPeer> knwonPeers) {
         this.knownPeers = knwonPeers;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public boolean isBootstrapBroadcast() {
         return bootstrapBroadcast;
     }
 
+    /**
+     *
+     * @param bootstrapBroadcast
+     */
     @Override
     public void setBootstrapBroadcast(boolean bootstrapBroadcast) {
         this.bootstrapBroadcast = bootstrapBroadcast;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public boolean isDhtLocalOnly() {
         return dhtLocalOnly;
     }
 
+    /**
+     *
+     * @param dhtLocalOnly
+     */
     @Override
         public void setDhtLocalOnly(boolean dhtLocalOnly) {
         this.dhtLocalOnly = dhtLocalOnly;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Identity getIdentity() {
         return identity;
     }
 
+    /**
+     *
+     * @param identity
+     */
     @Override
     public void setIdentity(Identity identity) {
         this.identity = identity;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public NetworkConfiguration getNetworkConfig() {
         return networkConfig;
     }
 
+    /**
+     *
+     * @param networkConfig
+     */
     @Override
     public void setNetworkConfig(NetworkConfiguration networkConfig) {
         this.networkConfig = (NetworkConfigurationImpl) networkConfig;

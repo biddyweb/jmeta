@@ -19,6 +19,10 @@ import org.meta.model.exceptions.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class ControlerTest extends MetaBaseTests {
 
     private final Logger logger = LoggerFactory.getLogger(MetaController.class);
@@ -28,9 +32,16 @@ public class ControlerTest extends MetaBaseTests {
     private static KyotoCabinetModel model;
     private static MetaController controller;
 
+    /**
+     *
+     * @throws ModelException
+     */
     public ControlerTest() throws ModelException {
     }
 
+    /**
+     *
+     */
     @BeforeClass
     public static void initControllerTest() {
         try {
@@ -45,6 +56,9 @@ public class ControlerTest extends MetaBaseTests {
         }
     }
 
+    /**
+     *
+     */
     @Test
     public void networkTest() {
         try {
@@ -85,6 +99,9 @@ public class ControlerTest extends MetaBaseTests {
         }
     }
 
+    /**
+     *
+     */
     public void close() {
         this.controller.getModel().remove(data.getHash());
         controller.stop();

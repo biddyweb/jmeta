@@ -15,11 +15,17 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class PluginExemple implements MetaPlugin {
 
+    /**
+     *
+     */
     public static String NAME = "PluginExample";
 
     private AbstractPluginWebServiceControler wsController;
     private PluginAMPController ampController;
 
+    /**
+     *
+     */
     public PluginExemple() {
         wsController = new PluginExempleWebServiceControler();
         ampController = new PluginExempleTcpControler();

@@ -45,6 +45,7 @@ public class TextOutput extends InterfaceField {
 
     /**
      * serialize as JSON
+     * @return 
      */
     public BasicBSONObject toJson() {
         //get mama's json append the string buffer

@@ -21,6 +21,10 @@ import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class Get extends AbstractWebService{
 
     InterfaceDescriptor  initialDescriptor   = null;
@@ -30,6 +34,10 @@ public class Get extends AbstractWebService{
     ArrayList<DataString>localResults        = null;
     private Logger logger = LoggerFactory.getLogger(Get.class);
     
+    /**
+     *
+     * @param controler
+     */
     public Get(AbstractPluginWebServiceControler controler){
         super(controler);
         distantResults = new ArrayList<DataString>();

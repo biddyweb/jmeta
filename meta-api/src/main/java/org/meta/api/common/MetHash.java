@@ -15,32 +15,71 @@ import java.util.Random;
 public class MetHash extends Number implements Comparable<MetHash> {
 
     // This key has *always* 160 bit. Do not change.
-    public final static int BITS = 160;
 
+    /**
+     *
+     */
+        public final static int BITS = 160;
+
+    /**
+     *
+     */
     public final static MetHash MAX_VALUE = new MetHash(new int[]{-1, -1, -1, -1, -1});
 
+    /**
+     *
+     */
     protected final static long LONG_MASK = 0xffffffffL;
 
+    /**
+     *
+     */
     protected final static int BYTE_MASK = 0xff;
 
+    /**
+     *
+     */
     protected final static int CHAR_MASK = 0xf;
 
     // a map used for String <-> Key conversion
-    protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+
+    /**
+     *
+     */
+        protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
         'f'};
 
     // size of the backing integer array
-    public final static int INT_ARRAY_SIZE = BITS / 32;
+
+    /**
+     *
+     */
+        public final static int INT_ARRAY_SIZE = BITS / 32;
 
     // size of a byte array
-    public final static int BYTE_ARRAY_SIZE = BITS / 8;
+
+    /**
+     *
+     */
+        public final static int BYTE_ARRAY_SIZE = BITS / 8;
 
     // backing integer array
-    protected final int[] val;
+
+    /**
+     *
+     */
+        protected final int[] val;
 
     // constants
-    public final static MetHash ZERO = new MetHash(0);
 
+    /**
+     *
+     */
+        public final static MetHash ZERO = new MetHash(0);
+
+    /**
+     *
+     */
     public final static MetHash ONE = new MetHash(1);
 
     /**
@@ -108,6 +147,10 @@ public class MetHash extends Number implements Comparable<MetHash> {
         this.val[INT_ARRAY_SIZE - 1] = val;
     }
 
+    /**
+     *
+     * @param val
+     */
     public MetHash(final long val) {
         this.val = new int[INT_ARRAY_SIZE];
         this.val[INT_ARRAY_SIZE - 1] = (int) val;
@@ -130,6 +173,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      *
      * @param val
      * @param offset The offset where to start
+     * @param length
      */
     public MetHash(final byte[] val, final int offset, final int length) {
         if (length > 20) {
@@ -174,6 +218,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      * Fills the byte array with this number
      *
      * @param me
+     * @return 
      */
     public int toByteArray(byte[] me, int offset) {
         if (offset + BYTE_ARRAY_SIZE > me.length) {
@@ -250,11 +295,19 @@ public class MetHash extends Number implements Comparable<MetHash> {
         return bits;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return toString(true);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public double doubleValue() {
         double d = 0;
@@ -265,21 +318,38 @@ public class MetHash extends Number implements Comparable<MetHash> {
         return d;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public float floatValue() {
         return (float) doubleValue();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int intValue() {
         return this.val[INT_ARRAY_SIZE - 1];
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public long longValue() {
         return ((this.val[INT_ARRAY_SIZE - 1] & LONG_MASK) << 32) + (this.val[INT_ARRAY_SIZE - 2] & LONG_MASK);
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
     @Override
     public int compareTo(final MetHash o) {
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
@@ -294,6 +364,11 @@ public class MetHash extends Number implements Comparable<MetHash> {
         return 0;
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     */
     @Override
     public boolean equals(final Object obj) {
         if (obj == this) {
@@ -311,6 +386,10 @@ public class MetHash extends Number implements Comparable<MetHash> {
         return true;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int hashCode() {
         int hashCode = 0;

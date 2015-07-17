@@ -20,7 +20,10 @@ import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ *
+ * @author nico
+ */
 public class AnswerSenderThread implements Runnable {
 
     private InetAddress             adress      = null;
@@ -37,6 +40,7 @@ public class AnswerSenderThread implements Runnable {
      * @param adress    address to contact
      * @param port      contact port
      * @param listenner who to call back
+     * @param factory
      */
     public AnswerSenderThread(  AMPAskBuilder ask,
                                 InetAddress adress,
@@ -52,6 +56,9 @@ public class AnswerSenderThread implements Runnable {
         this.factory   = factory;
     }
 
+    /**
+     *
+     */
     public void run() {
         try {
             // Open a connection to the pair

@@ -41,6 +41,7 @@ public class SubmitToButton extends InterfaceButton{
 
     /**
      * Serialize as JSON
+     * @return 
      */
     public BasicBSONObject toJson() {
         BasicBSONObject o = super.toJson();

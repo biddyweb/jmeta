@@ -28,24 +28,64 @@ import org.meta.api.dht.MetaPeer;
  */
 public interface DHTConfiguration {
 
+    /**
+     *
+     * @return
+     */
     Identity getIdentity();
 
+    /**
+     *
+     * @return
+     */
     Collection<MetaPeer> getKnownPeers();
 
+    /**
+     *
+     * @return
+     */
     NetworkConfiguration getNetworkConfig();
 
+    /**
+     *
+     * @return
+     */
     boolean isBootstrapBroadcast();
 
+    /**
+     *
+     * @return
+     */
     boolean isDhtLocalOnly();
 
+    /**
+     *
+     * @param bootstrapBroadcast
+     */
     void setBootstrapBroadcast(boolean bootstrapBroadcast);
 
+    /**
+     *
+     * @param dhtLocalOnly
+     */
     void setDhtLocalOnly(boolean dhtLocalOnly);
 
+    /**
+     *
+     * @param identity
+     */
     void setIdentity(Identity identity);
 
+    /**
+     *
+     * @param knwonPeers
+     */
     void setKnwonPeers(Collection<MetaPeer> knwonPeers);
 
+    /**
+     *
+     * @param networkConfig
+     */
     void setNetworkConfig(NetworkConfiguration networkConfig);
 
 }

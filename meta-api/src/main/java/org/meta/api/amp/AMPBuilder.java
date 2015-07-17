@@ -25,6 +25,10 @@ import java.util.LinkedHashMap;
  * @author faquin
  */
 public abstract class AMPBuilder {
+
+    /**
+     *
+     */
     protected byte[]    message     =     null;
 
     /**
@@ -39,7 +43,6 @@ public abstract class AMPBuilder {
      * @param ask
      * @param command
      * @param map
-     * @return
      */
     protected void build(LinkedHashMap<String, byte[]> map)
     {

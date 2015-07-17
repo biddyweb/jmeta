@@ -46,6 +46,7 @@ public class DataString extends Data {
      * Instantiate a new Data -> use in case of creation
      *
      * @param hashCode
+     * @param string
      * @param file
      */
     protected DataString(MetHash hash, String string) {
@@ -63,6 +64,7 @@ public class DataString extends Data {
     /**
      * As the String is used to process the hash calculation, this setter is
      * only callable from the model package.
+     * @param string
      * @param file the file to set.
      */
     public void setString(String string) {

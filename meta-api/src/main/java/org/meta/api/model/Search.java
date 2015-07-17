@@ -85,6 +85,9 @@ public class Search extends Searchable {
     private String       tmpSourceHash  = null;
     private String       tmpMetaDataHash  = null;
 
+    /**
+     *
+     */
     protected Search() {
         super();
         linkedData    = new HashMap<MetHash, Data>();
@@ -253,10 +256,18 @@ public class Search extends Searchable {
         return tmpLinkedData;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTmpSourceHash() {
         return tmpSourceHash;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTmpmetaDataHash() {
         return tmpMetaDataHash;
     }

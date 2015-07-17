@@ -52,7 +52,15 @@ public class DHTStoreTest extends BaseDHTTests {
     private static final short DHT2_PORT = 15001;
     private static String DHT1_ADDR;// = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT1_PORT;
     private static String DHT2_ADDR;// = InetAddress.getLoopbackAddress().getHostAddress() + ":" + DHT2_PORT;
+
+    /**
+     *
+     */
     public static String DHT1_PEER_STRING;
+
+    /**
+     *
+     */
     public static String DHT2_PEER_STRING;
 
     private static final short FIRST_AMP_PORT = 4242;
@@ -68,6 +76,10 @@ public class DHTStoreTest extends BaseDHTTests {
     private static DHTConfigurationImpl configurationDht1;
     private static DHTConfigurationImpl configurationDht2;
 
+    /**
+     *
+     * @throws IOException
+     */
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
@@ -101,6 +113,9 @@ public class DHTStoreTest extends BaseDHTTests {
         }
     }
 
+    /**
+     *
+     */
     @AfterClass
     public static void shutDownDhtNodes() {
         dhtNode1.stop();

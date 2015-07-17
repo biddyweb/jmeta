@@ -52,6 +52,7 @@ public class DataFile extends Data {
     /**
      * Instantiate a new Data -> use in case of creation
      *
+     * @param hash
      * @param hashCode
      * @param file
      */
@@ -68,6 +69,7 @@ public class DataFile extends Data {
     }
 
     /**
+     * @param file
      * @param a file to set, this will change the final hash, only callable in
      * the model.
      */

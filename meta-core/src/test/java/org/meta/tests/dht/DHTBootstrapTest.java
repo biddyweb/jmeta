@@ -41,23 +41,72 @@ import org.slf4j.LoggerFactory;
  */
 public class DHTBootstrapTest extends BaseDHTTests {
 
+    /**
+     *
+     */
     public static final short DHT1_PORT = 15000;
+
+    /**
+     *
+     */
     public static final short DHT2_PORT = 15001;
+
+    /**
+     *
+     */
     public static InetAddress DHT1_PEER_ADDR;
+
+    /**
+     *
+     */
     public static InetAddress DHT2_PEER_ADDR;
+
+    /**
+     *
+     */
     public static String DHT1_PEER_STRING;
+
+    /**
+     *
+     */
     public static String DHT2_PEER_STRING;
 
+    /**
+     *
+     */
     protected static MetHash validHash = new MetHash(42);
+
+    /**
+     *
+     */
     protected static MetHash invalidHash = new MetHash(43);
 
+    /**
+     *
+     */
     protected static MetaDHT dhtNode1;
+
+    /**
+     *
+     */
     protected static MetaDHT dhtNode2;
+
+    /**
+     *
+     */
     protected static DHTConfigurationImpl configurationDht1;
+
+    /**
+     *
+     */
     protected static DHTConfigurationImpl configurationDht2;
 
     private static final Logger logger = LoggerFactory.getLogger(DHTBootstrapTest.class);
 
+    /**
+     *
+     * @throws IOException
+     */
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
@@ -88,6 +137,9 @@ public class DHTBootstrapTest extends BaseDHTTests {
         }
     }
 
+    /**
+     *
+     */
     @AfterClass
     public static void shutDownDhtNodes() {
         dhtNode1.stop();

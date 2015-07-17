@@ -28,6 +28,10 @@ import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class Chat extends AbstractWebService {
 
     InterfaceDescriptor initialDescriptor = null;
@@ -41,6 +45,10 @@ public class Chat extends AbstractWebService {
     private SimpleDateFormat sdf = null;
     private Logger logger = LoggerFactory.getLogger(Chat.class);
 
+    /**
+     *
+     * @param controler
+     */
     public Chat(AbstractPluginWebServiceControler controler) {
         super(controler);
         results = new TreeMap<Date, String>();

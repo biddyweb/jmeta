@@ -19,6 +19,7 @@ package org.meta.dht.exceptions;
 
 /**
  *
+ * @author nico
  */
 public class BootstrapException extends DHTException {
 

@@ -69,18 +69,34 @@ public class PluginConfigurationImpl extends PropertiesConfiguration {
         this.loadDirectory = loadDir;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLoadDirectory() {
         return loadDirectory;
     }
 
+    /**
+     *
+     * @param loadDirectory
+     */
     public void setLoadDirectory(String loadDirectory) {
         this.loadDirectory = loadDirectory;
     }
 
+    /**
+     *
+     * @return
+     */
     public String[] getExcludes() {
         return excludes;
     }
 
+    /**
+     *
+     * @param excludes
+     */
     public void setExcludes(String[] excludes) {
         this.excludes = excludes;
     }

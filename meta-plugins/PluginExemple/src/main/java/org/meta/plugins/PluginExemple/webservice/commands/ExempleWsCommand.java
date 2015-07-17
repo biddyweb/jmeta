@@ -11,12 +11,20 @@ import org.meta.api.ws.forms.fields.TextOutput;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
 
+/**
+ *
+ * @author nico
+ */
 public class ExempleWsCommand extends AbstractWebService {
 
     private TextOutput          output         = null;
     private int                 nbRefresh      = 0;
     private DateInput           birthDate      = null;
 
+    /**
+     *
+     * @param controler
+     */
     public ExempleWsCommand(AbstractPluginWebServiceControler controler){
         super(controler);
         // Describe a full interface for test

@@ -41,11 +41,25 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PluginAMPController {
 
+    /**
+     *
+     */
     protected Model model = null;
+
+    /**
+     *
+     */
     protected HashMap<String, Class<? extends PluginAMPCommand>> lstCommands = null;
+
+    /**
+     *
+     */
     protected String pluginName = null;
     private Logger logger = LoggerFactory.getLogger(PluginAMPController.class);
 
+    /**
+     *
+     */
     public PluginAMPController() {
         lstCommands = new HashMap<String, Class<? extends PluginAMPCommand>>();
     }

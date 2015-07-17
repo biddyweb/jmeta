@@ -45,6 +45,11 @@ public class AMPWriterImpl implements AMPWriter {
      */
     private final AMPConfiguration configuration;
 
+    /**
+     *
+     * @param config
+     * @param factory
+     */
     public AMPWriterImpl(AMPConfiguration config, ModelFactory factory) {
         this.configuration = config;
         this.factory = factory;
@@ -52,6 +57,10 @@ public class AMPWriterImpl implements AMPWriter {
                 this.configuration.getSenderThPoolSize());
     }
 
+    /**
+     *
+     * @param factory
+     */
     public void setFactory(ModelFactory factory) {
         this.factory = factory;
     }

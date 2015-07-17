@@ -20,6 +20,10 @@ public class InterfaceDescriptor {
         this.root = root;
     }
 
+    /**
+     *
+     * @return
+     */
     public BasicBSONObject toJson() {
         return root.toJson();
     }

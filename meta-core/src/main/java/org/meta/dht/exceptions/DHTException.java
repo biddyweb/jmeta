@@ -24,14 +24,27 @@ import org.meta.api.common.exceptions.MetaException;
  */
 public class DHTException extends MetaException {
 
+    /**
+     *
+     * @param message
+     */
     public DHTException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param t
+     */
     public DHTException(Throwable t) {
         super(t);
     }
 
+    /**
+     *
+     * @param message
+     * @param t
+     */
     public DHTException(String message, Throwable t) {
         super(message, t);
     }

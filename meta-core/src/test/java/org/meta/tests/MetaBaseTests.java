@@ -32,6 +32,9 @@ import org.meta.configuration.WSConfigurationImpl;
  */
 public abstract class MetaBaseTests {
 
+    /**
+     *
+     */
     public static void initConfigurations() {
         //Init all configs with default values manually
         MetaConfiguration.setAmpConfiguration(new AMPConfigurationImpl());
@@ -40,6 +43,9 @@ public abstract class MetaBaseTests {
         MetaConfiguration.setModelConfiguration(new ModelConfigurationImpl());
     }
 
+    /**
+     *
+     */
     @BeforeClass
     public static void setUp() {
         initConfigurations();

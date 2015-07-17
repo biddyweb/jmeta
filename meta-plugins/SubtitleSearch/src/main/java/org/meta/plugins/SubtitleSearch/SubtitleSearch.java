@@ -15,6 +15,9 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class SubtitleSearch implements MetaPlugin {
 
+    /**
+     *
+     */
     public static String NAME = "SubtitleSearch";
 
     private PluginAMPController ampController;

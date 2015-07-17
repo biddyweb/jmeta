@@ -20,6 +20,9 @@ public class ModelFactory {
 
     Map<ModelType, InstancePool> pools;
 
+    /**
+     *
+     */
     public ModelFactory() {
         pools = new HashMap<>();
         for (ModelType type : ModelType.values()) {

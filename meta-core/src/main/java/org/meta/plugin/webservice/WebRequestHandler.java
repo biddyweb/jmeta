@@ -23,6 +23,10 @@ public class WebRequestHandler extends AbstractHandler {
     private HashMap<String, AbstractWebService> instanceMap = null;
     private int nbCommands = 0;
 
+    /**
+     *
+     * @param webServiceServer
+     */
     public WebRequestHandler(WebServiceReader webServiceServer) {
         webServiceReader = webServiceServer;
         instanceMap = new HashMap<String, AbstractWebService>();

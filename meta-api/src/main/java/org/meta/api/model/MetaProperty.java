@@ -84,7 +84,12 @@ public class MetaProperty implements Comparable<MetaProperty>{
         this.value = value;
     }
 
-     @Override
+    /**
+     *
+     * @param o
+     * @return
+     */
+    @Override
      public int compareTo(MetaProperty o) {
          //compare to another property
          // on key:value concatenation

@@ -51,6 +51,7 @@ public class MetaData extends Searchable {
      * Create a MetaData -> use in case of creation
      *
      * @param hashCode hash of this MetaData
+     * @param properties
      * @param linkedData every data linked to this metaData
      */
     protected MetaData(
@@ -62,7 +63,6 @@ public class MetaData extends Searchable {
     }
    /**
      * this will only return copies.
-     * @param name
      * @return
      */
     public ArrayList<MetaProperty> getProperties(){

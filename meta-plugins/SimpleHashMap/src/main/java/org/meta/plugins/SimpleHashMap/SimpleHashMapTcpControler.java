@@ -5,6 +5,10 @@ import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.SimpleHashMap.tcp.commands.Get;
 
+/**
+ *
+ * @author nico
+ */
 public class SimpleHashMapTcpControler extends PluginAMPController {
 
     @Override

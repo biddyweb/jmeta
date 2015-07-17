@@ -35,10 +35,19 @@ import org.meta.api.common.MetHash;
  */
 public class MetaPeer {
 
+    /**
+     *
+     */
     protected Identity id;
 
+    /**
+     *
+     */
     protected InetAddress address;
 
+    /**
+     *
+     */
     protected short port;
 
     /**
@@ -70,30 +79,58 @@ public class MetaPeer {
         this.port = port;
     }
 
+    /**
+     *
+     * @return
+     */
     public MetHash getID() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(Identity id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public InetAddress getAddress() {
         return address;
     }
 
+    /**
+     *
+     * @param address
+     */
     public void setAddress(InetAddress address) {
         this.address = address;
     }
 
+    /**
+     *
+     * @return
+     */
     public short getPort() {
         return port;
     }
 
+    /**
+     *
+     * @param port
+     */
     public void setPort(short port) {
         this.port = port;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -108,6 +145,11 @@ public class MetaPeer {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

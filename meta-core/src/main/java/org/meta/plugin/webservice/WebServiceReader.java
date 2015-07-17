@@ -47,6 +47,9 @@ public class WebServiceReader extends Thread {
         return mapPlugins.get(pluginName);
     }
 
+    /**
+     *
+     */
     @Override
     public void run() {
         //Launch the server on the right port

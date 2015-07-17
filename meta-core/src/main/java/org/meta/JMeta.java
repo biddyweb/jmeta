@@ -34,6 +34,10 @@ public class JMeta {
 
     private static final Logger logger = LoggerFactory.getLogger(JMeta.class);
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {

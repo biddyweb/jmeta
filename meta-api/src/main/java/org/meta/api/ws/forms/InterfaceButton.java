@@ -13,8 +13,16 @@ import org.bson.BasicBSONObject;
  */
 public abstract class InterfaceButton extends InterfaceElement {
 
+    /**
+     *
+     */
     protected String label = "";
 
+    /**
+     *
+     * @param id
+     * @param label
+     */
     public InterfaceButton(String id, String label) {
         super(id);
         this.label = label;
@@ -32,6 +40,7 @@ public abstract class InterfaceButton extends InterfaceElement {
     
     /**
      * Render as simple json.
+     * @return 
      */
     public BasicBSONObject toJson() {
         //get parent json and add attributes

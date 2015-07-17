@@ -33,7 +33,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Searchable {
 
+    /**
+     *
+     */
     protected MetHash hash = null;
+
+    /**
+     *
+     */
     protected ObjectState state;
     private Logger logger = LoggerFactory.getLogger(Searchable.class);
 
@@ -43,13 +50,29 @@ public abstract class Searchable {
     public enum ObjectState {
 
         //Object has been instanciated, it does not comes from network or database.
-        CREATED,
+
+        /**
+         *
+         */
+                CREATED,
         //Object comes from network.
-        FROM_NETWORK,
+
+        /**
+         *
+         */
+                FROM_NETWORK,
         //Object comes from database and is up to date.
-        UP_TO_DATE,
+
+        /**
+         *
+         */
+                UP_TO_DATE,
         //Object comes from database but has been modified.
-        DIRTY;
+
+        /**
+         *
+         */
+                DIRTY;
     };
 
     /**
@@ -62,6 +85,7 @@ public abstract class Searchable {
     /**
      * This constructor has to be used in case of creation
      *
+     * @param hash
      * @param hashCode
      */
     protected Searchable(MetHash hash) {
@@ -79,6 +103,7 @@ public abstract class Searchable {
 
     /**
      * Only callable in model package
+     * @param hash
      * @param hashCode the hashCode to set
      */
     public void setHash(MetHash hash) {

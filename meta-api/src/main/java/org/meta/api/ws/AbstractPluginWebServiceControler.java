@@ -52,21 +52,41 @@ import org.meta.api.model.Model;
  */
 public abstract class AbstractPluginWebServiceControler {
 
+    /**
+     *
+     */
     protected Model model = null;
 
+    /**
+     *
+     */
     protected MetaDHT dht = null;
 
+    /**
+     *
+     */
     protected AMPWriter ampWriter = null;
 
+    /**
+     *
+     */
     protected LinkedHashMap<String, Class<? extends AbstractWebService>> lstCommands = null;
+
+    /**
+     *
+     */
     protected String pluginName = null;
 
+    /**
+     *
+     */
     public AbstractPluginWebServiceControler() {
         lstCommands = new LinkedHashMap<String, Class<? extends AbstractWebService>>();
     }
 
     /**
      * initialize the plugin
+     * @param pluginName
      */
     public void init(String pluginName) {
         this.pluginName = pluginName;
@@ -171,18 +191,34 @@ public abstract class AbstractPluginWebServiceControler {
         return model;
     }
 
+    /**
+     *
+     * @return
+     */
     public MetaDHT getDht() {
         return dht;
     }
 
+    /**
+     *
+     * @param dht
+     */
     public void setDht(MetaDHT dht) {
         this.dht = dht;
     }
 
+    /**
+     *
+     * @return
+     */
     public AMPWriter getAmpWriter() {
         return ampWriter;
     }
 
+    /**
+     *
+     * @param ampWriter
+     */
     public void setAmpWriter(AMPWriter ampWriter) {
         this.ampWriter = ampWriter;
     }

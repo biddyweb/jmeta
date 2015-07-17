@@ -16,6 +16,7 @@ public class AMPAskBuilder extends AMPBuilder{
      * Create a new AMP Ask command with the given parameters
      *
      * @param ask       the number for the question
+     * @param plugin
      * @param command   the command to execute to the other pair
      * @param hash      the hash of the request
      */

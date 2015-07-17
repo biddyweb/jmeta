@@ -22,6 +22,10 @@ import org.meta.api.ws.forms.organizers.LineOrganizer;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
 
+/**
+ *
+ * @author nico
+ */
 public class SecondStateExempleWsCommand extends AbstractWebService {
 
     private TextOutput          output         = null;
@@ -45,6 +49,10 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
 	private CheckBoxLists       checklist;
 	private DateInput birthDate;
 
+    /**
+     *
+     * @param controler
+     */
     public SecondStateExempleWsCommand(AbstractPluginWebServiceControler controler){
         super(controler);
         // Describe a full interface for test

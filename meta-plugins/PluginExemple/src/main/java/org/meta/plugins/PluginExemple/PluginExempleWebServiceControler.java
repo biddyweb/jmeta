@@ -6,6 +6,10 @@ import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.PluginExemple.webservice.commands.ExempleWsCommand;
 import org.meta.plugins.PluginExemple.webservice.commands.SecondStateExempleWsCommand;
 
+/**
+ *
+ * @author nico
+ */
 public class PluginExempleWebServiceControler extends AbstractPluginWebServiceControler {
 
     @Override

@@ -55,6 +55,7 @@ public class MetaController {
 
     /**
      *
+     * @throws MetaException
      */
     public void initAndStartAll() throws MetaException {
         try {
@@ -150,22 +151,42 @@ public class MetaController {
         this.model.close();
     }
 
+    /**
+     *
+     * @return
+     */
     public KyotoCabinetModel getModel() {
         return model;
     }
 
+    /**
+     *
+     * @return
+     */
     public WebServiceReader getWebServiceReader() {
         return wsReader;
     }
 
+    /**
+     *
+     * @return
+     */
     public AMPServer getAmpServer() {
         return ampServer;
     }
 
+    /**
+     *
+     * @return
+     */
     public MetaDHT getDht() {
         return dht;
     }
 
+    /**
+     *
+     * @return
+     */
     public AMPWriterImpl getAmpWriter() {
         return ampWriter;
     }

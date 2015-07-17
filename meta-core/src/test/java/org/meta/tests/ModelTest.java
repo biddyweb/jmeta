@@ -23,13 +23,31 @@ import org.meta.model.exceptions.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author nico
+ */
 public class ModelTest extends MetaBaseTests {
 
+    /**
+     *
+     */
     protected static KyotoCabinetModel model;
+
+    /**
+     *
+     */
     protected static Long startTime;
+
+    /**
+     *
+     */
     protected static Long endTime;
     private static final Logger logger = LoggerFactory.getLogger(ModelTest.class);
 
+    /**
+     *
+     */
     @BeforeClass
     public static void setUpModel() {
         startTime = new Date().getTime();
@@ -45,6 +63,9 @@ public class ModelTest extends MetaBaseTests {
 
 	private MetHash hash;
 
+    /**
+     *
+     */
     @Test
     public void basicTest() {
         try {
@@ -58,6 +79,9 @@ public class ModelTest extends MetaBaseTests {
         }
     }
 
+    /**
+     *
+     */
     @Test
     public void testDataStringUpdate() {
         try {
@@ -87,6 +111,9 @@ public class ModelTest extends MetaBaseTests {
         }
     }
 
+    /**
+     *
+     */
     @Test
     public void testDataFileUpdate() {
         try {
@@ -118,6 +145,9 @@ public class ModelTest extends MetaBaseTests {
         }
     }
     
+    /**
+     *
+     */
     @Test
     public void testMetaDataUpdate() {
         //create a strin data
@@ -139,6 +169,9 @@ public class ModelTest extends MetaBaseTests {
         //Assert.assertEquals("data", ((DataString) fromDb.getLinkedData().get(0)).getStringCollections.singletonList((Data) dataMetaData), 
     }
 
+    /**
+     *
+     */
     @Test
     public void testSearchUpdate() {
         try {
@@ -161,6 +194,10 @@ public class ModelTest extends MetaBaseTests {
 
     }
 
+    /**
+     *
+     * @throws ModelException
+     */
     @Test
     public void fullTest() throws ModelException {
         try {
@@ -244,7 +281,11 @@ public class ModelTest extends MetaBaseTests {
     }
 
     //@Test
-    public void perfTest() {
+
+    /**
+     *
+     */
+        public void perfTest() {
         MetHash hash;
         int NB_IT = 100000;
         startTime = new Date().getTime();
@@ -281,7 +322,12 @@ public class ModelTest extends MetaBaseTests {
     }
 
     //@Test
-    public void threadTest() throws InterruptedException {
+
+    /**
+     *
+     * @throws InterruptedException
+     */
+        public void threadTest() throws InterruptedException {
         final int NB_THREADS = 10;
         final int NB_IT = 100;
 

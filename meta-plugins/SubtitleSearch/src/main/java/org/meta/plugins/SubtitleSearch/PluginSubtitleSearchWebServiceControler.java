@@ -7,6 +7,10 @@ import org.meta.plugins.SubtitleSearch.webservice.commands.AddSubtitle;
 import org.meta.plugins.SubtitleSearch.webservice.commands.GetSubtitles;
 import org.meta.plugins.SubtitleSearch.webservice.commands.SearchSubtitles;
 
+/**
+ *
+ * @author nico
+ */
 public class PluginSubtitleSearchWebServiceControler extends AbstractPluginWebServiceControler{
 
     @Override

@@ -54,10 +54,29 @@ public abstract class AsyncOperation {
         CANCELED
     };
 
+    /**
+     *
+     */
     protected final Object lock = new Object();
+
+    /**
+     *
+     */
     protected Throwable failedReason;
+
+    /**
+     *
+     */
     protected String failedMessage;
+
+    /**
+     *
+     */
     protected OperationState state;
+
+    /**
+     *
+     */
     protected Collection<OperationListener<? extends AsyncOperation>> listeners;
 
     /**
@@ -139,6 +158,7 @@ public abstract class AsyncOperation {
      * Removes a listener on this operation.
      *
      * @param listener The listener to remove from the list.
+     * @return 
      */
     public AsyncOperation removeListerner(OperationListener<? extends AsyncOperation> listener) {
         if (this.hasFinished()) {
@@ -156,6 +176,7 @@ public abstract class AsyncOperation {
      * Mark the operation as failed and set the reason of the failure.
      *
      * @param reason The origin of the failure
+     * @return 
      */
     public AsyncOperation setFailed(Throwable reason) {
         if (this.hasFinished()) {
@@ -175,6 +196,7 @@ public abstract class AsyncOperation {
      * Mark the operation as failed and set the failure message.
      *
      * @param message The message of the failure
+     * @return 
      */
     public AsyncOperation setFailed(String message) {
         if (this.hasFinished()) {
@@ -264,6 +286,10 @@ public abstract class AsyncOperation {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public AsyncOperation awaitUninterruptibly() {
         synchronized (lock) {
             while (!this.hasFinished()) {

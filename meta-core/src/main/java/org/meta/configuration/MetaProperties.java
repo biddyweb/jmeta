@@ -82,6 +82,7 @@ public class MetaProperties {
      * Get the given property name from the default properties file.
      *
      * @param propertyKey The key to get.
+     * @param defaultValue
      *
      * @return The value associated with the key or defaultValue if not found.
      */

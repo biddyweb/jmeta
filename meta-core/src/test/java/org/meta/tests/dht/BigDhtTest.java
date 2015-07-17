@@ -43,6 +43,9 @@ public class BigDhtTest extends BaseDHTTests {
     private static final int NB_PEERS = 3;
     private static final MetaDHT[] dhts = new MetaDHT[NB_PEERS];
 
+    /**
+     *
+     */
     @AfterClass
     public static void tearDown() {
         for (int i = 0; i < NB_PEERS; ++i) {

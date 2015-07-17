@@ -8,6 +8,10 @@ import org.meta.api.model.MetaData;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 
+/**
+ *
+ * @author nico
+ */
 public class Get extends PluginAMPCommand {
 
     @Override

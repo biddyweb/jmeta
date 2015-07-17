@@ -16,8 +16,19 @@ import org.bson.BasicBSONObject;
  */
 public abstract class InterfaceField extends InterfaceElement {
 
+    /**
+     *
+     */
     protected String label       = "";
+
+    /**
+     *
+     */
     protected String value       = "";
+
+    /**
+     *
+     */
     protected String description = "";
 
     /**
@@ -64,6 +75,7 @@ public abstract class InterfaceField extends InterfaceElement {
 
     /**
      * Render as simple json.
+     * @return 
      */
     public BasicBSONObject toJson() {
         //get parent json and add attributes

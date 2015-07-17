@@ -25,6 +25,10 @@ public class InstancePool<T extends Searchable> {
     Class<T> clazz;
     private Queue<T> instances;
 
+    /**
+     *
+     * @param claz
+     */
     public InstancePool(Class<T> claz) {
         clazz = claz;
         instances = new LinkedList<>();
@@ -42,6 +46,10 @@ public class InstancePool<T extends Searchable> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public T getInstance() {
         synchronized (instances) {
             if (instances.size() < MIN_INSTANCES) {

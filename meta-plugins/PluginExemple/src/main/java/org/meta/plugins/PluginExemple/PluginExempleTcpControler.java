@@ -5,6 +5,10 @@ import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.PluginExemple.tcp.commands.ExempleCommand;
 
+/**
+ *
+ * @author nico
+ */
 public class PluginExempleTcpControler extends PluginAMPController {
 
     @Override

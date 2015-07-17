@@ -18,6 +18,10 @@ import org.meta.api.ws.forms.fields.TextInput;
 import org.meta.api.ws.forms.fields.TextOutput;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
 
+/**
+ *
+ * @author nico
+ */
 public class GetSubtitles extends AbstractWebService{
 
     private TextInput           subtitleHash        = null;
@@ -28,6 +32,10 @@ public class GetSubtitles extends AbstractWebService{
     private Search              subtitleSearch      = null;
     private String failure;
 
+    /**
+     *
+     * @param controler
+     */
     public GetSubtitles(AbstractPluginWebServiceControler controler) {
         super(controler);
         factory = controler.getModel().getFactory();
@@ -138,10 +146,22 @@ public class GetSubtitles extends AbstractWebService{
     public void callbackFailure(String failureMessage) {
         errorTextOutput.append(failure);
     }
+
+    /**
+     *
+     * @param operation
+     * @param s
+     */
     @Override
     protected void callbackFailedToPush(AsyncOperation operation, Searchable s) {
         errorTextOutput.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
     }
+
+    /**
+     *
+     * @param operation
+     * @param s
+     */
     @Override
     protected void callbackSuccessToPush(AsyncOperation operation, Searchable s) {
         successTextOutput.append("Success to push "+s.getHash());

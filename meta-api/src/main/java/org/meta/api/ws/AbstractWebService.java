@@ -28,9 +28,19 @@ import org.meta.api.ws.forms.organizers.ColumnOrganizer;
  */
 public abstract class AbstractWebService implements AMPResponseCallback {
 
+    /**
+     *
+     */
     protected ColumnOrganizer rootColumn = null;
+
+    /**
+     *
+     */
     protected InterfaceDescriptor descriptor = null;
 
+    /**
+     *
+     */
     protected AbstractPluginWebServiceControler controler = null;
 
     /**
@@ -39,6 +49,7 @@ public abstract class AbstractWebService implements AMPResponseCallback {
      *
      * Fill it with anything you want to build your interface
      *
+     * @param controler
      */
     public AbstractWebService(AbstractPluginWebServiceControler controler) {
         this.controler = controler;
@@ -137,6 +148,9 @@ public abstract class AbstractWebService implements AMPResponseCallback {
      */
     protected abstract void applySmallUpdate();
 
+    /**
+     *
+     */
     @PreDestroy
     public void kill() {
         controler = null;
@@ -199,6 +213,7 @@ public abstract class AbstractWebService implements AMPResponseCallback {
      * Auto merge the Data description objects
      *
      * @param newResult newResultToUpdate
+     * @return 
      */
     protected Data updateResult(Data newResult) {
         //If dbResult was not null, remove it and add the new result instead
@@ -237,6 +252,7 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     /**
      * Save the searchable in the DB and push his hash to the DHT
      *
+     * @param searchable
      * @param seachable
      */
     protected void saveAndPush(Searchable searchable) {
@@ -278,9 +294,19 @@ public abstract class AbstractWebService implements AMPResponseCallback {
                 });
     }
 
+    /**
+     *
+     * @param operation
+     * @param searchable
+     */
     protected void callbackFailedToPush(AsyncOperation operation, Searchable searchable) {
     }
 
+    /**
+     *
+     * @param operation
+     * @param searchable
+     */
     protected void callbackSuccessToPush(AsyncOperation operation, Searchable searchable) {
     }
 }

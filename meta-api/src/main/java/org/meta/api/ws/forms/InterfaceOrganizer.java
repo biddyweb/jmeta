@@ -28,6 +28,7 @@ public abstract class InterfaceOrganizer extends InterfaceElement{
 
     /**
      * Return this as JSON, containing his children
+     * @return 
      */
     public BasicBSONObject toJson() {
         //get parent json, and add it all children's json

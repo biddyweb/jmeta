@@ -7,6 +7,10 @@ import org.meta.api.common.MetHash;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 
+/**
+ *
+ * @author nico
+ */
 public class GetLastMessage extends PluginAMPCommand {
 
     @Override

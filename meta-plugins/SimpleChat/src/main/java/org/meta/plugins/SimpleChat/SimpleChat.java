@@ -15,6 +15,9 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class SimpleChat implements MetaPlugin {
 
+    /**
+     *
+     */
     public static String NAME = "SimpleChat";
 
     private PluginAMPController ampController;

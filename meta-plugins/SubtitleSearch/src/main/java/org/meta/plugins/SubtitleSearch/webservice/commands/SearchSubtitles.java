@@ -21,6 +21,10 @@ import org.meta.api.ws.forms.fields.radio.RadioList;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
 
+/**
+ *
+ * @author nico
+ */
 public class SearchSubtitles extends AbstractWebService{
 
     TextOutput       initialTextOutput   = null;
@@ -32,6 +36,10 @@ public class SearchSubtitles extends AbstractWebService{
     RadioList        resultsOutput       = null;
     String           failure             = null;
     
+    /**
+     *
+     * @param controler
+     */
     public SearchSubtitles(AbstractPluginWebServiceControler controler){
         super(controler);
 

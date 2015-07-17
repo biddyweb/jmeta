@@ -1,7 +1,6 @@
 package org.meta.plugin.tcp.amp;
 
 import java.util.LinkedHashMap;
-
 import org.meta.api.common.MetHash;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPAskCommand;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;

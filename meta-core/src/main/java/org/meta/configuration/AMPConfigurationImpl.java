@@ -17,8 +17,8 @@
  */
 package org.meta.configuration;
 
-import org.meta.api.configuration.AMPConfiguration;
 import java.util.Properties;
+import org.meta.api.configuration.AMPConfiguration;
 import org.meta.api.configuration.NetworkConfiguration;
 
 /**

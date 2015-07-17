@@ -1,17 +1,15 @@
 package org.meta.plugin.webservice;
 
-import org.meta.api.ws.AbstractWebService;
 import java.io.IOException;
 import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.bson.BasicBSONObject;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractWebService;
 
 /**
  * Handle a request from the web server

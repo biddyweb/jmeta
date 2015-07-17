@@ -25,7 +25,6 @@ import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.fields.TextInput;
 import org.meta.api.ws.forms.fields.TextOutput;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

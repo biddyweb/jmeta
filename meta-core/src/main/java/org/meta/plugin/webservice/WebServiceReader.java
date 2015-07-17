@@ -1,18 +1,15 @@
 package org.meta.plugin.webservice;
 
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import org.bson.types.BasicBSONList;
-import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
-
-import com.mongodb.util.JSONSerializers;
-import com.mongodb.util.ObjectSerializer;
-
 import org.meta.configuration.WSConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

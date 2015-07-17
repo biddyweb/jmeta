@@ -20,12 +20,12 @@ package org.meta.tests.dht;
 import java.util.Collection;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
-import org.meta.configuration.DHTConfigurationImpl;
+import org.meta.api.common.OperationListener;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.MetaPeer;
-import org.meta.api.common.OperationListener;
 import org.meta.api.dht.StoreOperation;
+import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.tests.MetaBaseTests;
 

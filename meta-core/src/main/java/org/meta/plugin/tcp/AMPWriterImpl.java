@@ -17,13 +17,12 @@
  */
 package org.meta.plugin.tcp;
 
-import org.meta.api.amp.AMPResponseCallback;
-import org.meta.api.amp.AMPWriter;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
+import org.meta.api.amp.AMPResponseCallback;
+import org.meta.api.amp.AMPWriter;
 import org.meta.api.common.MetHash;
 import org.meta.api.configuration.AMPConfiguration;
 import org.meta.api.model.ModelFactory;

@@ -17,7 +17,6 @@
  */
 package org.meta.api.dht;
 
-import org.meta.api.dht.MetaPeer;
 import org.meta.api.common.AsyncOperation;
 import java.util.Collection;
 

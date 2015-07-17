@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 import org.meta.api.model.Data;
-
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.MetaProperty;

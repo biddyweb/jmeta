@@ -17,11 +17,11 @@
  */
 package org.meta.configuration;
 
-import org.meta.api.configuration.NetworkConfiguration;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
+import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**

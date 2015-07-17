@@ -22,9 +22,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.configuration.ConfigurationUtils;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.MetaPeer;
+import org.meta.configuration.ConfigurationUtils;
 import org.meta.tests.MetaBaseTests;
 
 /**

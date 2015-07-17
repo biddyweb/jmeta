@@ -1,12 +1,11 @@
 package org.meta.plugin.tcp;
 
-import org.meta.api.amp.PluginAMPCommand;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-
+import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.common.MetHash;
 import org.meta.plugin.tcp.amp.AMPAskParser;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;

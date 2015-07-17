@@ -6,11 +6,6 @@
 
 package org.meta.api.model;
 
-import org.meta.api.model.MetaData;
-import org.meta.api.model.DataString;
-import org.meta.api.model.DataFile;
-import org.meta.api.model.Search;
-
 /**
  *
  * Enum for model factory, lists objects type from model.

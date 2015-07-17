@@ -3,7 +3,6 @@ package org.meta.plugin.tcp.amp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
 import org.meta.api.model.DataFile;
 import org.meta.api.model.DataString;
 import org.meta.api.model.MetaData;

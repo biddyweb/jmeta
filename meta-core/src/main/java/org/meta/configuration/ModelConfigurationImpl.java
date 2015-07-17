@@ -17,8 +17,8 @@
  */
 package org.meta.configuration;
 
-import org.meta.api.configuration.ModelConfiguration;
 import java.util.Properties;
+import org.meta.api.configuration.ModelConfiguration;
 
 /**
  *

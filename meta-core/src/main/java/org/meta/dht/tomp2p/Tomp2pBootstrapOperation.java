@@ -19,8 +19,6 @@ package org.meta.dht.tomp2p;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.futures.FutureBootstrap;
@@ -28,8 +26,10 @@ import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.builder.AnnounceBuilder;
 import net.tomp2p.peers.PeerAddress;
 import org.meta.api.dht.BootstrapOperation;
-import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.api.dht.MetaPeer;
+import org.meta.configuration.DHTConfigurationImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author nico

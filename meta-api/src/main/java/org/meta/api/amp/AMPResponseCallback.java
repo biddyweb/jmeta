@@ -1,7 +1,6 @@
 package org.meta.api.amp;
 
 import java.util.ArrayList;
-
 import org.meta.api.model.Searchable;
 
 /**

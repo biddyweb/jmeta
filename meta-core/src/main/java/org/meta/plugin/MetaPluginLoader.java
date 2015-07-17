@@ -17,7 +17,6 @@
  */
 package org.meta.plugin;
 
-import org.meta.api.plugin.MetaPlugin;
 import java.io.File;
 import java.io.FileFilter;
 import java.net.MalformedURLException;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import org.meta.api.amp.PluginAMPController;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
+import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.configuration.PluginConfigurationImpl;
 import org.meta.controler.MetaController;

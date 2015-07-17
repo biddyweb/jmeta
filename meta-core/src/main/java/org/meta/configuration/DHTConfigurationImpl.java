@@ -17,14 +17,14 @@
  */
 package org.meta.configuration;
 
-import org.meta.api.configuration.DHTConfiguration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import org.meta.api.common.Identity;
-import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.common.MetamphetUtils;
+import org.meta.api.configuration.DHTConfiguration;
+import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.MetaPeer;
 

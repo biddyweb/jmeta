@@ -2,7 +2,6 @@ package org.meta.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.AMPAskParser;

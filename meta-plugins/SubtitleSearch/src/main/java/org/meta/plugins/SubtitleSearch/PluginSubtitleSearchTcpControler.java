@@ -3,7 +3,6 @@ package org.meta.plugins.SubtitleSearch;
 import java.util.HashMap;
 import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.PluginAMPController;
-
 import org.meta.plugins.SubtitleSearch.tcp.commands.GetSubtitleCommand;
 import org.meta.plugins.SubtitleSearch.tcp.commands.SearchSubtitleCommand;
 

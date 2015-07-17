@@ -17,33 +17,30 @@
  */
 package org.meta.model;
 
-import org.meta.api.model.ModelType;
-import org.meta.api.model.Data;
-import org.meta.api.model.MetaData;
-import org.meta.api.model.Searchable;
-import org.meta.api.model.MetaProperty;
-import org.meta.api.model.DataString;
-import org.meta.api.model.DataFile;
-import org.meta.api.model.Search;
-import org.meta.api.model.ModelFactory;
-import org.meta.api.model.Model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import kyotocabinet.DB;
-
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.api.common.MetHash;
+import org.meta.api.model.Data;
+import org.meta.api.model.DataFile;
+import org.meta.api.model.DataString;
+import org.meta.api.model.MetaData;
+import org.meta.api.model.MetaProperty;
+import org.meta.api.model.Model;
+import org.meta.api.model.ModelFactory;
+import org.meta.api.model.ModelType;
+import org.meta.api.model.Search;
+import org.meta.api.model.Searchable;
 import org.meta.configuration.ModelConfigurationImpl;
 import org.meta.model.exceptions.ModelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

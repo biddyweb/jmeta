@@ -1,8 +1,7 @@
 package org.meta.plugin.tcp.amp;
 
-import org.meta.api.amp.AMPBuilder;
 import java.util.LinkedHashMap;
-
+import org.meta.api.amp.AMPBuilder;
 import org.meta.api.common.MetHash;
 
 /**

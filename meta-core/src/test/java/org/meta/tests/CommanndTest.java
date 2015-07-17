@@ -1,8 +1,8 @@
 package org.meta.tests;
 
-import org.meta.api.common.MetHash;
-import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.AMPAnswerBuilder;
+import org.meta.api.amp.PluginAMPCommand;
+import org.meta.api.common.MetHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

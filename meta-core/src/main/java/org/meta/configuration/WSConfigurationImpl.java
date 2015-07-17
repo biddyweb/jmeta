@@ -18,8 +18,8 @@
 package org.meta.configuration;
 
 import java.util.Properties;
-import org.meta.api.configuration.WSConfiguration;
 import org.meta.api.configuration.NetworkConfiguration;
+import org.meta.api.configuration.WSConfiguration;
 
 /**
  * The web service configuration object

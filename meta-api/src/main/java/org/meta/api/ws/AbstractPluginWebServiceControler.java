@@ -1,21 +1,19 @@
 package org.meta.api.ws;
 
+import com.mongodb.util.JSONSerializers;
+import com.mongodb.util.ObjectSerializer;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
 import org.bson.types.BasicBSONList;
+import org.meta.api.amp.AMPResponseCallback;
+import org.meta.api.amp.AMPWriter;
 import org.meta.api.common.MetHash;
+import org.meta.api.common.OperationListener;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.MetaPeer;
-import org.meta.api.common.OperationListener;
-
-import com.mongodb.util.JSONSerializers;
-import com.mongodb.util.ObjectSerializer;
-import org.meta.api.amp.AMPResponseCallback;
-import org.meta.api.amp.AMPWriter;
 import org.meta.api.model.Model;
 
 /*

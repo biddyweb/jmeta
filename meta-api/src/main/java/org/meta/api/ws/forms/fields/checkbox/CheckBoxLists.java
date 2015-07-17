@@ -1,7 +1,6 @@
 package org.meta.api.ws.forms.fields.checkbox;
 
 import java.util.ArrayList;
-
 import org.bson.BasicBSONObject;
 import org.bson.types.BasicBSONList;
 import org.meta.api.ws.forms.InterfaceField;

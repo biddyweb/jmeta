@@ -2,7 +2,6 @@ package org.meta.api.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
 import org.meta.api.common.MetHash;

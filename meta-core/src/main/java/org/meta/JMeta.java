@@ -18,11 +18,10 @@
 package org.meta;
 
 import org.meta.api.common.exceptions.MetaException;
-
-import org.meta.controler.MetaController;
-import org.meta.configuration.MetaConfiguration;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.configuration.exceptions.InvalidConfigurationFileException;
+import org.meta.configuration.MetaConfiguration;
+import org.meta.controler.MetaController;
 import org.meta.plugin.MetaPluginLoader;
 import org.meta.plugin.exceptions.PluginLoadException;
 import org.slf4j.Logger;

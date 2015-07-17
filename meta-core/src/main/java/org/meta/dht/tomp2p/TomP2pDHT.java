@@ -35,7 +35,6 @@ import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
-import org.meta.configuration.NetworkConfigurationImpl;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;

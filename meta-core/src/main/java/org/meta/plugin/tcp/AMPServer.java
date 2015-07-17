@@ -17,18 +17,17 @@
  */
 package org.meta.plugin.tcp;
 
-import org.meta.api.amp.PluginAMPCommand;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.meta.api.amp.PluginAMPCommand;
+import org.meta.api.amp.PluginAMPController;
 import org.meta.configuration.AMPConfigurationImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.meta.api.amp.PluginAMPController;
 
 /**
  * Class listening to peer-to-peer connections over TCP/AMP.

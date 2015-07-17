@@ -5,7 +5,6 @@
  */
 package org.meta.api.common;
 
-import org.meta.api.common.MetHash;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;

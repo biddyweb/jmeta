@@ -18,7 +18,6 @@
 package org.meta.api.amp;
 
 import java.util.HashMap;
-
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Model;
 import org.meta.api.model.Searchable;

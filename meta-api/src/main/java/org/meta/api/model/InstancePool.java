@@ -5,7 +5,6 @@
  */
 package org.meta.api.model;
 
-import org.meta.api.model.Searchable;
 import java.util.LinkedList;
 import java.util.Queue;
 import org.slf4j.Logger;

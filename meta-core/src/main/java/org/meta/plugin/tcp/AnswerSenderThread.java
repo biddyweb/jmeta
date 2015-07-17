@@ -11,11 +11,9 @@ import java.util.ArrayList;
 
 import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
-import org.meta.model.KyotoCabinetModel;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
-import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;

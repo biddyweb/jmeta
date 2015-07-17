@@ -1,6 +1,5 @@
 package org.meta.api.amp;
 
-import org.meta.api.amp.AMPBuilder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

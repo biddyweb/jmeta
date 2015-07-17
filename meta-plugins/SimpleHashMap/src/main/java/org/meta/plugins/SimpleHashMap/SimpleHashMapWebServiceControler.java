@@ -3,9 +3,8 @@ package org.meta.plugins.SimpleHashMap;
 import java.util.LinkedHashMap;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
-
-import org.meta.plugins.SimpleHashMap.webservicecommands.Put;
 import org.meta.plugins.SimpleHashMap.webservicecommands.Get;
+import org.meta.plugins.SimpleHashMap.webservicecommands.Put;
 
 public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceControler{
 

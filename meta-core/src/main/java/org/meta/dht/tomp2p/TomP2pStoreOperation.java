@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
-import net.tomp2p.peers.PeerMap;
 import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
 import org.meta.configuration.MetaConfiguration;

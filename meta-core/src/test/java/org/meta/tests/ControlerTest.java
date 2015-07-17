@@ -4,19 +4,18 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.Future;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.meta.api.amp.AMPResponseCallback;
 import org.meta.api.common.exceptions.MetaException;
-import org.meta.configuration.MetaConfiguration;
-import org.meta.controler.MetaController;
 import org.meta.api.model.DataString;
-import org.meta.model.KyotoCabinetModel;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Searchable;
+import org.meta.configuration.MetaConfiguration;
+import org.meta.controler.MetaController;
+import org.meta.model.KyotoCabinetModel;
 import org.meta.model.exceptions.ModelException;
-import org.meta.api.amp.AMPResponseCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

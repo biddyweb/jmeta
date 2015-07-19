@@ -20,7 +20,9 @@ package org.meta.dht.tomp2p;
 import java.io.IOException;
 import java.net.InetAddress;
 import net.tomp2p.connection.Bindings;
+import net.tomp2p.connection.ChannelClientConfiguration;
 import net.tomp2p.connection.ChannelServerConfiguration;
+import net.tomp2p.connection.Ports;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.BaseFuture;
@@ -31,14 +33,13 @@ import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
-import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.common.MetamphetUtils;
-import org.meta.configuration.DHTConfigurationImpl;
-import org.meta.configuration.MetaConfiguration;
+import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
+import org.meta.configuration.DHTConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class TomP2pDHT extends MetaDHT {
 
     /**
      * Create the tomp2p DHT with given configuration.
-     * 
+     *
      * @param config The DHT configuration to use.
      */
     public TomP2pDHT(DHTConfigurationImpl config) {
@@ -105,16 +106,44 @@ public class TomP2pDHT extends MetaDHT {
     private Bindings configureBindings() {
         NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
         Bindings b = new Bindings();
+        b.setListenAny(false);
 
-        for (InetAddress addr : nwConfig.getAddresses()) {
-            logger.debug("DHT binding to address: " + addr);
-            b.addAddress(addr);
+        if (nwConfig.getAddresses() != null) {
+            for (InetAddress addr : nwConfig.getAddresses()) {
+                logger.debug("DHT binding to address: " + addr);
+                b.addAddress(addr);
+            }
         }
-        for (String iface : nwConfig.getInterfaces()) {
-            logger.debug("DHT binding to interface: " + iface);
-            b.addInterface(iface);
+        if (nwConfig.getInterfaces() != null) {
+            for (String iface : nwConfig.getInterfaces()) {
+                logger.debug("DHT binding to interface: " + iface);
+                b.addInterface(iface);
+            }
         }
         return b;
+    }
+
+    /**
+     * The tomp2p channel server configuration initialization.
+     */
+    private ChannelServerConfiguration getServerConfig(Bindings bindings, int port) {
+        ChannelServerConfiguration serverConfig = new ChannelServerConfiguration();
+        serverConfig.ports(new Ports(port, port));
+        serverConfig.forceTCP(false).forceUDP(true);
+        serverConfig.pipelineFilter(new PeerBuilder.DefaultPipelineFilter());
+        serverConfig.bindings(bindings);
+        return serverConfig;
+    }
+
+    private ChannelClientConfiguration getClientConfig(Bindings bindings) {
+        ChannelClientConfiguration clientConfig = new ChannelClientConfiguration();
+
+        clientConfig.bindings(bindings);
+        clientConfig.pipelineFilter(new PeerBuilder.DefaultPipelineFilter());
+        clientConfig.maxPermitsPermanentTCP(250);
+        clientConfig.maxPermitsTCP(250);
+        clientConfig.maxPermitsUDP(250);
+        return clientConfig;
     }
 
     /**
@@ -127,23 +156,26 @@ public class TomP2pDHT extends MetaDHT {
         }
         Number160 peerId = TomP2pUtils.toNumber160(this.configuration.getIdentity());
 
-        //PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(null)
         PeerBuilder peerBuilder = new PeerBuilder(peerId);
-//        peerBuilder.
-        peerBuilder.ports(MetaConfiguration.getDHTConfiguration().getNetworkConfig().getPort());
-        peerBuilder.bindings(configureBindings());
-        ChannelServerConfiguration c = new ChannelServerConfiguration();
-        //c.forceTCP()
+        //Udp port from configuration.
+        int udpPort = this.configuration.getNetworkConfig().getPort();
+        Bindings bindings = configureBindings();
+        peerBuilder.portsExternal(udpPort);
+        peerBuilder.enableBroadcast(false).enableMaintenance(false).enableQuitRPC(false);
+        peerBuilder.channelServerConfiguration(getServerConfig(bindings, udpPort));
+        peerBuilder.channelClientConfiguration(getClientConfig(bindings));
+
         this.peer = peerBuilder.start();
 
+        logger.debug("DHT address = " + this.peer.peerAddress());
         this.peerDHT = new PeerBuilderDHT(peer).start();
-        //Here define custom storage layer for routing table etc...
+        // TODO Define custom storage layer for routing table etc on DHT peer.
     }
 
     @Override
     public BootstrapOperation bootstrap() {
         Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnownPeers(),
-                this.configuration.isBootstrapBroadcast());
+            this.configuration.isBootstrapBroadcast());
         b.start();
         return b;
     }
@@ -191,4 +223,5 @@ public class TomP2pDHT extends MetaDHT {
         });
         shutDownOperation.awaitUninterruptibly();
     }
+
 }

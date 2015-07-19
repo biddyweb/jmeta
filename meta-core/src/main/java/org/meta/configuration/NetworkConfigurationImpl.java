@@ -46,6 +46,11 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     public static String NETWORK_ADDRESSES_KEY = "listen-addresses";
 
     /**
+     * The key in the configuration file for the ipv6 parameter.
+     */
+    public static String IPv6_KEY = "ipV6";
+
+    /**
      * The port to listen to.
      */
     private Short port;
@@ -61,6 +66,11 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     private Collection<InetAddress> addresses;
 
     /**
+     * If we prefer ipV6 or not.
+     */
+    private boolean ipV6;
+
+    /**
      * Initializes this network configuration with given values.
      *
      * @param port
@@ -71,6 +81,7 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
         this.port = port;
         this.interfaces = interfaces;
         this.addresses = addresses;
+        this.ipV6 = false;
     }
 
     /**
@@ -99,6 +110,10 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
         String addrs = this.getValue(NETWORK_ADDRESSES_KEY);
         if (addrs != null) {
             this.addresses = ConfigurationUtils.addressesFromString(addrs);
+        }
+        Boolean preferIpV6 = this.getBoolean(IPv6_KEY);
+        if (preferIpV6 != null) {
+            this.ipV6 = preferIpV6;
         }
     }
 
@@ -153,4 +168,19 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     public void setPort(Short port) {
         this.port = port;
     }
+
+    /**
+     * @return true if prefering ipV6, false if ipV4.
+     */
+    public boolean isIpV6() {
+        return ipV6;
+    }
+
+    /**
+     * @param ipV6 the new ipV6 value.
+     */
+    public void setIpV6(boolean ipV6) {
+        this.ipV6 = ipV6;
+    }
+
 }

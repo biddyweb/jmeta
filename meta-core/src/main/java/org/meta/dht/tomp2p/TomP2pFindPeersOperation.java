@@ -71,7 +71,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
                         for (Data data : datas) {
                             MetaPeer newPeer = peerFromData(data.toBytes());
                             if (newPeer != null) {
-                                logger.debug("New peer added to list! : " + newPeer);
+                                logger.debug("Peer found! : " + newPeer);
                                 TomP2pFindPeersOperation.this.peers.add(newPeer);
                             }
                         }
@@ -93,7 +93,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
      * De-serialize the Ip/port couple from the given data into a
      * {@link  MetaPeer}
      *
-     * @param data
+     * @param data The serialized ip:port couple.
      *
      * @return the created peer or null if invalid data.
      */

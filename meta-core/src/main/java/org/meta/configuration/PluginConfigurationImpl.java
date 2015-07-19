@@ -65,7 +65,6 @@ public class PluginConfigurationImpl extends PropertiesConfiguration {
         if (loadDir == null) {
             throw new InvalidConfigurationException("The entry '" + LOAD_DIRECTORY_KEY + "' is mandatory for plugins configuration");
         }
-        System.out.println("PLUGINS CONFIG, LOAD DIR = " + this.loadDirectory);
         this.loadDirectory = loadDir;
     }
 

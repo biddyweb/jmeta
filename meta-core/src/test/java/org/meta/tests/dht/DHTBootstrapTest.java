@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
@@ -41,67 +42,20 @@ import org.slf4j.LoggerFactory;
  */
 public class DHTBootstrapTest extends BaseDHTTests {
 
-    /**
-     *
-     */
-    public static final short DHT1_PORT = 15000;
-
-    /**
-     *
-     */
-    public static final short DHT2_PORT = 15001;
-
-    /**
-     *
-     */
-    public static InetAddress DHT1_PEER_ADDR;
-
-    /**
-     *
-     */
-    public static InetAddress DHT2_PEER_ADDR;
-
-    /**
-     *
-     */
-    public static String DHT1_PEER_STRING;
-
-    /**
-     *
-     */
-    public static String DHT2_PEER_STRING;
-
-    /**
-     *
-     */
-    protected static MetHash validHash = new MetHash(42);
-
-    /**
-     *
-     */
-    protected static MetHash invalidHash = new MetHash(43);
-
-    /**
-     *
-     */
-    protected static MetaDHT dhtNode1;
-
-    /**
-     *
-     */
-    protected static MetaDHT dhtNode2;
-
-    /**
-     *
-     */
-    protected static DHTConfigurationImpl configurationDht1;
-
-    /**
-     *
-     */
-    protected static DHTConfigurationImpl configurationDht2;
-
     private static final Logger logger = LoggerFactory.getLogger(DHTBootstrapTest.class);
+
+    private static final short DHT1_PORT = 15000;
+    private static final short DHT2_PORT = 15001;
+    private static InetAddress DHT1_PEER_ADDR;
+    private static InetAddress DHT2_PEER_ADDR;
+    private static String DHT1_PEER_STRING;
+    private static String DHT2_PEER_STRING;
+    private static final MetHash validHash = new MetHash(42);
+    private static final MetHash invalidHash = new MetHash(43);
+    private static MetaDHT dhtNode1;
+    private static MetaDHT dhtNode2;
+    private static DHTConfigurationImpl configurationDht1;
+    protected static DHTConfigurationImpl configurationDht2;
 
     /**
      *
@@ -117,18 +71,18 @@ public class DHTBootstrapTest extends BaseDHTTests {
             DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
 
             configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
-                    DHT1_PORT,
-                    ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
-                    false,
-                    true);
+                DHT1_PORT,
+                ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
+                false,
+                true);
             dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
             dhtNode1.start();
 
             configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
-                    DHT2_PORT,
-                    ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
-                    false,
-                    true);
+                DHT2_PORT,
+                ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
+                false,
+                true);
             dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
             dhtNode2.start();
         } catch (InvalidConfigurationException ex) {
@@ -149,7 +103,7 @@ public class DHTBootstrapTest extends BaseDHTTests {
     /**
      * Test the bootstrap process to another peer.
      */
-    //@Test
+    @Test
     public void testBootstrapSuccess() {
 
         DHTBootstrapTest.bootstrapDht(dhtNode1, false);
@@ -163,7 +117,9 @@ public class DHTBootstrapTest extends BaseDHTTests {
             MetaPeer expectedPeer = new MetaPeer(null, DHT1_PEER_ADDR, DHT1_PORT);
 
             for (MetaPeer peer : bootstrapOperation.getBootstrapTo()) {
-                if (peer.equals(expectedPeer)) {
+                logger.debug("bootstraped to :" + peer);
+                if (peer.getAddress().equals(expectedPeer.getAddress())
+                    && peer.getPort() == expectedPeer.getPort()) {
                     logger.debug("Bootstraped to expected peer!");
                     return;
                 }

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import junit.framework.Assert;
 import org.junit.AfterClass;
-
+import org.junit.Test;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.dht.FindPeersOperation;
@@ -57,13 +57,13 @@ public class BigDhtTest extends BaseDHTTests {
      *
      * @throws IOException
      */
-    //@Test
+    @Test
     public void testManyNodesOneHash() throws IOException {
         try {
             short port = 15000;
             Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, InetAddress.getByName("127.0.0.1"), port));
 
-            dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, null, false, true));
+            dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, Collections.EMPTY_LIST, false, true));
             dhts[0].start();
             for (int i = 1; i < NB_PEERS; ++i) {
                 ++port;
@@ -84,7 +84,7 @@ public class BigDhtTest extends BaseDHTTests {
                 Thread.sleep(50);
                 BaseDHTTests.StoreIntoDht(dhts[i], hash);
             }
-            Thread.sleep(2000);
+            //Thread.sleep(2000);
 
             MetaDHT lastNode = dhts[NB_PEERS - 1];
             FindPeersOperation operation = lastNode.findPeers(hash);

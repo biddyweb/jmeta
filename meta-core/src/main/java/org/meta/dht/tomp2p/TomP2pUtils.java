@@ -17,6 +17,7 @@
  */
 package org.meta.dht.tomp2p;
 
+import net.tomp2p.p2p.Peer;
 import net.tomp2p.peers.Number160;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
@@ -56,7 +57,7 @@ public class TomP2pUtils {
      * @param peer The tomp2p peer to convert
      * @return The created Meta Peer.
      */
-    public static MetaPeer toPeer(net.tomp2p.p2p.Peer peer) {
+    public static MetaPeer toPeer(Peer peer) {
         Identity id = new Identity(toMetHash(peer.peerID()));
         return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
     }

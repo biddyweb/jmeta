@@ -22,14 +22,14 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 import net.tomp2p.dht.AddBuilder;
 import net.tomp2p.dht.FuturePut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
-import org.meta.configuration.MetaConfiguration;
 import org.meta.api.dht.StoreOperation;
+import org.meta.configuration.MetaConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tomp2p implementation of the store operation.
@@ -43,7 +43,7 @@ public class TomP2pStoreOperation extends StoreOperation {
     private static final Logger logger = LoggerFactory.getLogger(TomP2pStoreOperation.class);
 
     /**
-     * Create the bootstrap operation with given arguments.
+     * Create the store operation with given arguments.
      *
      * @param dht The dht.
      * @param hash The hash to store in the DHT.
@@ -54,8 +54,7 @@ public class TomP2pStoreOperation extends StoreOperation {
     }
 
     /**
-     *
-     * Serialize a ip/port couple into a byte array.
+     * Serialize an ip/port couple into a byte array.
      *
      * @param port The udp port
      * @param addr The ipv4/ipv6 address
@@ -86,7 +85,6 @@ public class TomP2pStoreOperation extends StoreOperation {
         dataMap.put(hash, new Data(data));
 
         AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
-        //AddBuilder addBuilder = this.dht.getPeer().
         addBuilder.data(new Data(data)).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override

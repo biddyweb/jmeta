@@ -18,6 +18,7 @@
 package org.meta.tests.dht;
 
 import java.util.Collection;
+import java.util.Collections;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.OperationListener;
@@ -28,6 +29,7 @@ import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.tests.MetaBaseTests;
+import org.meta.utils.NetworkUtils;
 
 /**
  *
@@ -49,6 +51,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
 
         dhtConfig.setIdentity(id);
         dhtConfig.getNetworkConfig().setPort(port);
+        dhtConfig.getNetworkConfig().setInterfaces(Collections.singletonList(NetworkUtils.getLoopbackInterface()));
         dhtConfig.setKnwonPeers(peers);
         dhtConfig.setBootstrapBroadcast(broadcast);
         dhtConfig.setDhtLocalOnly(localOnly);
@@ -62,7 +65,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @return the created dht node.
      */
     public static MetaDHT createDHTNode(DHTConfigurationImpl config) {
-        return (MetaDHT)new TomP2pDHT(config);
+        return (MetaDHT) new TomP2pDHT(config);
     }
 
     /**
@@ -84,7 +87,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
             @Override
             public void complete(BootstrapOperation operation) {
                 if (assertIfEmpty && operation.getBootstrapTo().isEmpty()) {
-                    org.junit.Assert.fail("Bootstrap operation failed.");
+                    org.junit.Assert.fail("Bootstrap operation returned empty list!");
                 }
             }
         });

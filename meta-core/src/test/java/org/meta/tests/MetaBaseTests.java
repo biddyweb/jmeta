@@ -20,12 +20,16 @@ package org.meta.tests;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import org.junit.BeforeClass;
+import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.configuration.AMPConfigurationImpl;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.ModelConfigurationImpl;
+import org.meta.configuration.NetworkConfigurationImpl;
 import org.meta.configuration.WSConfigurationImpl;
+import org.meta.utils.NetworkUtils;
 
 /**
  * Base class for tests to pre-configure the JMETA env
@@ -36,9 +40,15 @@ public abstract class MetaBaseTests {
      *
      */
     public static void initConfigurations() {
-        //Init all configs with default values manually
+        NetworkConfiguration dhtNetworkConfig = new NetworkConfigurationImpl(
+            DHTConfigurationImpl.DEFAULT_DHT_PORT,
+            Collections.singletonList(NetworkUtils.getLoopbackInterface()),
+            null);
+        DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
+        dhtConfig.setNetworkConfig(dhtNetworkConfig);
+        MetaConfiguration.setDhtConfiguration(dhtConfig);
+
         MetaConfiguration.setAmpConfiguration(new AMPConfigurationImpl());
-        MetaConfiguration.setDhtConfiguration(new DHTConfigurationImpl());
         MetaConfiguration.setWSConfiguration(new WSConfigurationImpl());
         MetaConfiguration.setModelConfiguration(new ModelConfigurationImpl());
     }
@@ -69,6 +79,7 @@ public abstract class MetaBaseTests {
 //        for (NetworkInterface netIf : Collections.list(networkInterfaces)) {
 //            if (netIf.isUp()) {
 //                for (InetAddress ifAddr : Collections.list(netIf.getInetAddresses())) {
+//
 //                    if (ifAddr instanceof Inet4Address) {
 //                        //We prefer ipv4 for tests...
 //                        localAddr = ifAddr;

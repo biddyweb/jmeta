@@ -96,7 +96,8 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
      * Initializes the dht config from properties.
      *
      * @param properties
-     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException
+     * @throws
+     * org.meta.api.configuration.exceptions.InvalidConfigurationException
      */
     public DHTConfigurationImpl(Properties properties) throws InvalidConfigurationException {
         super(properties);
@@ -181,7 +182,7 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
      * @param dhtLocalOnly
      */
     @Override
-        public void setDhtLocalOnly(boolean dhtLocalOnly) {
+    public void setDhtLocalOnly(boolean dhtLocalOnly) {
         this.dhtLocalOnly = dhtLocalOnly;
     }
 

@@ -26,10 +26,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.MetaPeer;
+import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,39 +40,24 @@ public class ConfigurationUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
 
-    private static final String LOOPBACK = getLoopbackInterface();
-
-    /**
-     *
-     * @return
-     */
-    private static String getLoopbackInterface() {
-        try {
-            for (NetworkInterface netIf : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (netIf.isLoopback()) {
-                    return netIf.getName();
-                }
-            }
-        } catch (SocketException ex) {
-        }
-        return null;
-    }
+    private static final String LOOPBACK = NetworkUtils.getLoopbackInterface();
 
     /**
      * Explode the given string using the ',' delimiter.
-     * 
+     *
      * @param value The input string to split.
-     * 
+     *
      * @return The exploded parts.
      */
     public static String[] asList(String value) {
         return value.split(",");
     }
-    
+
     /**
      * Utility function to create peers from a string representation.
      *
-     * For now the following format is supported :
+     * For now the following formats are supported :
+     *
      * <ul>
      * <li>ip:port[,coma-separated list]</li>
      * <li>hostname:port[,coma-separated list]</li>
@@ -112,7 +97,8 @@ public class ConfigurationUtils {
      * @param interfacesString The input string
      *
      * @return The list of interfaces found in the string.
-     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException
+     * @throws
+     * org.meta.api.configuration.exceptions.InvalidConfigurationException
      */
     public static Collection<String> interfacesFromString(String interfacesString) throws InvalidConfigurationException {
         Collection<String> interfaces = new ArrayList<>();
@@ -121,18 +107,18 @@ public class ConfigurationUtils {
         for (String iface : ifs) {
             try {
                 if (NetworkInterface.getByName(iface) == null) {
-                    throw new InvalidConfigurationException("Unknown interface specified in network configuration.");
+                    throw new InvalidConfigurationException("Invalid interface specified in network configuration.");
                 }
                 interfaces.add(iface);
             } catch (SocketException ex) {
-                throw new InvalidConfigurationException("Unknown interface specified in network configuration.", ex);
+                throw new InvalidConfigurationException("Invalid interface specified in network configuration.", ex);
             }
         }
-        if (!interfaces.isEmpty() && !interfaces.contains(LOOPBACK)) {
-            //Always add binding to loopback.
-            //Even windows has loopback, houray!
-            interfaces.add(LOOPBACK);
-        }
+//        if (!interfaces.isEmpty() && !interfaces.contains(LOOPBACK)) {
+//            //Always add binding to loopback.
+//            //Even windows has loopback, houray!
+//            interfaces.add(LOOPBACK);
+//        }
         return interfaces;
     }
 
@@ -143,8 +129,9 @@ public class ConfigurationUtils {
      *
      * @return The list of addresses found in the string.
      *
-     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException
-     * if an invalid address or hostname is encountered.
+     * @throws
+     * org.meta.api.configuration.exceptions.InvalidConfigurationException if an
+     * invalid address or hostname is encountered.
      */
     public static Collection<InetAddress> addressesFromString(String addressesString) throws InvalidConfigurationException {
         Collection<InetAddress> addresses = new ArrayList<>();

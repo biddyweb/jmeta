@@ -56,6 +56,7 @@ public class JMeta {
             controller.initAndStartAll();
         } catch (MetaException ex) {
             logger.error("Failed to start JMeta!", ex);
+            System.exit(1);
         }
         logger.info("Loading plugins...");
         MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(), controller);

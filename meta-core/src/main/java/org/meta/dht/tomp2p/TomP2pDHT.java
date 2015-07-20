@@ -19,10 +19,12 @@ package org.meta.dht.tomp2p;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collection;
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.connection.ChannelClientConfiguration;
 import net.tomp2p.connection.ChannelServerConfiguration;
 import net.tomp2p.connection.Ports;
+import net.tomp2p.connection.StandardProtocolFamily;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.BaseFuture;
@@ -40,6 +42,7 @@ import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.DHTConfigurationImpl;
+import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,19 +109,16 @@ public class TomP2pDHT extends MetaDHT {
     private Bindings configureBindings() {
         NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
         Bindings b = new Bindings();
-        b.setListenAny(false);
 
-        if (nwConfig.getAddresses() != null) {
-            for (InetAddress addr : nwConfig.getAddresses()) {
-                logger.debug("DHT binding to address: " + addr);
-                b.addAddress(addr);
-            }
+        if (nwConfig.ipV4()) {
+            b.addProtocol(StandardProtocolFamily.INET);
         }
-        if (nwConfig.getInterfaces() != null) {
-            for (String iface : nwConfig.getInterfaces()) {
-                logger.debug("DHT binding to interface: " + iface);
-                b.addInterface(iface);
-            }
+        if (nwConfig.ipV6()) {
+            b.addProtocol(StandardProtocolFamily.INET6);
+        }
+        Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
+        for (InetAddress addr : configAddresses) {
+            b.addAddress(addr);
         }
         return b;
     }
@@ -146,16 +146,20 @@ public class TomP2pDHT extends MetaDHT {
         return clientConfig;
     }
 
-    /**
-     * Initializes tomp2p2 and starts listening on the DHT.
-     */
-    private void startAndListen() throws IOException {
+    private Number160 getPeerId() {
         if (this.configuration.getIdentity() == null) {
             Identity id = new Identity(MetamphetUtils.createRandomHash());
             this.configuration.setIdentity(id);
         }
-        Number160 peerId = TomP2pUtils.toNumber160(this.configuration.getIdentity());
+        //TODO manage correctly identity!
+        return TomP2pUtils.toNumber160(this.configuration.getIdentity());
+    }
 
+    /**
+     * Initializes tomp2p2 and starts listening on the DHT.
+     */
+    private void startAndListen() throws IOException {
+        Number160 peerId = getPeerId();
         PeerBuilder peerBuilder = new PeerBuilder(peerId);
         //Udp port from configuration.
         int udpPort = this.configuration.getNetworkConfig().getPort();

@@ -25,6 +25,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.dht.MetaPeer;
 
 /**
@@ -99,6 +100,60 @@ public class NetworkUtils {
         } catch (SocketException ex) {
             return null;
         }
+    }
+
+    /**
+     * Get the all addresses found for the given interface of the given type.
+     *
+     * @param ifaceName The interface name
+     * @param ipV4 true if searching ipV4 address, false otherwise
+     * @param ipV6 true if searching ipV6 address, false otherwise
+     *
+     * @return The List of addresses. Might be empty.
+     */
+    public static Collection<InetAddress> getInterfaceAddresses(String ifaceName, boolean ipV4, boolean ipV6) {
+        Collection<InetAddress> addrs = new ArrayList<>();
+        try {
+            NetworkInterface iface = NetworkInterface.getByName(ifaceName);
+            for (InetAddress ifAddr : Collections.list(iface.getInetAddresses())) {
+                if (ipV4 && ifAddr instanceof Inet4Address) {
+                    addrs.add(ifAddr);
+                } else if (ipV6 && ifAddr instanceof Inet6Address) {
+                    addrs.add(ifAddr);
+                }
+            }
+        } catch (SocketException ex) {
+            //Ignore invalid interface or addresses.
+        }
+        return addrs;
+    }
+
+    /**
+     * Get all addresses found by reading the network configuration.
+     *
+     * @param nwConfig The network configuration.
+     * @return The list of found addresses.
+     */
+    public static Collection<InetAddress> getConfigAddresses(NetworkConfiguration nwConfig) {
+        Collection<InetAddress> addresses = new ArrayList();
+
+        if (nwConfig.getAddresses() != null) {
+            for (InetAddress addr : nwConfig.getAddresses()) {
+                if (nwConfig.ipV4() && addr instanceof Inet4Address) {
+                    addresses.add(addr);
+                } else if (nwConfig.ipV6() && addr instanceof Inet6Address) {
+                    addresses.add(addr);
+                }
+            }
+        }
+        if (nwConfig.getInterfaces() != null) {
+            for (String iface : nwConfig.getInterfaces()) {
+                Collection<InetAddress> ifaceAddresses
+                    = getInterfaceAddresses(iface, nwConfig.ipV4(), nwConfig.ipV6());
+                addresses.addAll(ifaceAddresses);
+            }
+        }
+        return addresses;
     }
 
     /**

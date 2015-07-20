@@ -46,6 +46,11 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     public static String NETWORK_ADDRESSES_KEY = "listen-addresses";
 
     /**
+     * The key in the configuration file for the ipv4 parameter.
+     */
+    public static String IPv4_KEY = "ipV4";
+
+    /**
      * The key in the configuration file for the ipv6 parameter.
      */
     public static String IPv6_KEY = "ipV6";
@@ -66,9 +71,14 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     private Collection<InetAddress> addresses;
 
     /**
-     * If we prefer ipV6 or not.
+     * If we enable ipV4 or not.
      */
-    private boolean ipV6;
+    private boolean ipV4 = true;
+
+    /**
+     * If we enable ipV6 or not.
+     */
+    private boolean ipV6 = false;
 
     /**
      * Initializes this network configuration with given values.
@@ -113,7 +123,16 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
         }
         Boolean preferIpV6 = this.getBoolean(IPv6_KEY);
         if (preferIpV6 != null) {
+            System.out.println("IPV6 enabled ? :" + preferIpV6);
             this.ipV6 = preferIpV6;
+        }
+        Boolean preferIpV4 = this.getBoolean(IPv4_KEY);
+        if (preferIpV4 != null) {
+            System.out.println("IPV4 enabled ? :" + preferIpV4);
+            this.ipV4 = preferIpV4;
+        }
+        if (!ipV4 && !ipV6) {
+            throw new InvalidConfigurationException("ipv4 and ipv6 cannot be both disabled!");
         }
     }
 
@@ -170,17 +189,34 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
     }
 
     /**
-     * @return true if prefering ipV6, false if ipV4.
+     * @return true enabling ipV6, false otherwise.
      */
-    public boolean isIpV6() {
+    @Override
+    public boolean ipV6() {
         return ipV6;
     }
 
     /**
      * @param ipV6 the new ipV6 value.
      */
+    @Override
     public void setIpV6(boolean ipV6) {
         this.ipV6 = ipV6;
     }
 
+    /**
+     * @return true enabling ipV6, false otherwise.
+     */
+    @Override
+    public boolean ipV4() {
+        return ipV4;
+    }
+
+    /**
+     * @param ipV4 the new ipV4 value.
+     */
+    @Override
+    public void setIpV4(boolean ipV4) {
+        this.ipV4 = ipV4;
+    }
 }

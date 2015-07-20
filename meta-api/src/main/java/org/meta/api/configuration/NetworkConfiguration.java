@@ -47,5 +47,24 @@ public interface NetworkConfiguration {
      * @param port
      */
     void setPort(Short port);
-    
+
+    /**
+     * @return true enabling ipV6, false otherwise.
+     */
+    public boolean ipV6();
+
+    /**
+     * @param ipV6 the new ipV6 value.
+     */
+    public void setIpV6(boolean ipV6);
+
+    /**
+     * @return true enabling ipV6, false otherwise.
+     */
+    public boolean ipV4();
+
+    /**
+     * @param ipV4 the new ipV4 value.
+     */
+    public void setIpV4(boolean ipV4);
 }

@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This thread only listen to AMP Command
+ * This thread only listen to AMP Command.
  *
  * @author faquin
  *
@@ -22,24 +22,24 @@ public class AskHandlerThread implements Runnable {
 
     private Socket client = null;
     private AMPServer reader = null;
-    private Logger logger = LoggerFactory.getLogger(AskHandlerThread.class);
+    private final Logger logger = LoggerFactory.getLogger(AskHandlerThread.class);
 
     /**
-     * Initiate the handler with given parameters
+     * Initiate the handler with given parameters.
      *
-     * @param server the AMP server that created us.
-     * @param client socket connection to dicuss with.
+     * @param pServer the AMP server that created us.
+     * @param pClient socket connection to dicuss with.
      */
-    public AskHandlerThread(AMPServer server, Socket client) {
-        this.reader = server;
-        this.client = client;
+    public AskHandlerThread(final AMPServer pServer, final Socket pClient) {
+        this.reader = pServer;
+        this.client = pClient;
     }
 
     /**
      *
      */
     @Override
-    public void run() {
+    public final void run() {
         InputStream inputStream = null;
         try {
             //Open the client inputStream
@@ -76,9 +76,7 @@ public class AskHandlerThread implements Runnable {
                     }
                 }
             }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (InvalidAMPCommand e) {
+        } catch (IOException | InvalidAMPCommand e) {
             logger.error(e.getMessage(), e);
         } finally {
             if (inputStream != null) {

@@ -25,14 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * You may extends {@link PluginAMPController} to create the TCP part of a
- * plugin. It's allow you to register command to the tcp reader, that can be
- * executed by other peers
+ * You may extends {@link PluginAMPController} to create the TCP part of a plugin. It's allow you to register
+ * command to the tcp reader, that can be executed by other peers
  *
  * Basically, this class offer generic treatment to serve Data over P2P
  *
- * You may extends registerCommands wich allow you to tel the {@link AMPServer}
- * that you may have something to execute.
+ * You may extends registerCommands wich allow you to tel the {@link AMPServer} that you may have something to
+ * execute.
  *
  * You may use getInTheModel to retrieve information from the DB
  *
@@ -55,25 +54,25 @@ public abstract class PluginAMPController {
      *
      */
     protected String pluginName = null;
-    private Logger logger = LoggerFactory.getLogger(PluginAMPController.class);
+    private final Logger logger = LoggerFactory.getLogger(PluginAMPController.class);
 
     /**
-     *
+     * toto.
      */
     public PluginAMPController() {
-        lstCommands = new HashMap<String, Class<? extends PluginAMPCommand>>();
+        lstCommands = new HashMap<>();
     }
 
     /**
      * Fill the lstCommands with all the needed TCP commands.
      *
-     * @param commands is a HashMap containing a key wich is the command name
-     * and a Clas wich is the Class of the command.
+     * @param commands is a HashMap containing a key wich is the command name and a Clas wich is the Class of
+     * the command.
      */
     protected abstract void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands);
 
     /**
-     * initialize the plugin
+     * Initialize the plugin.
      *
      * @param pluginName
      */

@@ -1,19 +1,19 @@
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 JMeta
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 JMeta
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.meta.configuration;
 
@@ -84,7 +84,8 @@ public class ConfigurationUtils {
                 addr = InetAddress.getByName(peerInfo[0]);
                 short peerPort = Short.valueOf(peerInfo[1]);
                 peers.add(new MetaPeer(null, addr, peerPort));
-            } catch (UnknownHostException ex) {
+            }
+            catch (UnknownHostException ex) {
                 throw new InvalidConfigurationException("Invalid ip or hostname specified in configuration", ex);
             }
         }
@@ -110,7 +111,8 @@ public class ConfigurationUtils {
                     throw new InvalidConfigurationException("Invalid interface specified in network configuration.");
                 }
                 interfaces.add(iface);
-            } catch (SocketException ex) {
+            }
+            catch (SocketException ex) {
                 throw new InvalidConfigurationException("Invalid interface specified in network configuration.", ex);
             }
         }
@@ -140,7 +142,8 @@ public class ConfigurationUtils {
             try {
                 InetAddress addr = InetAddress.getByName(addrStr);
                 addresses.add(addr);
-            } catch (UnknownHostException ex) {
+            }
+            catch (UnknownHostException ex) {
                 throw new InvalidConfigurationException("Invalid address specified in configuration.", ex);
             }
         }

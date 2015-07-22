@@ -31,14 +31,14 @@ public interface OperationListener<T extends AsyncOperation> {
     /**
      * Method called if the listened operation failed.
      *
-     * @param operation. The operation that failed.
+     * @param operation The operation that failed.
      */
-    public abstract void failed(T operation);
+    void failed(T operation);
 
     /**
      * Method called if the listened operation completed.
      *
-     * @param operation. The operation that completed.
+     * @param operation The operation that completed.
      */
-    public abstract void complete(T operation);
+    void complete(T operation);
 }

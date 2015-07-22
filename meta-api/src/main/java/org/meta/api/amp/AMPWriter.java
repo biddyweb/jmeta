@@ -28,7 +28,7 @@ import org.meta.api.common.MetHash;
 public interface AMPWriter {
 
     /**
-     * Ask a question to the given address, with the given parameters
+     * Ask a question to the given address, with the given parameters.
      *
      * @param adress who do we call ?
      * @param port on wich port do we call ?
@@ -38,6 +38,7 @@ public interface AMPWriter {
      * @param listenner after getting result, who is getting the callback ?
      * @return the sender thread for join purposes
      */
-    Future<?> askTo(InetAddress adress, String plugin, String command, MetHash hash, AMPResponseCallback listenner, int port);
-    
+    Future<?> askTo(InetAddress adress, String plugin, String command, MetHash hash,
+            AMPResponseCallback listenner, int port);
+
 }

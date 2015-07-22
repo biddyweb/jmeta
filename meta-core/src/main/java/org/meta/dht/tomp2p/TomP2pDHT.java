@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * It is a first implementation and will improve with time.
  *
  */
-public class TomP2pDHT extends MetaDHT {
+public final class TomP2pDHT extends MetaDHT {
 
     private final Logger logger = LoggerFactory.getLogger(TomP2pDHT.class);
 
@@ -74,7 +74,7 @@ public class TomP2pDHT extends MetaDHT {
      *
      * @param config The DHT configuration to use.
      */
-    public TomP2pDHT(DHTConfigurationImpl config) {
+    public TomP2pDHT(final DHTConfigurationImpl config) {
         super(config);
     }
 
@@ -101,8 +101,7 @@ public class TomP2pDHT extends MetaDHT {
     /**
      * Create the bindings for tomp2p based on the dht configuration.
      *
-     * If Network configuration has empty addresses or interfaces, it will bind
-     * to everything.
+     * If Network configuration has empty addresses or interfaces, it will bind to everything.
      *
      * @return The bindings.
      */
@@ -126,7 +125,7 @@ public class TomP2pDHT extends MetaDHT {
     /**
      * The tomp2p channel server configuration initialization.
      */
-    private ChannelServerConfiguration getServerConfig(Bindings bindings, int port) {
+    private ChannelServerConfiguration getServerConfig(final Bindings bindings, final int port) {
         ChannelServerConfiguration serverConfig = new ChannelServerConfiguration();
         serverConfig.ports(new Ports(port, port));
         serverConfig.forceTCP(false).forceUDP(true);
@@ -135,7 +134,7 @@ public class TomP2pDHT extends MetaDHT {
         return serverConfig;
     }
 
-    private ChannelClientConfiguration getClientConfig(Bindings bindings) {
+    private ChannelClientConfiguration getClientConfig(final Bindings bindings) {
         ChannelClientConfiguration clientConfig = new ChannelClientConfiguration();
 
         clientConfig.bindings(bindings);
@@ -179,13 +178,13 @@ public class TomP2pDHT extends MetaDHT {
     @Override
     public BootstrapOperation bootstrap() {
         Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnownPeers(),
-            this.configuration.isBootstrapBroadcast());
+                this.configuration.isBootstrapBroadcast());
         b.start();
         return b;
     }
 
     @Override
-    public FindPeersOperation findPeers(MetHash hash) {
+    public FindPeersOperation findPeers(final MetHash hash) {
         Number160 contentHash = TomP2pUtils.toNumber160(hash);
         TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
 
@@ -194,7 +193,7 @@ public class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public StoreOperation store(MetHash hash) {
+    public StoreOperation store(final MetHash hash) {
         Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
         TomP2pStoreOperation storeOperation = new TomP2pStoreOperation(this, tomp2pHash);
 
@@ -211,7 +210,7 @@ public class TomP2pDHT extends MetaDHT {
         shutdownAnnounce.addListener(new BaseFutureAdapter<BaseFuture>() {
 
             @Override
-            public void operationComplete(BaseFuture future) throws Exception {
+            public void operationComplete(final BaseFuture future) throws Exception {
                 logger.debug("Successfully announced to peers we are shutting down");
             }
         });
@@ -221,7 +220,7 @@ public class TomP2pDHT extends MetaDHT {
         shutDownOperation.addListener(new BaseFutureAdapter<BaseFuture>() {
 
             @Override
-            public void operationComplete(BaseFuture future) throws Exception {
+            public void operationComplete(final BaseFuture future) throws Exception {
                 TomP2pDHT.this.logger.info("Meta DHT has shut down.");
             }
         });

@@ -1,19 +1,19 @@
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 JMeta
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 JMeta
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.meta.configuration;
 
@@ -24,7 +24,8 @@ import org.meta.api.configuration.NetworkConfiguration;
 /**
  * Class holding general configuration entries for the amp stack.
  */
-public final class AMPConfigurationImpl extends PropertiesConfiguration implements AMPConfiguration {
+public final class AMPConfigurationImpl extends PropertiesConfiguration
+    implements AMPConfiguration {
 
     /**
      * The default size for Sender thread pool.
@@ -60,8 +61,8 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
      * The port the amp stack will listen to.
      */
     private Short ampPort = DEFAULT_AMP_PORT;
-    private Integer senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
-    private Integer serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
+    private Integer senderThPoolSize;
+    private Integer serverThPoolSize;
 
     /**
      * The network parameters.
@@ -72,6 +73,8 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
      * Empty initialization with default values.
      */
     public AMPConfigurationImpl() {
+        this.serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
+        this.senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
     }
 
     /**
@@ -79,8 +82,10 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
      *
      * @param properties The properties to take configuration from.
      */
-    public AMPConfigurationImpl(Properties properties) {
+    public AMPConfigurationImpl(final Properties properties) {
         super(properties);
+        this.serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
+        this.senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
         if (properties != null) {
             initFromProperties();
         }
@@ -92,13 +97,13 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
         if (port != null) {
             this.ampPort = port;
         }
-        Integer senderThPoolSize = this.getInt(SENDER_TH_POOL_KEY);
-        if (senderThPoolSize != null) {
-            this.senderThPoolSize = senderThPoolSize;
+        Integer senderThreadPoolSize = this.getInt(SENDER_TH_POOL_KEY);
+        if (senderThreadPoolSize != null) {
+            this.senderThPoolSize = senderThreadPoolSize;
         }
-        Integer serverThPoolSize = this.getInt(SERVER_TH_POOL_KEY);
-        if (senderThPoolSize != null) {
-            this.serverThPoolSize = serverThPoolSize;
+        Integer serverThreadPoolSize = this.getInt(SERVER_TH_POOL_KEY);
+        if (serverThreadPoolSize != null) {
+            this.serverThPoolSize = serverThreadPoolSize;
         }
     }
 
@@ -113,11 +118,11 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
 
     /**
      *
-     * @param ampPort The new amp port
+     * @param port The new amp port
      */
     @Override
-    public void setAmpPort(Short ampPort) {
-        this.ampPort = ampPort;
+    public void setAmpPort(final Short port) {
+        this.ampPort = port;
     }
 
     /**
@@ -129,11 +134,11 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
     }
 
     /**
-     * @param senderThPoolSize the senderThPoolSize to set
+     * @param threadPoolSize the senderThPoolSize to set
      */
     @Override
-    public void setSenderThPoolSize(Integer senderThPoolSize) {
-        this.senderThPoolSize = senderThPoolSize;
+    public void setSenderThPoolSize(final Integer threadPoolSize) {
+        this.senderThPoolSize = threadPoolSize;
     }
 
     /**
@@ -145,15 +150,15 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
     }
 
     /**
-     * @param serverThPoolSize the serverThPoolSize to set
+     * @param threadPoolSize the serverThPoolSize to set
      */
     @Override
-    public void setServerThPoolSize(Integer serverThPoolSize) {
-        this.serverThPoolSize = serverThPoolSize;
+    public void setServerThPoolSize(final Integer threadPoolSize) {
+        this.serverThPoolSize = threadPoolSize;
     }
 
     /**
-     * 
+     *
      * @return The network configuration.
      */
     @Override
@@ -162,12 +167,11 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration implemen
     }
 
     /**
-     * 
-     * @param networkConfig 
+     * @param nwConfig The new network configuration.
      */
     @Override
-    public void setNetworkConfig(NetworkConfiguration networkConfig) {
-        this.networkConfig = networkConfig;
+    public void setNetworkConfig(final NetworkConfiguration nwConfig) {
+        this.networkConfig = nwConfig;
     }
 
 }

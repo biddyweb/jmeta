@@ -8,66 +8,74 @@ package org.meta.api.common;
 import java.util.Random;
 
 /**
- * Class representing a Hash (either a model object's hash, or a piece of data's
- * hash, or anything really), to be used throughout the application.
+ * Class representing a Hash (either a model object's hash, or a piece of data's hash, or anything really), to
+ * be used throughout the application.
  */
 public class MetHash extends Number implements Comparable<MetHash> {
 
     /**
      * This key has *always* 160 bit. Do not change.
      */
-    public final static int BITS = 160;
+    public static final int BITS = 160;
+
+    private static final int INT_SIZE = 32;
+
+    private static final int CHAR_SIZE = 8;
+
+    private static final int HEXA_STRING_SIZE = 42;
 
     /**
      * The max value of a hash.
      */
-    public final static MetHash MAX_VALUE = new MetHash(new int[]{-1, -1, -1, -1, -1});
+    public static final MetHash MAX_VALUE
+            = new MetHash(new int[]{-1, -1, -1, -1, -1});
 
     /**
      * Bitwise mask for long.
      */
-    protected final static long LONG_MASK = 0xffffffffL;
+    protected static final long LONG_MASK = 0xffffffffL;
 
     /**
      * Bitwise mask for byte.
      */
-    protected final static int BYTE_MASK = 0xff;
+    protected static final int BYTE_MASK = 0xff;
 
     /**
      * Bitwise mask for char.
      */
-    protected final static int CHAR_MASK = 0xf;
+    protected static final int CHAR_MASK = 0xf;
 
     /**
-     * a map used for String <-> Key conversion.
+     * A map used for String <-> Key conversion.
      */
-    protected final static char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-        'f'};
+    protected static final char[] DIGITS
+            = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
+                'b', 'c', 'd', 'e', 'f'};
 
     /**
-     * size of the backing integer array.
+     * Size of the backing integer array.
      */
-    public final static int INT_ARRAY_SIZE = BITS / 32;
+    public static final int INT_ARRAY_SIZE = BITS / INT_SIZE;
 
     /**
-     * size of a byte array.
+     * Size of a byte array.
      */
-    public final static int BYTE_ARRAY_SIZE = BITS / 8;
+    public static final int BYTE_ARRAY_SIZE = BITS / CHAR_SIZE;
 
     /**
      * backing integer array.
      */
-    protected final int[] val;
+    private final int[] val;
 
     /**
      * Constants zero hash.
      */
-    public final static MetHash ZERO = new MetHash(0);
+    public static final MetHash ZERO = new MetHash(0);
 
     /**
      * Constants one hash.
      */
-    public final static MetHash ONE = new MetHash(1);
+    public static final MetHash ONE = new MetHash(1);
 
     /**
      * Create a Key with value 0.
@@ -77,47 +85,53 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Create an instance with an integer array. This integer array will be
-     * copied into the backing array.
+     * Create an instance with an integer array. This integer array will be copied into the backing array.
      *
-     * @param val The value to copy to the backing array. Since this class
-     * stores 160bit numbers, the array needs to be of size 5 or smaller.
+     * @param ints The value to copy to the backing array. Since this class stores 160bit numbers, the array
+     * needs to be of size 5 or smaller.
+     *
+     * @throws IllegalArgumentException if the array is invalid.
      */
-    public MetHash(final int... val) {
-        if (val.length > INT_ARRAY_SIZE) {
-            throw new IllegalArgumentException("Can only deal with arrays of smaller or equal " + INT_ARRAY_SIZE
-                    + ". Your array has " + val.length);
+    public MetHash(final int... ints) throws IllegalArgumentException {
+        if (ints.length > INT_ARRAY_SIZE) {
+            throw new IllegalArgumentException(
+                    "Array of int too long. Max : " + INT_ARRAY_SIZE
+                    + ". Your array has " + ints.length
+            );
         }
         this.val = new int[INT_ARRAY_SIZE];
-        final int len = val.length;
+        final int len = ints.length;
         for (int i = len - 1, j = INT_ARRAY_SIZE - 1; i >= 0; i--, j--) {
-            this.val[j] = val[i];
+            this.val[j] = ints[i];
         }
     }
 
     /**
-     * Create a Hash from a string. The string has to be of length 40 to fit
-     * into the backing array. Note that this string is *always* in hexadecimal,
-     * there is no 0x... required before the number.
+     * Create a Hash from a string. The string has to be of length 40 to fit into the backing array. Note that
+     * this string is *always* in hexadecimal, there is no 0x... required before the number.
      *
-     * @param val The characters allowed are [0-9a-f], which is in hexadecimal
+     * @param pVal The characters allowed are [0-9a-f], which is in hexadecimal
      */
-    public MetHash(final String val) {
-        if (val.length() > 42) {
+    public MetHash(final String pVal) {
+        if (pVal.length() > HEXA_STRING_SIZE) {
             throw new IllegalArgumentException(
-                    "Can only deal with strings of size smaller or equal than 42. Your string has " + val.length());
+                    "Can only deal with strings of size smaller or equal than 42."
+                    + "Your string has " + pVal.length());
         }
-        if (val.indexOf("0x") != 0) {
-            throw new IllegalArgumentException(val + " is not in hexadecimal form. Decimal form is not supported yet");
+        if (pVal.indexOf("0x") != 0) {
+            throw new IllegalArgumentException(pVal
+                    + " is not in hexadecimal form."
+                    + "Decimal form is not supported yet");
         }
         this.val = new int[INT_ARRAY_SIZE];
-        final char[] tmp = val.toCharArray();
+        final char[] tmp = pVal.toCharArray();
         final int len = tmp.length;
-        for (int i = 42 - len, j = 2; i < 40; i++, j++) {
+        for (int i = HEXA_STRING_SIZE - len, j = 2; i < 40; i++, j++) {
             this.val[i >> 3] <<= 4;
             int digit = Character.digit(tmp[j], 16);
             if (digit < 0) {
-                throw new RuntimeException("Not a hexadecimal number \"" + tmp[j] + "\". The range is [0-9a-f]");
+                throw new RuntimeException("Not a hexadecimal number \""
+                        + tmp[j] + "\". The range is [0-9a-f]");
             }
             // += or |= does not matter here
             this.val[i >> 3] += digit & CHAR_MASK;
@@ -127,60 +141,59 @@ public class MetHash extends Number implements Comparable<MetHash> {
     /**
      * Creates a Hash with the integer value.
      *
-     * @param val integer value
+     * @param intVal integer value.
      */
-    public MetHash(final int val) {
+    public MetHash(final int intVal) {
         this.val = new int[INT_ARRAY_SIZE];
-        this.val[INT_ARRAY_SIZE - 1] = val;
+        this.val[INT_ARRAY_SIZE - 1] = intVal;
     }
 
     /**
      * Creates a Hash with the long value.
      *
-     * @param val
+     * @param longVal the long value.
      */
-    public MetHash(final long val) {
+    public MetHash(final long longVal) {
         this.val = new int[INT_ARRAY_SIZE];
-        this.val[INT_ARRAY_SIZE - 1] = (int) val;
-        this.val[INT_ARRAY_SIZE - 2] = (int) (val >> 32);
+        this.val[INT_ARRAY_SIZE - 1] = (int) longVal;
+        this.val[INT_ARRAY_SIZE - 2] = (int) (longVal >> 32);
     }
 
     /**
-     * Creates a new Hash using the byte array. The array is copied to the
-     * backing int[]
+     * Creates a new Hash using the byte array.
      *
-     * @param val
+     * @param byteArray The array to be copied to the backing int[]
      */
-    public MetHash(final byte[] val) {
-        this(val, 0, val.length);
+    public MetHash(final byte[] byteArray) {
+        this(byteArray, 0, byteArray.length);
     }
 
     /**
-     * Creates a new Hash using the byte array. The array is copied to the
-     * backing int[] starting at the given offest.
+     * Creates a new Hash using the byte array. The array is copied to the backing int[] starting at the given
+     * offest.
      *
-     * @param val
-     * @param offset The offset where to start
-     * @param length
+     * @param byteArray The array to be copied to the backing int[].
+     * @param offset The offset where to start.
+     * @param length The length to use in array.
      */
-    public MetHash(final byte[] val, final int offset, final int length) {
+    public MetHash(final byte[] byteArray, final int offset, final int length) {
         if (length > 20) {
             throw new IllegalArgumentException(
-                    "Can only deal with byte arrays of size smaller or equal than 20. Your array has " + length);
+                    "Can only deal with byte arrays of size smaller or equal than 20."
+                    + "Your array has " + length);
         }
         this.val = new int[INT_ARRAY_SIZE];
-        for (int i = length + offset - 1, j = 20 - 1, k = 0; i >= offset; i--, j--, k++) // += or |= does not matter here
-        {
-            this.val[j >> 2] |= (val[i] & BYTE_MASK) << ((k % 4) << 3);
+        // += or |= does not matter here
+        for (int i = length + offset - 1, j = 20 - 1, k = 0; i >= offset; i--, j--, k++) {
+            this.val[j >> 2] |= (byteArray[i] & BYTE_MASK) << ((k % 4) << 3);
         }
     }
 
     /**
      * Creates a new Hash with random values in it.
      *
-     * @param random The object to create pseudo random numbers. For testing and
-     * debugging, the seed in the random class can be set to make the random
-     * values repeatable.
+     * @param random The object to create pseudo random numbers. For testing and debugging, the seed in the
+     * random class can be set to make the random values repeatable.
      */
     public MetHash(final Random random) {
         this.val = new int[INT_ARRAY_SIZE];
@@ -194,7 +207,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      *
      * @return a copy of the backing array
      */
-    public int[] toIntArray() {
+    public final int[] toIntArray() {
         final int[] retVal = new int[INT_ARRAY_SIZE];
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             retVal[i] = this.val[i];
@@ -210,7 +223,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      *
      * @return the last index written in the array.
      */
-    public int toByteArray(byte[] me, int offset) {
+    public final int toByteArray(final byte[] me, final int offset) {
         if (offset + BYTE_ARRAY_SIZE > me.length) {
             throw new RuntimeException("array too small");
         }
@@ -230,25 +243,22 @@ public class MetHash extends Number implements Comparable<MetHash> {
      *
      * @return a byte array
      */
-    public byte[] toByteArray() {
+    public final byte[] toByteArray() {
         final byte[] retVal = new byte[BYTE_ARRAY_SIZE];
         toByteArray(retVal, 0);
         return retVal;
     }
 
     /**
-     * Shows the content in a human readable manner
+     * The string representation of a hash. Shows the content in a human readable manner.
      *
-     * @param removeLeadingZero Indicates of leading zeros should be removed
-     * @return A human readable representation of this key
+     * @return the string representation.
      */
-    public String toString(boolean removeLeadingZero) {
+    @Override
+    public final String toString() {
         final StringBuilder sb = new StringBuilder("0x");
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
-            toHex(val[i], removeLeadingZero, sb);
-            if (removeLeadingZero && val[i] != 0) {
-                removeLeadingZero = false;
-            }
+            toHex(val[i], sb);
         }
         return sb.toString();
     }
@@ -258,7 +268,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      *
      * @return True if this number is zero, false otherwise
      */
-    public boolean isZero() {
+    public final boolean isZero() {
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             if (this.val[i] != 0) {
                 return false;
@@ -268,12 +278,12 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Calculates the number of bits used to represent this number. All leading
-     * (leftmost) zero bits are ignored
+     * Calculates the number of bits used to represent this number. All leading (leftmost) zero bits are
+     * ignored
      *
      * @return The bits used
      */
-    public int bitLength() {
+    public final int bitLength() {
         int bits = 0;
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             if (this.val[i] != 0) {
@@ -286,22 +296,12 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * The string representation of a hash.
-     *
-     * @return the string representation.
-     */
-    @Override
-    public String toString() {
-        return toString(true);
-    }
-
-    /**
      * The double representation of this hash.
      *
      * @return The double representation.
      */
     @Override
-    public double doubleValue() {
+    public final double doubleValue() {
         double d = 0;
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             d *= LONG_MASK + 1;
@@ -316,7 +316,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      * @return The float representation.
      */
     @Override
-    public float floatValue() {
+    public final float floatValue() {
         return (float) doubleValue();
     }
 
@@ -326,7 +326,7 @@ public class MetHash extends Number implements Comparable<MetHash> {
      * @return The int representation.
      */
     @Override
-    public int intValue() {
+    public final int intValue() {
         return this.val[INT_ARRAY_SIZE - 1];
     }
 
@@ -336,21 +336,24 @@ public class MetHash extends Number implements Comparable<MetHash> {
      * @return The long representation.
      */
     @Override
-    public long longValue() {
-        return ((this.val[INT_ARRAY_SIZE - 1] & LONG_MASK) << 32) + (this.val[INT_ARRAY_SIZE - 2] & LONG_MASK);
+    public final long longValue() {
+        return ((this.val[INT_ARRAY_SIZE - 1] & LONG_MASK) << 32)
+                + (this.val[INT_ARRAY_SIZE - 2] & LONG_MASK);
     }
 
     /**
      * Comparison with the given hash.
-     * 
-     * @param o 
-     * @return
+     *
+     * @param metHash the hash to compare to.
+     *
+     * @return < 0 if this is considered less than metHash, > 0 if considered greater, or 0 if they are
+     * equals.
      */
     @Override
-    public int compareTo(final MetHash o) {
+    public final int compareTo(final MetHash metHash) {
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             long b1 = val[i] & LONG_MASK;
-            long b2 = o.val[i] & LONG_MASK;
+            long b2 = metHash.val[i] & LONG_MASK;
             if (b1 < b2) {
                 return -1;
             } else if (b1 > b2) {
@@ -362,11 +365,12 @@ public class MetHash extends Number implements Comparable<MetHash> {
 
     /**
      *
-     * @param obj
-     * @return
+     * @param obj The object to compare.
+     *
+     * @return true if they are strictly equals, false otherwise.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public final boolean equals(final Object obj) {
         if (obj == this) {
             return true;
         }
@@ -384,10 +388,10 @@ public class MetHash extends Number implements Comparable<MetHash> {
 
     /**
      *
-     * @return
+     * @return The int hashcode if this hash.
      */
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int hashCode = 0;
         for (int i = 0; i < INT_ARRAY_SIZE; i++) {
             hashCode = (int) (31 * hashCode + (val[i] & LONG_MASK));
@@ -396,48 +400,49 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
-     * Convert an integer to hex value
+     * Convert an integer to hex value.
      *
      * @param integer The integer to convert
-     * @param removeLeadingZero idicate if leading zeros should be ignored
-     * @param sb The string bulider where to store the result
+     * @param removeLeadingZero indicate if leading zeros should be ignored
+     * @param sb The string builder where to store the result
      */
-    private static void toHex(int integer, final boolean removeLeadingZero, final StringBuilder sb) {
+    private static void toHex(final Integer integer, final StringBuilder sb) {
         // 4 bits form a char, thus we have 160/4=40 chars in a key, with an
         // integer array size of 5, this gives 8 chars per integer
-        final int CHARS_PER_INT = 8;
-        final char[] buf = new char[CHARS_PER_INT];
-        int charPos = CHARS_PER_INT;
-        for (int i = 0; i < CHARS_PER_INT && !(removeLeadingZero && integer == 0); i++) {
-            buf[--charPos] = DIGITS[integer & CHAR_MASK];
+        final int charsPerInt = 8;
+        int value = integer;
+        final char[] buf = new char[charsPerInt];
+        int charPos = charsPerInt;
+        for (int i = 0; i < charsPerInt; i++) {
+            buf[--charPos] = DIGITS[value & CHAR_MASK];
             // for hexadecimal, we have 4 bits per char, which ranges from
             // [0-9a-f]
-            integer >>>= 4;
+            value >>>= 4;
         }
-        sb.append(buf, charPos, (CHARS_PER_INT - charPos));
+        sb.append(buf, charPos, (charsPerInt - charPos));
     }
 
-    /**
-     * Create a new MetHash from the integer, which fills all the 160bits. A new
-     * random object will be created.
-     *
-     * @param integerValue The value to hash from
-     * @return A hash from based on pseudo random, to fill the 160bits
-     */
-    public static MetHash createHash(int integerValue) {
-        Random r = new Random(integerValue);
-        return new MetHash(r);
-    }
-
-    /**
-     * Create a new MetHash from the long, which fills all the 160bit. A new
-     * random object will be created, thus, its thread safe
-     *
-     * @param longValue The value to hash from
-     * @return A hash based on pseudo random, to fill the 160bits
-     */
-    public static MetHash createHash(long longValue) {
-        Random r = new Random(longValue);
-        return new MetHash(r);
-    }
+//    /**
+//     * Create a new MetHash from the integer, which fills all the 160bits. A new random object will be
+//     * created.
+//     *
+//     * @param integerValue The value to hash from
+//     * @return A hash from based on pseudo random, to fill the 160bits
+//     */
+//    public static MetHash createHash(final int integerValue) {
+//        Random r = new Random(integerValue);
+//        return new MetHash(r);
+//    }
+//
+//    /**
+//     * Create a new MetHash from the long, which fills all the 160bit. A new random object will be created,
+//     * thus, its thread safe
+//     *
+//     * @param longValue The value to hash from
+//     * @return A hash based on pseudo random, to fill the 160bits
+//     */
+//    public static MetHash createHash(final long longValue) {
+//        Random r = new Random(longValue);
+//        return new MetHash(r);
+//    }
 }

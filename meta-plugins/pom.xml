@@ -19,6 +19,8 @@
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Skip checkstyle for plugins -->
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
   <dependencyManagement>
     <dependencies>

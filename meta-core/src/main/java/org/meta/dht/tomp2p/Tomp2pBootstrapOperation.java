@@ -17,6 +17,7 @@
  */
 package org.meta.dht.tomp2p;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.tomp2p.futures.BaseFutureListener;
@@ -71,7 +72,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             this.finish();
             return;
         }
-        this.discoverListener = new Tomp2pFutureDiscoverListener(this.knownPeers.size());
+        this.discoverListener = new Tomp2pFutureDiscoverListener(this.knownPeers.size(), this.dht.getPeer().peerAddress().inetAddress());
         this.bootstrapListener = new Tomp2pFutureBootstrapListener(broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
         this.setState(OperationState.WAITING);
 
@@ -80,6 +81,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             //If local network only, do no discover first
             this.startBootstrap();
         } else {
+            //Discovery is only to find our public IP using one of the bootstrap peers.
             this.startDiscover();
         }
     }
@@ -89,7 +91,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         if (this.bootstrapListener != null) {
             for (FutureBootstrap bootstrapFuture : this.bootstrapListener.getOperations()) {
                 if (bootstrapFuture.isFailed()) {
-                    logger.debug("BootstrapFuture failure : " + bootstrapFuture.failedReason());
+                    logger.debug("Bootstrap Future failure : " + bootstrapFuture.failedReason());
                     continue;
                 }
                 for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
@@ -98,7 +100,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
                     peer.setPort((short) addr.udpPort());
                     peer.setId(new Identity(TomP2pUtils.toMetHash(addr.peerId())));
                     this.bootstrapTo.add(peer);
-                    logger.debug("DHT bootstraped to a peer!" + peer.toString());
+                    logger.debug("DHT bootstraped to a peer : " + peer.toString());
                 }
             }
         }
@@ -143,16 +145,6 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     }
 
     /**
-     * Called by the Discovery listener if the operation failed.
-     *
-     * If this operation failed we cannot continue so we notify listeners and
-     * exit...
-     */
-    private void discoveryFailed() {
-        this.setFailed("Discovery operation failed");
-    }
-
-    /**
      * Start the discovery of our public address using any public peers in the
      * configuration.
      */
@@ -162,8 +154,9 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             this.finish();
         }
         for (MetaPeer peer : publicPeers) {
-            DiscoverBuilder db = new DiscoverBuilder(this.dht.getPeer());
-            db.expectManualForwarding();
+            DiscoverBuilder db = this.dht.getPeer().discover();
+            //db.discoverTimeoutSec(100);
+            //db.setExpectManualForwarding(true);
             db.inetAddress(peer.getAddress()).ports(peer.getPort());
             db.start().addListener(this.discoverListener);
         }
@@ -182,29 +175,37 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
         private int nbOperations;
         private boolean discoveryDone = false;
+        private final InetAddress origAddress;
 
         /**
          * Initializes the listener and specify the number of operations to wait
          * for before notifying.
          */
-        Tomp2pFutureDiscoverListener(int nbOperation) {
+        Tomp2pFutureDiscoverListener(int nbOperation, InetAddress origAddress) {
             this.nbOperations = nbOperation;
+            this.origAddress = origAddress;
+            logger.debug("Discovery listener with original peer address :" + origAddress);
         }
 
         @Override
         public void operationComplete(FutureDiscover future) throws Exception {
+            //We don't rely on isSuccess or isFailed here because the tomp2p Discovery is a bit broken...
             --nbOperations;
-            if (future.isFailed()) {
-                logger.warn("Discovery failed: " + future.failedReason());
-                if (nbOperations == 0 && !discoveryDone) {
-                    Tomp2pBootstrapOperation.this.discoveryFailed();
+            PeerAddress peerAddr = future.peerAddress();
+            if (peerAddr != null && !peerAddr.inetAddress().equals(origAddress)) {
+                //We guess it is an operation success.
+                discoveryDone = true;
+                logger.debug("Discovery reported our external peer address ?" + future.peerAddress().inetAddress());
+                Tomp2pBootstrapOperation.this.startBootstrap();
+            } else if (peerAddr == null || peerAddr.inetAddress().equals(origAddress)) {
+                //To operation has failed.
+                if (discoveryDone) {
                     return;
                 }
-            }
-            if (!discoveryDone && future.isSuccess()) {
-                discoveryDone = true;
-                logger.debug("Discovery finished! Our peer public address ? : " + future.peerAddress() + " ? : " + future.externalAddress());
-                Tomp2pBootstrapOperation.this.startBootstrap();
+                if (nbOperations == 0) {
+                    logger.info("Discovery failed.");
+                    Tomp2pBootstrapOperation.this.finish();
+                }
             }
         }
 

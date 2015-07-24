@@ -1,17 +1,17 @@
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 JMeta
- *	
+ *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as
  *	published by the Free Software Foundation, either version 3 of the
  *	License, or (at your option) any later version.
- *	
+ *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Affero General Public License for more details.
- *	
+ *
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,7 @@ import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.WSConfiguration;
 
 /**
- * The web service configuration object
+ * The web service configuration object.
  */
 public final class WSConfigurationImpl extends PropertiesConfiguration implements WSConfiguration {
 
@@ -47,7 +47,7 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
     private NetworkConfigurationImpl networkConfig;
 
     /**
-     * Empty initialization with default values
+     * Empty initialization with default values.
      */
     public WSConfigurationImpl() {
     }
@@ -57,7 +57,7 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
      *
      * @param properties The properties to take configuration from.
      */
-    public WSConfigurationImpl(Properties properties) {
+    public WSConfigurationImpl(final Properties properties) {
         super(properties);
         if (properties != null) {
             initFromProperties();
@@ -81,11 +81,10 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
     }
 
     /**
-     *
-     * @param wsPort the new web service port
+     * @param port the new web service port
      */
-    public void setWsPort(Short wsPort) {
-        this.wsPort = wsPort;
+    public void setWsPort(final Short port) {
+        this.wsPort = port;
     }
 
     /**
@@ -97,12 +96,11 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
     }
 
     /**
-     *
-     * @param networkConfig the network configuration to use.
+     * @param nwConfig the network configuration to use.
      */
     @Override
-    public void setNetworkConfig(NetworkConfiguration networkConfig) {
-        this.networkConfig = (NetworkConfigurationImpl) networkConfig;
+    public void setNetworkConfig(final NetworkConfiguration nwConfig) {
+        this.networkConfig = (NetworkConfigurationImpl) nwConfig;
     }
 
 }

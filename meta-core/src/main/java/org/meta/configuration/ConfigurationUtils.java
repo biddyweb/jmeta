@@ -36,11 +36,17 @@ import org.slf4j.LoggerFactory;
 /**
  * General utility class for configuration parsing.
  */
-public class ConfigurationUtils {
+public final class ConfigurationUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
 
     private static final String LOOPBACK = NetworkUtils.getLoopbackInterface();
+
+    /**
+     * Hidden default constructor.
+     */
+    private ConfigurationUtils() {
+    }
 
     /**
      * Explode the given string using the ',' delimiter.
@@ -49,7 +55,7 @@ public class ConfigurationUtils {
      *
      * @return The exploded parts.
      */
-    public static String[] asList(String value) {
+    public static String[] asList(final String value) {
         return value.split(",");
     }
 
@@ -64,12 +70,13 @@ public class ConfigurationUtils {
      * </ul>
      *
      * @param peersString The string to extract peers from.
-     * @return The collection of {@link MetaPeer} extracted from the given
-     * string representation or null if none found.
+     * @return The collection of {@link MetaPeer} extracted from the given string representation or null if
+     * none found.
      *
      * @throws InvalidConfigurationException if an invalid ip/host is given.
      */
-    public static Collection<MetaPeer> peersFromString(String peersString) throws InvalidConfigurationException {
+    public static Collection<MetaPeer> peersFromString(final String peersString)
+            throws InvalidConfigurationException {
         Collection<MetaPeer> peers = new ArrayList<>();
         String[] knownPeersStringList = asList(peersString);
 
@@ -84,9 +91,9 @@ public class ConfigurationUtils {
                 addr = InetAddress.getByName(peerInfo[0]);
                 short peerPort = Short.valueOf(peerInfo[1]);
                 peers.add(new MetaPeer(null, addr, peerPort));
-            }
-            catch (UnknownHostException ex) {
-                throw new InvalidConfigurationException("Invalid ip or hostname specified in configuration", ex);
+            } catch (UnknownHostException ex) {
+                throw new InvalidConfigurationException(
+                        "Invalid ip or hostname specified in configuration", ex);
             }
         }
         return peers;
@@ -98,22 +105,21 @@ public class ConfigurationUtils {
      * @param interfacesString The input string
      *
      * @return The list of interfaces found in the string.
-     * @throws
-     * org.meta.api.configuration.exceptions.InvalidConfigurationException
+     * @throws InvalidConfigurationException if an invalid interface is encountered.
      */
-    public static Collection<String> interfacesFromString(String interfacesString) throws InvalidConfigurationException {
+    public static Collection<String> interfacesFromString(final String interfacesString)
+            throws InvalidConfigurationException {
         Collection<String> interfaces = new ArrayList<>();
         String[] ifs = asList(interfacesString);
 
         for (String iface : ifs) {
             try {
                 if (NetworkInterface.getByName(iface) == null) {
-                    throw new InvalidConfigurationException("Invalid interface specified in network configuration.");
+                    throw new InvalidConfigurationException("Invalid interface specified in network config.");
                 }
                 interfaces.add(iface);
-            }
-            catch (SocketException ex) {
-                throw new InvalidConfigurationException("Invalid interface specified in network configuration.", ex);
+            } catch (SocketException ex) {
+                throw new InvalidConfigurationException("Invalid interface specified in network config.", ex);
             }
         }
 //        if (!interfaces.isEmpty() && !interfaces.contains(LOOPBACK)) {
@@ -131,19 +137,18 @@ public class ConfigurationUtils {
      *
      * @return The list of addresses found in the string.
      *
-     * @throws
-     * org.meta.api.configuration.exceptions.InvalidConfigurationException if an
-     * invalid address or hostname is encountered.
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid address or
+     * hostname is encountered.
      */
-    public static Collection<InetAddress> addressesFromString(String addressesString) throws InvalidConfigurationException {
+    public static Collection<InetAddress> addressesFromString(final String addressesString)
+            throws InvalidConfigurationException {
         Collection<InetAddress> addresses = new ArrayList<>();
         String[] addrs = asList(addressesString);
         for (String addrStr : addrs) {
             try {
                 InetAddress addr = InetAddress.getByName(addrStr);
                 addresses.add(addr);
-            }
-            catch (UnknownHostException ex) {
+            } catch (UnknownHostException ex) {
                 throw new InvalidConfigurationException("Invalid address specified in configuration.", ex);
             }
         }
@@ -157,7 +162,8 @@ public class ConfigurationUtils {
      * @throws FileNotFoundException If invalid path given
      * @throws IOException If a file error occur
      */
-    public static Properties createProperties(String propertiesPath) throws FileNotFoundException, IOException {
+    public static Properties createProperties(final String propertiesPath)
+            throws FileNotFoundException, IOException {
         FileInputStream fis = new FileInputStream(propertiesPath);
         Properties newProperties = new Properties();
         newProperties.load(fis);

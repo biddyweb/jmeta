@@ -1,17 +1,17 @@
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 JMeta
- *	
+ *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as
  *	published by the Free Software Foundation, either version 3 of the
  *	License, or (at your option) any later version.
- *	
+ *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Affero General Public License for more details.
- *	
+ *
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,7 +22,7 @@ import org.meta.api.configuration.ModelConfiguration;
 
 /**
  *
- * Class holding general configuration entries for the Model
+ * Class holding general configuration entries for the Model.
  *
  */
 public final class ModelConfigurationImpl extends PropertiesConfiguration implements ModelConfiguration {
@@ -33,7 +33,7 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
     public static final String DEFAULT_DB_PATH = "db/meta.kch";
 
     /**
-     * The key for DEFAULT_DB_PATH in model.conf
+     * The key for DEFAULT_DB_PATH in model.conf.
      */
     public static final String MODEL_PATH_KEY = "databasePath";
 
@@ -43,7 +43,7 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
     public static final Integer DEFAULT_DB_MAX_SIZE = 1024 * 1024 * 512;
 
     /**
-     * The key for DEFAULT_DB_MAX_SIZE in model.conf
+     * The key for DEFAULT_DB_MAX_SIZE in model.conf.
      */
     public static final String MODEL_MAX_SIZE_KEY = "maxDatabaseSize";
 
@@ -61,7 +61,7 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
      *
      * @param properties The properties to take configuration from.
      */
-    public ModelConfigurationImpl(Properties properties) {
+    public ModelConfigurationImpl(final Properties properties) {
         super(properties);
         if (properties != null) {
             initFromProperties();
@@ -91,12 +91,11 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
     }
 
     /**
-     *
-     * @param databasePath The new database path.
+     * @param dbPath The new database path.
      */
     @Override
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setDatabasePath(final String dbPath) {
+        this.databasePath = dbPath;
     }
 
     /**
@@ -110,10 +109,10 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
 
     /**
      *
-     * @param maxSize The new database file max size.
+     * @param dbMaxSize The new database file max size.
      */
     @Override
-    public void setMaxSize(Integer maxSize) {
-        this.maxSize = maxSize;
+    public void setMaxSize(final Integer dbMaxSize) {
+        this.maxSize = dbMaxSize;
     }
 }

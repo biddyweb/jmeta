@@ -23,7 +23,7 @@ import org.meta.api.dht.MetaPeer;
 
 /**
  * Interface for DHT configuration entries.
- * 
+ *
  * @author nico
  */
 public interface DHTConfiguration {
@@ -45,43 +45,40 @@ public interface DHTConfiguration {
 
     /**
      * TODO remove and always broadcast ?
-     * @return
+     *
+     * @return if broadcasting to find peers.
      */
     boolean isBootstrapBroadcast();
 
     /**
-     * TODO REMOVE
-     * @return
+     * @return true if the DHT must deal only witch link-local addresses, false otherwise.
      */
     boolean isDhtLocalOnly();
 
     /**
-     *
-     * @param bootstrapBroadcast
+     * @param bootstrapBroadcast boolean
      */
     void setBootstrapBroadcast(boolean bootstrapBroadcast);
 
     /**
-     *
-     * @param dhtLocalOnly
+     * @param dhtLocalOnly the new value for local-only dht mode.
      */
     void setDhtLocalOnly(boolean dhtLocalOnly);
 
     /**
      *
-     * @param identity
+     * @param identity the identity used by our peer on the DHT.
      */
     void setIdentity(Identity identity);
 
     /**
-     *
-     * @param knwonPeers
+     * @param knwonPeers a collection of known peers.
      */
     void setKnwonPeers(Collection<MetaPeer> knwonPeers);
 
     /**
      *
-     * @param networkConfig
+     * @param networkConfig the backend network configuration for the DHT.
      */
     void setNetworkConfig(NetworkConfiguration networkConfig);
 

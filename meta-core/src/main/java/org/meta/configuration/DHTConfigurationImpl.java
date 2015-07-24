@@ -86,20 +86,22 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
     private NetworkConfigurationImpl networkConfig;
 
     /**
-     * Empty initialization with default values
+     * Empty initialization with default values.
      */
     public DHTConfigurationImpl() {
-        this.networkConfig = new NetworkConfigurationImpl(DEFAULT_DHT_PORT, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        this.networkConfig = new NetworkConfigurationImpl(
+                DEFAULT_DHT_PORT,
+                Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST);
     }
 
     /**
      * Initializes the dht config from properties.
      *
-     * @param properties
-     * @throws
-     * org.meta.api.configuration.exceptions.InvalidConfigurationException
+     * @param properties the backend properties
+     * @throws InvalidConfigurationException if an invalid configuration entry is encountered
      */
-    public DHTConfigurationImpl(Properties properties) throws InvalidConfigurationException {
+    public DHTConfigurationImpl(final Properties properties) throws InvalidConfigurationException {
         super(properties);
         this.networkConfig = new NetworkConfigurationImpl(properties);
         if (properties != null) {
@@ -146,7 +148,7 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
      * @param knwonPeers
      */
     @Override
-    public void setKnwonPeers(Collection<MetaPeer> knwonPeers) {
+    public void setKnwonPeers(final Collection<MetaPeer> knwonPeers) {
         this.knownPeers = knwonPeers;
     }
 
@@ -159,67 +161,39 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
         return bootstrapBroadcast;
     }
 
-    /**
-     *
-     * @param bootstrapBroadcast
-     */
     @Override
-    public void setBootstrapBroadcast(boolean bootstrapBroadcast) {
-        this.bootstrapBroadcast = bootstrapBroadcast;
+    public void setBootstrapBroadcast(final boolean broadcast) {
+        this.bootstrapBroadcast = broadcast;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public boolean isDhtLocalOnly() {
         return dhtLocalOnly;
     }
 
-    /**
-     *
-     * @param dhtLocalOnly
-     */
     @Override
-    public void setDhtLocalOnly(boolean dhtLocalOnly) {
-        this.dhtLocalOnly = dhtLocalOnly;
+    public void setDhtLocalOnly(final boolean localOnly) {
+        this.dhtLocalOnly = localOnly;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Identity getIdentity() {
         return identity;
     }
 
-    /**
-     *
-     * @param identity
-     */
     @Override
-    public void setIdentity(Identity identity) {
-        this.identity = identity;
+    public void setIdentity(final Identity id) {
+        this.identity = id;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public NetworkConfiguration getNetworkConfig() {
         return networkConfig;
     }
 
-    /**
-     *
-     * @param networkConfig
-     */
     @Override
-    public void setNetworkConfig(NetworkConfiguration networkConfig) {
-        this.networkConfig = (NetworkConfigurationImpl) networkConfig;
+    public void setNetworkConfig(final NetworkConfiguration nwConfig) {
+        this.networkConfig = (NetworkConfigurationImpl) nwConfig;
     }
 
 }

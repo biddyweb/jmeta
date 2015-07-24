@@ -1,17 +1,17 @@
 /*
  *	JMeta - Meta's java implementation
  *	Copyright (C) 2013 JMeta
- *	
+ *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as
  *	published by the Free Software Foundation, either version 3 of the
  *	License, or (at your option) any later version.
- *	
+ *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Affero General Public License for more details.
- *	
+ *
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,8 +21,9 @@ import java.util.Properties;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**
+ * Base class for configuration classes based on {@link Properties}.
  *
- * @author nico
+ * @author dyslesiq
  */
 public abstract class PropertiesConfiguration {
 
@@ -32,14 +33,13 @@ public abstract class PropertiesConfiguration {
     protected Properties properties;
 
     /**
-     * Initializes the configuration from the configuration file. If some
-     * entries are not present, uses default values instead.
+     * Initializes the configuration from the configuration file. If some entries are not present, uses
+     * default values instead.
      *
-     * @param properties The properties instance related to the configuration
-     * file.
-     */ 
-    public PropertiesConfiguration(Properties properties) {
-        this.properties = properties;
+     * @param props The properties instance related to the configuration file.
+     */
+    public PropertiesConfiguration(final Properties props) {
+        this.properties = props;
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class PropertiesConfiguration {
      *
      * @return the value associated wit the given property key or null
      */
-    public String getValue(String propKey) {
+    public final String getValue(final String propKey) {
         if (this.properties == null || !this.properties.containsKey(propKey)) {
             return null;
         }
@@ -71,7 +71,7 @@ public abstract class PropertiesConfiguration {
      *
      * @return the short value or null if not found.
      */
-    public Short getShort(String propKey) {
+    public final Short getShort(final String propKey) {
         String val = this.getValue(propKey);
 
         if (val == null) {
@@ -85,23 +85,23 @@ public abstract class PropertiesConfiguration {
     }
 
     /**
-    *
-    * @param propKey The key in the property file.
-    *
-    * @return the integer value or null if not found.
-    */
-   public Integer getInt(String propKey) {
-       String val = this.getValue(propKey);
+     *
+     * @param propKey The key in the property file.
+     *
+     * @return the integer value or null if not found.
+     */
+    public final Integer getInt(final String propKey) {
+        String val = this.getValue(propKey);
 
-       if (val == null) {
-           return null;
-       }
-       try {
-           return Integer.valueOf(val);
-       } catch (NumberFormatException ex) {
-           return null;
-       }
-   }
+        if (val == null) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(val);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
 
     /**
      *
@@ -109,7 +109,7 @@ public abstract class PropertiesConfiguration {
      *
      * @return the boolean value or null if not found.
      */
-    public Boolean getBoolean(String propKey) {
+    public final Boolean getBoolean(final String propKey) {
         String val = this.getValue(propKey);
 
         if (val == null) {

@@ -1,19 +1,19 @@
 /*
- *	JMeta - Meta's java implementation
- *	Copyright (C) 2013 JMeta
- *	
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU Affero General Public License as
- *	published by the Free Software Foundation, either version 3 of the
- *	License, or (at your option) any later version.
- *	
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Affero General Public License for more details.
- *	
- *	You should have received a copy of the GNU Affero General Public License
- *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *    JMeta - Meta's java implementation
+ *    Copyright (C) 2013 JMeta
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU Affero General Public License as
+ *    published by the Free Software Foundation, either version 3 of the
+ *    License, or (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU Affero General Public License for more details.
+ *
+ *    You should have received a copy of the GNU Affero General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.meta.configuration;
 
@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The main configuration class, holding sub-configuration objects per
- * components (amp, webservices, model, dht).
+ * The main configuration class, holding sub-configuration objects per components (amp, webservices, model,
+ * dht).
  */
-public class MetaConfiguration {
+public final class MetaConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(MetaConfiguration.class);
 
@@ -83,7 +83,7 @@ public class MetaConfiguration {
     private static PluginConfigurationImpl pluginsConfiguration;
 
     /**
-     * Default private constructor
+     * Default private constructor.
      */
     private MetaConfiguration() {
     }
@@ -91,10 +91,11 @@ public class MetaConfiguration {
     /**
      * Initializes all configurations.
      *
-     * @throws InvalidConfigurationFileException
-     * @throws InvalidConfigurationException
+     * @throws InvalidConfigurationFileException if an invalid file was provided
+     * @throws InvalidConfigurationException if an invalid configuration entry was encountered
      */
-    public static void initConfiguration() throws InvalidConfigurationFileException, InvalidConfigurationException {
+    public static void initConfiguration() throws
+            InvalidConfigurationFileException, InvalidConfigurationException {
         try {
             Properties dhtProps = ConfigurationUtils.createProperties(DHT_CONFIG_PATH);
             dhtConfiguration = new DHTConfigurationImpl(dhtProps);
@@ -152,42 +153,42 @@ public class MetaConfiguration {
 
     /**
      *
-     * @param dhtConfiguration
+     * @param dhtConfig the dht configuration
      */
-    public static void setDhtConfiguration(DHTConfigurationImpl dhtConfiguration) {
-        MetaConfiguration.dhtConfiguration = dhtConfiguration;
+    public static void setDhtConfiguration(final DHTConfigurationImpl dhtConfig) {
+        MetaConfiguration.dhtConfiguration = dhtConfig;
     }
 
     /**
      *
-     * @param wSConfiguration
+     * @param wSConfiguration the web service configuration
      */
-    public static void setWSConfiguration(WSConfigurationImpl wSConfiguration) {
+    public static void setWSConfiguration(final WSConfigurationImpl wSConfiguration) {
         MetaConfiguration.wsConfiguration = wSConfiguration;
     }
 
     /**
      *
-     * @param ampConfiguration
+     * @param ampConfig the amp configuration
      */
-    public static void setAmpConfiguration(AMPConfigurationImpl ampConfiguration) {
-        MetaConfiguration.ampConfiguration = ampConfiguration;
+    public static void setAmpConfiguration(final AMPConfigurationImpl ampConfig) {
+        MetaConfiguration.ampConfiguration = ampConfig;
     }
 
     /**
      *
-     * @param modelConfiguration
+     * @param modelConfig the model configuration
      */
-    public static void setModelConfiguration(ModelConfigurationImpl modelConfiguration) {
-        MetaConfiguration.modelConfiguration = modelConfiguration;
+    public static void setModelConfiguration(final ModelConfigurationImpl modelConfig) {
+        MetaConfiguration.modelConfiguration = modelConfig;
     }
 
     /**
-     * 
-     * @param pluginsConfiguration 
+     *
+     * @param pluginsConfig the plugins configuration
      */
-    public static void setPluginsConfiguration(PluginConfigurationImpl pluginsConfiguration) {
-        MetaConfiguration.pluginsConfiguration = pluginsConfiguration;
+    public static void setPluginsConfiguration(final PluginConfigurationImpl pluginsConfig) {
+        MetaConfiguration.pluginsConfiguration = pluginsConfig;
     }
 
 }

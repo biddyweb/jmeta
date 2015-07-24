@@ -14,7 +14,7 @@ import org.meta.api.common.MetHash;
 public interface Model {
 
     /**
-     * Close the model and do some clean-up
+     * Close the model and do some clean-up.
      */
     void close();
 
@@ -26,15 +26,14 @@ public interface Model {
     Searchable get(MetHash hash);
 
     /**
-     *
-     * @param hash
+     * @param hash the hash of a data file
      * @return a DataString object or null if the hash does not exists
      */
     DataFile getDataFile(MetHash hash);
 
     /**
      *
-     * @param hash
+     * @param hash the hash of a data string
      * @return a DataString object or null if the hash does not exists
      */
     DataString getDataString(MetHash hash);
@@ -47,29 +46,29 @@ public interface Model {
 
     /**
      *
-     * @param hash
-     * @return a MetaData pointed by his hash or null if the hash is pointed on
-     * nothing or if the hash is pointed on a non MetaData object
+     * @param hash the hash of a meta data
+     * @return a MetaData pointed by his hash or null if the hash is pointed on nothing or if the hash is
+     * pointed on a non MetaData object
      */
     MetaData getMetaData(MetHash hash);
 
     /**
      *
-     * @param hash
-     * @return a search pointed by his hash. Return null if not found or if the
-     * hash is not pointed a Search object
+     * @param hash the hash of a search
+     * @return a search pointed by his hash. Return null if not found or if the hash is not pointed a Search
+     * object
      */
     Search getSearch(MetHash hash);
 
     /**
      *
-     * @param hash
+     * @param hash the hash of a searchable
      * @return the Search linked to the hash or null if not found
      */
     Searchable getSearchable(MetHash hash);
 
     /**
-     * Delete an object in DB
+     * Delete an object in DB.
      *
      * @param searchable the object to remove from db
      * @return true on success, false otherwise
@@ -77,7 +76,7 @@ public interface Model {
     boolean remove(Searchable searchable);
 
     /**
-     * Delete an object in DB
+     * Delete an object in DB.
      *
      * @param hash The hash to remove from db
      * @return true on success, false otherwise
@@ -85,8 +84,8 @@ public interface Model {
     boolean remove(MetHash hash);
 
     /**
-     * Creates or updates a searchable object in database. All children of given
-     * object are also created/updated.
+     * Creates or updates a searchable object in database. All children of given object are also
+     * created/updated.
      *
      * @param searchable The object to create / update
      *

@@ -91,7 +91,9 @@ Finally, it is worth reading the documentation.
 
 <!-- Checks for Naming Conventions.                  -->
 <!-- See http://checkstyle.sf.net/config_naming.html -->
-<module name="ConstantName"/>
+<module name="ConstantName">
+  <property name="applyToPrivate" value="false" />
+</module>
 <module name="LocalFinalVariableName"/>
 <module name="LocalVariableName"/>
 <module name="MemberName"/>

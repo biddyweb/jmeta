@@ -74,20 +74,20 @@ public abstract class PluginAMPController {
     /**
      * Initialize the plugin.
      *
-     * @param pluginName
+     * @param plugin the name of the plugin.
      */
-    public void init(String pluginName) {
-        this.pluginName = pluginName;
+    public final void init(final String plugin) {
+        this.pluginName = plugin;
         registercommands(lstCommands);
     }
 
     /**
-     * Give the model
+     * Give an instance of the model.
      *
-     * @param model
+     * @param metaModel the model instance
      */
-    public void setModel(Model model) {
-        this.model = model;
+    public final void setModel(final Model metaModel) {
+        this.model = metaModel;
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class PluginAMPController {
      *
      * @return A command to execute
      */
-    public PluginAMPCommand getCommand(String commandName) {
+    public final PluginAMPCommand getCommand(final String commandName) {
         PluginAMPCommand command = null;
 
         Class<? extends PluginAMPCommand> clazz = lstCommands.get(commandName);
@@ -113,12 +113,12 @@ public abstract class PluginAMPController {
     }
 
     /**
-     * Search the given hash in the DB
+     * Search the given hash in the DB.
      *
      * @param hash hash to search
      * @return the searchable if found, nothing otherwise
      */
-    public Searchable getInTheModel(MetHash hash) {
+    public final Searchable getInTheModel(final MetHash hash) {
         return model.getSearchable(hash);
     }
 }

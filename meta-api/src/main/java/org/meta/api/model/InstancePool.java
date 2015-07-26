@@ -35,7 +35,7 @@ public class InstancePool<T extends Searchable> {
     private static final int MAX_INSTANCES = 100000;
     private static final Logger logger = LoggerFactory.getLogger(InstancePool.class);
 
-    Class<T> clazz;
+    private final Class<T> clazz;
     private final Queue<T> instances;
 
     /**
@@ -43,7 +43,7 @@ public class InstancePool<T extends Searchable> {
      *
      * @param claz The Class.
      */
-    public InstancePool(Class<T> claz) {
+    public InstancePool(final Class<T> claz) {
         clazz = claz;
         instances = new LinkedList<>();
     }
@@ -65,7 +65,7 @@ public class InstancePool<T extends Searchable> {
      *
      * @return An instance of the defined class.
      */
-    public T getInstance() {
+    public final T getInstance() {
         synchronized (instances) {
             if (instances.size() < MIN_INSTANCES) {
                 createInstances();

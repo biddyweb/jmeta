@@ -1,5 +1,3 @@
-package org.meta.api.model;
-
 /*
  *    JMeta - Meta's java implementation
  *    Copyright (C) 2013 Thomas LAVOCAT
@@ -17,40 +15,43 @@ package org.meta.api.model;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.api.model;
+
 /**
  *
- * @author Thomas LAVOCAT
- *
  * A MetaProperty is a key value object used in two cases :
- * - add semantic to an objet (MetaData)
+ *
+ * - add semantic to an object (MetaData)
+ *
  * - add information to an object (Data)
- * 
- * Since MetaProperty is not storable as is in the DB, it does not contain a hash
- * value.
- * 
- * it implements Comparable to be ordered by key:value in a TreeSet or other 
- * sorted collections.
+ *
+ * Since MetaProperty is not storable as is in the DB, it does not contain a hash value.
+ *
+ * it implements Comparable to be ordered by key:value in a TreeSet or other sorted collections.
+ *
+ * * @author Thomas LAVOCAT
  */
-public class MetaProperty implements Comparable<MetaProperty>{
+public final class MetaProperty implements Comparable<MetaProperty> {
 
-    private String name  = "";
+    private String name = "";
     private String value = "";
 
     /**
-     * @param name
-     * @param value
+     * @param key the key of the property
+     * @param val the value of the property
      */
-    public MetaProperty(String name, String value) {
+    public MetaProperty(final String key, final String val) {
         super();
-        this.name = name;
-        this.value = value;
+        this.name = key;
+        this.value = val;
     }
-    
+
     /**
-     * copy constructor
-     * @param other
+     * copy constructor.
+     *
+     * @param other the MetaProperty to copy
      */
-    public MetaProperty(MetaProperty other){
+    public MetaProperty(final MetaProperty other) {
         super();
         this.name = other.name;
         this.value = other.value;
@@ -64,10 +65,10 @@ public class MetaProperty implements Comparable<MetaProperty>{
     }
 
     /**
-     * @param name the name to set
+     * @param key the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setName(final String key) {
+        this.name = key;
     }
 
     /**
@@ -78,10 +79,10 @@ public class MetaProperty implements Comparable<MetaProperty>{
     }
 
     /**
-     * @param value the value to set
+     * @param val the value to set
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(final String val) {
+        this.value = val;
     }
 
     /**
@@ -90,10 +91,10 @@ public class MetaProperty implements Comparable<MetaProperty>{
      * @return
      */
     @Override
-     public int compareTo(MetaProperty o) {
-         //compare to another property
-         // on key:value concatenation
-         return (name+":"+value).compareTo((o.name+":"+o.value));
-     }
+    public int compareTo(final MetaProperty o) {
+        //compare to another property
+        // on key:value concatenation
+        return (name + ":" + value).compareTo((o.name + ":" + o.value));
+    }
 
 }

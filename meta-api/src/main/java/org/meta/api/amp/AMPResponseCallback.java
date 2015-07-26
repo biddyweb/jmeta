@@ -6,6 +6,8 @@ import org.meta.api.model.Searchable;
 /**
  * Interface that define callbacks called when a contact peer operation is complete.
  *
+ * TODO use {@link  AsyncOperation} instead ?
+ *
  * @author faquin
  */
 public interface AMPResponseCallback {

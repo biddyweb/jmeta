@@ -15,7 +15,6 @@
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.meta.api.common.exceptions;
 
 /**
@@ -24,27 +23,27 @@ package org.meta.api.common.exceptions;
 public class MetaException extends Exception {
 
     /**
-     * 
-     * @param message 
+     *
+     * @param message the exception message
      */
-    public MetaException(String message) {
+    public MetaException(final String message) {
         super(message);
     }
 
     /**
-     * 
-     * @param t 
+     *
+     * @param t the initial throwable
      */
-    public MetaException(Throwable t) {
+    public MetaException(final Throwable t) {
         super(t);
     }
- 
+
     /**
-     * 
-     * @param message
-     * @param t 
+     *
+     * @param message the exception message
+     * @param t the initial throwable
      */
-    public MetaException(String message, Throwable t) {
+    public MetaException(final String message, final Throwable t) {
         super(message, t);
     }
 }

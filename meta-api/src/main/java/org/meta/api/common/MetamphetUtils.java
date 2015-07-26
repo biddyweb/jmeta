@@ -14,7 +14,6 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +23,14 @@ import org.slf4j.LoggerFactory;
  *
  * Class holding static Utility methods for hash and SHA1.
  */
-public class MetamphetUtils {
+public final class MetamphetUtils {
 
     private static final Random random = new Random();
     private static final Logger logger = LoggerFactory.getLogger(MetamphetUtils.class);
+
+    private MetamphetUtils() {
+
+    }
 
     /**
      * Computes a {@link MetHash} for the given file.
@@ -35,10 +38,9 @@ public class MetamphetUtils {
      *
      * @param file The file to hash.
      *
-     * @return the hash of the file, or the ZERO value of a MetHash if an error
-     * occurs.
+     * @return the hash of the file, or the ZERO value of a MetHash if an error occurs.
      */
-    public static MetHash makeSHAHash(File file) {
+    public static MetHash makeSHAHash(final File file) {
         FileInputStream fis = null;
         FileChannel channel = null;
         try {
@@ -46,13 +48,13 @@ public class MetamphetUtils {
             channel = fis.getChannel();
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             for (long offest = 0; offest < channel.size(); offest += 10 * 1024) {
-                ByteBuffer buffer;
+                ByteBuffer buff;
                 if (channel.size() - offest < 10 * 1024) {
-                    buffer = channel.map(FileChannel.MapMode.READ_ONLY, offest, (int) channel.size() - offest);
+                    buff = channel.map(FileChannel.MapMode.READ_ONLY, offest, (int) channel.size() - offest);
                 } else {
-                    buffer = channel.map(FileChannel.MapMode.READ_ONLY, offest, 10 * 1024);
+                    buff = channel.map(FileChannel.MapMode.READ_ONLY, offest, 10 * 1024);
                 }
-                md.update(buffer);
+                md.update(buff);
             }
             byte[] digest = md.digest();
             return new MetHash(digest);
@@ -69,10 +71,9 @@ public class MetamphetUtils {
      *
      * @param strInput The string to hash.
      *
-     * @return the hash of the file, or the ZERO value of a MetHash if an error
-     * occurs.
+     * @return the hash of the file, or the ZERO value of a MetHash if an error occurs.
      */
-    public static MetHash makeSHAHash(String strInput) {
+    public static MetHash makeSHAHash(final String strInput) {
         byte[] buffer = strInput.getBytes();
         return makeSHAHash(buffer);
     }
@@ -82,10 +83,9 @@ public class MetamphetUtils {
      *
      * @param buffer The buffer to hash.
      *
-     * @return the hash of the buffer, or the ZERO value of a MetHash if an
-     * error occurs.
+     * @return the hash of the buffer, or the ZERO value of a MetHash if an error occurs.
      */
-    public static MetHash makeSHAHash(ByteBuffer buffer) {
+    public static MetHash makeSHAHash(final ByteBuffer buffer) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update(buffer);
@@ -102,37 +102,34 @@ public class MetamphetUtils {
      *
      * @param buffer The array to hash.
      *
-     * @return the hash of the byte array, or the ZERO value of a MetHash if an
-     * error occurs.
+     * @return the hash of the byte array, or the ZERO value of a MetHash if an error occurs.
      */
-    public static MetHash makeSHAHash(byte[] buffer) {
+    public static MetHash makeSHAHash(final byte[] buffer) {
         return makeSHAHash(ByteBuffer.wrap(buffer));
     }
 
     /**
-     * Computes a {@link MetHash} for the given byte array with given offset and
-     * length.
+     * Computes a {@link MetHash} for the given byte array with given offset and length.
      *
      * @param buffer The array to hash.
      * @param offset The offset in buffer.
      * @param length The length of the portion to be hashed inside buffer.
      *
-     * @return the hash of the byte array, or the ZERO value of a MetHash if an
-     * error occurs.
+     * @return the hash of the byte array, or the ZERO value of a MetHash if an error occurs.
      */
-    public static MetHash makeSHAHash(byte[] buffer, int offset, int length) {
+    public static MetHash makeSHAHash(final byte[] buffer, final int offset, final int length) {
         return makeSHAHash(ByteBuffer.wrap(buffer, offset, length));
     }
 
     /**
      * Creates a random hash.
-     * 
-     * TODO improve random ?
-     * 
+     *
+     * TODO improve random!
+     *
      * @return The randomly initialized hash.
      */
     public static MetHash createRandomHash() {
-        // TODO: this hardcoded, bad style
+        // TODO this hardcoded, bad style
         byte[] me = new byte[20];
         random.nextBytes(me);
         MetHash id = new MetHash(me);
@@ -141,24 +138,23 @@ public class MetamphetUtils {
 
     /**
      * Checks if the given hash equals the hash of the given byte array.
-     * 
+     *
      * @param hash The hash to check.
      * @param bloc The block to hash and check.
      *
-     * @return true if the bloc's hash matches the given expected hash, false
-     * otherwise.
+     * @return true if the bloc's hash matches the given expected hash, false otherwise.
      */
-    public static boolean checkHash(String hash, byte[] bloc) {
+    public static boolean checkHash(final String hash, final byte[] bloc) {
         //TODO
         return true;
     }
 
     /**
      * Utility function to close all given Closeable at once.
-     * 
+     *
      * @param closables The closeable array to close.
      */
-    public static void close(Closeable... closables) {
+    public static void close(final Closeable... closables) {
         // best effort close;
         for (Closeable closable : closables) {
             if (closable != null) {

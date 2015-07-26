@@ -35,29 +35,28 @@ import org.slf4j.LoggerFactory;
  *
  * File implementation of Data object. Point to a File on the hard drive.
  */
-public class DataFile extends Data {
+public final class DataFile extends Data {
 
     private File file = null;
     private static final int MAX_BLOC_SIZE = 65536;
     private Logger logger = LoggerFactory.getLogger(DataFile.class);
 
     /**
-     * needed for java reflection
+     * needed for java reflection.
      */
     protected DataFile() {
         super();
     }
 
     /**
-     * Instantiate a new DataFile with given hash and file. Used in case of
-     * creation.
+     * Instantiate a new DataFile with given hash and file. Used in case of creation.
      *
      * @param hash The has of the DataFile.
-     * @param file The underlying File.
+     * @param fil The underlying File.
      */
-    protected DataFile(MetHash hash, File file) {
+    protected DataFile(final MetHash hash, final File fil) {
         super(hash);
-        this.file = file;
+        this.file = fil;
     }
 
     /**
@@ -68,12 +67,12 @@ public class DataFile extends Data {
     }
 
     /**
-     * @param file The new file for this DataFile.
+     * @param fil The new file for this DataFile.
      *
      * This will change the final hash, only callable in the model.
      */
-    public void setFile(File file) {
-        this.file = file;
+    public void setFile(final File fil) {
+        this.file = fil;
         this.updateState();
         reHash();
     }
@@ -84,10 +83,11 @@ public class DataFile extends Data {
         return hash;
     }
 
+    @Override
     public BSONObject getBson() {
         /**
-         * The hash is simply processed with the entire File content. TODO add
-         * specific work depending on file extension
+         * The hash is simply processed with the entire File content. TODO add specific work depending on file
+         * extension
          */
         BSONObject bsonObject = super.getBson();
         bsonObject.put("file", file.getAbsolutePath());
@@ -95,7 +95,7 @@ public class DataFile extends Data {
     }
 
     @Override
-    protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
         //Test if file exist
         if (file != null && file.exists()) {
@@ -104,7 +104,7 @@ public class DataFile extends Data {
 
             /*
              * each data bloc is limited to 64kB in AMP protocol,
-             * get the number of the blocs needed to send the file 
+             * get the number of the blocs needed to send the file
              */
             long size = file.length();
             long blocs = size / MAX_BLOC_SIZE;
@@ -166,7 +166,7 @@ public class DataFile extends Data {
     }
 
     @Override
-    protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
         super.decodefragment(fragment);
         //File is temporary create in the java.io.tmpdir
         //If no fileName, there is no file to recreate

@@ -19,6 +19,7 @@ package org.meta.api.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Base interface representing an asynchronous operation.
@@ -90,15 +91,15 @@ public abstract class AsyncOperation {
     /**
      * For internal use, set the state in a thread-safe manner.
      *
-     * @param state The new state.
+     * @param operationState The new state.
      */
-    protected void setState(OperationState state) {
+    protected final void setState(final OperationState operationState) {
         if (this.hasFinished()) {
             //No need to do anything if the operation already finished.
             return;
         }
         synchronized (lock) {
-            this.state = state;
+            this.state = operationState;
         }
     }
 
@@ -113,10 +114,9 @@ public abstract class AsyncOperation {
     public abstract void finish();
 
     /**
-     * Cancel the operation and notifies the listeners the operation was
-     * canceled.
+     * Cancel the operation and notifies the listeners the operation was canceled.
      */
-    public void cancel() {
+    public final void cancel() {
         if (this.hasFinished()) {
             //No need to do anything if the operation already finished.
             return;
@@ -129,14 +129,14 @@ public abstract class AsyncOperation {
     }
 
     /**
-     * Add a listener to listen to this operation events. If the operation
-     * already finished, notify the listener immediately.
+     * Add a listener to listen to this operation events. If the operation already finished, notify the
+     * listener immediately.
      *
      * @param listener The listener to add to the list.
      *
      * @return The AsyncOperation for convenience.
      */
-    public AsyncOperation addListener(OperationListener<? extends AsyncOperation> listener) {
+    public final AsyncOperation addListener(final OperationListener<? extends AsyncOperation> listener) {
         boolean notifyNow = false;
 
         synchronized (lock) {
@@ -158,9 +158,9 @@ public abstract class AsyncOperation {
      * Removes a listener on this operation.
      *
      * @param listener The listener to remove from the list.
-     * @return 
+     * @return this
      */
-    public AsyncOperation removeListerner(OperationListener<? extends AsyncOperation> listener) {
+    public final AsyncOperation removeListerner(final OperationListener<? extends AsyncOperation> listener) {
         if (this.hasFinished()) {
             //No need to do anything if the operation already finished.
             return this;
@@ -176,9 +176,9 @@ public abstract class AsyncOperation {
      * Mark the operation as failed and set the reason of the failure.
      *
      * @param reason The origin of the failure
-     * @return 
+     * @return this
      */
-    public AsyncOperation setFailed(Throwable reason) {
+    public final AsyncOperation setFailed(final Throwable reason) {
         if (this.hasFinished()) {
             //No need to do anything if the operation already finished.
             return this;
@@ -196,9 +196,9 @@ public abstract class AsyncOperation {
      * Mark the operation as failed and set the failure message.
      *
      * @param message The message of the failure
-     * @return 
+     * @return this
      */
-    public AsyncOperation setFailed(String message) {
+    public final AsyncOperation setFailed(final String message) {
         if (this.hasFinished()) {
             //No need to do anything if the operation already finished.
             return this;
@@ -213,10 +213,9 @@ public abstract class AsyncOperation {
     }
 
     /**
-     * @return true if the operation completed (even if it failed), false
-     * otherwise.
+     * @return true if the operation completed (even if it failed), false otherwise.
      */
-    public boolean hasFinished() {
+    public final boolean hasFinished() {
         synchronized (lock) {
             return this.state != OperationState.INIT
                     && this.state != OperationState.WAITING;
@@ -224,10 +223,9 @@ public abstract class AsyncOperation {
     }
 
     /**
-     * @return true if operation succeeded, false if there was an error or a
-     * false response.
+     * @return true if operation succeeded, false if there was an error or a false response.
      */
-    public boolean isSuccess() {
+    public final boolean isSuccess() {
         synchronized (lock) {
             return state == OperationState.COMPLETE;
         }
@@ -236,7 +234,7 @@ public abstract class AsyncOperation {
     /**
      * @return true if operation failed, false otherwise.
      */
-    public boolean isFailure() {
+    public final boolean isFailure() {
         synchronized (lock) {
             return this.state == OperationState.FAILED;
         }
@@ -245,35 +243,34 @@ public abstract class AsyncOperation {
     /**
      * @return true if the operation was canceled, false otherwise.
      */
-    public boolean canceled() {
+    public final boolean canceled() {
         synchronized (lock) {
             return this.state == OperationState.CANCELED;
         }
     }
 
     /**
-     * Set the failed message based on the given Throwable. Should be called
-     * from a synchronized block!
+     * Set the failed message based on the given Throwable. Should be called from a synchronized block!
      *
      * @param t The Throwable.
      */
-    protected void setFailedMessage(final Throwable t) {
+    protected final void setFailedMessage(final Throwable t) {
         this.failedMessage = t.getLocalizedMessage();
     }
 
     /**
      * @return The string representation of the failure of this operation.
      */
-    public String getFailureMessage() {
+    public final String getFailureMessage() {
         return this.failedMessage;
     }
 
     /**
-     * Notify the listeners in case an event occurred (completion, cancellation,
-     * ...)
+     * Notify the listeners in case an event occurred (completion, cancellation, ...).
      */
-    protected void notifyListeners() {
-        for (OperationListener l : listeners) {
+    protected final void notifyListeners() {
+        for (Iterator<OperationListener<? extends AsyncOperation>> it = listeners.iterator(); it.hasNext();) {
+            OperationListener l = it.next();
             if (this.isSuccess()) {
                 l.complete(this);
             } else {
@@ -287,12 +284,11 @@ public abstract class AsyncOperation {
     }
 
     /**
-     * Wait until the operation has completed.
-     * Ignores interruptions.
-     * 
+     * Wait until the operation has completed. Ignores interruptions.
+     *
      * @return The operation.
      */
-    public AsyncOperation awaitUninterruptibly() {
+    public final AsyncOperation awaitUninterruptibly() {
         synchronized (lock) {
             while (!this.hasFinished()) {
                 try {

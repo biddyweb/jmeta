@@ -29,45 +29,43 @@ import org.meta.api.common.MetamphetUtils;
  *
  * String implementation of a Data object used to carry a simple text message.
  */
-public class DataString extends Data {
+public final class DataString extends Data {
 
     private String string = null;
     private static final int MAX_BLOC_SIZE = 65536;
 
     /**
-     * needed for java Reflexion
+     * needed for java Reflexion.
      */
     protected DataString() {
         super();
     }
 
     /**
-     * Instantiate a new Data -> use in case of creation
+     * Instantiate a new Data -> use in case of creation.
      *
-     * @param hashCode
-     * @param string
-     * @param file
+     * @param hash the hash of this data
+     * @param string the content of the datastring
      */
-    protected DataString(MetHash hash, String string) {
+    protected DataString(final MetHash hash, final String string) {
         super(hash);
         this.string = string;
     }
 
     /**
-     * @return the String
+     * @return the string content
      */
     public String getString() {
         return string;
     }
 
     /**
-     * As the String is used to process the hash calculation, this setter is
-     * only callable from the model package.
+     * As the String is used to process the hash calculation, this setter is only callable from the model
+     * package.
      *
-     * @param string
-     * @param file the file to set.
+     * @param string the new content
      */
-    public void setString(String string) {
+    public void setString(final String string) {
         this.string = string;
         this.updateState();
         reHash();
@@ -80,6 +78,7 @@ public class DataString extends Data {
         return hash;
     }
 
+    @Override
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         bsonObject.put("string", string);
@@ -87,7 +86,7 @@ public class DataString extends Data {
     }
 
     @Override
-    protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
         super.fillFragment(fragment);
 
         byte[] totalString = string.getBytes();
@@ -137,7 +136,7 @@ public class DataString extends Data {
     }
 
     @Override
-    protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
         super.decodefragment(fragment);
         long count = Long.parseLong(new String(fragment.get("_count")));
         fragment.remove("_size");

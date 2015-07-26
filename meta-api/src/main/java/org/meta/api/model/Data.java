@@ -1,13 +1,3 @@
-package org.meta.api.model;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
-import org.bson.types.BasicBSONList;
-import org.meta.api.common.MetHash;
-
 /*
  *    JMeta - Meta's java implementation
  *    Copyright (C) 2013 Thomas LAVOCAT
@@ -25,15 +15,24 @@ import org.meta.api.common.MetHash;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.api.model;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
+import org.bson.types.BasicBSONList;
+import org.meta.api.common.MetHash;
+
 /**
  *
  * @author Thomas LAVOCAT
  *
- * A Data Object is an element who contained final result for a search.
- * This is an abstract Data meant to be override to add a content.
- * A Data object contains a list of MetaProperty who are complementary 
- * information about the data.
- * 
+ * A Data Object is an element who contained final result for a search. This is an abstract Data meant to be
+ * override to add a content. A Data object contains a list of MetaProperty who are complementary information
+ * about the data.
+ *
  */
 public abstract class Data extends Searchable {
 
@@ -43,30 +42,29 @@ public abstract class Data extends Searchable {
     protected ArrayList<MetaProperty> description = null;
 
     /**
-     * Instantiate Data, create an empty description list
+     * Instantiate Data, create an empty description list.
      */
     public Data() {
         super();
-        description = new ArrayList<MetaProperty>();
+        description = new ArrayList<>();
     }
 
     /**
-     * Instantiate a new Data -> use in case of creation
+     * Instantiate a new Data -> use in case of creation.
      *
-     * @param hash
-     * @param hashCode
-     * @param file
+     * @param hash the hash of this data
      */
-    public Data(MetHash hash) {
+    public Data(final MetHash hash) {
         super(hash);
     }
 
+    @Override
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
-       //foreach proerties, get her value and name and put it in the json
+        //foreach proerties, get her value and name and put it in the json
         BasicBSONList bsonProperties = new BasicBSONList();
         int count = 0;
-        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext();count++) {
+        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext(); count++) {
             MetaProperty property = i.next();
             BasicBSONObject bsonProperty = new BasicBSONObject();
             bsonProperty.put("name", property.getName());
@@ -78,11 +76,11 @@ public abstract class Data extends Searchable {
     }
 
     @Override
-    protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
         //write every description
         fragment.put("_nbProperties", (description.size() + "").getBytes());
         int count = 0;
-        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext();count++) {
+        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext(); count++) {
             MetaProperty property = i.next();
             fragment.put("_i" + count + "_property_value", property.getValue().getBytes());
             fragment.put("_i" + count + "_property_name", property.getName().getBytes());
@@ -90,8 +88,8 @@ public abstract class Data extends Searchable {
     }
 
     @Override
-    protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
-        description = new ArrayList<MetaProperty>();
+    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
+        description = new ArrayList<>();
         //and the Search cannot be write or updated in database
         //extract all linkedDatas and delete it from the fragment too
         int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
@@ -106,22 +104,22 @@ public abstract class Data extends Searchable {
     }
 
     /**
-     * As description does not count in the Data hash calculation, this method
-     * is public and can be called by anyone.
-     * @param description an ArrayList of MetaProperty representing complementary
-     * information about the data.
-     * This may be a simple description, a title, a comment...
+     * As description does not count in the Data hash calculation, this method is public and can be called by
+     * anyone.
+     *
+     * @param desc an ArrayList of MetaProperty representing complementary information about the data. This
+     * may be a simple description, a title, a comment...
      */
-    public void setDescription(ArrayList<MetaProperty> description) {
-        this.description = description;
+    public final void setDescription(final ArrayList<MetaProperty> desc) {
+        this.description = desc;
         updateState();
     }
 
     /**
-     * 
+     *
      * @return the description of the Data
      */
-    public ArrayList<MetaProperty> getDescription() {
+    public final ArrayList<MetaProperty> getDescription() {
         return description;
     }
 }

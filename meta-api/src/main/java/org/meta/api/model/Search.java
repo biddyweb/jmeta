@@ -189,6 +189,7 @@ public final class Search extends Searchable {
      *
      * Linked datas are only pointed by their hash
      */
+    @Override
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
 
@@ -259,6 +260,7 @@ public final class Search extends Searchable {
     }
 
     /**
+     * TODO what is this ?
      *
      * @return ?
      */
@@ -267,6 +269,7 @@ public final class Search extends Searchable {
     }
 
     /**
+     * TODO what is this ?
      *
      * @return ?
      */

@@ -63,7 +63,7 @@ public final class MetaData extends Searchable {
      * @return the list of {@link MetaProperty} of this MetaData
      */
     public ArrayList<MetaProperty> getProperties() {
-        ArrayList<MetaProperty> property = new ArrayList<MetaProperty>();
+        ArrayList<MetaProperty> property = new ArrayList<>();
         for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
             MetaProperty next = i.next();
             property.add(new MetaProperty(next));

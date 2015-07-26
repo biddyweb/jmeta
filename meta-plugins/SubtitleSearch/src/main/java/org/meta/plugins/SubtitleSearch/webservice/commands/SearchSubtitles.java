@@ -55,7 +55,7 @@ public class SearchSubtitles extends AbstractWebService{
         //tex output
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
-        factory = this.controler.getModel().getFactory();
+        factory = this.controller.getModel().getFactory();
         
         results = new ArrayList<Data>();
     }
@@ -95,7 +95,7 @@ public class SearchSubtitles extends AbstractWebService{
                 Search subtitleSearch = factory.createSearch(movie, metaData, null);
 
                 //lookup on the network to find the subtitles
-                super.controler.search(  subtitleSearch.getHash(),
+                super.controller.search(  subtitleSearch.getHash(),
                                         "SubtitleSearch",
                                         "SearchSubtitleCommand",
                                         this);

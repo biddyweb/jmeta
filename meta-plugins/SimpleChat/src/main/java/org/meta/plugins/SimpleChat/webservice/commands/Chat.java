@@ -68,7 +68,7 @@ public class Chat extends AbstractWebService {
 
         rootColumn.addChild(new SelfSubmitButton("send", "Send"));
 
-        factory = super.controler.getModel().getFactory();
+        factory = super.controller.getModel().getFactory();
 
         TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
         props.add(new MetaProperty("chat", "channel"));
@@ -94,8 +94,8 @@ public class Chat extends AbstractWebService {
                 Search searchToSave = factory.createSearch(channelName, chat, Collections.singletonList(messageToSave));
                 //write into dataBase
                 //and store it to the DHT
-                super.controler.getModel().set(searchToSave);
-                super.controler.getDht().store(searchToSave.getHash()).addListener(
+                super.controller.getModel().set(searchToSave);
+                super.controller.getDht().store(searchToSave.getHash()).addListener(
                         new OperationListener<StoreOperation>() {
 
                             @Override
@@ -110,7 +110,7 @@ public class Chat extends AbstractWebService {
 
                         });
             }
-            super.controler.search(retrieveMessage.getHash(),
+            super.controller.search(retrieveMessage.getHash(),
                     "SimpleChat",
                     "getLastMessages",
                     this);
@@ -121,7 +121,7 @@ public class Chat extends AbstractWebService {
 
     @Override
     public void applySmallUpdate() {
-        super.controler.search(retrieveMessage.getHash(),
+        super.controller.search(retrieveMessage.getHash(),
                 "SimpleChat",
                 "getLastMessages",
                 this);

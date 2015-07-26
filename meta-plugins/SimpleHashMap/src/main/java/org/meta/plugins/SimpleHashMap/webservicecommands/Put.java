@@ -51,7 +51,7 @@ public class Put extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "put"));
         rootColumn.addChild(output);
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        factory = super.controler.getModel().getFactory();
+        factory = super.controller.getModel().getFactory();
     }
 
     @Override
@@ -74,8 +74,8 @@ public class Put extends AbstractWebService{
             
             //write into dataBase
             //and store it to the DHT
-            this.controler.getModel().set(hashM);
-            this.controler.getDht().store(hashM.getHash()).addListener(
+            this.controller.getModel().set(hashM);
+            this.controller.getDht().store(hashM.getHash()).addListener(
                     new OperationListener<StoreOperation>() {
 
                 @Override

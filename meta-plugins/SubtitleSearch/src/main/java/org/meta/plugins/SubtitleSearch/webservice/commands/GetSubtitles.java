@@ -83,7 +83,7 @@ public class GetSubtitles extends AbstractWebService{
             //the metaData
             subtitleSearch = factory.createSearch(movie, metaData, null);
             //if a DB element exist, prefer it
-            Search dbSearch = super.controler.getModel().getSearch(subtitleSearch.getHash());
+            Search dbSearch = super.controller.getModel().getSearch(subtitleSearch.getHash());
             if(dbSearch != null)
                 subtitleSearch = dbSearch;
         }
@@ -95,7 +95,7 @@ public class GetSubtitles extends AbstractWebService{
         if(subtitleHash != null && !subtitleHash.equals("")){
             MetHash hash = new MetHash(subtitleHash);
             
-            super.controler.search( hash,
+            super.controller.search( hash,
                                     "SubtitleSearch",
                                     "GetSubtitleCommand",
                                     this);

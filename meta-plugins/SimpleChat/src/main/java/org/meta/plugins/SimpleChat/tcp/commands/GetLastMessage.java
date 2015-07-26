@@ -16,9 +16,9 @@ public class GetLastMessage extends PluginAMPCommand {
     @Override
     public AMPAnswerBuilder execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();
-        
+
         Search s = (Search) myTCPControler.getInTheModel(hash);
-        if(s != null){
+        if (s != null) {
             datas.add(s);
             datas.addAll(s.getLinkedData());
         }

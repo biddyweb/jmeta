@@ -67,13 +67,13 @@ public class Get extends AbstractWebService{
             Search      contentSearch= factory.createSearch(source, metaData, null);
             logger.info("get hash : "+contentSearch.getHash().toString());
 
-            super.controler.search(  contentSearch.getHash(),
+            super.controller.search(  contentSearch.getHash(),
                                     "SimpleHashMap",
                                     "getCommand",
                                     this);
             
             Search localResult =
-                    (Search) controler.getModel().get(contentSearch.getHash());
+                    (Search) controller.getModel().get(contentSearch.getHash());
             if(localResult != null){
                 Collection<Data> localDatas = localResult.getLinkedData();
                 for(Data d : localDatas)

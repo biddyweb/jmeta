@@ -44,8 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * The {@link Model} implementation using kyotocabinet database as underlying
- * storage.
+ * The {@link Model} implementation using kyotocabinet database as underlying storage.
  *
  */
 public class KyotoCabinetModel implements Model {
@@ -60,7 +59,7 @@ public class KyotoCabinetModel implements Model {
     /**
      * The model configuration.
      */
-    private ModelConfigurationImpl configuration;
+    private final ModelConfigurationImpl configuration;
 
     /**
      *
@@ -132,12 +131,6 @@ public class KyotoCabinetModel implements Model {
         }
     }
 
-    /**
-     *
-     * @param hash
-     * @return a search pointed by his hash. Return null if not found or if the
-     * hash is not pointed a Search object
-     */
     @Override
     public Search getSearch(MetHash hash) {
         Search search = null;
@@ -150,12 +143,6 @@ public class KyotoCabinetModel implements Model {
         return search;
     }
 
-    /**
-     *
-     * @param hash
-     * @return a MetaData pointed by his hash or null if the hash is pointed on
-     * nothing or if the hash is pointed on a non MetaData object
-     */
     @Override
     public MetaData getMetaData(MetHash hash) {
         MetaData metaData = null;
@@ -167,11 +154,6 @@ public class KyotoCabinetModel implements Model {
         return metaData;
     }
 
-    /**
-     *
-     * @param hash
-     * @return a DataString object or null if the hash does not exists
-     */
     @Override
     public DataString getDataString(MetHash hash) {
         DataString data = null;
@@ -184,11 +166,6 @@ public class KyotoCabinetModel implements Model {
         return data;
     }
 
-    /**
-     *
-     * @param hash
-     * @return a DataString object or null if the hash does not exists
-     */
     @Override
     public DataFile getDataFile(MetHash hash) {
         DataFile data = null;
@@ -201,11 +178,6 @@ public class KyotoCabinetModel implements Model {
         return data;
     }
 
-    /**
-     *
-     * @param hash
-     * @return the Search linked to the hash or null if not found
-     */
     @Override
     public Searchable getSearchable(MetHash hash) {
         Searchable foundedObject = null;
@@ -218,11 +190,10 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Recursive synchronized method Load. This method will retrieve an
-     * Searchable object from DB.
+     * Recursive synchronized method Load. This method will retrieve an Searchable object from DB.
      *
-     * @param hash
-     * @return a searchale object if found or null if not.
+     * @param hash the has to load.
+     * @return a searchable object if found or null if not.
      * @throws ClassNotFoundException
      * @throws InstantiationException
      * @throws IllegalAccessException
@@ -268,8 +239,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * rebuild a DataString from BSON object call extractData to complete parent
-     * operations
+     * Rebuild a DataString from BSON object call extractData to complete parent operations.
      *
      * @param searchable
      */
@@ -280,8 +250,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * rebuild a DataFile from BSON Object call extractData to complete parent
-     * operations
+     * rebuild a DataFile from BSON Object call extractData to complete parent operations.
      *
      * @param searchable
      * @param jsonSearcheable
@@ -295,8 +264,8 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * rebuild a Data from BSONObject, Data is a abstract class, this method
-     * only take care of common description
+     * Rebuild a Data from BSONObject, Data is a abstract class, this method only take care of common
+     * description.
      *
      * @param data
      * @param bsonObject
@@ -304,7 +273,7 @@ public class KyotoCabinetModel implements Model {
     private void extractData(Data data, BSONObject bsonObject) {
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("description");
         BSONObject tmp;
-        ArrayList<MetaProperty> properties = new ArrayList<MetaProperty>();
+        ArrayList<MetaProperty> properties = new ArrayList<>();
         for (String key : bsonProperties.keySet()) {
             tmp = (BSONObject) bsonProperties.get(key);
             MetaProperty toAdd = new MetaProperty(tmp.get("name").toString(), tmp.get("value").toString());
@@ -315,7 +284,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Extract a metadata from a BSONObject
+     * Extract a metadata from a BSONObject.
      *
      * @param searchable
      * @param jsonSearcheable
@@ -343,7 +312,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Extract a search from a BSONObject object
+     * Extract a search from a BSONObject object.
      *
      * @param searchable
      * @param jsonSearcheable
@@ -367,7 +336,7 @@ public class KyotoCabinetModel implements Model {
         search.setSource(source);
         search.setMetaData(metaData);
 
-        List<Data> linkedData = new ArrayList<Data>();
+        List<Data> linkedData = new ArrayList<>();
         BasicBSONList bsonLinkedData = (BasicBSONList) bsonObject.get("linkedData");
         for (String key : bsonLinkedData.keySet()) {
             MetHash hash = new MetHash(bsonLinkedData.get(key).toString());
@@ -394,16 +363,18 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Start a db transaction
+     * Start a db transaction.
      *
-     * @param startTx
-     * @return
+     * @param startTx if actually starting the transaction or not.
+     * @return true on success, false otherwise.
      */
     private boolean startTransaction(boolean startTx) {
         if (!startTx) {
             return true;
         }
-        if (!kyotoDB.begin_transaction(false)) {
+        //true as argument here means that changes brought by the transaction will be synchronized on disk after
+        //commit.
+        if (!kyotoDB.begin_transaction(true)) {
             logger.error("KYOTO FAILED TO START TX! " + kyotoDB.error());
             return false;
         }
@@ -472,8 +443,8 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Creates or updates a searchable object in database. All children of given
-     * object are also created/updated.
+     * Creates or updates a searchable object in database. All children of given object are also
+     * created/updated.
      *
      * @param searchable The object to create / update
      *
@@ -512,7 +483,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Delete an object in DB
+     * Delete an object in DB.
      *
      * @param searchable the object to remove from db
      * @return true on success, false otherwise
@@ -523,7 +494,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Delete an object in DB
+     * Delete an object in DB.
      *
      * @param hash The hash to remove from db
      * @return true on success, false otherwise

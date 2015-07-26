@@ -31,41 +31,36 @@ import org.meta.api.common.MetamphetUtils;
  *
  * @author Thomas LAVOCAT
  *
- * A MetaData is describe by a list of properties. like {name:subtitles,
- * value:vostfr} and a list of results.
+ * A MetaData is describe by a list of properties. like {name:subtitles, value:vostfr} and a list of results.
  *
  * This class extends Searchable.
  */
-public class MetaData extends Searchable {
+public final class MetaData extends Searchable {
 
     private TreeSet<MetaProperty> properties = null;
 
     /**
-     * needed for java Reflection
+     * Needed for java Reflection.
      */
     protected MetaData() {
         super();
     }
 
     /**
-     * Create a MetaData -> use in case of creation
+     * Create a MetaData -> use in case of creation.
      *
-     * @param hashCode hash of this MetaData
-     * @param properties
-     * @param linkedData every data linked to this metaData
+     * @param metHash hash of this MetaData
+     * @param props the list of properties
      */
-    protected MetaData(
-            MetHash hash,
-            TreeSet<MetaProperty> properties
-    ) {
-        super(hash);
-        this.setProperties(properties);
+    protected MetaData(final MetHash metHash, final TreeSet<MetaProperty> props) {
+        super(metHash);
+        this.setProperties(props);
     }
 
     /**
-     * this will only return copies.
+     * this will only return copies => TODO why ??
      *
-     * @return
+     * @return the list of {@link MetaProperty} of this MetaData
      */
     public ArrayList<MetaProperty> getProperties() {
         ArrayList<MetaProperty> property = new ArrayList<MetaProperty>();
@@ -77,13 +72,12 @@ public class MetaData extends Searchable {
     }
 
     /**
-     * @param properties the properties to set Since the MetaProperties are used
-     * in the hash calculation This method is only callable in the model
-     * package;
+     * @param props the properties to set Since the MetaProperties are used in the hash calculation This
+     * method is only callable in the model package;
      *
      */
-    public void setProperties(TreeSet<MetaProperty> properties) {
-        this.properties = properties;
+    public void setProperties(final TreeSet<MetaProperty> props) {
+        this.properties = props;
         this.updateState();
         reHash();
     }
@@ -92,15 +86,17 @@ public class MetaData extends Searchable {
     public MetHash reHash() {
         //The hash is the hash of the concatenation of every key:value
         //separate by ;
+        //TODO use string builder here
         String concat = "";
         for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
             MetaProperty property = i.next();
             concat = concat + property.getName() + ":" + property.getValue() + ";";
         }
         hash = MetamphetUtils.makeSHAHash(concat);
-        return null;
+        return hash;
     }
 
+    @Override
     public BSONObject getBson() {
         BSONObject bsonObject = super.getBson();
         //foreach proerties, get her value and name and put it in the json
@@ -118,7 +114,7 @@ public class MetaData extends Searchable {
     }
 
     @Override
-    protected void fillFragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
         //write every properties
         fragment.put("_nbProperties", (properties.size() + "").getBytes());
         int count = 0;
@@ -130,12 +126,12 @@ public class MetaData extends Searchable {
     }
 
     @Override
-    protected void decodefragment(LinkedHashMap<String, byte[]> fragment) {
+    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
         //when this method is called in a metaData, her state is no more a real
         //MetaData but a temporary metaData, it means, it only represent what's
         //over the network, so source = null ans result = null
         //but not properties
-        properties = new TreeSet<MetaProperty>();
+        properties = new TreeSet<>();
         //and the Search cannot be write or updated in database
 
         //extract all linkedDatas and delete it from the fragment too

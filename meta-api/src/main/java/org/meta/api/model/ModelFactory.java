@@ -13,15 +13,17 @@ import java.util.Map;
 import java.util.TreeSet;
 
 /**
- * This factory allow anyone to interact safely with the model
- * 
+ * This factory allows the manipulation of model objects easier.
+ *
+ * It contains utility methods to create model objects and instance pools.
+ *
  */
 public class ModelFactory {
 
-    Map<ModelType, InstancePool> pools;
+    private final Map<ModelType, InstancePool> pools;
 
     /**
-     *
+     * Default constructor.
      */
     public ModelFactory() {
         pools = new HashMap<>();
@@ -34,52 +36,56 @@ public class ModelFactory {
      *
      * @param type The model type to get
      *
-     * @return An instance of the asked class.
+     * @return An instance of the given type
      */
-    public Searchable getInstance(ModelType type) {
+    public final Searchable getInstance(final ModelType type) {
         return pools.get(type).getInstance();
-    }
-    
-    /**
-     * 
-     * @return a fresh search from pool
-     */
-    protected Search getSearch() {
-        return (Search) pools.get(ModelType.SEARCH).getInstance();
-    }
-    
-    /**
-     * Create a Search with given params
-     * @param source    search's source
-     * @param metaData  search's metaData
-     * @param datas     search's results
-     * 
-     * @return a brand new search
-     */
-    public Search createSearch(Searchable source, MetaData metaData, List<Data> datas){
-         Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
-         search.setSource(source);
-         search.setMetaData(metaData);
-         if(datas != null)
-             search.addLinkedData(datas);
-         return search;
     }
 
     /**
-     * 
+     *
+     * @return a fresh search from pool
+     */
+    protected final Search getSearch() {
+        return (Search) pools.get(ModelType.SEARCH).getInstance();
+    }
+
+    /**
+     * Create a Search with given parameters.
+     *
+     * @param source search's source
+     * @param metaData search's metaData
+     * @param datas search's results
+     *
+     * @return a brand new search
+     */
+    public final Search createSearch(final Searchable source,
+            final MetaData metaData, final List<Data> datas) {
+        Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
+        search.setSource(source);
+        search.setMetaData(metaData);
+        if (datas != null) {
+            search.addLinkedData(datas);
+        }
+        return search;
+    }
+
+    /**
+     *
      * @return a fresh dataString
      */
-    protected DataString getDataString() {
+    protected final DataString getDataString() {
         return (DataString) pools.get(ModelType.DATASTRING).getInstance();
     }
 
     /**
-     * Build a new DataString with the given params
+     * Build a new DataString with the given parameters.
+     *
      * @param data a string containing what it please you
      *
      * @return The fully-initialized dataString
      */
-    public DataString createDataString(String data) {
+    public final DataString createDataString(final String data) {
         DataString dataString = this.getDataString();
         dataString.setString(data);
         return dataString;
@@ -88,63 +94,63 @@ public class ModelFactory {
     /**
      * @return a fresh DataFile
      */
-    protected DataFile getDataFile() {
+    protected final DataFile getDataFile() {
         return (DataFile) pools.get(ModelType.DATAFILE).getInstance();
     }
 
     /**
-     * Build a new DataString with given params
+     * Build a new DataString with given parameters.
      *
-     * @param file  The file you want DataFile to point to
+     * @param file The file you want DataFile to point to
      *
      * @return The fully-initialized dataFile
      */
-    public DataFile createDataFile(File file) {
+    public final DataFile createDataFile(final File file) {
         DataFile dataFile = this.getDataFile();
         dataFile.setFile(file);
         return dataFile;
     }
 
     /**
-     * 
+     *
      * @return a fresh MetaData
      */
-    protected MetaData getMetaData() {
+    protected final MetaData getMetaData() {
         return (MetaData) pools.get(ModelType.METADATA).getInstance();
     }
 
     /**
-     * Build a MetaData with given params
+     * Build a MetaData with given parameters.
      *
      * @param props the MetaProperties representing the metaData
      *
      * @return The fully-initialized MetaData.
      */
-    public MetaData createMetaData(TreeSet<MetaProperty> props) {
+    public final MetaData createMetaData(final TreeSet<MetaProperty> props) {
         MetaData metaData = this.getMetaData();
         metaData.setProperties(props);
         return metaData;
     }
-    
+
     /**
-     * Create a new instance of a Content type
-     * Model object have protected constructor, so you can't call a 
+     * Create a new instance of a Content type Model object have protected constructor, so you can't call a
      * clazz.newinstance on those ? extends Searchable.class ;-)
-     * 
-     * @param clazz
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     *
+     * @param clazz the class to instantiate
+     * @return an instance of the given Class
+     * @throws InstantiationException if invalid class
+     * @throws IllegalAccessException if invalid class
      */
-    public Searchable newInstance(Class clazz) throws InstantiationException, IllegalAccessException {
+    public final Searchable newInstance(final Class clazz)
+            throws InstantiationException, IllegalAccessException {
         return (Searchable) clazz.newInstance();
     }
 
     /**
-     * After retrieving an search from network, you may want to give him his childs
-     * Call this method.
-     * 
+     * After retrieving an search from network, you may want to give him his childs Call this method.
+     *
      * TODO check that the given children have the same hash that the search want
+     *
      * @param search
      * @param source
      * @param metaData

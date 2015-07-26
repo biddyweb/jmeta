@@ -42,8 +42,7 @@ public class JMeta {
         try {
             logger.info("Reading configuration files");
             MetaConfiguration.initConfiguration();
-        }
-        catch (InvalidConfigurationFileException | InvalidConfigurationException ex) {
+        } catch (InvalidConfigurationFileException | InvalidConfigurationException ex) {
             logger.error("Failed to initialize configuration from files.", ex);
             return;
         }
@@ -51,8 +50,7 @@ public class JMeta {
         MetaController controller = new MetaController();
         try {
             controller.initAndStartAll();
-        }
-        catch (MetaException ex) {
+        } catch (MetaException ex) {
             logger.error("Failed to start JMeta!", ex);
             return;
         }
@@ -60,8 +58,7 @@ public class JMeta {
         MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(), controller);
         try {
             pluginLoader.loadPlugins();
-        }
-        catch (PluginLoadException ex) {
+        } catch (PluginLoadException ex) {
             logger.error("Failed to load plugins!", ex);
             return;
         }

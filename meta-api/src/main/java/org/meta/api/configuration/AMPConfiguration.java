@@ -39,7 +39,7 @@ public interface AMPConfiguration {
 
     /**
      *
-     * @param networkConfig
+     * @param networkConfig the underlying network configuration
      */
     void setNetworkConfig(NetworkConfiguration networkConfig);
 

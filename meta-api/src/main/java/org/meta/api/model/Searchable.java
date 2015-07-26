@@ -1,13 +1,3 @@
-package org.meta.api.model;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
-import org.meta.api.common.MetHash;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
  *    JMeta - Meta's java implementation
  *    Copyright (C) 2013 Thomas LAVOCAT
@@ -25,9 +15,18 @@ import org.slf4j.LoggerFactory;
  *    You should have received a copy of the GNU Affero General Public License
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.meta.api.model;
+
+import java.util.LinkedHashMap;
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
+import org.meta.api.common.MetHash;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Super class of all model types.
- * Contain a hash and a state
+ * Super class of all model types. Contain a hash and a state
+ *
  * @author faquin
  *
  */
@@ -49,47 +48,38 @@ public abstract class Searchable {
      */
     public enum ObjectState {
 
-        //Object has been instanciated, it does not comes from network or database.
-
         /**
-         *
+         * Object has been instantiated, it does not comes from network or database.
          */
-                CREATED,
-        //Object comes from network.
-
+        CREATED,
         /**
-         *
+         * Object comes from network.
          */
-                FROM_NETWORK,
-        //Object comes from database and is up to date.
-
+        FROM_NETWORK,
         /**
-         *
+         * Object comes from database and is up to date.
          */
-                UP_TO_DATE,
-        //Object comes from database but has been modified.
-
+        UP_TO_DATE,
         /**
-         *
+         * Object comes from database but has been modified.
          */
-                DIRTY;
+        DIRTY;
     };
 
     /**
-     * This constructor is needed for Java reflexion usage
+     * This constructor is needed for Java reflexion usage.
      */
     public Searchable() {
         state = ObjectState.CREATED;
     }
 
     /**
-     * This constructor has to be used in case of creation
+     * This constructor has to be used in case of creation.
      *
-     * @param hash
-     * @param hashCode
+     * @param metHash creates a searchable with given hash
      */
-    protected Searchable(MetHash hash) {
-        this.hash = hash;
+    protected Searchable(final MetHash metHash) {
+        this.hash = metHash;
         state = ObjectState.CREATED;
     }
 
@@ -97,34 +87,34 @@ public abstract class Searchable {
      *
      * @return the hashCode of this Searchable object
      */
-    public MetHash getHash() {
+    public final MetHash getHash() {
         return hash;
     }
 
     /**
-     * Only callable in model package
-     * @param hash
-     * @param hashCode the hashCode to set
+     * Only callable in model package.
+     *
+     * @param metHash the hash to set
      */
-    public void setHash(MetHash hash) {
-        this.hash = hash;
+    public final void setHash(final MetHash metHash) {
+        this.hash = metHash;
     }
 
     /**
      *
      * @return ObjectState The current state of this object.
      */
-    public ObjectState getState() {
+    public final ObjectState getState() {
         return state;
     }
 
     /**
      * Set the current state of this object.
      *
-     * @param state ObjectState the state.
+     * @param objectState ObjectState the state.
      */
-    public void setState(ObjectState state) {
-        this.state = state;
+    public final void setState(final ObjectState objectState) {
+        this.state = objectState;
     }
 
     /**
@@ -132,16 +122,17 @@ public abstract class Searchable {
      *
      * For now, just sets the object as dirty if it comes from database.
      */
-    protected void updateState() {
+    protected final void updateState() {
         if (state == ObjectState.UP_TO_DATE) {
             logger.info("update state for " + this.hash.toString() + " set to dirty");
             state = ObjectState.DIRTY;
         }
     }
-    
+
     /**
-     * Called for rebuilding the hash
-     * @return
+     * Called for rebuilding the hash.
+     *
+     * @return the newly updated hash
      */
     public abstract MetHash reHash();
 
@@ -149,15 +140,16 @@ public abstract class Searchable {
      *
      * @return transform the Searchable object into a JSON string that can be stored directly
      */
-    public String toJson() {
+    public final String toJson() {
         return this.getBson().toString();
     }
 
     /**
      *
-     * transform the Searchable object into a BSON object for model 
-     * serialization. Meant to be object-recursive
-     * @return a BSON object filled with all neede information for the DB
+     * transform the Searchable object into a BSON object for model serialization. Meant to be
+     * object-recursive
+     *
+     * @return a BSON object filled with all needed information for the DB
      */
     public BSONObject getBson() {
         BasicBSONObject bsonObject = new BasicBSONObject("hash", this.hash.toString());
@@ -166,17 +158,15 @@ public abstract class Searchable {
     }
 
     /**
-     * build an AMP valid amp message part with the content of the Searchable
-     * object. Call "fillFragment" to add specialized content function of 
-     * implementing type.
-     * By default this method add two information in the AnswerPart : 
-     * - type
-     * - hash
-     * @return a {@link HashMap} containing a label for key and a byte[] for 
-     * content. The content will be translated in AMP message elsewhere.
+     * build an AMP valid amp message part with the content of the Searchable object. Call "fillFragment" to
+     * add specialized content function of implementing type. By default this method add two information in
+     * the AnswerPart : - type - hash
+     *
+     * @return a {@link HashMap} containing a label for key and a byte[] for content. The content will be
+     * translated in AMP message elsewhere.
      */
-    public LinkedHashMap<String, byte[]> getAmpAnswerPart() {
-        LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<String, byte[]>();
+    public final LinkedHashMap<String, byte[]> getAmpAnswerPart() {
+        LinkedHashMap<String, byte[]> fragment = new LinkedHashMap<>();
         fragment.put("_type", (this.getClass().getName() + "").getBytes());
         fragment.put("_hash", getHash().toByteArray());
         fillFragment(fragment);
@@ -184,41 +174,43 @@ public abstract class Searchable {
     }
 
     /**
-     * Called when creating the answer part with the searchable object.
-     * Override this method to add usable content in your AMP answer
+     * Called when creating the answer part with the searchable object. Override this method to add usable
+     * content in your AMP answers
      *
-     * @param fragment
+     * @param fragment the amp fragments
      */
     protected abstract void fillFragment(LinkedHashMap<String, byte[]> fragment);
-    
+
     /**
-     * Rebuild a Searchable object from an Amp answer part.
-     * Basically, it did the reverse work of getAmpAnswerPart.
-     * @param fragment a {@link HashMap} containing a least the labels and values
-     * given in getAmpAnswerPart and fillFragment.
-     * 
-     * call decodeFragment wich allow implementing types to add somme usefull 
-     * code.
+     * Rebuild a Searchable object from an Amp answer part. Basically, it did the reverse work of
+     * getAmpAnswerPart.
+     *
+     * @param fragment a {@link HashMap} containing a least the labels and values given in getAmpAnswerPart
+     * and fillFragment.
+     *
+     * call decodeFragment wich allow implementing types to add somme usefull code.
      */
-    public void unParseFromAmpFragment(LinkedHashMap<String, byte[]> fragment) {
+    public final void unParseFromAmpFragment(final LinkedHashMap<String, byte[]> fragment) {
         this.hash = new MetHash(fragment.get("_hash"));
         fragment.remove("_hash");
         decodefragment(fragment);
         fragment.clear();
     }
-    
+
     /**
-     * Called when unParsing from AMP message.
-     * Retrieve information in the map as they where put in fillFragment method
+     * Called when unParsing from AMP message. Retrieve information in the map as they where put in
+     * fillFragment method
+     *
      * @param fragment same as unParseFromAmpFragment
      */
     protected abstract void decodefragment(LinkedHashMap<String, byte[]> fragment);
-    
+
     /**
-     * Allow implementing types to give a more textual version of themSelves
-     * This may be useful for {@link DataFile}, allowing them to create a copy
-     * of themselves containing everything but the final data.
-     * @return
+     * Allow implementing types to give a more textual version of themSelves This may be useful for
+     * {@link DataFile}, allowing them to create a copy of themselves containing everything but the final
+     * data.
+     *
+     * @return the
      */
     public abstract Searchable toOnlyTextData();
 }

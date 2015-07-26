@@ -3,9 +3,7 @@ package org.meta.api.ws;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.PreDestroy;
 import org.meta.api.amp.AMPResponseCallback;
-import org.meta.api.amp.PluginAMPController;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.Data;
@@ -16,10 +14,10 @@ import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.organizers.ColumnOrganizer;
 
 /**
- * Define how need to work a web service command
+ * Define how need to work a web service command.
  *
- * To register a new web service command you must extends this class, and
- * override at least : - execute command - apply small update
+ * To register a new web service command you must extends this class, and override at least : - execute
+ * command - apply small update
  *
  * You should build your interface in the default constructor, which is required
  *
@@ -41,128 +39,119 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     /**
      *
      */
-    protected AbstractPluginWebServiceControler controler = null;
+    protected AbstractPluginWebServiceControler controller = null;
 
     /**
-     * You need to build you user interface in here. For that, you shall need
-     * the root element, named rootColumn.
+     * You need to build you user interface in here. For that, you shall need the root element, named
+     * rootColumn.
      *
      * Fill it with anything you want to build your interface
      *
-     * @param controler
+     * @param wsController the parent web service controller
      */
-    public AbstractWebService(AbstractPluginWebServiceControler controler) {
-        this.controler = controler;
+    public AbstractWebService(final AbstractPluginWebServiceControler wsController) {
+        this.controller = wsController;
         rootColumn = new ColumnOrganizer("root");
         descriptor = new InterfaceDescriptor(rootColumn);
     }
 
     /**
      *
-     * @param controler give WebServiceControler
+     * @param wsController give WebServiceControler
      */
-    public void setWebServiceControler(AbstractPluginWebServiceControler controler) {
-        this.controler = controler;
+    public final void setWebServiceControler(final AbstractPluginWebServiceControler wsController) {
+        this.controller = wsController;
     }
 
     /**
      *
      * @return an interface who will be translate as JSON.
      *
-     * Client side will surely build a human interface to allow final user to
-     * interact with this webservice commands.
+     * Client side will surely build a human interface to allow final user to interact with this webservice
+     * commands.
      *
-     * Note that you can totally bypass the interface, but you loose interest of
-     * webservice commands.
+     * Note that you can totally bypass the interface, but you loose interest of webservice commands.
      */
-    public InterfaceDescriptor getInterface() {
+    public final InterfaceDescriptor getInterface() {
         return descriptor;
     }
 
     /**
-     * Execute the command with the given parameters
+     * Execute the command with the given parameters.
      *
      * @param map parameter map from jetty
      * @return the interface descriptor.
      *
      */
-    public InterfaceDescriptor execute(Map<String, String[]> map) {
+    public final InterfaceDescriptor execute(final Map<String, String[]> map) {
         executeCommand(map);
         return descriptor;
     }
 
     /**
-     * When a final user is ready to interact with your webservice command, he
-     * will execute it. Executing your command, mean, to give you some
-     * parameters to make it do some work.
+     * When a final user is ready to interact with your webservice command, he will execute it. Executing your
+     * command, mean, to give you some parameters to make it do some work.
      *
      * Parameters come into the map of parameters.
      *
-     * @param map a simple map, where for each key, you may find or not an array
-     * of values. Those are given by Jetty, which is a http server. So,
-     * parameters are given by the end user as a get string :
+     * @param map a simple map, where for each key, you may find or not an array of values. Those are given by
+     * Jetty, which is a http server. So, parameters are given by the end user as a get string :
      * ?key1=bar;key2=foo;key2=barfoo
      *
-     * you can easily lookup for parameters using the following tomcat style
-     * methods : - getParameter - getParameters
+     * you can easily lookup for parameters using the following tomcat style methods : - getParameter -
+     * getParameters
      *
-     * If you want any output, make sure you apply small changes to your
-     * interface. Beware that big changes are not tested yet, but you want to
-     * give a try, your feedback will be warm welcome.
+     * If you want any output, make sure you apply small changes to your interface. Beware that big changes
+     * are not tested yet, but you want to give a try, your feedback will be warm welcome.
      *
-     * Remember that your operation is bloking the user interface, so, faster
-     * you send him a result, better it is.
+     * Remember that your operation is bloking the user interface, so, faster you send him a result, better it
+     * is.
      *
-     * You may surely not be able to give any results for now, especially if you
-     * search on the DHT see search method in
-     * {@link PluginAMPController}. They will arrive later in the
-     * callback method.
+     * You may surely not be able to give any results for now, especially if you search on the DHT see search
+     * method in {@link PluginAMPController}. They will arrive later in the callback method.
      *
      */
-    protected abstract void executeCommand(Map<String, String[]> map);
+    protected abstract void executeCommand(final Map<String, String[]> map);
 
     /**
      * After execution, some client will fetch the interface every X ms.
      *
      * @return the modified interfaceDescripor
      */
-    public InterfaceDescriptor retrieveUpdate() {
+    public final InterfaceDescriptor retrieveUpdate() {
         applySmallUpdate();
         return descriptor;
     }
 
     /**
      *
-     * After calling execution, most clients (especially ours) will fetch the
-     * interface every X ms, to see if there any changes or any new results.
+     * After calling execution, most clients (especially ours) will fetch the interface every X ms, to see if
+     * there any changes or any new results.
      *
      * if you want to make small changes in the interface, it's possible here.
      *
-     * By small changes, we mean, - make an other DHT search, - take newly
-     * arrived results in the callback method and add them into the output text
-     * object. - ...
+     * By small changes, we mean, - make an other DHT search, - take newly arrived results in the callback
+     * method and add them into the output text object. - ...
      *
-     * Remember that, for now (LSP version) this method will be called every
-     * 500ms.
+     * Remember that, for now (LSP version) this method will be called every 500ms.
      *
      */
     protected abstract void applySmallUpdate();
 
     /**
-     *
+     * TODO ?
      */
-    @PreDestroy
-    public void kill() {
-        controler = null;
+    public final void kill() {
+        controller = null;
     }
 
     /**
      *
      * @param name name of the parameter
      * @param map map from jetty
-     * @return the parameter value or null if not found
+     * @return an array of values for the key or null if not found
      */
-    public String[] getParameters(String name, Map<String, String[]> map) {
+    public final String[] getParameters(final String name, final Map<String, String[]> map) {
         return map.get(name);
     }
 
@@ -170,9 +159,9 @@ public abstract class AbstractWebService implements AMPResponseCallback {
      *
      * @param name name of the parameter array
      * @param map map from jetty
-     * @return String[] containing the values or null if not found
+     * @return the value for the key or null if not found
      */
-    public String getParameter(String name, Map<String, String[]> map) {
+    public final String getParameter(final String name, final Map<String, String[]> map) {
         String parameter = null;
         String[] parameters = getParameters(name, map);
         if (parameters != null && parameters.length > 0) {
@@ -182,56 +171,54 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     }
 
     /**
-     * Update a search with the new result
+     * Update a search with the new result.
      *
-     * Will check in DB if the Data are already here, in these case, it will not
-     * override the data, but just apply changes.
+     * Will check in DB if the Data are already here, in these case, it will not override the data, but just
+     * apply changes.
      *
-     * After calling this method newSearch will contain newResult has hi list of
-     * results.
+     * After calling this method newSearch will contain newResult has hi list of results.
      *
      * In this case, try to
      *
-     * @param newSearch
-     * @param newResult
-     * @return
+     * @param newSearch the search to update
+     * @param newResult the result to add
+     * @return the updated search
      */
-    protected Search updateSearch(Search newSearch, Data newResult) {
+    protected final Search updateSearch(final Search newSearch, final Data newResult) {
         //try to get the same from model
-        Search searchDB = controler.getModel().getSearch(newSearch.getHash());
-        if (searchDB != null) {
-            newSearch = searchDB;
+        Search searchDB = controller.getModel().getSearch(newSearch.getHash());
+        if (searchDB == null) {
+            searchDB = newSearch;
         }
-        newSearch.setALinkedData(newResult);
-        return newSearch;
+        searchDB.setLinkedData(newResult);
+        return searchDB;
     }
 
     /**
-     * Look if the content already exist in the DB, and update the reference in
-     * this case.
+     * Look if the content already exist in the DB, and update the reference in this case.
      *
-     * Auto merge the Data description objects
+     * Auto merge the Data description objects. TODO This logic should not be here!
      *
      * @param newResult newResultToUpdate
-     * @return 
+     * @return the updated data
      */
-    protected Data updateResult(Data newResult) {
+    protected final Data updateResult(final Data newResult) {
         //If dbResult was not null, remove it and add the new result instead
         //try to get it in the DB
-        Data resultDB = controler.getModel()
+        Data resultDB = controller.getModel()
                 .getDataFile(newResult.getHash());
         //if result exist in the DB, just adjust newResult reference
         //to point to it
 
+        if (resultDB == null) {
+            return newResult;
+        }
+
         //get new description
         ArrayList<MetaProperty> newDescription = newResult.getDescription();
 
-        if (resultDB != null) {
-            newResult = resultDB;
-        }
-
         //get db description
-        ArrayList<MetaProperty> mergeDescription = newResult.getDescription();
+        ArrayList<MetaProperty> mergeDescription = resultDB.getDescription();
 
         //for each description of the new one
         for (MetaProperty desc : newDescription) {
@@ -244,18 +231,16 @@ public abstract class AbstractWebService implements AMPResponseCallback {
                 mergeDescription.add(desc);
             }
         }
-        newResult.setDescription(mergeDescription);
-
-        return newResult;
+        resultDB.setDescription(mergeDescription);
+        return resultDB;
     }
 
     /**
-     * Save the searchable in the DB and push his hash to the DHT
+     * Save the searchable in the DB and push his hash to the DHT.
      *
-     * @param searchable
-     * @param seachable
+     * @param searchable the searchable to save and push
      */
-    protected void saveAndPush(Searchable searchable) {
+    protected final void saveAndPush(final Searchable searchable) {
         //write into dataBase
         onlySave(searchable);
         //and store it to the DHT
@@ -263,31 +248,32 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     }
 
     /**
-     * Only save the searchable in the db
+     * Only save the searchable in the db.
      *
-     * @param searchable
+     * @param searchable the searchable to save
      */
-    protected void onlySave(Searchable searchable) {
+    protected final void onlySave(final Searchable searchable) {
         //TODO Error check
-        this.controler.getModel().set(searchable);
+        this.controller.getModel().set(searchable);
     }
 
     /**
-     * push the hash of the searchable to the DHT
+     * push the hash of the searchable to the DHT.
      *
-     * @param searchable
+     * @param searchable the searchable to push
      */
-    protected void onlyPush(final Searchable searchable) {
-        //store search into DHT 
-        this.controler.getDht().store(searchable.getHash()).addListener(new OperationListener<AsyncOperation>() {
+    protected final void onlyPush(final Searchable searchable) {
+        //store search into DHT
+        this.controller.getDht().store(searchable.getHash())
+                .addListener(new OperationListener<AsyncOperation>() {
 
                     @Override
-                    public void failed(AsyncOperation operation) {
+                    public void failed(final AsyncOperation operation) {
                         callbackFailedToPush(operation, searchable);
                     }
 
                     @Override
-                    public void complete(AsyncOperation operation) {
+                    public void complete(final AsyncOperation operation) {
                         callbackSuccessToPush(operation, searchable);
                     }
 
@@ -295,18 +281,16 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     }
 
     /**
-     *
-     * @param operation
-     * @param searchable
+     * @param operation the operation that failed.
+     * @param searchable the searchable
      */
-    protected void callbackFailedToPush(AsyncOperation operation, Searchable searchable) {
+    protected void callbackFailedToPush(final AsyncOperation operation, final Searchable searchable) {
     }
 
     /**
-     *
-     * @param operation
-     * @param searchable
+     * @param operation the operation that succeeded.
+     * @param searchable the searchable
      */
-    protected void callbackSuccessToPush(AsyncOperation operation, Searchable searchable) {
+    protected void callbackSuccessToPush(final AsyncOperation operation, final Searchable searchable) {
     }
 }

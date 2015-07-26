@@ -20,13 +20,12 @@ package org.meta.api.dht;
 import java.net.InetAddress;
 import java.util.Objects;
 import org.meta.api.common.Identity;
-import org.meta.api.common.MetHash;
 
 /**
  *
  * Class representing a peer in the DHT.
  *
- * Must a least contain an ip address and a port.
+ * Must a least contain an IP address and a port.
  *
  * May also contain other information and operation related to a peer.
  *
@@ -60,39 +59,39 @@ public class MetaPeer {
      *
      * Initialize this peer with the given id, with empty address and port.
      *
-     * @param id. The peer id.
+     * @param identity The peer id.
      */
-    public MetaPeer(Identity id) {
-        this(id, null, (short) 0);
+    public MetaPeer(final Identity identity) {
+        this(identity, null, (short) 0);
     }
 
     /**
      * Initialize this peer with id, address and port.
      *
-     * @param id The peer id.
-     * @param addr. The peer address.
-     * @param port. The peer port.
+     * @param identity The peer id.
+     * @param addr The peer address.
+     * @param peerPort The peer port.
      */
-    public MetaPeer(Identity id, InetAddress addr, short port) {
-        this.id = id;
+    public MetaPeer(final Identity identity, final InetAddress addr, final short peerPort) {
+        this.id = identity;
         this.address = addr;
-        this.port = port;
+        this.port = peerPort;
     }
 
     /**
      * @return the identity of this peer.
      */
-    public Identity getID() {
+    public final Identity getID() {
         return id;
     }
 
     /**
      * Set the identity of this peer.
      *
-     * @param id The new identity.
+     * @param identity The new identity.
      */
-    public void setId(Identity id) {
-        this.id = id;
+    public final void setId(final Identity identity) {
+        this.id = identity;
     }
 
     /**
@@ -100,17 +99,17 @@ public class MetaPeer {
      *
      * @return The InetAddress.
      */
-    public InetAddress getAddress() {
+    public final InetAddress getAddress() {
         return address;
     }
 
     /**
      * Set the address of this peer.
      *
-     * @param address The new address.
+     * @param addr The new address.
      */
-    public void setAddress(InetAddress address) {
-        this.address = address;
+    public void setAddress(final InetAddress addr) {
+        this.address = addr;
     }
 
     /**
@@ -118,24 +117,24 @@ public class MetaPeer {
      *
      * @return The port.
      */
-    public short getPort() {
+    public final short getPort() {
         return port;
     }
 
     /**
      * Set the port of this peer.
      *
-     * @param port The new port.
+     * @param peerPort The new port.
      */
-    public void setPort(short port) {
-        this.port = port;
+    public void setPort(final short peerPort) {
+        this.port = peerPort;
     }
 
     /**
      * @return The string representation of this peer.
      */
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("MetaPeer [ ");
         if (this.id != null) {
@@ -150,11 +149,11 @@ public class MetaPeer {
 
     /**
      *
-     * @param obj
-     * @return
+     * @param obj the object to check for equality
+     * @return true if equal, false otherwise
      */
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.meta.api.model;
 
 /**
@@ -18,31 +17,28 @@ public enum ModelType {
      *
      */
     SEARCH(Search.class),
-
     /**
      *
      */
     DATASTRING(DataString.class),
-
     /**
      *
      */
     DATAFILE(DataFile.class),
-
     /**
      *
      */
     METADATA(MetaData.class);
 
-    private Class<?> clazz;
+    private final Class<?> clazz;
 
-    private ModelType(Class<?> claz) {
+    private ModelType(final Class<?> claz) {
         this.clazz = claz;
     }
 
     /**
      *
-     * @return
+     * @return the {@link Class} for this type.
      */
     public Class<?> getTypeClass() {
         return this.clazz;
@@ -50,13 +46,13 @@ public enum ModelType {
 
     /**
      *
-     * @param claz
-     * @return
+     * @param claz the {@link Class} to get type for.
+     * @return the associated type, or null if unknown.
      */
-    public static ModelType fromClass(Class<?> claz) {
+    public static ModelType fromClass(final Class<?> claz) {
         for (ModelType type : ModelType.values()) {
             if (type.getTypeClass() == claz) {
-               return type;
+                return type;
             }
         }
         return null;

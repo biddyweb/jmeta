@@ -15,56 +15,56 @@ import java.util.Collection;
 public interface NetworkConfiguration {
 
     /**
-     * @return
+     * @return the list of network addresses to bind to
      */
     Collection<InetAddress> getAddresses();
 
     /**
      *
-     * @return
+     * @return the list of network interfaces to bind to
      */
     Collection<String> getInterfaces();
 
     /**
      *
-     * @return
+     * @return the network port to bind to
      */
     Short getPort();
 
     /**
      *
-     * @param addresses
+     * @param addresses the list of network addresses to bind to
      */
     void setAddresses(Collection<InetAddress> addresses);
 
     /**
-     * @param interfaces
+     * @param interfaces the list of network interfaces to bind to
      */
     void setInterfaces(Collection<String> interfaces);
 
     /**
      *
-     * @param port
+     * @param port the network port to bind to
      */
     void setPort(Short port);
 
     /**
      * @return true enabling ipV6, false otherwise.
      */
-    public boolean ipV6();
+    boolean ipV6();
 
     /**
      * @param ipV6 the new ipV6 value.
      */
-    public void setIpV6(boolean ipV6);
+    void setIpV6(boolean ipV6);
 
     /**
      * @return true enabling ipV6, false otherwise.
      */
-    public boolean ipV4();
+    boolean ipV4();
 
     /**
      * @param ipV4 the new ipV4 value.
      */
-    public void setIpV4(boolean ipV4);
+    void setIpV4(boolean ipV4);
 }

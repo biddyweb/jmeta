@@ -154,7 +154,8 @@ Finally, it is worth reading the documentation.
 <!-- See http://checkstyle.sf.net/config_coding.html -->
 <module name="AvoidInlineConditionals"/>
 <module name="EmptyStatement"/>
-<module name="EqualsHashCode"/>
+<!-- We want to implement equals() without implementing hashCode()...  -->
+<!-- <module name="EqualsHashCode"/> -->
 <module name="HiddenField"/>
 <module name="IllegalInstantiation"/>
 <module name="InnerAssignment"/>

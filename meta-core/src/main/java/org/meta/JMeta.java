@@ -30,14 +30,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Just the main class.
  */
-public class JMeta {
+public final class JMeta {
 
     private static final Logger logger = LoggerFactory.getLogger(JMeta.class);
+
+    private JMeta() {
+    }
 
     /**
      * @param args Do we really need to describe this?
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         try {
             logger.info("Reading configuration files");
@@ -46,7 +49,7 @@ public class JMeta {
             logger.error("Failed to initialize configuration from files.", ex);
             return;
         }
-        logger.info("Starting META");
+        logger.info("Starting JMeta");
         MetaController controller = new MetaController();
         try {
             controller.initAndStartAll();
@@ -55,13 +58,14 @@ public class JMeta {
             return;
         }
         logger.info("Loading plugins...");
-        MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(), controller);
+        MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(),
+                controller);
         try {
             pluginLoader.loadPlugins();
         } catch (PluginLoadException ex) {
             logger.error("Failed to load plugins!", ex);
             return;
         }
-        logger.info("META started!");
+        logger.info("JMeta started!");
     }
 }

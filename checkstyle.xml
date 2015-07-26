@@ -169,7 +169,9 @@ Finally, it is worth reading the documentation.
 
 <!-- Checks for class design                         -->
 <!-- See http://checkstyle.sf.net/config_design.html -->
-<module name="DesignForExtension"/>
+<module name="DesignForExtension">
+  <property name="severity" value="warning"/>
+</module>
 <module name="FinalClass"/>
 <module name="HideUtilityClassConstructor"/>
 <module name="InterfaceIsType"/>

@@ -39,9 +39,9 @@ public class InvalidAMPCommand extends MetaException {
 
     /**
      *
-     * @param message
+     * @param message the exception message
      */
-    public InvalidAMPCommand(String message) {
+    public InvalidAMPCommand(final String message) {
         super(message);
     }
 

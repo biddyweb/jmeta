@@ -53,43 +53,41 @@ public class AMPWriterImpl implements AMPWriter {
     private final AMPConfiguration configuration;
 
     /**
-     *
-     * @param config
-     * @param factory
+     * @param config the amp configuration
+     * @param modelFactory the model factory
      */
-    public AMPWriterImpl(AMPConfiguration config, ModelFactory factory) {
+    public AMPWriterImpl(final AMPConfiguration config, final ModelFactory modelFactory) {
         this.configuration = config;
-        this.factory = factory;
+        this.factory = modelFactory;
         this.executor = Executors.newFixedThreadPool(
                 this.configuration.getSenderThPoolSize());
     }
 
     /**
-     *
-     * @param factory
+     * @param modelFactory the model factory
      */
-    public void setFactory(ModelFactory factory) {
-        this.factory = factory;
+    public void setFactory(final ModelFactory modelFactory) {
+        this.factory = modelFactory;
     }
 
     /**
-     * Ask a question to the given address, with the given parameters
+     * Ask a question to the given address, with the given parameters.
      *
      * @param adress who do we call ?
-     * @param port on wich port do we call ?
+     * @param port on which port do we call ?
      * @param plugin which plugin is concerned ?
      * @param command what command to we ask him to execute ?
-     * @param hash on wich hash ?
+     * @param hash on which hash ?
      * @param listenner after getting result, who is getting the callback ?
      * @return the sender thread for join purposes
      */
     @Override
-    public Future<?> askTo(InetAddress adress,
-            String plugin,
-            String command,
-            MetHash hash,
-            AMPResponseCallback listenner,
-            int port) {
+    public Future<?> askTo(final InetAddress adress,
+            final String plugin,
+            final String command,
+            final MetHash hash,
+            final AMPResponseCallback listenner,
+            final int port) {
         //each command is "unique" at least where its send
         //TODO use unique ID here
         lastAsk++;

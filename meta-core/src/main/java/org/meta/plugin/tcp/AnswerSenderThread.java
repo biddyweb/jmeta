@@ -24,7 +24,6 @@
  */
 package org.meta.plugin.tcp;
 
-import org.meta.api.amp.AMPResponseCallback;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-
+import org.meta.api.amp.AMPResponseCallback;
 import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.ModelFactory;
@@ -50,34 +49,35 @@ import org.slf4j.LoggerFactory;
  */
 public class AnswerSenderThread implements Runnable {
 
-    private InetAddress             adress      = null;
-    private AMPAskBuilder           ask         = null;
-    private ArrayList<Searchable>   results     = null;
-    private int                     port        = 0;
-    private ModelFactory            factory     = null;
-    private Logger logger      = LoggerFactory.getLogger(AnswerSenderThread.class);
-    private AMPResponseCallback listenner = null;
-    
+    private InetAddress address = null;
+    private AMPAskBuilder ask = null;
+    private ArrayList<Searchable> results = null;
+    private int port = 0;
+    private ModelFactory factory = null;
+    private Logger logger = LoggerFactory.getLogger(AnswerSenderThread.class);
+    private AMPResponseCallback listener = null;
+
     /**
-     * 
-     * @param ask       Question
-     * @param adress    address to contact
-     * @param port      contact port
-     * @param listenner who to call back
-     * @param factory
+     *
+     * @param askBuilder Question
+     * @param addr address to contact
+     * @param p contact port
+     * @param callback who to call back
+     * @param modelFactory
+     *
+     * TODO replace InetAdress/port couple by MetaPeer
      */
-    public AnswerSenderThread(  AMPAskBuilder ask,
-                                InetAddress adress,
-                                int port,
-                                AMPResponseCallback listenner,
-                                ModelFactory factory)
-    {
-        this.ask       = ask;
-        this.adress    = adress;
-        this.port      = port;
-        this.listenner = listenner;
-        this.results   = new ArrayList<Searchable>();
-        this.factory   = factory;
+    public AnswerSenderThread(final AMPAskBuilder askBuilder,
+            final InetAddress addr,
+            final int p,
+            final AMPResponseCallback callback,
+            final ModelFactory modelFactory) {
+        this.ask = askBuilder;
+        this.address = addr;
+        this.port = p;
+        this.listener = callback;
+        this.results = new ArrayList<>();
+        this.factory = modelFactory;
     }
 
     /**
@@ -85,8 +85,8 @@ public class AnswerSenderThread implements Runnable {
      */
     public void run() {
         try {
-            // Open a connection to the pair
-            Socket client = new Socket(adress, port);
+            // Open a connection- to the pair
+            Socket client = new Socket(address, port);
             // write the message
             OutputStream os = client.getOutputStream();
             os.write(ask.getMessage());
@@ -100,26 +100,28 @@ public class AnswerSenderThread implements Runnable {
             while ((count = is.read()) != -1) {
                 buffer.write(count);
             }
-            if(buffer.size() > 0){
+            if (buffer.size() > 0) {
                 //parse it into an answer
                 AMPAnswerParser parser = new AMPAnswerParser(buffer.toByteArray(), factory);
                 this.results = parser.getDatas();
                 /*
                  * When results are retrieved.
-                 * Search objects are incompletes, 
+                 * Search objects are incompletes,
                  * Iterate, find search, and look if an Element inside the rest
                  * of retrieved datas looks like the search's child data
                  */
-                for(Searchable searchable : this.results){
-                    if(searchable instanceof Search){
+                for (Searchable searchable : this.results) {
+                    if (searchable instanceof Search) {
                         Search search = (Search) searchable;
                         Searchable source = searchElement(this.results, search.getTmpSourceHash());
-                        MetaData   metaData = (MetaData) searchElement(this.results, search.getTmpmetaDataHash());
-                        ArrayList<Data> linked = new ArrayList<Data>();
-                        for(String link : search.getTmpLinkedData()){
+                        MetaData metaData = (MetaData) searchElement(this.results,
+                                search.getTmpmetaDataHash());
+                        ArrayList<Data> linked = new ArrayList<>();
+                        for (String link : search.getTmpLinkedData()) {
                             Searchable s = searchElement(this.results, link);
-                            if(s != null)
-                                linked.add((Data)s);
+                            if (s != null) {
+                                linked.add((Data) s);
+                            }
                         }
                         factory.updateFromNewtork(search, source, metaData, linked);
                     }
@@ -134,21 +136,24 @@ public class AnswerSenderThread implements Runnable {
             logger.warn(e.getMessage());
         }
 
-        listenner.callbackSuccess(results);
+        listener.callbackSuccess(results);
     }
 
     /**
-     * Look if an element pointed by his hash is present in a searchable list
-     * @param results searchable list
-     * @param hash    hash we're lookin for
+     * Look if an element pointed by his hash is present in a searchable list.
+     *
+     * @param res searchable list
+     * @param hash hash we're looking for
      * @return the element if found, null otherwise
      */
-    private Searchable searchElement(ArrayList<Searchable> results, String hash) {
+    private Searchable searchElement(final ArrayList<Searchable> res, final String hash) {
         Searchable element = null;
-        for(int i=0; i<results.size() && element == null; i++){
-            Searchable e = results.get(i);
-            if(e.getHash().toString().equals(hash))
+        for (int i = 0; i < res.size() && element == null; i++) {
+            Searchable e = res.get(i);
+            if (e.getHash().toString().equals(hash)) {
                 element = e;
+                break;
+            }
         }
         return element;
     }

@@ -36,7 +36,7 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 
 /**
- * Handle a request from the web server
+ * Handle a request received from the web server.
  *
  * @author faquin
  *
@@ -49,18 +49,18 @@ public class WebRequestHandler extends AbstractHandler {
 
     /**
      *
-     * @param webServiceServer
+     * @param wsServer the parent web service reader
      */
-    public WebRequestHandler(WebServiceReader webServiceServer) {
-        webServiceReader = webServiceServer;
-        instanceMap = new HashMap<String, AbstractWebService>();
+    public WebRequestHandler(final WebServiceReader wsServer) {
+        webServiceReader = wsServer;
+        instanceMap = new HashMap<>();
     }
 
     @Override
-    public void handle(String target,
-            Request base,
-            HttpServletRequest request,
-            HttpServletResponse response)
+    public void handle(final String target,
+            final Request base,
+            final HttpServletRequest request,
+            final HttpServletResponse response)
             throws IOException,
             ServletException {
         //Split the incomming url on every /

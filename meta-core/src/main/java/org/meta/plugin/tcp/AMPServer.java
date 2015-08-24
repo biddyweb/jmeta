@@ -66,11 +66,11 @@ public class AMPServer extends Thread {
     private HashMap<String, PluginAMPController> mapPlugin = null;
 
     /**
-     * initiate a pluginMap
+     * Instantiate the amp server with given configuration.
      *
-     * @param config
+     * @param config the amp configuration
      */
-    public AMPServer(AMPConfigurationImpl config) {
+    public AMPServer(final AMPConfigurationImpl config) {
         this.configuration = config;
         this.mapPlugin = new HashMap<>();
         this.executor = Executors.newFixedThreadPool(
@@ -95,8 +95,8 @@ public class AMPServer extends Thread {
                 executor.submit(discussWith);
             }
         } catch (IOException e) {
-            if (work == true) {
-                //TODO Handle correcty this error
+            if (work) {
+                //TODO Handle correcty this error!
                 logger.error("Socket error.", e);
             } else {
                 logger.info("AMP thread exiting");
@@ -105,25 +105,25 @@ public class AMPServer extends Thread {
     }
 
     /**
-     * Register a plugin to this TCPReader
+     * Register a plugin to this TCPReader.
      *
      * @param pluginName pluginName
      * @param abstractPluginTCPControler plugin tcp controler
      */
-    public void registerPlugin(String pluginName,
-            PluginAMPController abstractPluginTCPControler) {
+    public void registerPlugin(final String pluginName,
+            final PluginAMPController abstractPluginTCPControler) {
         mapPlugin.put(pluginName, abstractPluginTCPControler);
     }
 
     /**
-     * return the command pointed by pluginName and commandName
+     * Return the command pointed by pluginName and commandName.
      *
      * @param pluginName the plugin name
      * @param commandName the command Name
      *
      * @return a command to execute if found, null otherwise
      */
-    public PluginAMPCommand getCommand(String pluginName, String commandName) {
+    public PluginAMPCommand getCommand(final String pluginName, final String commandName) {
         PluginAMPCommand command = null;
         PluginAMPController plugin = mapPlugin.get(pluginName);
 
@@ -136,8 +136,8 @@ public class AMPServer extends Thread {
     /**
      * Kills the server socket.
      *
-     * Remember there is a timeout for closing a socket. Should only be called
-     * at the end of the program life cycle.
+     * Remember there is a timeout for closing a socket. Should only be called at the end of the program life
+     * cycle.
      */
     public void kill() {
         work = false;

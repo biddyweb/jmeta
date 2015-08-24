@@ -28,13 +28,13 @@ package org.meta.plugin.tcp.amp.exception;
  *
  * @author nico
  */
-public class NotAValidAmpAnswerCommand extends InvalidAMPCommand {
+public class InvalidAmpAnswerCommand extends InvalidAMPCommand {
 
     /**
      *
-     * @param type
+     * @param type the model type that triggered the error
      */
-    public NotAValidAmpAnswerCommand(String type){
-        super("Error, the type "+type+"is not an valid JMeta's Model type");
+    public InvalidAmpAnswerCommand(final String type) {
+        super("Error, the type " + type + "is not an valid JMeta's Model type");
     }
 }

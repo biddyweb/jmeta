@@ -33,27 +33,24 @@ import org.meta.api.common.exceptions.MetaException;
 public class PluginLoadException extends MetaException {
 
     /**
-     *
-     * @param message
-     * @param t
+     * @param message the exception message
+     * @param t the initial cause
      */
-    public PluginLoadException(String message, Throwable t) {
+    public PluginLoadException(final String message, final Throwable t) {
         super(message, t);
     }
 
     /**
-     *
-     * @param message
+     * @param message the exception message
      */
-    public PluginLoadException(String message) {
+    public PluginLoadException(final String message) {
         super(message);
     }
 
     /**
-     *
-     * @param t
+     * @param t the initial cause
      */
-    public PluginLoadException(Throwable t) {
+    public PluginLoadException(final Throwable t) {
         super(t);
     }
 }

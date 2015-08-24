@@ -31,27 +31,27 @@ package org.meta.dht.exceptions;
 public class BootstrapException extends DHTException {
 
     /**
-     * 
-     * @param message 
+     *
+     * @param message the exception message
      */
-    public BootstrapException(String message) {
+    public BootstrapException(final String message) {
         super(message);
     }
 
     /**
-     * 
-     * @param t 
+     *
+     * @param t the initial cause
      */
-    public BootstrapException(Throwable t) {
+    public BootstrapException(final Throwable t) {
         super(t);
     }
 
     /**
-     * 
-     * @param message
-     * @param t 
+     *
+     * @param message the exception message
+     * @param t the initial cause
      */
-    public BootstrapException(String message, Throwable t) {
+    public BootstrapException(final String message, final Throwable t) {
         super(message, t);
     }
 }

@@ -41,7 +41,11 @@ import org.meta.api.dht.MetaPeer;
  *
  * @author nico
  */
-public class NetworkUtils {
+public final class NetworkUtils {
+
+    private NetworkUtils() {
+
+    }
 
     /**
      * Get the loopback interface name.
@@ -68,32 +72,31 @@ public class NetworkUtils {
      *
      * @return true if the address is publicly routable, false otherwise.
      */
-    public static boolean isPublicAddress(InetAddress addr) {
+    public static boolean isPublicAddress(final InetAddress addr) {
         return !addr.isLinkLocalAddress()
-            && !addr.isSiteLocalAddress()
-            && !addr.isLoopbackAddress();
+                && !addr.isSiteLocalAddress()
+                && !addr.isLoopbackAddress();
     }
 
     /**
      *
      * @param addr The address to check.
-     * @return true of the address is routable within the local network, false
-     * otherwise.
+     * @return true of the address is routable within the local network, false otherwise.
      */
-    public static boolean isLocalNetworkAddress(InetAddress addr) {
+    public static boolean isLocalNetworkAddress(final InetAddress addr) {
         return addr.isSiteLocalAddress();
     }
 
     /**
-     * Get the first address found for the given interface. The returned address
-     * will be stored in the DHT for the local-only mode.
+     * Get the first address found for the given interface. The returned address will be stored in the DHT for
+     * the local-only mode.
      *
      * @param ifaceName The interface name
      * @param ipV4 true if searching ipV4 address, false if searching ipV6.
      *
      * @return The IntetAddress or null if not found.
      */
-    public static InetAddress getInterfaceAddress(String ifaceName, boolean ipV4) {
+    public static InetAddress getInterfaceAddress(final String ifaceName, final boolean ipV4) {
         try {
             NetworkInterface iface = NetworkInterface.getByName(ifaceName);
             for (InetAddress ifAddr : Collections.list(iface.getInetAddresses())) {
@@ -118,7 +121,8 @@ public class NetworkUtils {
      *
      * @return The List of addresses. Might be empty.
      */
-    public static Collection<InetAddress> getInterfaceAddresses(String ifaceName, boolean ipV4, boolean ipV6) {
+    public static Collection<InetAddress> getInterfaceAddresses(final String ifaceName, final boolean ipV4,
+            final boolean ipV6) {
         Collection<InetAddress> addrs = new ArrayList<>();
         try {
             NetworkInterface iface = NetworkInterface.getByName(ifaceName);
@@ -141,7 +145,7 @@ public class NetworkUtils {
      * @param nwConfig The network configuration.
      * @return The list of found addresses.
      */
-    public static Collection<InetAddress> getConfigAddresses(NetworkConfiguration nwConfig) {
+    public static Collection<InetAddress> getConfigAddresses(final NetworkConfiguration nwConfig) {
         Collection<InetAddress> addresses = new ArrayList();
 
         if (nwConfig.getAddresses() != null) {
@@ -156,7 +160,7 @@ public class NetworkUtils {
         if (nwConfig.getInterfaces() != null) {
             for (String iface : nwConfig.getInterfaces()) {
                 Collection<InetAddress> ifaceAddresses
-                    = getInterfaceAddresses(iface, nwConfig.ipV4(), nwConfig.ipV6());
+                        = getInterfaceAddresses(iface, nwConfig.ipV4(), nwConfig.ipV6());
                 addresses.addAll(ifaceAddresses);
             }
         }
@@ -170,7 +174,7 @@ public class NetworkUtils {
      *
      * @return The list of peers found to have local addresses.
      */
-    public static Collection<MetaPeer> getLocalPeers(Collection<MetaPeer> peers) {
+    public static Collection<MetaPeer> getLocalPeers(final Collection<MetaPeer> peers) {
         Collection<MetaPeer> localPeers = new ArrayList<>();
 
         for (MetaPeer peer : peers) {
@@ -188,7 +192,7 @@ public class NetworkUtils {
      *
      * @return The list of peers found to have public addresses.
      */
-    public static Collection<MetaPeer> getPublicPeers(Collection<MetaPeer> peers) {
+    public static Collection<MetaPeer> getPublicPeers(final Collection<MetaPeer> peers) {
         Collection<MetaPeer> publicPeers = new ArrayList<>();
 
         for (MetaPeer peer : peers) {

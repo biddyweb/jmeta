@@ -51,12 +51,12 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
 
     /**
      *
-     * @param dht
-     * @param hash
+     * @param dhtNode the dht node.
+     * @param queryHash the hash to find peers for
      */
-    public TomP2pFindPeersOperation(TomP2pDHT dht, Number160 hash) {
-        this.dht = dht;
-        this.hash = hash;
+    public TomP2pFindPeersOperation(final TomP2pDHT dhtNode, final Number160 queryHash) {
+        this.dht = dhtNode;
+        this.hash = queryHash;
         this.peers = new ArrayList<>();
     }
 
@@ -66,16 +66,21 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         futureGet.addListener(new BaseFutureListener<FutureGet>() {
 
             @Override
-            public void operationComplete(FutureGet getOperation) throws Exception {
+            public void operationComplete(final FutureGet getOperation) throws Exception {
                 if (getOperation.isFailed()) {
                     logger.debug("Failed to find peers from dht: " + getOperation.failedReason());
-                    TomP2pFindPeersOperation.this.setFailed("Failed to find peers from dht: " + getOperation.failedReason());
+                    TomP2pFindPeersOperation.this.setFailed("Failed to find peers from dht: "
+                            + getOperation.failedReason());
                 } else if (getOperation.isSuccess()) {
                     Collection<Data> datas = getOperation.dataMap().values();
                     if (datas.isEmpty()) {
                         logger.debug("No peers found for hash: ", TomP2pFindPeersOperation.this.hash);
                     } else {
                         for (Data data : datas) {
+                            long timestamp = System.currentTimeMillis();
+                            if (data.expirationMillis() < timestamp) {
+                                logger.debug("EXPIRED DATA RECEIVED!");
+                            }
                             MetaPeer newPeer = peerFromData(data.toBytes());
                             if (newPeer != null) {
                                 logger.debug("Peer found! : " + newPeer);
@@ -89,7 +94,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
             }
 
             @Override
-            public void exceptionCaught(Throwable t) throws Exception {
+            public void exceptionCaught(final Throwable t) throws Exception {
                 logger.debug("Tomp2p find peers operation failed", t);
                 TomP2pFindPeersOperation.this.setFailed(t);
             }
@@ -97,17 +102,16 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
     }
 
     /**
-     * De-serialize the Ip/port couple from the given data into a
-     * {@link  MetaPeer}
+     * De-serialize the Ip/port couple from the given data into a {@link  MetaPeer}.
      *
      * @param data The serialized ip:port couple.
      *
      * @return the created peer or null if invalid data.
      */
-    private MetaPeer peerFromData(byte[] data) {
+    private MetaPeer peerFromData(final byte[] data) {
         MetaPeer peer = new MetaPeer();
         short addrSize = (short) (data.length - 2);
-        byte addrBytes[] = new byte[addrSize];
+        byte[] addrBytes = new byte[addrSize];
         short port = (short) (((data[1] & 0xFF) << 8) | (data[0] & 0xFF));
 
         peer.setPort(port);

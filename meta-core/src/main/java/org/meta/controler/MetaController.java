@@ -28,6 +28,7 @@ import java.io.IOException;
 import org.meta.api.common.exceptions.MetaException;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
+import org.meta.api.model.Model;
 import org.meta.api.model.ModelFactory;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.exceptions.BootstrapException;
@@ -42,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO
+ * JMeta controller. Instantiate all parent objects.
  */
 public class MetaController {
 
@@ -62,7 +63,7 @@ public class MetaController {
 
     /**
      *
-     * @throws MetaException
+     * @throws MetaException if an error occur.
      */
     public void initAndStartAll() throws MetaException {
         try {
@@ -132,7 +133,7 @@ public class MetaController {
     /**
      * Initializes the AMPWriterImpl.
      */
-    private static AMPWriterImpl initAMPWriter(ModelFactory factory) {
+    private static AMPWriterImpl initAMPWriter(final ModelFactory factory) {
         AMPWriterImpl writer = new AMPWriterImpl(MetaConfiguration.getAmpConfiguration(), factory);
 
         return writer;
@@ -149,8 +150,7 @@ public class MetaController {
     }
 
     /**
-     * Clean stop of controler Call kill methods on tcpReader and WebService
-     * reader.
+     * Clean stop of controller. Call kill methods on tcpReader and WebService reader.
      */
     public void stop() {
         this.ampServer.kill();
@@ -160,15 +160,15 @@ public class MetaController {
 
     /**
      *
-     * @return
+     * @return the instance of the model
      */
-    public KyotoCabinetModel getModel() {
+    public Model getModel() {
         return model;
     }
 
     /**
      *
-     * @return
+     * @return the instance of the web service reader
      */
     public WebServiceReader getWebServiceReader() {
         return wsReader;
@@ -176,7 +176,7 @@ public class MetaController {
 
     /**
      *
-     * @return
+     * @return the instance of the amp server
      */
     public AMPServer getAmpServer() {
         return ampServer;
@@ -184,7 +184,7 @@ public class MetaController {
 
     /**
      *
-     * @return
+     * @return the instance of the dht
      */
     public MetaDHT getDht() {
         return dht;
@@ -192,7 +192,7 @@ public class MetaController {
 
     /**
      *
-     * @return
+     * @return the instance of the amp writer
      */
     public AMPWriterImpl getAmpWriter() {
         return ampWriter;

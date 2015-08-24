@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.tomp2p.futures.BaseFutureListener;
+import net.tomp2p.futures.FutureAnnounce;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.builder.AnnounceBuilder;
@@ -58,16 +59,17 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     /**
      * Create the bootstrap operation with given arguments.
      *
-     * @param dht The dht.
-     * @param knownPeers The list of peers to bootstrap to.
-     * @param broadcast If we broadcast or not.
+     * @param dhtNode The dht.
+     * @param peers The list of peers to bootstrap to.
+     * @param bootstrapBroadcast If we broadcast or not.
      */
-    public Tomp2pBootstrapOperation(TomP2pDHT dht, Collection<MetaPeer> knownPeers, boolean broadcast) {
-        this.dht = dht;
-        this.knownPeers = knownPeers;
-        this.broadcast = broadcast;
-        this.publicPeers = NetworkUtils.getPublicPeers(knownPeers);
-        this.localPeers = NetworkUtils.getLocalPeers(knownPeers);
+    public Tomp2pBootstrapOperation(final TomP2pDHT dhtNode, final Collection<MetaPeer> peers,
+            final boolean bootstrapBroadcast) {
+        this.dht = dhtNode;
+        this.knownPeers = peers;
+        this.broadcast = bootstrapBroadcast;
+        this.publicPeers = NetworkUtils.getPublicPeers(peers);
+        this.localPeers = NetworkUtils.getLocalPeers(peers);
     }
 
     @Override
@@ -79,8 +81,10 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             this.finish();
             return;
         }
-        this.discoverListener = new Tomp2pFutureDiscoverListener(this.knownPeers.size(), this.dht.getPeer().peerAddress().inetAddress());
-        this.bootstrapListener = new Tomp2pFutureBootstrapListener(broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
+        this.discoverListener = new Tomp2pFutureDiscoverListener(
+                this.knownPeers.size(), this.dht.getPeer().peerAddress().inetAddress());
+        this.bootstrapListener = new Tomp2pFutureBootstrapListener(
+                broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
         this.setState(OperationState.WAITING);
 
         if (dht.getConfiguration().isDhtLocalOnly()) {
@@ -121,8 +125,8 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     }
 
     /**
-     * Called by the Discovery listener once operation has finished successfully
-     * or directly if no discovery is needed.
+     * Called by the Discovery listener once operation has finished successfully or directly if no discovery
+     * is needed.
      *
      * The actual bootstrap starts here.
      */
@@ -130,7 +134,8 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         if (broadcast) {
             logger.debug("Broadcasting to find peers.");
             AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
-            announceBuilder.port(DHTConfigurationImpl.DEFAULT_DHT_PORT).start().addListener(this.bootstrapListener);
+            FutureAnnounce announce = announceBuilder.port(DHTConfigurationImpl.DEFAULT_DHT_PORT).start();
+            announce.addListener(this.bootstrapListener);
         }
         Collection<MetaPeer> bootstrapPeers;
         if (this.dht.getConfiguration().isDhtLocalOnly()) {
@@ -147,13 +152,12 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             //Start the bootstrap operation on 'peer'
             logger.debug("Bootstraping to peer : " + peer);
             this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
-                .start().addListener(this.bootstrapListener);
+                    .start().addListener(this.bootstrapListener);
         }
     }
 
     /**
-     * Start the discovery of our public address using any public peers in the
-     * configuration.
+     * Start the discovery of our public address using any public peers in the configuration.
      */
     private void startDiscover() {
         if (publicPeers.isEmpty()) {
@@ -170,13 +174,11 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
     }
 
     /**
-     * Nested class implementation for the Tomp2p discovery future operation
-     * listener.
+     * Nested class implementation for the Tomp2p discovery future operation listener.
      *
      * Bridge between tomp2p future and our async operation.
      *
-     * Wait for all tomp2p operations (we might use several peers for discovery
-     * to finish.
+     * Wait for all tomp2p operations (we might use several peers for discovery to finish.
      */
     private class Tomp2pFutureDiscoverListener implements BaseFutureListener<FutureDiscover> {
 
@@ -185,24 +187,23 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         private final InetAddress origAddress;
 
         /**
-         * Initializes the listener and specify the number of operations to wait
-         * for before notifying.
+         * Initializes the listener and specify the number of operations to wait for before notifying.
          */
-        Tomp2pFutureDiscoverListener(int nbOperation, InetAddress origAddress) {
-            this.nbOperations = nbOperation;
-            this.origAddress = origAddress;
-            logger.debug("Discovery listener with original peer address :" + origAddress);
+        Tomp2pFutureDiscoverListener(final int operations, final InetAddress peerAddr) {
+            this.nbOperations = operations;
+            this.origAddress = peerAddr;
+            logger.debug("Discovery listener with original peer address :" + peerAddr);
         }
 
         @Override
-        public void operationComplete(FutureDiscover future) throws Exception {
+        public void operationComplete(final FutureDiscover future) throws Exception {
             //We don't rely on isSuccess or isFailed here because the tomp2p Discovery is a bit broken...
             --nbOperations;
             PeerAddress peerAddr = future.peerAddress();
             if (peerAddr != null && !peerAddr.inetAddress().equals(origAddress)) {
                 //We guess it is an operation success.
                 discoveryDone = true;
-                logger.debug("Discovery reported our external peer address ?" + future.peerAddress().inetAddress());
+                logger.debug("Discovery reported our peer address ?:" + future.peerAddress().inetAddress());
                 Tomp2pBootstrapOperation.this.startBootstrap();
             } else if (peerAddr == null || peerAddr.inetAddress().equals(origAddress)) {
                 //To operation has failed.
@@ -217,20 +218,19 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         }
 
         @Override
-        public void exceptionCaught(Throwable t) throws Exception {
+        public void exceptionCaught(final Throwable t) throws Exception {
             logger.error("Exception caught while trying to discover our public address.", t);
         }
 
     }
 
     /**
-     * Nested class implementation for the Tomp2p bootstrap future operation
-     * listener.
+     * Nested class implementation for the Tomp2p bootstrap future operation listener.
      *
      * Bridge between tomp2p future and our async operation.
      *
-     * Wait for all tomp2p operations (we might bootstrap to several peers or
-     * also broadcast) to finish before notifying our operation.
+     * Wait for all tomp2p operations (we might bootstrap to several peers or also broadcast) to finish before
+     * notifying our operation.
      */
     private class Tomp2pFutureBootstrapListener implements BaseFutureListener<FutureBootstrap> {
 
@@ -238,16 +238,15 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         private final Collection<FutureBootstrap> operations;
 
         /**
-         * Initializes the listener and specify the number of operations to wait
-         * for before notifying.
+         * Initializes the listener and specify the number of operations to wait for before notifying.
          */
-        public Tomp2pFutureBootstrapListener(int nbOperations) {
-            this.nbOperations = nbOperations;
+        public Tomp2pFutureBootstrapListener(final int operationsNb) {
+            this.nbOperations = operationsNb;
             this.operations = new ArrayList<>();
         }
 
         @Override
-        public void operationComplete(FutureBootstrap future) throws Exception {
+        public void operationComplete(final FutureBootstrap future) throws Exception {
             synchronized (this) { //We might be called from multiple threads.
                 this.operations.add(future);
                 if (this.operations.size() == this.nbOperations) {
@@ -257,7 +256,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         }
 
         @Override
-        public void exceptionCaught(Throwable t) throws Exception {
+        public void exceptionCaught(final Throwable t) throws Exception {
             logger.error("Exception caught while waiting for bootstrap.");
         }
 

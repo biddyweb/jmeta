@@ -37,22 +37,21 @@ public class InvalidAMPAskCommand extends InvalidAMPCommand {
 
     /**
      *
-     * @param ask
-     * @param plugin
-     * @param command
-     * @param hash
+     * @param ask the amp ask
+     * @param plugin the plugin name
+     * @param command the command
+     * @param hash the hash
      */
-    public InvalidAMPAskCommand(    String ask,
-                                    String plugin,
-                                    String command,
-                                    String hash)
-    {
+    public InvalidAMPAskCommand(final String ask,
+            final String plugin,
+            final String command,
+            final String hash) {
         super("The received message is not valid because"
                 + "one of those parameters are empty or null : "
-                + "plugin : "+plugin
-                + "ask : "+ ask +
-                " ; command : " + command +
-                " ; hash : " + hash);
+                + "plugin : " + plugin
+                + "ask : " + ask
+                + " ; command : " + command
+                + " ; hash : " + hash);
 
     }
 

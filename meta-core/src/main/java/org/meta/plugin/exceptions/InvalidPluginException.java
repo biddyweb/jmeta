@@ -34,26 +34,26 @@ public class InvalidPluginException extends MetaException {
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message the exception message
+     * @param t the initial cause
      */
-    public InvalidPluginException(String message, Throwable t) {
+    public InvalidPluginException(final String message, final Throwable t) {
         super(message, t);
     }
 
     /**
      *
-     * @param message
+     * @param message the exception message
      */
-    public InvalidPluginException(String message) {
+    public InvalidPluginException(final String message) {
         super(message);
     }
 
     /**
      *
-     * @param t
+     * @param t the initial cause
      */
-    public InvalidPluginException(Throwable t) {
+    public InvalidPluginException(final Throwable t) {
         super(t);
     }
 

@@ -29,23 +29,23 @@ import org.meta.api.amp.AMPBuilder;
 import org.meta.api.common.MetHash;
 
 /**
- * Build a new Ask
+ * Build a new Ask.
+ *
  * @author faquin
  *
  */
-public class AMPAskBuilder extends AMPBuilder{
+public class AMPAskBuilder extends AMPBuilder {
 
     /**
+     * Create a new AMP Ask command with the given parameters.
      *
-     * Create a new AMP Ask command with the given parameters
-     *
-     * @param ask       the number for the question
-     * @param plugin
-     * @param command   the command to execute to the other pair
-     * @param hash      the hash of the request
+     * @param ask the number for the question
+     * @param plugin the plugin name
+     * @param command the command to execute on the other pair
+     * @param hash the hash of the request
      */
-    public AMPAskBuilder(String ask, String plugin, String command, MetHash hash) {
-        LinkedHashMap<String, byte[]> map = new LinkedHashMap<String, byte[]>();
+    public AMPAskBuilder(final String ask, final String plugin, final String command, final MetHash hash) {
+        LinkedHashMap<String, byte[]> map = new LinkedHashMap<>();
         map.put("_ask", ask.getBytes());
         map.put("_plugin", plugin.getBytes());
         map.put("_command", command.getBytes());

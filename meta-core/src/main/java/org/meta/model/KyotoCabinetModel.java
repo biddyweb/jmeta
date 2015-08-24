@@ -74,22 +74,22 @@ public class KyotoCabinetModel implements Model {
     private final ModelFactory factory;
 
     /**
-     * Instanciate a new model with the given configuration.
+     * Instantiate a new model with the given configuration.
      *
-     * Init the dataBase connection.
+     * Initializes the dataBase connection.
      *
-     * @param config
+     * @param config the model configuration
      *
-     * @throws org.meta.model.exceptions.ModelException
+     * @throws ModelException if the database failed to initialize
      */
-    public KyotoCabinetModel(ModelConfigurationImpl config) throws ModelException {
+    public KyotoCabinetModel(final ModelConfigurationImpl config) throws ModelException {
         this.configuration = config;
         initDataBase();
         factory = new ModelFactory();
     }
 
     /**
-     * Close the model and do some clean-up
+     * Close the model and do some clean-up.
      */
     @Override
     public void close() {
@@ -97,7 +97,6 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     *
      * @return The model factory.
      */
     @Override
@@ -106,7 +105,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     /**
-     * Log why kyoto as failed
+     * Log why kyoto as failed.
      */
     private void kyotoError() {
         kyotocabinet.Error error = kyotoDB.error();
@@ -139,7 +138,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     @Override
-    public Search getSearch(MetHash hash) {
+    public Search getSearch(final MetHash hash) {
         Search search = null;
         try {
             //Try to load the search in the data base
@@ -151,7 +150,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     @Override
-    public MetaData getMetaData(MetHash hash) {
+    public MetaData getMetaData(final MetHash hash) {
         MetaData metaData = null;
         try {
             metaData = (MetaData) load(hash.toByteArray());
@@ -162,7 +161,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     @Override
-    public DataString getDataString(MetHash hash) {
+    public DataString getDataString(final MetHash hash) {
         DataString data = null;
 
         try {
@@ -174,7 +173,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     @Override
-    public DataFile getDataFile(MetHash hash) {
+    public DataFile getDataFile(final MetHash hash) {
         DataFile data = null;
 
         try {
@@ -186,7 +185,7 @@ public class KyotoCabinetModel implements Model {
     }
 
     @Override
-    public Searchable getSearchable(MetHash hash) {
+    public Searchable getSearchable(final MetHash hash) {
         Searchable foundedObject = null;
         try {
             foundedObject = load(hash.toByteArray());
@@ -205,7 +204,7 @@ public class KyotoCabinetModel implements Model {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private Searchable load(byte[] hash) throws
+    private Searchable load(final byte[] hash) throws
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
@@ -250,7 +249,7 @@ public class KyotoCabinetModel implements Model {
      *
      * @param searchable
      */
-    private void extractDataString(Searchable searchable, BSONObject bsonObject) {
+    private void extractDataString(final Searchable searchable, final BSONObject bsonObject) {
         DataString data = (DataString) searchable;
         extractData(data, bsonObject);
         data.setString(bsonObject.get("string").toString());
@@ -262,7 +261,7 @@ public class KyotoCabinetModel implements Model {
      * @param searchable
      * @param jsonSearcheable
      */
-    private void extractDataFile(Searchable searchable, BSONObject bsonObject) {
+    private void extractDataFile(final Searchable searchable, final BSONObject bsonObject) {
         DataFile data = (DataFile) searchable;
         extractData(data, bsonObject);
         String filePath = bsonObject.get("file").toString();
@@ -277,7 +276,7 @@ public class KyotoCabinetModel implements Model {
      * @param data
      * @param bsonObject
      */
-    private void extractData(Data data, BSONObject bsonObject) {
+    private void extractData(final Data data, final BSONObject bsonObject) {
         BasicBSONList bsonProperties = (BasicBSONList) bsonObject.get("description");
         BSONObject tmp;
         ArrayList<MetaProperty> properties = new ArrayList<>();
@@ -299,7 +298,7 @@ public class KyotoCabinetModel implements Model {
      * @throws InstantiationException
      * @throws ClassNotFoundException
      */
-    private void extractMetaData(Searchable searchable, BSONObject bsonObject)
+    private void extractMetaData(final Searchable searchable, final BSONObject bsonObject)
             throws
             ClassNotFoundException,
             InstantiationException,
@@ -328,7 +327,7 @@ public class KyotoCabinetModel implements Model {
      * @throws InstantiationException
      * @throws IllegalAccessExceptionn
      */
-    private void extractSearch(Searchable searchable, BSONObject bsonObject)
+    private void extractSearch(final Searchable searchable, final BSONObject bsonObject)
             throws ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
@@ -359,7 +358,7 @@ public class KyotoCabinetModel implements Model {
      * @return A searchable object, or null if not found.
      */
     @Override
-    public Searchable get(MetHash hash) {
+    public Searchable get(final MetHash hash) {
         Searchable ret = null;
         try {
             ret = load(hash.toByteArray());
@@ -375,12 +374,12 @@ public class KyotoCabinetModel implements Model {
      * @param startTx if actually starting the transaction or not.
      * @return true on success, false otherwise.
      */
-    private boolean startTransaction(boolean startTx) {
+    private boolean startTransaction(final boolean startTx) {
         if (!startTx) {
             return true;
         }
-        //true as argument here means that changes brought by the transaction will be synchronized on disk after
-        //commit.
+        //true as argument here means that changes brought by the
+        // transaction will be forced to synchronize on disk after commit.
         if (!kyotoDB.begin_transaction(true)) {
             logger.error("KYOTO FAILED TO START TX! " + kyotoDB.error());
             return false;
@@ -394,7 +393,7 @@ public class KyotoCabinetModel implements Model {
      *
      * @return true on success, false otherwise
      */
-    private boolean commitTransaction(boolean commit) {
+    private boolean commitTransaction(final boolean commit) {
         return kyotoDB.end_transaction(commit);
     }
 
@@ -410,7 +409,7 @@ public class KyotoCabinetModel implements Model {
      *
      * If false is returned, the database remains untouched.
      */
-    private boolean set(Searchable searchable, boolean startTx) {
+    private boolean set(final Searchable searchable, final boolean startTx) {
         boolean status = startTransaction(startTx);
         //Based on the object's type, redirects to specific set method.
         switch (ModelType.fromClass(searchable.getClass())) {
@@ -458,7 +457,7 @@ public class KyotoCabinetModel implements Model {
      * @return true on success, false otherwise
      */
     @Override
-    public boolean set(Searchable searchable) {
+    public boolean set(final Searchable searchable) {
         if (searchable == null) {
             return false;
         }
@@ -471,7 +470,7 @@ public class KyotoCabinetModel implements Model {
      * @param search A Search object.
      *
      */
-    private boolean setSearch(Search search) {
+    private boolean setSearch(final Search search) {
         boolean status = true;
 
         if (search.getSource().getState() != Searchable.ObjectState.UP_TO_DATE) {
@@ -496,7 +495,7 @@ public class KyotoCabinetModel implements Model {
      * @return true on success, false otherwise
      */
     @Override
-    public boolean remove(Searchable searchable) {
+    public boolean remove(final Searchable searchable) {
         return remove(searchable.getHash());
     }
 
@@ -507,7 +506,7 @@ public class KyotoCabinetModel implements Model {
      * @return true on success, false otherwise
      */
     @Override
-    public boolean remove(MetHash hash) {
+    public boolean remove(final MetHash hash) {
         startTransaction(true);
         boolean status = kyotoDB.remove(hash.toByteArray());
         return commitTransaction(status) && status;

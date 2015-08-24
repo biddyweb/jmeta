@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Singleton who's launch the web server
+ * The web server part.
  *
  * @author faquin
  *
@@ -54,20 +54,20 @@ public class WebServiceReader extends Thread {
 
     /**
      *
-     * @param config
+     * @param config the web service configuration
      */
-    public WebServiceReader(WSConfigurationImpl config) {
+    public WebServiceReader(final WSConfigurationImpl config) {
         this.configuration = config;
-        mapPlugins = new HashMap<String, AbstractPluginWebServiceControler>();
+        mapPlugins = new HashMap<>();
     }
 
     /**
-     * return the plugin pointed by the given parameters
+     * return the plugin pointed by the given parameters.
      *
-     * @param pluginName
+     * @param pluginName the plugin name
      * @return the plugin if found, null otherwise
      */
-    public AbstractPluginWebServiceControler getPlugin(String pluginName) {
+    public AbstractPluginWebServiceControler getPlugin(final String pluginName) {
         return mapPlugins.get(pluginName);
     }
 
@@ -81,14 +81,14 @@ public class WebServiceReader extends Thread {
         server = new Server(this.configuration.getWsPort());
 
         // serve statics files within 'static' directory
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setDirectoriesListed(true);
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setDirectoriesListed(true);
         //give a way to serve the web site part
-        resource_handler.setResourceBase("static");
+        resourceHandler.setResourceBase("static");
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[]{
-            resource_handler,
+            resourceHandler,
             new WebRequestHandler(this)
         });
 
@@ -104,13 +104,13 @@ public class WebServiceReader extends Thread {
     }
 
     /**
-     * Register a plugin pointed by plugin name
+     * Register a plugin pointed by the given plugin name.
      *
      * @param pluginName plugin name
      * @param abstractPluginWebServiceControler plugin webservice controler
      */
-    public void registerPlugin(String pluginName,
-            AbstractPluginWebServiceControler abstractPluginWebServiceControler) {
+    public void registerPlugin(final String pluginName,
+            final AbstractPluginWebServiceControler abstractPluginWebServiceControler) {
         mapPlugins.put(pluginName, abstractPluginWebServiceControler);
     }
 
@@ -126,8 +126,8 @@ public class WebServiceReader extends Thread {
         }
 
         // Serialize BasicBSONList in JSON
-        ObjectSerializer json_serializer = JSONSerializers.getStrict();
-        return json_serializer.serialize(list);
+        ObjectSerializer jsonSerializer = JSONSerializers.getStrict();
+        return jsonSerializer.serialize(list);
     }
 
     /**

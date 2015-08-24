@@ -32,10 +32,16 @@ import org.meta.api.dht.MetaPeer;
 
 /**
  * General utility class for tomp2p-related entities.
- * 
+ *
  * Mostly conversion methods.
  */
-public class TomP2pUtils {
+public final class TomP2pUtils {
+
+    /**
+     *
+     */
+    private TomP2pUtils() {
+    }
 
     /**
      * Utility function to convert a MetHash to a Number160 used by TomP2p lib.
@@ -44,17 +50,17 @@ public class TomP2pUtils {
      *
      * @return The created Number160.
      */
-    public static Number160 toNumber160(MetHash hash) {
+    public static Number160 toNumber160(final MetHash hash) {
         return new Number160(hash.toByteArray());
     }
 
     /**
-     * Convert a tomp2p hash {@link  Number160} to a {@link MetHash}
+     * Convert a tomp2p hash {@link  Number160} to a {@link MetHash}.
      *
      * @param hash The tomp2p hash to convert.
      * @return The created MetHash.
      */
-    public static MetHash toMetHash(Number160 hash) {
+    public static MetHash toMetHash(final Number160 hash) {
         return new MetHash(hash.toByteArray());
     }
 
@@ -64,7 +70,7 @@ public class TomP2pUtils {
      * @param peer The tomp2p peer to convert
      * @return The created Meta Peer.
      */
-    public static MetaPeer toPeer(Peer peer) {
+    public static MetaPeer toPeer(final Peer peer) {
         Identity id = new Identity(toMetHash(peer.peerID()));
         return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
     }

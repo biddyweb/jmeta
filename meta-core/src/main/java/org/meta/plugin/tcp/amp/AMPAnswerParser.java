@@ -34,10 +34,10 @@ import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
-import org.meta.plugin.tcp.amp.exception.NotAValidAmpAnswerCommand;
+import org.meta.plugin.tcp.amp.exception.InvalidAmpAnswerCommand;
 
 /**
- * Parse an AMP answer
+ * Parse an AMP answer.
  *
  * @author faquin
  *
@@ -51,16 +51,16 @@ public class AMPAnswerParser extends AMPParser {
 
     /**
      *
-     * @param bs
-     * @param factory
-     * @throws InvalidAMPCommand
+     * @param bs the data
+     * @param factory the model factory
+     * @throws InvalidAMPCommand if an invalid value is encountered in the data
      */
-    public AMPAnswerParser(byte[] bs, ModelFactory factory) throws InvalidAMPCommand {
+    public AMPAnswerParser(final byte[] bs, final ModelFactory factory) throws InvalidAMPCommand {
         super(bs, factory);
     }
 
     @Override
-    protected void useContent(LinkedHashMap<String, byte[]> content) throws NotAValidAmpAnswerCommand {
+    protected void useContent(final LinkedHashMap<String, byte[]> content) throws InvalidAmpAnswerCommand {
         answer = new String(content.get("_answer"));
         content.remove("_answer");
         datas = new ArrayList<Searchable>();
@@ -68,15 +68,15 @@ public class AMPAnswerParser extends AMPParser {
     }
 
     /**
-     * Extract {@link Searchable} from {@link LinkedHashMap}
+     * Extract {@link Searchable} objects from protocol data.
      *
-     * @param content
-     * @throws NotAValidAmpAnswerCommand
+     * @param content the parsed data
+     * @throws InvalidAmpAnswerCommand
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    private void extractDatas(LinkedHashMap<String, byte[]> content) throws NotAValidAmpAnswerCommand {
+    private void extractDatas(final LinkedHashMap<String, byte[]> content) throws InvalidAmpAnswerCommand {
         //get the count of datas
         int nbDatas = Integer.parseInt(new String(content.get("_nbDatas")));
         //and remove it
@@ -130,10 +130,8 @@ public class AMPAnswerParser extends AMPParser {
                     searchable.unParseFromAmpFragment(fragment);
                     datas.add(searchable);
                 }
-            } catch (ClassNotFoundException |
-                    InstantiationException |
-                    IllegalAccessException e) {
-                throw new NotAValidAmpAnswerCommand(type);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new InvalidAmpAnswerCommand(type);
             }
 
         }

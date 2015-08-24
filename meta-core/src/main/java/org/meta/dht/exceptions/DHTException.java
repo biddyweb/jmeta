@@ -33,26 +33,26 @@ public class DHTException extends MetaException {
 
     /**
      *
-     * @param message
+     * @param message the exception message
      */
-    public DHTException(String message) {
+    public DHTException(final String message) {
         super(message);
     }
 
     /**
      *
-     * @param t
+     * @param t the initial cause
      */
-    public DHTException(Throwable t) {
+    public DHTException(final Throwable t) {
         super(t);
     }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message the exception message
+     * @param t the initial cause
      */
-    public DHTException(String message, Throwable t) {
+    public DHTException(final String message, final Throwable t) {
         super(message, t);
     }
 }

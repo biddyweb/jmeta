@@ -30,51 +30,69 @@ import org.meta.plugin.tcp.amp.exception.InvalidAMPAskCommand;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 
 /**
- * parse an AMP ask
+ * Parse an AMP ask.
+ *
  * @author faquin
  *
  */
-public class AMPAskParser extends AMPParser{
+public class AMPAskParser extends AMPParser {
 
     //Do not initialize those variables, because it's made by the mumy
     //in her constructor ;) via the implement method "useContent"
-    private String    ask       ;
-    private String    plugin    ;
-    private String    command   ;
-    private MetHash   hash      ;
+    private String ask;
+    private String plugin;
+    private String command;
+    private MetHash hash;
 
     /**
-     * Call parent
-     * @param bs
-     * @throws InvalidAMPCommand
+     * Call parent.
+     *
+     * @param bs the data to parse
+     * @throws InvalidAMPCommand if invalid values are encountered in the data
      */
-    public AMPAskParser(byte[] bs) throws InvalidAMPCommand{
+    public AMPAskParser(final byte[] bs) throws InvalidAMPCommand {
         super(bs);
     }
 
     @Override
-    protected void useContent(LinkedHashMap<String, byte[]> content) throws InvalidAMPAskCommand {
-        ask     = content.get("_ask")    != null ? new String(content.get("_ask"))     : null;
-        plugin  = content.get("_plugin") != null ? new String(content.get("_plugin"))  : null;
-        command = content.get("_command")!= null ? new String(content.get("_command")) : null;
-        hash    = content.get("_hash")   != null ? new MetHash(new String(content.get("_hash"))) : null;
-          
+    protected void useContent(final LinkedHashMap<String, byte[]> content) throws InvalidAMPAskCommand {
+        if (content.get("_ask") != null) {
+            ask = new String(content.get("_ask"));
+        } else {
+            ask = null;
+        }
+        if (content.get("_plugin") != null) {
+            plugin = new String(content.get("_plugin"));
+        } else {
+            plugin = null;
+        }
+        if (content.get("_command") != null) {
+            command = new String(content.get("_command"));
+        } else {
+            command = null;
+        }
+        if (content.get("_hash") != null) {
+            hash = new MetHash(new String(content.get("_hash")));
+        } else {
+            hash = null;
+        }
+
         //If one of those parameters is empty or null, throw an exception
-        if( ask     == null || "".equals(ask)        ||
-            plugin  == null || "".equals(plugin)     ||
-            command == null || "".equals(command)    ||
-            hash    == null || "".equals(hash)
-        ){
+        if (ask == null || "".equals(ask)
+                || plugin == null || "".equals(plugin)
+                || command == null || "".equals(command)
+                || hash == null || "".equals(hash)) {
             throw new InvalidAMPAskCommand(
-                    ask, 
-                    plugin, 
-                    command, 
+                    ask,
+                    plugin,
+                    command,
                     hash != null ? hash.toString() : null);
         }
 
     }
+
     /**
-     * 
+     *
      * @return ask number
      */
     public String getAsk() {
@@ -82,7 +100,7 @@ public class AMPAskParser extends AMPParser{
     }
 
     /**
-     * 
+     *
      * @return command name
      */
     public String getCommand() {
@@ -90,7 +108,7 @@ public class AMPAskParser extends AMPParser{
     }
 
     /**
-     * 
+     *
      * @return hash value
      */
     public MetHash getHash() {
@@ -98,7 +116,7 @@ public class AMPAskParser extends AMPParser{
     }
 
     /**
-     * 
+     *
      * @return plugin name
      */
     public String getPlugin() {

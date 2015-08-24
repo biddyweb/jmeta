@@ -52,12 +52,12 @@ public class TomP2pStoreOperation extends StoreOperation {
     /**
      * Create the store operation with given arguments.
      *
-     * @param dht The dht.
-     * @param hash The hash to store in the DHT.
+     * @param dhtNode The dht node.
+     * @param storeHash The hash to store in the DHT.
      */
-    public TomP2pStoreOperation(TomP2pDHT dht, Number160 hash) {
-        this.dht = dht;
-        this.hash = hash;
+    public TomP2pStoreOperation(final TomP2pDHT dhtNode, final Number160 storeHash) {
+        this.dht = dhtNode;
+        this.hash = storeHash;
     }
 
     /**
@@ -68,7 +68,7 @@ public class TomP2pStoreOperation extends StoreOperation {
      *
      * @return the serialized ip/port couple
      */
-    private byte[] serializeAddress(Short port, InetAddress addr) {
+    private byte[] serializeAddress(final Short port, final InetAddress addr) {
         byte[] addrBytes = addr.getAddress();
         short dataSize = (short) (2 + addrBytes.length);
         byte[] data = new byte[dataSize];
@@ -84,7 +84,6 @@ public class TomP2pStoreOperation extends StoreOperation {
     @Override
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeer().peerAddress().peerSocketAddress();
-
         Short port = MetaConfiguration.getAmpConfiguration().getAmpPort();
         byte[] data = serializeAddress(port, peerAddr.inetAddress());
 
@@ -92,10 +91,13 @@ public class TomP2pStoreOperation extends StoreOperation {
         dataMap.put(hash, new Data(data));
 
         AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
-        addBuilder.data(new Data(data)).start().addListener(new BaseFutureListener<FuturePut>() {
+        Data toAdd = new Data(data);
+        toAdd.ttlSeconds(100);
+        logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
+        addBuilder.data(toAdd).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override
-            public void operationComplete(FuturePut future) throws Exception {
+            public void operationComplete(final FuturePut future) throws Exception {
                 if (future.isSuccess() || future.isSuccessPartially()) {
                     logger.debug("Store operation complete.");
                     TomP2pStoreOperation.this.setState(OperationState.COMPLETE);
@@ -107,7 +109,7 @@ public class TomP2pStoreOperation extends StoreOperation {
             }
 
             @Override
-            public void exceptionCaught(Throwable t) throws Exception {
+            public void exceptionCaught(final Throwable t) throws Exception {
                 logger.error("Exception caught in store operation!", t);
                 TomP2pStoreOperation.this.setFailed(t.getMessage());
             }

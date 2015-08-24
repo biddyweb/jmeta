@@ -33,26 +33,26 @@ public class ModelException extends MetaException {
 
     /**
      *
-     * @param message
+     * @param message the exception message
      */
-    public ModelException(String message) {
+    public ModelException(final String message) {
         super(message);
     }
 
     /**
      *
-     * @param t
+     * @param t the initial cause
      */
-    public ModelException(Throwable t) {
+    public ModelException(final Throwable t) {
         super(t);
     }
 
     /**
      *
-     * @param message
-     * @param t
+     * @param message the exception message
+     * @param t the initial cause
      */
-    public ModelException(String message, Throwable t) {
+    public ModelException(final String message, final Throwable t) {
         super(t);
     }
 

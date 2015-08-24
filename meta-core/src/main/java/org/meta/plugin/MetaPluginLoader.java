@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The META plugin load mechanism.
  *
- * Takes a directory from the configuration and tries to load plugins from all
- * jars found. TODO add exclude property.
+ * Takes a directory from the configuration and tries to load plugins from all jars found. TODO add exclude
+ * property.
  */
 public class MetaPluginLoader {
 
@@ -78,31 +78,31 @@ public class MetaPluginLoader {
      * Initializes the plug-in loader.
      *
      * @param config The plugins configuration.
-     * @param controller The initialized global Meta controller.
+     * @param metaController The initialized global Meta controller.
      */
-    public MetaPluginLoader(PluginConfigurationImpl config, MetaController controller) {
+    public MetaPluginLoader(final PluginConfigurationImpl config, final MetaController metaController) {
         this.configuration = config;
-        this.controller = controller;
+        this.controller = metaController;
         this.plugins = new HashMap<>();
         this.pluginsLoaders = new HashMap<>();
     }
 
     /**
-     * List all jar files in the configured load directory. Return a Collection
-     * of urls representing all valid jars found.
+     * List all jar files in the configured load directory. Return a Collection of urls representing all valid
+     * jars found.
      */
     private Collection<URL> findPluginsJars() throws InvalidConfigurationException, MalformedURLException {
         File loadFileDir = new File(this.configuration.getLoadDirectory());
 
         if (!loadFileDir.isDirectory()) {
             throw new InvalidConfigurationException("Provided loadDirectory ('"
-                + this.configuration.getLoadDirectory()
-                + "') is not a directory!");
+                    + this.configuration.getLoadDirectory()
+                    + "') is not a directory!");
         }
         File[] files = loadFileDir.listFiles(new FileFilter() {
 
             @Override
-            public boolean accept(File file) {
+            public boolean accept(final File file) {
                 if (!file.isFile()) {
                     return false;
                 }
@@ -127,7 +127,7 @@ public class MetaPluginLoader {
      *
      * To install a plugin, refer to the documentation inside conf/plugin.conf.
      *
-     * @throws org.meta.plugin.exceptions.PluginLoadException
+     * @throws PluginLoadException if an error occured while loading plugins
      */
     public void loadPlugins() throws PluginLoadException {
         Collection<URL> jarsUrls = null;
@@ -146,7 +146,7 @@ public class MetaPluginLoader {
      *
      * @param jarUrl
      */
-    private void loadPlugin(URL jarUrl) throws PluginLoadException {
+    private void loadPlugin(final URL jarUrl) throws PluginLoadException {
         URLClassLoader urlCl = new URLClassLoader(new URL[]{jarUrl});
         ServiceLoader<MetaPlugin> serviceLoader = ServiceLoader.load(MetaPlugin.class, urlCl);
         MetaPlugin plugin = null;
@@ -160,23 +160,24 @@ public class MetaPluginLoader {
             throw new PluginLoadException("Unable to load plugin from jar: " + jarUrl.getFile());
         }
         if (this.plugins.containsKey(plugin.getName())) {
-            throw new PluginLoadException("A plugin with name: '" + plugin.getName() + "' has already been loaded.");
+            throw new PluginLoadException("A plugin with name: '"
+                    + plugin.getName() + "' has already been loaded.");
         }
         registerPlugin(plugin);
         logger.info("Plugin successfully loaded: " + plugin.getName());
         this.plugins.put(plugin.getName(), plugin);
         //Also store URL and classloader to keep references on it.
-        //Do not close classloader now as we don't know if the plugin can load more classes after its registration.
+        //Do not close classloader now as we don't know if the plugin
+        // can load more classes after its registration.
         this.pluginsLoaders.put(jarUrl, urlCl);
     }
 
     /**
-     * Registers the given plugin to amp and web service stacks and inject any
-     * required dependencies.
+     * Registers the given plugin to amp and web service stacks and inject any required dependencies.
      *
      * @param plugin the plugin to register.
      */
-    private void registerPlugin(MetaPlugin plugin) {
+    private void registerPlugin(final MetaPlugin plugin) {
         PluginAMPController ampController = plugin.getAMPController();
         AbstractPluginWebServiceControler wsController = plugin.getWebServiceController();
 
@@ -189,7 +190,7 @@ public class MetaPluginLoader {
         //init AMP and WS parts
         ampController.init(plugin.getName());
         wsController.init(plugin.getName());
-        //give the plugin to webservicereader and TcoReader
+        //give the plugin to webservicereader and TcpReader
         this.controller.getWebServiceReader().registerPlugin(plugin.getName(), wsController);
         this.controller.getAmpServer().registerPlugin(plugin.getName(), ampController);
 

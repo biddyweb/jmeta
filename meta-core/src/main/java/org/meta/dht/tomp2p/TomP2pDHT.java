@@ -123,8 +123,12 @@ public final class TomP2pDHT extends MetaDHT {
             b.addProtocol(StandardProtocolFamily.INET6);
         }
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
-        for (InetAddress addr : configAddresses) {
-            b.addAddress(addr);
+        if (configAddresses.isEmpty()) {
+            b.setListenAny(true);
+        } else {
+            for (InetAddress addr : configAddresses) {
+                b.addAddress(addr);
+            }
         }
         return b;
     }
@@ -141,6 +145,9 @@ public final class TomP2pDHT extends MetaDHT {
         return serverConfig;
     }
 
+    /**
+     * The tomp2p channel client configuration initialization.
+     */
     private ChannelClientConfiguration getClientConfig(final Bindings bindings) {
         ChannelClientConfiguration clientConfig = new ChannelClientConfiguration();
 
@@ -176,9 +183,26 @@ public final class TomP2pDHT extends MetaDHT {
         peerBuilder.channelClientConfiguration(getClientConfig(bindings));
 
         this.peer = peerBuilder.start();
+//        this.peer.connectionBean().dispatcher().peerBean().addPeerStatusListener(new PeerStatusListener() {
+//
+//            @Override
+//            public boolean peerFailed(PeerAddress remotePeer, PeerException exception) {
+//                logger.debug("Peer status listener, peer failed. Remote peer = " + remotePeer, exception);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean peerFound(PeerAddress remotePeer, PeerAddress referrer,
+//                    PeerConnection peerConnection, RTT roundTripTime) {
+//                logger.debug("Peer status listener, peer FOUND. Remote peer = "
+//                              + remotePeer + " referrer = " + referrer);
+//                return true;
+//            }
+//        });
 
         logger.debug("DHT address = " + this.peer.peerAddress());
         this.peerDHT = new PeerBuilderDHT(peer).start();
+        //this.peerDHT.
         // TODO Define custom storage layer for routing table etc on DHT peer.
     }
 
@@ -210,7 +234,8 @@ public final class TomP2pDHT extends MetaDHT {
 
     @Override
     public void stop() {
-        if (peer == null) {
+        if (peer == null || peer.isShutdown()) {
+            logger.info("DHT peer not initialized or already shutdown.");
             return;
         }
         FutureDone<Void> shutdownAnnounce = this.peer.announceShutdown().start();
@@ -218,7 +243,9 @@ public final class TomP2pDHT extends MetaDHT {
 
             @Override
             public void operationComplete(final BaseFuture future) throws Exception {
-                logger.debug("Successfully announced to peers we are shutting down");
+                if (future.isSuccess()) {
+                    logger.debug("Successfully announced to peers we are shutting down");
+                }
             }
         });
         shutdownAnnounce.awaitUninterruptibly();

@@ -152,7 +152,9 @@ Finally, it is worth reading the documentation.
 
 <!-- Checks for common coding problems               -->
 <!-- See http://checkstyle.sf.net/config_coding.html -->
-<module name="AvoidInlineConditionals"/>
+<module name="AvoidInlineConditionals">
+  <property name="severity" value="warning"/>
+</module>
 <module name="EmptyStatement"/>
 <!-- We want to implement equals() without implementing hashCode()...  -->
 <!-- <module name="EqualsHashCode"/> -->

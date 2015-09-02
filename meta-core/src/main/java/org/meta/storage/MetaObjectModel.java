@@ -22,14 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.model;
+package org.meta.storage;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
-import kyotocabinet.DB;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.types.BasicBSONList;
@@ -44,29 +43,20 @@ import org.meta.api.model.ModelFactory;
 import org.meta.api.model.ModelType;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
-import org.meta.configuration.ModelConfigurationImpl;
-import org.meta.model.exceptions.ModelException;
+import org.meta.api.storage.MetaStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * The {@link Model} implementation using kyotocabinet database as underlying storage.
+ * The {@link Model} implementation using low-level database as underlying storage.
  *
  */
-public class KyotoCabinetModel implements Model {
+public class MetaObjectModel implements Model {
 
-    private static final Logger logger = LoggerFactory.getLogger(KyotoCabinetModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaObjectModel.class);
 
-    /**
-     * The kyoto DB object.
-     */
-    private DB kyotoDB;
-
-    /**
-     * The model configuration.
-     */
-    private final ModelConfigurationImpl configuration;
+    private final MetaStorage storage;
 
     /**
      *
@@ -74,17 +64,12 @@ public class KyotoCabinetModel implements Model {
     private final ModelFactory factory;
 
     /**
-     * Instantiate a new model with the given configuration.
+     * Instantiate a new model with the given backing storage unit.
      *
-     * Initializes the dataBase connection.
-     *
-     * @param config the model configuration
-     *
-     * @throws ModelException if the database failed to initialize
+     * @param storageDb the storage unit to use
      */
-    public KyotoCabinetModel(final ModelConfigurationImpl config) throws ModelException {
-        this.configuration = config;
-        initDataBase();
+    public MetaObjectModel(final MetaStorage storageDb) {
+        this.storage = storageDb;
         factory = new ModelFactory();
     }
 
@@ -93,7 +78,7 @@ public class KyotoCabinetModel implements Model {
      */
     @Override
     public void close() {
-        kyotoDB.close();
+        storage.close();
     }
 
     /**
@@ -102,39 +87,6 @@ public class KyotoCabinetModel implements Model {
     @Override
     public ModelFactory getFactory() {
         return this.factory;
-    }
-
-    /**
-     * Log why kyoto as failed.
-     */
-    private void kyotoError() {
-        kyotocabinet.Error error = kyotoDB.error();
-
-        if (error != null) {
-            logger.error("Kyotocabinet error: " + error.code() + ":" + error.name() + " " + error.message());
-        }
-    }
-
-    /**
-     * Initialize data base connection.
-     *
-     * @throws ModelException
-     */
-    @SuppressWarnings("PointlessBitwiseExpression")
-    private void initDataBase() throws ModelException {
-        String databaseFile = this.configuration.getDatabasePath();
-        //avoid dummy error, if database file parent does not exist, create one
-        File databaseDir = new File(databaseFile).getParentFile();
-        if (!databaseDir.isDirectory()) {
-            databaseDir.mkdir();
-        }
-        kyotoDB = new DB();
-        //Open DB with read/write rights
-        if (!kyotoDB.open(databaseFile, DB.OREADER | DB.OWRITER | DB.OCREATE | DB.MSET | DB.OTRYLOCK)) {
-            logger.error("Failed to open kyotocabinet database.");
-            kyotoError();
-            throw new ModelException("Unable to start kyoto cabinet with database file : " + databaseFile);
-        }
     }
 
     @Override
@@ -198,7 +150,7 @@ public class KyotoCabinetModel implements Model {
     /**
      * Recursive synchronized method Load. This method will retrieve an Searchable object from DB.
      *
-     * @param hash the has to load.
+     * @param hash the hash to load.
      * @return a searchable object if found or null if not.
      * @throws ClassNotFoundException
      * @throws InstantiationException
@@ -208,7 +160,7 @@ public class KyotoCabinetModel implements Model {
             ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
-        byte[] serializedData = kyotoDB.get(hash);
+        byte[] serializedData = storage.get(hash);
         if (serializedData == null) {
             return null;
         }
@@ -378,10 +330,8 @@ public class KyotoCabinetModel implements Model {
         if (!startTx) {
             return true;
         }
-        //true as argument here means that changes brought by the
-        // transaction will be forced to synchronize on disk after commit.
-        if (!kyotoDB.begin_transaction(true)) {
-            logger.error("KYOTO FAILED TO START TX! " + kyotoDB.error());
+        if (!storage.begin()) {
+            logger.error("FAILED TO START TX!");
             return false;
         }
         return true;
@@ -394,7 +344,11 @@ public class KyotoCabinetModel implements Model {
      * @return true on success, false otherwise
      */
     private boolean commitTransaction(final boolean commit) {
-        return kyotoDB.end_transaction(commit);
+        if (commit) {
+            return storage.commit();
+        } else {
+            return storage.rollback();
+        }
     }
 
     /**
@@ -416,7 +370,7 @@ public class KyotoCabinetModel implements Model {
             case DATAFILE:
             case METADATA:
             case DATASTRING:
-                //Datas have no childs, nothing to do here
+                //MetaData and Datas have no childs, nothing to do here
                 break;
             case SEARCH:
                 status = this.setSearch((Search) searchable);
@@ -437,9 +391,9 @@ public class KyotoCabinetModel implements Model {
         }
         if (status) {
             byte[] key = searchable.getHash().toByteArray();
-            byte[] existingData = kyotoDB.get(key);
+            byte[] existingData = storage.get(key);
             if (existingData == null || !Arrays.equals(data, existingData)) {
-                status = status && kyotoDB.set(key, data);
+                status = status && storage.store(key, data);
             }
         }
         if (startTx) {
@@ -458,6 +412,14 @@ public class KyotoCabinetModel implements Model {
      */
     @Override
     public boolean set(final Searchable searchable) {
+        if (searchable == null) {
+            return false;
+        }
+        return set(searchable, true);
+    }
+
+    @Override
+    public boolean set(final Searchable searchable, final long timeout) {
         if (searchable == null) {
             return false;
         }
@@ -508,7 +470,12 @@ public class KyotoCabinetModel implements Model {
     @Override
     public boolean remove(final MetHash hash) {
         startTransaction(true);
-        boolean status = kyotoDB.remove(hash.toByteArray());
+        boolean status = storage.remove(hash.toByteArray());
         return commitTransaction(status) && status;
+    }
+
+    @Override
+    public MetaStorage getStorage() {
+        return storage;
     }
 }

@@ -22,20 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.model.exceptions;
+package org.meta.storage.exceptions;
 
 import org.meta.api.common.exceptions.MetaException;
 
 /**
- * The base exception for model operations.
+ * The base exception for storage operations.
  */
-public class ModelException extends MetaException {
+public class StorageException extends MetaException {
 
     /**
      *
      * @param message the exception message
      */
-    public ModelException(final String message) {
+    public StorageException(final String message) {
         super(message);
     }
 
@@ -43,7 +43,7 @@ public class ModelException extends MetaException {
      *
      * @param t the initial cause
      */
-    public ModelException(final Throwable t) {
+    public StorageException(final Throwable t) {
         super(t);
     }
 
@@ -52,8 +52,8 @@ public class ModelException extends MetaException {
      * @param message the exception message
      * @param t the initial cause
      */
-    public ModelException(final String message, final Throwable t) {
-        super(t);
+    public StorageException(final String message, final Throwable t) {
+        super(message, t);
     }
 
 }

@@ -53,6 +53,7 @@ public class InstancePool<T extends Searchable> {
     public InstancePool(final Class<T> claz) {
         clazz = claz;
         instances = new LinkedList<>();
+        createInstances();
     }
 
     /**

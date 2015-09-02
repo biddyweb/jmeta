@@ -25,7 +25,6 @@
 package org.meta.tests;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.AMPAskParser;
@@ -38,18 +37,19 @@ import org.slf4j.LoggerFactory;
  * @author nico
  */
 public class AMPAskParserTest {
+
     private Logger logger = LoggerFactory.getLogger(AMPAskParserTest.class);
 
     /**
      *
      */
-    @Test
+    //@Test
     public void ampPerserTest() {
         AMPAskBuilder factory = new AMPAskBuilder(
-                                            "23", 
-                                            "toto", 
-                                            "cacahuete", 
-                                            MetamphetUtils.makeSHAHash("toto"));
+                "23",
+                "toto",
+                "cacahuete",
+                MetamphetUtils.makeSHAHash("toto"));
         try {
             AMPAskParser parser = new AMPAskParser(factory.getMessage());
             Assert.assertEquals("23", parser.getAsk());

@@ -25,8 +25,11 @@
 package org.meta.api.model;
 
 import org.meta.api.common.MetHash;
+import org.meta.api.storage.MetaStorage;
 
 /**
+ *
+ * Base interface representing storage operations on meta model objects.
  *
  * @author nico
  */
@@ -103,13 +106,33 @@ public interface Model {
     boolean remove(MetHash hash);
 
     /**
-     * Creates or updates a searchable object in database. All children of given object are also
-     * created/updated.
+     * Creates or updates a searchable object in database.
+     *
+     * All children of given object are also created/updated.
      *
      * @param searchable The object to create / update
      *
      * @return true on success, false otherwise
      */
     boolean set(Searchable searchable);
+
+    /**
+     * Creates or updates a searchable object in database.
+     *
+     * All children of given object are also created/updated.
+     *
+     * The entry will be considered invalid after timeout mili-seconds
+     *
+     * @param searchable The object to create / update
+     * @param timeout the timeout value in ms
+     *
+     * @return true on success, false otherwise
+     */
+    boolean set(Searchable searchable, long timeout);
+
+    /**
+     * @return the backing storage used by this model.
+     */
+    MetaStorage getStorage();
 
 }

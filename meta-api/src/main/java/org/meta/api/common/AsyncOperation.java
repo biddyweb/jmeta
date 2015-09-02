@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Base interface representing an asynchronous operation.
+ * Base interface representing a stateful asynchronous operation.
  *
  * @author nico
  */

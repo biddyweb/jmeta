@@ -30,15 +30,20 @@ import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.model.Model;
 import org.meta.api.model.ModelFactory;
+import org.meta.api.storage.MetaCache;
+import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.exceptions.BootstrapException;
 import org.meta.dht.exceptions.DHTException;
 import org.meta.dht.tomp2p.TomP2pDHT;
-import org.meta.model.KyotoCabinetModel;
-import org.meta.model.exceptions.ModelException;
 import org.meta.plugin.tcp.AMPServer;
 import org.meta.plugin.tcp.AMPWriterImpl;
 import org.meta.plugin.webservice.WebServiceReader;
+import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MetaCacheStorage;
+import org.meta.storage.MetaObjectModel;
+import org.meta.storage.exceptions.ModelException;
+import org.meta.storage.exceptions.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +55,7 @@ public class MetaController {
     private final Logger logger = LoggerFactory.getLogger(MetaController.class);
 
     private MetaDHT dht = null;
-    private KyotoCabinetModel model = null;
+    private MetaObjectModel model = null;
     private AMPServer ampServer = null;
     private AMPWriterImpl ampWriter = null;
     private WebServiceReader wsReader = null;
@@ -113,10 +118,12 @@ public class MetaController {
     }
 
     /**
-     * Initializes the KyotoCabinetModel.
+     * Initializes kyotocabinet storage, cache and object model.
      */
-    private static KyotoCabinetModel initModel() throws ModelException {
-        KyotoCabinetModel model = new KyotoCabinetModel(MetaConfiguration.getModelConfiguration());
+    private static MetaObjectModel initModel() throws StorageException {
+        MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+        MetaCache cacheStorage = new MetaCacheStorage(storage, 15000);
+        MetaObjectModel model = new MetaObjectModel(cacheStorage);
         return model;
     }
 

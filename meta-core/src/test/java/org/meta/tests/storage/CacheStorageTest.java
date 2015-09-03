@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.api.configuration.ModelConfiguration;
+import org.meta.api.storage.MetaCache;
 import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.ModelConfigurationImpl;
 import org.meta.storage.KyotoCabinetStorage;
@@ -29,6 +30,21 @@ public class CacheStorageTest {
 
     private static MetaCacheStorage storage;
 
+    private static MetaStorage getKyotoStorage(final String dbFile) throws IOException, StorageException {
+        ModelConfiguration config = new ModelConfigurationImpl();
+        config.setDatabasePath(dbFile);
+        return new KyotoCabinetStorage(config);
+    }
+
+    private static MetaStorage getKyotoStorage() throws IOException, StorageException {
+
+        return getKyotoStorage(File.createTempFile(Long.toString(System.currentTimeMillis())
+                + "-CacheBenchmarkTest", ".kch").getAbsolutePath());
+    }
+
+    /**
+     *
+     */
     @BeforeClass
     public static void setup() {
         try {
@@ -165,6 +181,10 @@ public class CacheStorageTest {
         Assert.assertNotNull(storage.get(key));
     }
 
+    /**
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void removeExpiredEntriesTest() throws InterruptedException {
         byte[] key1 = "removeExpiredEntriesTest1".getBytes();
@@ -177,6 +197,33 @@ public class CacheStorageTest {
         storage.removeExpiredEntries();
         Assert.assertNull(storage.get(key1));
         Assert.assertNull(storage.get(key2));
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void syncToStorageTest() throws IOException, StorageException, InterruptedException {
+        String dbPath = File.createTempFile("syncToStorageTest", ".kch")
+                .getAbsolutePath();
+        MetaStorage testSyncStorage = getKyotoStorage(dbPath);
+        MetaCache cacheStorage = new MetaCacheStorage(testSyncStorage, 500);
+        byte[] key = "syncToStorageTest".getBytes();
+        byte[] key1 = "syncToStorageTestExpire".getBytes();
+        byte[] value = "value".getBytes();
+
+        Assert.assertTrue(cacheStorage.store(key, value));
+        Assert.assertTrue(cacheStorage.store(key1, value, 1000));
+        Assert.assertArrayEquals(value, cacheStorage.get(key));
+        cacheStorage.flushToStorage();
+        cacheStorage.close();
+        //Re-create storage layers
+        testSyncStorage = getKyotoStorage(dbPath);
+        cacheStorage = new MetaCacheStorage(testSyncStorage, 500);
+        Assert.assertArrayEquals(value, cacheStorage.get(key));
+        Assert.assertArrayEquals(value, cacheStorage.get(key1));
+        Thread.sleep(1000L);
+        Assert.assertNull(cacheStorage.get(key1));
     }
 
 }

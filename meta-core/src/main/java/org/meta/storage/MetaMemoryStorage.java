@@ -119,4 +119,9 @@ public class MetaMemoryStorage implements MetaStorage {
         map.clear();
     }
 
+    @Override
+    public long count() {
+        return this.map.size();
+    }
+
 }

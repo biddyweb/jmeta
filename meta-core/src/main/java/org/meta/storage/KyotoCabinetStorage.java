@@ -123,4 +123,9 @@ public class KyotoCabinetStorage implements MetaStorage {
         kyotoDB.close();
     }
 
+    @Override
+    public long count() {
+        return this.kyotoDB.count();
+    }
+
 }

@@ -361,10 +361,13 @@ public class MetaCacheStorage implements MetaCache {
         ByteBuffer buf = ByteBuffer.allocate(this.expiryKeys.size() * Long.BYTES);
 
         synchronized (lock) {
-            for (Map.Entry<Long, CacheBucket> entry : this.expiryKeys.entrySet()) {
-                byte[] longKey = SerializationUtils.longToBytes(entry.getKey());
+            for (Map.Entry<Long, CacheBucket> mapEntry : this.expiryKeys.entrySet()) {
+                byte[] longKey = SerializationUtils.longToBytes(mapEntry.getKey());
                 buf.put(longKey);
-                this.storage.store(longKey, entry.getValue().serialize());
+                this.storage.store(longKey, mapEntry.getValue().serialize());
+            }
+            for (CacheEntry entry : this.entries.values()) {
+                this.storage.store(entry.getKey(), entry.getData());
             }
         }
         this.storage.store(KEY, buf.array());
@@ -379,5 +382,10 @@ public class MetaCacheStorage implements MetaCache {
             this.start.next(end);
             this.end.previous(start);
         }
+    }
+
+    @Override
+    public long count() {
+        return this.storage.count();
     }
 }

@@ -13,6 +13,7 @@
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <netbeans.hint.license>license_header</netbeans.hint.license>
   </properties>
   <build>
     <pluginManagement>
@@ -43,6 +44,28 @@
 	</plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <showDeprecation>true</showDeprecation>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>cobertura-maven-plugin</artifactId>
+	<configuration>
+	  <formats>
+	    <format>html</format>
+	  </formats>
+	  <aggregate>true</aggregate>
+	</configuration>
+      </plugin>
+    </plugins>
   </build>
   <dependencies>
     <dependency>

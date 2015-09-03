@@ -36,6 +36,8 @@ import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.exceptions.BootstrapException;
 import org.meta.dht.exceptions.DHTException;
 import org.meta.dht.tomp2p.TomP2pDHT;
+import org.meta.executors.MetaTimedExecutor;
+import org.meta.executors.StorageExpirationTask;
 import org.meta.plugin.tcp.AMPServer;
 import org.meta.plugin.tcp.AMPWriterImpl;
 import org.meta.plugin.webservice.WebServiceReader;
@@ -54,7 +56,12 @@ public class MetaController {
 
     private final Logger logger = LoggerFactory.getLogger(MetaController.class);
 
+    private final MetaTimedExecutor executor;
+
     private MetaDHT dht = null;
+
+    private MetaStorage backendStorage = null;
+    private MetaCache cacheStorage = null;
     private MetaObjectModel model = null;
     private AMPServer ampServer = null;
     private AMPWriterImpl ampWriter = null;
@@ -64,6 +71,17 @@ public class MetaController {
      * Global meta controller constructor.
      */
     public MetaController() {
+        this.executor = new MetaTimedExecutor();
+    }
+
+    /**
+     * Schedule all tasks that need to be executed regularly.
+     *
+     * (Cache cleanup, DHT data announce, etc)
+     */
+    private void scheduleExecutorTasks() {
+        StorageExpirationTask expirationTask = new StorageExpirationTask(cacheStorage);
+        this.executor.addTask(expirationTask);
     }
 
     /**
@@ -72,24 +90,26 @@ public class MetaController {
      */
     public void initAndStartAll() throws MetaException {
         try {
-            dht = initDht();
+            initDht();
         } catch (DHTException ex) {
             throw new MetaException("Failed to initialize DHT.", ex);
         }
 
         try {
-            model = initModel();
+            initModel();
         } catch (ModelException ex) {
             throw new MetaException("Failed to initialize Model.", ex);
         }
 
-        //TODO add and check exception
-        wsReader = initWebService();
+        //TODO add and check exceptions
+        initWebService();
 
-        //TODO add and check exception
-        ampServer = initAMPServer();
+        //TODO add and check exceptions
+        initAMPServer();
 
-        ampWriter = initAMPWriter(model.getFactory());
+        initAMPWriter(model.getFactory());
+
+        scheduleExecutorTasks();
     }
 
     /**
@@ -97,9 +117,8 @@ public class MetaController {
      *
      * @throws BootstrapException If an error occurred.
      */
-    private static MetaDHT initDht() throws DHTException {
-
-        MetaDHT dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration());
+    private void initDht() throws DHTException {
+        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration());
 
         try {
             dht.start();
@@ -114,46 +133,41 @@ public class MetaController {
         if (bootstrapOperation.isFailure()) {
             throw new BootstrapException("Bootstrap operation failed");
         }
-        return dht;
     }
 
     /**
      * Initializes kyotocabinet storage, cache and object model.
      */
-    private static MetaObjectModel initModel() throws StorageException {
-        MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
-        MetaCache cacheStorage = new MetaCacheStorage(storage, 15000);
-        MetaObjectModel model = new MetaObjectModel(cacheStorage);
-        return model;
+    private void initModel() throws StorageException {
+        backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+        cacheStorage = new MetaCacheStorage(backendStorage, 15000);
+        model = new MetaObjectModel(cacheStorage);
     }
 
     /**
      * Initializes the AmpServer.
      */
-    private static AMPServer initAMPServer() {
-        AMPServer ampServer = new AMPServer(MetaConfiguration.getAmpConfiguration());
+    private void initAMPServer() {
+        this.ampServer = new AMPServer(MetaConfiguration.getAmpConfiguration());
 
         ampServer.start();
-        return ampServer;
+        //return ampServer;
     }
 
     /**
      * Initializes the AMPWriterImpl.
      */
-    private static AMPWriterImpl initAMPWriter(final ModelFactory factory) {
-        AMPWriterImpl writer = new AMPWriterImpl(MetaConfiguration.getAmpConfiguration(), factory);
-
-        return writer;
+    private void initAMPWriter(final ModelFactory factory) {
+        ampWriter = new AMPWriterImpl(MetaConfiguration.getAmpConfiguration(), factory);
     }
 
     /**
      * Initializes the web service server.
      */
-    private static WebServiceReader initWebService() {
-        WebServiceReader wsReader = new WebServiceReader(MetaConfiguration.getWSConfiguration());
+    private void initWebService() {
+        wsReader = new WebServiceReader(MetaConfiguration.getWSConfiguration());
 
         wsReader.start();
-        return wsReader;
     }
 
     /**
@@ -203,6 +217,14 @@ public class MetaController {
      */
     public AMPWriterImpl getAmpWriter() {
         return ampWriter;
+    }
+
+    /**
+     *
+     * @return The timed executor
+     */
+    public MetaTimedExecutor getExecutor() {
+        return executor;
     }
 
 }

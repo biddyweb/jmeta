@@ -94,6 +94,12 @@ public interface MetaStorage {
     byte[] pop(final byte[] key);
 
     /**
+     *
+     * @return the number of entries stored in this storage.
+     */
+    long count();
+
+    /**
      * Begin a transaction.
      *
      * @return true if the transaction was successfully started, false otherwise

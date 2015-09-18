@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import org.meta.api.configuration.NetworkConfiguration;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 
 /**
  *
@@ -178,7 +178,8 @@ public final class NetworkUtils {
         Collection<MetaPeer> localPeers = new ArrayList<>();
 
         for (MetaPeer peer : peers) {
-            if (isLocalNetworkAddress(peer.getAddress()) || peer.getAddress().isLoopbackAddress()) {
+            if (isLocalNetworkAddress(peer.getSocketAddr().getAddress())
+                    || peer.getSocketAddr().getAddress().isLoopbackAddress()) {
                 localPeers.add(peer);
             }
         }
@@ -196,7 +197,7 @@ public final class NetworkUtils {
         Collection<MetaPeer> publicPeers = new ArrayList<>();
 
         for (MetaPeer peer : peers) {
-            if (isPublicAddress(peer.getAddress())) {
+            if (isPublicAddress(peer.getSocketAddr().getAddress())) {
                 publicPeers.add(peer);
             }
         }

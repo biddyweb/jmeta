@@ -26,7 +26,7 @@ package org.meta.api.configuration;
 
 import java.util.Collection;
 import org.meta.api.common.Identity;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 
 /**
  * Interface for DHT configuration entries.

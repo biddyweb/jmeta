@@ -37,7 +37,7 @@ import org.meta.api.common.MetamphetUtils;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
 import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
@@ -78,18 +78,18 @@ public class DHTBootstrapTest extends BaseDHTTests {
             DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
 
             configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
-                DHT1_PORT,
-                ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
-                false,
-                true);
+                    DHT1_PORT,
+                    ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
+                    false,
+                    true);
             dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
             dhtNode1.start();
 
             configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
-                DHT2_PORT,
-                ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
-                false,
-                true);
+                    DHT2_PORT,
+                    ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
+                    false,
+                    true);
             dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
             dhtNode2.start();
         } catch (InvalidConfigurationException ex) {
@@ -125,8 +125,7 @@ public class DHTBootstrapTest extends BaseDHTTests {
 
             for (MetaPeer peer : bootstrapOperation.getBootstrapTo()) {
                 logger.debug("bootstraped to :" + peer);
-                if (peer.getAddress().equals(expectedPeer.getAddress())
-                    && peer.getPort() == expectedPeer.getPort()) {
+                if (peer.getSocketAddr().equals(expectedPeer.getSocketAddr())) {
                     logger.debug("Bootstraped to expected peer!");
                     return;
                 }

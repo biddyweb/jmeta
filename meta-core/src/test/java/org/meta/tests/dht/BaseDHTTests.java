@@ -31,10 +31,15 @@ import org.meta.api.common.MetHash;
 import org.meta.api.common.OperationListener;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.dht.StoreOperation;
+import org.meta.api.storage.MetaCache;
+import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.DHTConfigurationImpl;
+import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.tomp2p.TomP2pDHT;
+import org.meta.storage.MetaCacheStorage;
+import org.meta.storage.MetaMemoryStorage;
 import org.meta.tests.MetaBaseTests;
 import org.meta.utils.NetworkUtils;
 
@@ -53,7 +58,8 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @param localOnly
      * @return
      */
-    public static DHTConfigurationImpl createDhtConfig(Identity id, short port, Collection<MetaPeer> peers, boolean broadcast, boolean localOnly) {
+    public static DHTConfigurationImpl createDhtConfig(Identity id, short port, Collection<MetaPeer> peers,
+            boolean broadcast, boolean localOnly) {
         DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
 
         dhtConfig.setIdentity(id);
@@ -72,7 +78,9 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @return the created dht node.
      */
     public static MetaDHT createDHTNode(DHTConfigurationImpl config) {
-        return (MetaDHT) new TomP2pDHT(config);
+        MetaStorage storage = new MetaMemoryStorage(MetaConfiguration.getModelConfiguration());
+        MetaCache cache = new MetaCacheStorage(storage, 500);
+        return (MetaDHT) new TomP2pDHT(config, cache);
     }
 
     /**

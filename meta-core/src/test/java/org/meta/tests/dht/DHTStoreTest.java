@@ -39,7 +39,7 @@ import org.meta.api.common.OperationListener;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
@@ -167,6 +167,11 @@ public class DHTStoreTest extends BaseDHTTests {
         });
         storeOperation.awaitUninterruptibly();
 
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(DHTStoreTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         FindPeersOperation findPeersOperation = dhtNode2.findPeers(validHash);
         findPeersOperation.addListener(new OperationListener<FindPeersOperation>() {
 

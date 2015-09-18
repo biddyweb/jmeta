@@ -34,9 +34,8 @@ import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.builder.AnnounceBuilder;
 import net.tomp2p.p2p.builder.DiscoverBuilder;
 import net.tomp2p.peers.PeerAddress;
-import org.meta.api.common.Identity;
 import org.meta.api.dht.BootstrapOperation;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
@@ -106,12 +105,8 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
                     continue;
                 }
                 for (PeerAddress addr : bootstrapFuture.bootstrapTo()) {
-                    MetaPeer peer = new MetaPeer();
-                    peer.setAddress(addr.inetAddress());
-                    peer.setPort((short) addr.udpPort());
-                    peer.setId(new Identity(TomP2pUtils.toMetHash(addr.peerId())));
-                    this.bootstrapTo.add(peer);
-                    logger.debug("DHT bootstraped to a peer : " + peer.toString());
+                    this.bootstrapTo.add(TomP2pUtils.toMetaPeer(addr));
+                    logger.debug("DHT bootstraped to a peer : " + addr.toString());
                 }
             }
         }
@@ -151,7 +146,8 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         for (MetaPeer peer : bootstrapPeers) {
             //Start the bootstrap operation on 'peer'
             logger.debug("Bootstraping to peer : " + peer);
-            this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getAddress()).ports(peer.getPort())
+            this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getSocketAddr().getAddress())
+                    .ports(peer.getSocketAddr().getPort())
                     .start().addListener(this.bootstrapListener);
         }
     }
@@ -168,7 +164,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             DiscoverBuilder db = this.dht.getPeer().discover();
             //db.discoverTimeoutSec(100);
             //db.setExpectManualForwarding(true);
-            db.inetAddress(peer.getAddress()).ports(peer.getPort());
+            db.inetAddress(peer.getSocketAddr().getAddress()).ports(peer.getSocketAddr().getPort());
             db.start().addListener(this.discoverListener);
         }
     }

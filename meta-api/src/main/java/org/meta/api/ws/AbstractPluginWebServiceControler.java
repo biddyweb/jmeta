@@ -26,7 +26,6 @@ package org.meta.api.ws;
 
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -37,7 +36,7 @@ import org.meta.api.common.MetHash;
 import org.meta.api.common.OperationListener;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.model.Model;
 
 /**
@@ -171,14 +170,13 @@ public abstract class AbstractPluginWebServiceControler {
 
                 for (Iterator<MetaPeer> i = peers.iterator(); i.hasNext();) {
                     MetaPeer peer = i.next();
-                    InetAddress adress = peer.getAddress();
                     //TODO control ID validity
-                    AbstractPluginWebServiceControler.this.ampWriter.askTo(adress,
+                    AbstractPluginWebServiceControler.this.ampWriter.askTo(peer.getSocketAddr().getAddress(),
                             plugin,
                             command,
                             hash,
                             abstractWebService,
-                            (int) peer.getPort());
+                            peer.getSocketAddr().getPort());
                 }
             }
         });

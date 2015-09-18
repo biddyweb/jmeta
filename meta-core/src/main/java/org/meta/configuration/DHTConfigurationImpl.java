@@ -33,7 +33,7 @@ import org.meta.api.common.MetamphetUtils;
 import org.meta.api.configuration.DHTConfiguration;
 import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 
 /**
  *

@@ -35,7 +35,7 @@ import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

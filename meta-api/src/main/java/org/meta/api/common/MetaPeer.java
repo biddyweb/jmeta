@@ -22,14 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.api.dht;
+package org.meta.api.common;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Objects;
-import org.meta.api.common.Identity;
 
 /**
- *
  * Class representing a peer in the DHT.
  *
  * Must a least contain an IP address and a port.
@@ -47,29 +46,46 @@ public class MetaPeer {
     protected Identity id;
 
     /**
-     * The InetAddress to contact this peer.
+     * The inet address and port of this peer.
      */
-    protected InetAddress address;
+    protected InetSocketAddress peerAddress;
 
     /**
-     * The port to contact this peer.
-     */
-    protected short port;
-
-    /**
-     * Default constructor. Initialize this peer with empty attributes.
+     * Default constructor.
+     *
+     * Initialize this peer with empty attributes.
      */
     public MetaPeer() {
     }
 
     /**
+     * Initialize this peer with empty identity and given peer address.
      *
-     * Initialize this peer with the given id, with empty address and port.
+     * @param peerAddr the peer address
+     */
+    public MetaPeer(final InetSocketAddress peerAddr) {
+        this(null, peerAddr);
+    }
+
+    /**
+     * Initialize this peer with the given id, with empty peer address.
      *
      * @param identity The peer id.
      */
     public MetaPeer(final Identity identity) {
         this(identity, null, (short) 0);
+    }
+
+    /**
+     * Initialize this peer with the given id and peer address.
+     *
+     * @param identity The peer id.
+     * @param peerAddr the peer address
+     *
+     */
+    public MetaPeer(final Identity identity, final InetSocketAddress peerAddr) {
+        this.id = identity;
+        this.peerAddress = peerAddr;
     }
 
     /**
@@ -80,15 +96,13 @@ public class MetaPeer {
      * @param peerPort The peer port.
      */
     public MetaPeer(final Identity identity, final InetAddress addr, final short peerPort) {
-        this.id = identity;
-        this.address = addr;
-        this.port = peerPort;
+        this(identity, new InetSocketAddress(addr, peerPort));
     }
 
     /**
      * @return the identity of this peer.
      */
-    public final Identity getID() {
+    public final Identity getId() {
         return id;
     }
 
@@ -104,10 +118,10 @@ public class MetaPeer {
     /**
      * Get the address of this peer.
      *
-     * @return The InetAddress.
+     * @return The Peer Address
      */
-    public final InetAddress getAddress() {
-        return address;
+    public final InetSocketAddress getSocketAddr() {
+        return peerAddress;
     }
 
     /**
@@ -115,26 +129,8 @@ public class MetaPeer {
      *
      * @param addr The new address.
      */
-    public void setAddress(final InetAddress addr) {
-        this.address = addr;
-    }
-
-    /**
-     * Get the port of this peer.
-     *
-     * @return The port.
-     */
-    public final short getPort() {
-        return port;
-    }
-
-    /**
-     * Set the port of this peer.
-     *
-     * @param peerPort The new port.
-     */
-    public void setPort(final short peerPort) {
-        this.port = peerPort;
+    public void setAddress(final InetSocketAddress addr) {
+        this.peerAddress = addr;
     }
 
     /**
@@ -147,10 +143,10 @@ public class MetaPeer {
         if (this.id != null) {
             sb.append(this.id.toString()).append(":");
         }
-        if (this.getAddress() != null) {
-            sb.append(this.getAddress().getHostAddress()).append(":");
+        if (this.getSocketAddr() != null) {
+            sb.append(this.peerAddress.toString()).append(":");
         }
-        sb.append(this.port).append(" ]");
+        sb.append(this.peerAddress.getPort()).append(" ]");
         return sb.toString();
     }
 
@@ -171,12 +167,6 @@ public class MetaPeer {
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        if (!Objects.equals(this.address, other.address)) {
-            return false;
-        }
-        if (this.port != other.port) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.peerAddress, other.peerAddress);
     }
 }

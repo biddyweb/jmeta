@@ -25,6 +25,7 @@
 package org.meta.dht.tomp2p;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,7 @@ import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 import org.meta.api.dht.FindPeersOperation;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +107,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
      *
      * @param data The serialized ip:port couple.
      *
+     * //TODO move addr part to utility class
      * @return the created peer or null if invalid data.
      */
     private MetaPeer peerFromData(final byte[] data) {
@@ -114,7 +116,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         byte[] addrBytes = new byte[addrSize];
         short port = (short) (((data[1] & 0xFF) << 8) | (data[0] & 0xFF));
 
-        peer.setPort(port);
+        //peer.setPort(port);
         for (int i = 0; i < addrSize; ++i) {
             addrBytes[i] = data[i + 2];
         }
@@ -124,7 +126,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
                 logger.error("Failed to create inet address from data.");
                 return null;
             }
-            peer.setAddress(inetAddr);
+            peer.setAddress(new InetSocketAddress(inetAddr, port));
         } catch (UnknownHostException ex) {
             logger.error("Failed to create inet address from data.", ex);
             return null;

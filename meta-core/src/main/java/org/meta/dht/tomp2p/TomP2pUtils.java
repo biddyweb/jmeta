@@ -26,9 +26,10 @@ package org.meta.dht.tomp2p;
 
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
-import org.meta.api.dht.MetaPeer;
+import org.meta.api.common.MetaPeer;
 
 /**
  * General utility class for tomp2p-related entities.
@@ -70,9 +71,20 @@ public final class TomP2pUtils {
      * @param peer The tomp2p peer to convert
      * @return The created Meta Peer.
      */
-    public static MetaPeer toPeer(final Peer peer) {
+    public static MetaPeer toMetaPeer(final Peer peer) {
         Identity id = new Identity(toMetHash(peer.peerID()));
         return new MetaPeer(id, peer.peerAddress().inetAddress(), (short) peer.peerAddress().udpPort());
+    }
+
+    /**
+     * Convert a tomp2p peer address to a meta peer.
+     *
+     * @param addr The tomp2p address to convert
+     * @return The created Meta Peer.
+     */
+    public static MetaPeer toMetaPeer(final PeerAddress addr) {
+        Identity id = new Identity(toMetHash(addr.peerId()));
+        return new MetaPeer(id, addr.inetAddress(), (short) addr.udpPort());
     }
 
 }

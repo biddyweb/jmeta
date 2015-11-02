@@ -24,6 +24,7 @@
  */
 package org.meta.api.common;
 
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**
@@ -82,11 +83,6 @@ public class MetHash extends Number implements Comparable<MetHash> {
     public static final int BYTE_ARRAY_SIZE = BITS / CHAR_SIZE;
 
     /**
-     * backing integer array.
-     */
-    private final int[] val;
-
-    /**
      * Constants zero hash.
      */
     public static final MetHash ZERO = new MetHash(0);
@@ -95,6 +91,11 @@ public class MetHash extends Number implements Comparable<MetHash> {
      * Constants one hash.
      */
     public static final MetHash ONE = new MetHash(1);
+
+    /**
+     * backing integer array.
+     */
+    private final int[] val;
 
     /**
      * Create a Key with value 0.
@@ -205,6 +206,26 @@ public class MetHash extends Number implements Comparable<MetHash> {
         // += or |= does not matter here
         for (int i = length + offset - 1, j = 20 - 1, k = 0; i >= offset; i--, j--, k++) {
             this.val[j >> 2] |= (byteArray[i] & BYTE_MASK) << ((k % 4) << 3);
+        }
+    }
+
+    /**
+     * Creates a new Hash using the buffer as source. All necessary bytes are taken from the ByteBuffer and
+     * copied in the backing int[].
+     *
+     * This constructor is to avoid unnecessary copies of a byte[] when manipulating ByteBuffers.
+     *
+     * @param buffer the byte buffer as a source of a byte[]
+     * @param length the maximum length to take from the byte buffer
+     */
+    public MetHash(final ByteBuffer buffer, final short length) {
+        if (buffer.remaining() < BYTE_ARRAY_SIZE) {
+            throw new IllegalArgumentException("Given ByteBuffer doesn't have necessary"
+                    + "remaining content to create a hash");
+        }
+        this.val = new int[INT_ARRAY_SIZE];
+        for (int i = 0; i < INT_ARRAY_SIZE; ++i) {
+            this.val[i] = buffer.getInt();
         }
     }
 
@@ -440,28 +461,4 @@ public class MetHash extends Number implements Comparable<MetHash> {
         }
         sb.append(buf, charPos, (charsPerInt - charPos));
     }
-
-//    /**
-//     * Create a new MetHash from the integer, which fills all the 160bits. A new random object will be
-//     * created.
-//     *
-//     * @param integerValue The value to hash from
-//     * @return A hash from based on pseudo random, to fill the 160bits
-//     */
-//    public static MetHash createHash(final int integerValue) {
-//        Random r = new Random(integerValue);
-//        return new MetHash(r);
-//    }
-//
-//    /**
-//     * Create a new MetHash from the long, which fills all the 160bit. A new random object will be created,
-//     * thus, its thread safe
-//     *
-//     * @param longValue The value to hash from
-//     * @return A hash based on pseudo random, to fill the 160bits
-//     */
-//    public static MetHash createHash(final long longValue) {
-//        Random r = new Random(longValue);
-//        return new MetHash(r);
-//    }
 }

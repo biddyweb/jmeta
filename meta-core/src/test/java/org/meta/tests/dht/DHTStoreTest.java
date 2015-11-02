@@ -34,12 +34,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.common.OperationListener;
-import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.common.MetaPeer;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
@@ -82,34 +81,27 @@ public class DHTStoreTest extends BaseDHTTests {
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
-        try {
-            DHT1_PEER_ADDR = getLocalAddress();
-            DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
-            DHT2_PEER_ADDR = getLocalAddress();
-            DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
-
-            MetaConfiguration.getAmpConfiguration().setAmpPort((short) 4243);
-            configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
+        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
+        MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort((short) 4243);
+        configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
                 DHT1_PORT,
                 ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
                 false,
                 true);
-            dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
-            dhtNode1.start();
-
-            configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+        dhtNode1.start();
+        configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
                 DHT2_PORT,
                 ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
                 false,
                 true);
-            dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
-            dhtNode2.start();
-
-            bootstrapDht(dhtNode1, false);
-            bootstrapDht(dhtNode2, true);
-        } catch (InvalidConfigurationException ex) {
-            java.util.logging.Logger.getLogger(DHTStoreTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+        dhtNode2.start();
+        bootstrapDht(dhtNode1, false);
+        bootstrapDht(dhtNode2, true);
     }
 
     /**
@@ -130,7 +122,7 @@ public class DHTStoreTest extends BaseDHTTests {
     public void testSimpleStore() throws UnknownHostException, IOException {
 
         //Forcing AMP Port
-        MetaConfiguration.getAmpConfiguration().setAmpPort(FIRST_AMP_PORT);
+        MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort(FIRST_AMP_PORT);
 
         StoreOperation storeOperation = dhtNode1.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
@@ -149,8 +141,8 @@ public class DHTStoreTest extends BaseDHTTests {
 
         storeOperation.awaitUninterruptibly();
 
-        //Re-setting AMP port to avoid duplicate entry in the DHT.
-        MetaConfiguration.getAmpConfiguration().setAmpPort(SECOND_AMP_PORT);
+        //Re-setting P2pp port to avoid duplicate entry in the DHT.
+        MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort(SECOND_AMP_PORT);
         storeOperation = dhtNode2.store(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
@@ -187,9 +179,9 @@ public class DHTStoreTest extends BaseDHTTests {
                 MetaPeer expectedMetaPeerDht2;
                 logger.info("Find peer operation success!");
                 expectedMetaPeerDht1 = new MetaPeer(null, InetAddress.getLoopbackAddress(),
-                    FIRST_AMP_PORT);
+                        FIRST_AMP_PORT);
                 expectedMetaPeerDht2 = new MetaPeer(null, InetAddress.getLoopbackAddress(),
-                    SECOND_AMP_PORT);
+                        SECOND_AMP_PORT);
                 //int matchedPeers = 0;
 //                for (MetaPeer peer : operation.getPeers()) {
 //                    logger.debug("Got peer = " + peer.toString());

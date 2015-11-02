@@ -30,16 +30,16 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import org.junit.BeforeClass;
 import org.meta.api.configuration.NetworkConfiguration;
-import org.meta.configuration.AMPConfigurationImpl;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.ModelConfigurationImpl;
 import org.meta.configuration.NetworkConfigurationImpl;
+import org.meta.configuration.P2PPConfigurationImpl;
 import org.meta.configuration.WSConfigurationImpl;
 import org.meta.utils.NetworkUtils;
 
 /**
- * Base class for tests to pre-configure the JMETA env
+ * Base class for tests to pre-configure the JMETA env.
  */
 public abstract class MetaBaseTests {
 
@@ -48,14 +48,20 @@ public abstract class MetaBaseTests {
      */
     public static void initConfigurations() {
         NetworkConfiguration dhtNetworkConfig = new NetworkConfigurationImpl(
-            DHTConfigurationImpl.DEFAULT_DHT_PORT,
-            Collections.singletonList(NetworkUtils.getLoopbackInterface()),
-            null);
+                DHTConfigurationImpl.DEFAULT_DHT_PORT,
+                Collections.singletonList(NetworkUtils.getLoopbackInterface()),
+                null);
         DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
         dhtConfig.setNetworkConfig(dhtNetworkConfig);
         MetaConfiguration.setDhtConfiguration(dhtConfig);
 
-        MetaConfiguration.setAmpConfiguration(new AMPConfigurationImpl());
+        NetworkConfiguration p2ppNetworkConfig = new NetworkConfigurationImpl(
+                P2PPConfigurationImpl.DEFAULT_P2PP_PORT,
+                Collections.singletonList(NetworkUtils.getLoopbackInterface()),
+                null);
+        P2PPConfigurationImpl p2ppConfig = new P2PPConfigurationImpl();
+        p2ppConfig.setNetworkConfig(p2ppNetworkConfig);
+        MetaConfiguration.setP2ppConfiguration(p2ppConfig);
         MetaConfiguration.setWSConfiguration(new WSConfigurationImpl());
         MetaConfiguration.setModelConfiguration(new ModelConfigurationImpl());
     }
@@ -69,8 +75,8 @@ public abstract class MetaBaseTests {
     }
 
     /**
-     * Look for a usable network interface address to use for tests. It must be
-     * routable (even locally). Falls back to 'localhost'
+     * Look for a usable network interface address to use for tests. It must be routable (even locally). Falls
+     * back to 'localhost'
      *
      * //TODO better addr choice (no more randomness...)
      *

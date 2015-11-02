@@ -26,7 +26,6 @@ package org.meta.tests.dht;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.logging.Level;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -34,7 +33,6 @@ import org.junit.Test;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
-import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.common.MetaPeer;
@@ -71,31 +69,24 @@ public class DHTBootstrapTest extends BaseDHTTests {
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
-        try {
-            DHT1_PEER_ADDR = getLocalAddress();
-            DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
-            DHT2_PEER_ADDR = getLocalAddress();
-            DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
-
-            configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
-                    DHT1_PORT,
-                    ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
-                    false,
-                    true);
-            dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
-            dhtNode1.start();
-
-            configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
-                    DHT2_PORT,
-                    ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
-                    false,
-                    true);
-            dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
-            dhtNode2.start();
-        } catch (InvalidConfigurationException ex) {
-            java.util.logging.Logger.getLogger(DHTBootstrapTest.class.getName()).log(Level.SEVERE, null, ex);
-            Assert.fail(ex.getMessage());
-        }
+        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
+        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
+        configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
+                DHT1_PORT,
+                ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
+                false,
+                true);
+        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+        dhtNode1.start();
+        configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
+                DHT2_PORT,
+                ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
+                false,
+                true);
+        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+        dhtNode2.start();
     }
 
     /**

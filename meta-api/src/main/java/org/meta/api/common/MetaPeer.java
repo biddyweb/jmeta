@@ -144,9 +144,8 @@ public class MetaPeer {
             sb.append(this.id.toString()).append(":");
         }
         if (this.getSocketAddr() != null) {
-            sb.append(this.peerAddress.toString()).append(":");
+            sb.append(this.peerAddress.toString()).append(" ]");
         }
-        sb.append(this.peerAddress.getPort()).append(" ]");
         return sb.toString();
     }
 
@@ -167,6 +166,15 @@ public class MetaPeer {
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        return Objects.equals(this.peerAddress, other.peerAddress);
+        return Objects.equals(this.peerAddress.getAddress(), other.peerAddress.getAddress())
+                && Objects.equals(this.peerAddress.getPort(), other.peerAddress.getPort());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + Objects.hashCode(this.id);
+        hash = 17 * hash + Objects.hashCode(this.peerAddress);
+        return hash;
     }
 }

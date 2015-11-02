@@ -26,16 +26,20 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
+import org.meta.api.common.MetHash;
+import org.meta.api.common.OperationListener;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
-import org.meta.api.model.MetaProperty;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
-import org.meta.api.model.Searchable;
+import org.meta.api.model.SearchCriteria;
+import org.meta.api.plugin.MetAPI;
+import org.meta.api.plugin.SearchOperation;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -44,28 +48,37 @@ import org.meta.api.ws.forms.fields.radio.RadioButton;
 import org.meta.api.ws.forms.fields.radio.RadioList;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author nico
  */
-public class SearchSubtitles extends AbstractWebService{
+public class SearchSubtitles extends AbstractWebService implements OperationListener<SearchOperation> {
 
-    TextOutput       initialTextOutput   = null;
-    ModelFactory     factory             = null;
-    TextInput        path                = null;
-    ArrayList<Data>  results             = null;
-    SelfSubmitButton submitToMe          = null;
-    SubmitToButton   getSubtitleButton   = null;
-    RadioList        resultsOutput       = null;
-    String           failure             = null;
-    
+    private final Logger logger = LoggerFactory.getLogger(SearchSubtitles.class);
+
+    private TextOutput initialTextOutput = null;
+    private ModelFactory factory = null;
+    private MetAPI api;
+    private TextInput path = null;
+    private Map<MetHash, Data> results = null;
+    private SelfSubmitButton submitToMe = null;
+    private SubmitToButton getSubtitleButton = null;
+    private RadioList resultsOutput = null;
+    private String failure = null;
+
+    private final Set<String> subtitleMetaKeys;
+
     /**
      *
-     * @param controler
+     * @param controller the parent web service controller
      */
-    public SearchSubtitles(AbstractPluginWebServiceControler controler){
-        super(controler);
+    public SearchSubtitles(final AbstractPluginWebServiceControler controller) {
+        super(controller);
+        this.api = controller.getAPI();
+        factory = this.api.getModel().getFactory();
 
         //Path to the movie
         path = new TextInput("path", "Path to the movie");
@@ -79,56 +92,51 @@ public class SearchSubtitles extends AbstractWebService{
         //tex output
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
-        factory = this.controller.getModel().getFactory();
-        
-        results = new ArrayList<Data>();
+
+        results = new HashMap<>();
+
+        subtitleMetaKeys = new HashSet<>(2);
+        subtitleMetaKeys.add("description");
+        subtitleMetaKeys.add("name");
     }
 
     @Override
-    public void executeCommand(Map<String, String[]> map) {
+    public void executeCommand(final Map<String, String[]> map) {
         //initiate state
         initialTextOutput.flush();
         rootColumn.removeChild(resultsOutput);
-        resultsOutput       = null;
+        resultsOutput = null;
         rootColumn.removeChild(getSubtitleButton);
-        getSubtitleButton   = null;
+        getSubtitleButton = null;
         //Get file path
-        String path = getParameter(this.path.getId(), map);
+        String paramPath = getParameter(this.path.getId(), map);
 
         //set retrieving path as new defaults value of path field
-        this.path.setValue(path);
+        this.path.setValue(paramPath);
 
         //if path is not empty, try to search othrerwise just return the main
         //interface
-        if(path != ""){
+        if (paramPath != null && !paramPath.isEmpty()) {
             //Only go further if the file exist
-            File file = new File(path);
-            if(file.exists()){
-                initialTextOutput.flush();
+            File file = new File(paramPath);
+            if (file.exists()) {
 
-                //instanciate a new MetaData st:<choosen language>
-                TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
-                properties.add(new MetaProperty("st", "fr"));
-                MetaData metaData = factory.createMetaData(properties);
+                //instanciate a new SearchCriteria st:<choosen language>
+                SearchCriteria metaData = factory.createCriteria(new MetaData("st", "fr"));
 
                 //instanciate a new DataFile Object
-                DataFile movie = factory.createDataFile(file);
+                DataFile movieFile = factory.getDataFile(file);
 
                 //create a new search with in input the DataFile and in output
                 //the metaData
-                Search subtitleSearch = factory.createSearch(movie, metaData, null);
+                Search subtitleSearch = factory.createSearch(movieFile, metaData);
 
                 //lookup on the network to find the subtitles
-                super.controller.search(  subtitleSearch.getHash(),
-                                        "SubtitleSearch",
-                                        "SearchSubtitleCommand",
-                                        this);
-            }else{
-                initialTextOutput.flush();
+                this.api.search(subtitleSearch.getHash(), false, false, subtitleMetaKeys).addListener(this);
+            } else {
                 initialTextOutput.append("The file does not exist");
             }
-        }else{
-            initialTextOutput.flush();
+        } else {
             initialTextOutput.append("Please set a valide path name");
         }
         //Change the label of the selfSubmit to me to "make a new search"
@@ -136,29 +144,27 @@ public class SearchSubtitles extends AbstractWebService{
     }
 
     @Override
-    public void applySmallUpdate() {}
+    public void applySmallUpdate() {
+    }
 
     @Override
-    public void callbackSuccess(ArrayList<Searchable> results) {
-        for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
-            Searchable searchable = i.next();
-            if (searchable instanceof Search) {
-                Search search = (Search) searchable;
-                /*
-                 * SearchSubtitle TCP command as send the linked datas as
-                 * onlyText but we still have acces to the description
-                 */
-                if(search.getLinkedData() != null){
-                    this.results.addAll(search.getLinkedData());
-                }
-            }
-        }
-        redrawOutPut();
+    public void failed(final SearchOperation operation) {
+        logger.info("Search operation failed!");
+        failure = operation.getFailureMessage();
     }
-    
+
     @Override
-    public void callbackFailure(String failureMessage) {
-        failure = failureMessage;
+    public void complete(final SearchOperation operation) {
+        logger.info("Search complete! Results:  ");
+
+        this.results.clear();
+        for (Data data : operation.getResults()) {
+            this.results.put(data.getHash(), data);
+        }
+        //FOr test.
+        this.controller.getContext().put("results", this.results);
+        this.controller.getContext().put("peers", operation.getPeers());
+        redrawOutPut();
     }
 
     private void redrawOutPut() {
@@ -166,33 +172,49 @@ public class SearchSubtitles extends AbstractWebService{
          * At first successful callback, initialize the resultOutput radioList
          * and add the button to submit to the getCommand
          */
-        if(resultsOutput == null){
+        if (this.failure != null && !this.failure.isEmpty()) {
+            initialTextOutput.flush();
+            initialTextOutput.append("Error: " + failure);
+        }
+        if (resultsOutput == null) {
             resultsOutput = new RadioList("subtitleHash", "Pick a subtitle");
             rootColumn.addChild(resultsOutput);
         }
-        if(getSubtitleButton == null){
+        if (getSubtitleButton == null) {
             getSubtitleButton = new SubmitToButton(
-                                        "send", 
-                                        "Download selected subtitle", 
-                                        "getSubtitles");
+                    "send",
+                    "Download selected subtitle",
+                    "getSubtitles");
             rootColumn.addChild(getSubtitleButton);
-            
+        }
+        if (results.isEmpty()) {
+            initialTextOutput.append("No subtitles found!");
         }
         //Feed the output with the results
-        ArrayList<RadioButton> buttons = new ArrayList<RadioButton>();
-        for(Data data : results){
-            String description = extractDescription(data.getDescription());
+        ArrayList<RadioButton> buttons = new ArrayList<>();
+        for (Data data : results.values()) {
+            String description = extractDescription(data);
             buttons.add(new RadioButton(data.getHash().toString(), description));
         }
         resultsOutput.setButtons(buttons);
     }
 
-    private String extractDescription(ArrayList<MetaProperty> properties) {
-        String description = ""; 
-        for(MetaProperty property : properties){
-            if(property.getName().equals("description"))
-                description = description+property.getValue()+";";
+    /**
+     *
+     * @param properties
+     * @return the printable description for the data
+     */
+    private String extractDescription(final Data data) {
+        String description = "Subtitle: ";
+
+        for (MetaData property : data.getMetaData()) {
+            if (property.getKey().equals("description")) {
+                description += " description(" + property.getValue() + ")";
+            } else if (property.getKey().equals("name")) {
+                description += " name(" + property.getValue() + ")";
+            }
         }
+        description += " size(" + data.getSize() + " bytes)";
         return description;
     }
 

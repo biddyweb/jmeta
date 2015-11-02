@@ -27,15 +27,13 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeSet;
-import org.meta.api.common.AsyncOperation;
+import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
-import org.meta.api.model.DataString;
 import org.meta.api.model.MetaData;
-import org.meta.api.model.MetaProperty;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
-import org.meta.api.model.Searchable;
+import org.meta.api.model.SearchCriteria;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
@@ -49,26 +47,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author nico
  */
-public class AddSubtitle extends AbstractWebService{
+public class AddSubtitle extends AbstractWebService {
 
-    InterfaceDescriptor  initialDescriptor   = null;
-    TextOutput           output              = null;
-    ModelFactory         factory             = null;
-    ArrayList<DataString>results             = null;
-    TextInput            source              = null;
-    TextInput            result              = null;
-    TextInput            description         = null;
-    
+    private InterfaceDescriptor initialDescriptor = null;
+    private TextOutput output = null;
+    private ModelFactory factory = null;
+    private MetAPI api;
+    private ArrayList<Data> results = null;
+    private TextInput source = null;
+    private TextInput result = null;
+    private TextInput description = null;
+
     private Logger logger = LoggerFactory.getLogger(AddSubtitle.class);
-    
+
     /**
      *
-     * @param controler
+     * @param controller the web service controller
      */
-    public AddSubtitle(AbstractPluginWebServiceControler controler){
-        super(controler);
-        factory = this.controller.getModel().getFactory();
-        results = new ArrayList<DataString>();
+    public AddSubtitle(final AbstractPluginWebServiceControler controller) {
+        super(controller);
+        this.api = controller.getAPI();
+        factory = this.api.getModel().getFactory();
+
+        results = new ArrayList<>();
         source = new TextInput("path", "Path to the movie");
         rootColumn.addChild(source);
 
@@ -83,91 +84,66 @@ public class AddSubtitle extends AbstractWebService{
         rootColumn.addChild(output);
 
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        super.controller.getModel().getFactory();
     }
 
     @Override
-    public void executeCommand(Map<String, String[]> map) {
-        String source = getParameter(this.source.getId(), map);
-        String result = getParameter(this.result.getId(), map);
-        String desc   = getParameter(this.description.getId(), map);
+    public void executeCommand(final Map<String, String[]> map) {
+        String srcString = getParameter(this.source.getId(), map);
+        String resultString = getParameter(this.result.getId(), map);
+        String desc = getParameter(this.description.getId(), map);
 
-        if(source != null && result != null){
-            File fSource = new File(source);
-            File fResult = new File(result);
-            
-            if(fSource.exists() && fResult.exists())
+        if (srcString != null && resultString != null) {
+            File fSource = new File(srcString);
+            File fResult = new File(resultString);
+
+            if (fSource.exists() && fResult.exists()) {
                 processCreation(fResult, fSource, desc);
-            else{
+            } else {
                 output.flush();
-                output.append("Please set valid pathes");
+                output.append("Please set valid paths");
             }
-
-        }else{
+        } else {
             output.flush();
             output.append("Please set both pathes");
         }
     }
 
     /**
-     * Process DataFile creation for source and result.
-     * Process Search creation.
-     * 
-     *  
-     *  process a save action to the search
-     *  process a DHT push on the search
-     *  process a push action on the content
-     *  
-     * @param fResult
-     * @param fSource
-     * @param description
-     */
-    private void processCreation(File fResult, File fSource, String description){
-        //Create the empty search 
-        TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
-        properties.add(new MetaProperty("st", "fr"));
-
-        MetaData metaData = factory.createMetaData(properties);
-        DataFile src = factory.createDataFile(fSource);
-
-        Search newSearch = factory.createSearch(src, metaData, null);
-
-        DataFile newResult = factory.createDataFile(fResult);
-        ArrayList<MetaProperty> d = newResult.getDescription();
-        d.add(new MetaProperty("description", description));
-        newResult.setDescription(d);
-        
-        newResult = (DataFile) super.updateResult(newResult);
-        newSearch = super.updateSearch(newSearch, newResult);
-        
-        super.saveAndPush(newSearch);
-        super.onlyPush(newResult);
-    }
-
-    @Override
-    public void applySmallUpdate() {}
-    @Override
-    public void callbackSuccess(ArrayList<Searchable> results) {}
-    @Override
-    public void callbackFailure(String failureMessage) {}
-    
-    /**
+     * Process DataFile creation for source and result. Process MetaSearch creation.
      *
-     * @param operation
-     * @param s
+     *
+     * process a save action to the search process a DHT push on the search process a push action on the
+     * content
+     *
+     * @param fResult the subtitle file
+     * @param fSource the movie file
+     * @param desc the description of the subtitle
      */
-    @Override
-    protected void callbackFailedToPush(AsyncOperation operation, Searchable s) {
-        output.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
+    private void processCreation(final File fResult, final File fSource, final String desc) {
+        //Create the empty search
+        SearchCriteria metaData = factory.createCriteria(new MetaData("st", "fr"));
+
+        DataFile src = factory.getDataFile(fSource);
+
+        DataFile newResult = factory.getDataFile(fResult);
+        newResult.addMetaData(new MetaData("description", desc));
+        newResult.addMetaData(new MetaData("name", fResult.getName()));
+
+        newResult = (DataFile) api.consolidateData(newResult);
+
+        Search newSearch = factory.createSearch(src, metaData, newResult);
+        newSearch = api.consolidateSearch(newSearch);
+
+        if (!api.storePush(newSearch)) {
+            logger.error("Failed to store the seach into db...");
+        } else {
+            output.flush();
+            output.append("Subtitle registered successfully.");
+        }
     }
 
-    /**
-     *
-     * @param operation
-     * @param s
-     */
     @Override
-    protected void callbackSuccessToPush(AsyncOperation operation, Searchable s) {
-        output.append("Success to push "+s.getHash());
+    public void applySmallUpdate() {
     }
+
 }

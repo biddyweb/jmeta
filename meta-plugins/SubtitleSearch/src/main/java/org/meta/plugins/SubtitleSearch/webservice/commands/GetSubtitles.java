@@ -24,60 +24,66 @@
  */
 package org.meta.plugins.SubtitleSearch.webservice.commands;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
-import java.util.TreeSet;
-import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
+import org.meta.api.common.OperationListener;
+import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
-import org.meta.api.model.MetaData;
-import org.meta.api.model.MetaProperty;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
-import org.meta.api.model.Searchable;
+import org.meta.api.plugin.DownloadOperation;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.TextInput;
 import org.meta.api.ws.forms.fields.TextOutput;
 import org.meta.api.ws.forms.submit.SelfSubmitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author nico
  */
-public class GetSubtitles extends AbstractWebService{
+public class GetSubtitles extends AbstractWebService implements OperationListener<DownloadOperation> {
 
-    private TextInput           subtitleHash        = null;
-    private SelfSubmitButton    submitToMe          = null;
-    private TextOutput          errorTextOutput     = null;
-    private TextOutput          successTextOutput   = null;
-    private ModelFactory        factory             = null;
-    private Search              subtitleSearch      = null;
+    private final Logger logger = LoggerFactory.getLogger(GetSubtitles.class);
+
+    private TextInput subtitleHash = null;
+    private SelfSubmitButton submitToMe = null;
+    private TextOutput errorTextOutput = null;
+    private TextOutput successTextOutput = null;
+    private final MetAPI api;
+    private ModelFactory factory = null;
+    private Search subtitleSearch = null;
     private String failure;
 
     /**
      *
-     * @param controler
+     * @param controller parent controller
      */
-    public GetSubtitles(AbstractPluginWebServiceControler controler) {
-        super(controler);
-        factory = controler.getModel().getFactory();
-        
+    public GetSubtitles(final AbstractPluginWebServiceControler controller) {
+        super(controller);
+        api = controller.getAPI();
+        factory = api.getModel().getFactory();
+
         //Path to the movie
         subtitleHash = new TextInput("subtitleHash", "Hash of the subtitle");
         subtitleHash.setDescription("If you don't know what to do here, "
-                                    + "make a full search from searchSubtitle");
+                + "make a full search from searchSubtitle");
         rootColumn.addChild(subtitleHash);
-        
-        submitToMe = new SelfSubmitButton("submitToMe", "Search");
+
+        submitToMe = new SelfSubmitButton("submitToMe", "Download");
         //had a linked button on himself
         rootColumn.addChild(submitToMe);
 
         //tex output
         errorTextOutput = new TextOutput("errorOutput", "Errors");
         rootColumn.addChild(errorTextOutput);
-        
 
         //tex output
         successTextOutput = new TextOutput("successOutput", "Success");
@@ -85,109 +91,103 @@ public class GetSubtitles extends AbstractWebService{
     }
 
     @Override
-    protected void executeCommand(Map<String, String[]> map) {
+    protected void executeCommand(final Map<String, String[]> map) {
         errorTextOutput.flush();
+        successTextOutput.flush();
         //Get path to the movie
-        String pathToTheMovie = getParameter("path", map);
-        
+        String moviePath = getParameter("path", map);
+        String paramHash = getParameter(this.subtitleHash.getId(), map);
+        this.subtitleHash.setValue(paramHash);
+
         /*
-         * if we are in the user workflow and we have a path to the movie, so 
-         * we can rebuild the search to store the future result in a cleany way 
+         * if we are in the user workflow and we have a path to the movie, so
+         * we can rebuild the search to store the future result in a clean way
          */
-        if(pathToTheMovie != null){
-            //instanciate a new MetaData st:<choosen language>
-            TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
-            properties.add(new MetaProperty("st", "fr"));
-            MetaData metaData = factory.createMetaData(properties);
-    
-            //instanciate a new DataFile Object
-            DataFile movie = factory.createDataFile(new File(pathToTheMovie));
+//        if (moviePath != null) {
+//            logger.info("moviePath = " + moviePath);
+//            SearchCriteria criteria = factory.createCriteria(new MetaData("st", "fr"));
+//
+//            //instanciate a new DataFile Object
+//            DataFile movie = factory.getDataFile(new File(moviePath));
+//
+//            //create a new search with the movie as source
+//            subtitleSearch = factory.createSearch(movie, criteria);
+//            //if a DB element exist, prefer it
+//            Search dbSearch = api.getModel().getSearch(subtitleSearch.getHash());
+//            if (dbSearch != null) {
+//                subtitleSearch = dbSearch;
+//            }
+//        }
+        if (paramHash != null && !paramHash.isEmpty()) {
+            logger.info("hash = " + paramHash);
+            MetHash hash = new MetHash(paramHash);
 
-            //create a new search with in input the DataFile and in output
-            //the metaData
-            subtitleSearch = factory.createSearch(movie, metaData, null);
-            //if a DB element exist, prefer it
-            Search dbSearch = super.controller.getModel().getSearch(subtitleSearch.getHash());
-            if(dbSearch != null)
-                subtitleSearch = dbSearch;
-        }
-
-        
-        
-        String subtitleHash     = getParameter(this.subtitleHash.getId(), map);
-        this.subtitleHash.setValue(subtitleHash);
-        if(subtitleHash != null && !subtitleHash.equals("")){
-            MetHash hash = new MetHash(subtitleHash);
-            
-            super.controller.search( hash,
-                                    "SubtitleSearch",
-                                    "GetSubtitleCommand",
-                                    this);
-            
-        }else{
-            errorTextOutput.flush();
+            //TESTING Context-passing between plugin commands
+            Map<String, Object> context = this.controller.getContext();
+            Map<MetHash, Data> results = (Map<MetHash, Data>) context.get("results");
+            Collection<MetaPeer> peers = (Collection<MetaPeer>) context.get("peers");
+            successTextOutput.append("Hash: " + hash);
+            Data data = results.get(hash);
+            if (data != null) {
+                URI uri = null;
+                try {
+                    uri = new URI("file:/home/nico/Downloads/meta_subtitle_download");
+                    DataFile destinationFile = factory.getDataFile(hash, uri, data.getSize());
+                    successTextOutput.append("Downloading to: " + uri);
+                    api.download(destinationFile, peers).addListener(this);
+                } catch (URISyntaxException ex) {
+                    logger.error("Invalid URI!");
+                    errorTextOutput.append("Invalid URI: " + uri);
+                }
+            } else {
+                successTextOutput.append("Unknown data! ");
+            }
+        } else {
             errorTextOutput.append("Please set a valide path name");
         }
-     
     }
 
     @Override
-    public void applySmallUpdate() {}
+    public void applySmallUpdate() {
+    }
 
-
+//    public void callbackSuccess(ArrayList<Searchable> results) {
+//        /*
+//         * On success, if there is results,
+//         */
+//        if (results.size() > 0) {
+//            if (results.get(0) instanceof DataFile) {
+//                //Get the first as subtitle
+//                DataFile subtitle = (DataFile) results.get(0);
+//                successTextOutput.append("New subtitle "
+//                        + subtitle.getFile().getName()
+//                        + " download to "
+//                        + subtitle.getFile().getPath());
+//                /*
+//                 * If subtitle search !=null, it mean that we where able to
+//                 * rebuild it, and we are in the search subtitle workflow.
+//                 * We need to change the search value in DB
+//                 * In this case, it means adding a new subtitle in the dataBase
+//                 */
+////                subtitle = (DataFile) super.consolidateData(subtitle);
+////                if (subtitleSearch != null) {
+////                    subtitleSearch = super.updateSearch(subtitleSearch, subtitle);
+////                    super.storePush(subtitleSearch);
+////                } else {
+////                    super.onlySave(subtitle);
+////                }
+////                super.onlyPush(subtitle);
+//            }
+//        }
+//    }
     @Override
-    public void callbackSuccess(ArrayList<Searchable> results) {
-        /*
-         * On success, if there is results, 
-         */
-        if(results.size() > 0){
-            if(results.get(0) instanceof DataFile){
-                //Get the first as subtitle
-                DataFile subtitle = (DataFile) results.get(0);
-                successTextOutput.append(   "New subtitle "+
-                                            subtitle.getFile().getName()+
-                                            " download to "+
-                                            subtitle.getFile().getPath());
-                /*
-                 * If subtitle search !=null, it mean that we where able to 
-                 * rebuild it, and we are in the search subtitle workflow.
-                 * We need to change the search value in DB
-                 * In this case, it means adding a new subtitle in the dataBase
-                 */
-                subtitle = (DataFile) super.updateResult(subtitle);
-                if(subtitleSearch != null){
-                    subtitleSearch = super.updateSearch(subtitleSearch, subtitle);
-                    super.saveAndPush(subtitleSearch);
-                }else{
-                    super.onlySave(subtitle);
-                }
-                super.onlyPush(subtitle);
-            }
-        }
+    public void failed(final DownloadOperation operation) {
+        errorTextOutput.flush();
+        errorTextOutput.append("Download failed! Error: " + operation.getFailureMessage());
     }
 
     @Override
-    public void callbackFailure(String failureMessage) {
-        errorTextOutput.append(failure);
-    }
-
-    /**
-     *
-     * @param operation
-     * @param s
-     */
-    @Override
-    protected void callbackFailedToPush(AsyncOperation operation, Searchable s) {
-        errorTextOutput.append("Fail to push "+s.getHash()+" "+operation.getFailureMessage());
-    }
-
-    /**
-     *
-     * @param operation
-     * @param s
-     */
-    @Override
-    protected void callbackSuccessToPush(AsyncOperation operation, Searchable s) {
-        successTextOutput.append("Success to push "+s.getHash());
+    public void complete(final DownloadOperation operation) {
+        successTextOutput.append("Download complete! See file: " + operation.getFile().getURI());
     }
 }

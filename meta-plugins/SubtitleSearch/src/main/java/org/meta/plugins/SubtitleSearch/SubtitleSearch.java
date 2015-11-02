@@ -25,6 +25,7 @@
 package org.meta.plugins.SubtitleSearch;
 
 import org.meta.api.amp.PluginAMPController;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 
@@ -34,10 +35,9 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class SubtitleSearch implements MetaPlugin {
 
-    /**
-     *
-     */
-    public static String NAME = "SubtitleSearch";
+    private static final String PLUGIN_NAME = "SubtitleSearch";
+
+    private MetAPI metApi;
 
     private PluginAMPController ampController;
     private AbstractPluginWebServiceControler wsController;
@@ -46,13 +46,13 @@ public class SubtitleSearch implements MetaPlugin {
      *
      */
     public SubtitleSearch() {
-        ampController = new PluginSubtitleSearchTcpControler();
-        wsController = new PluginSubtitleSearchWebServiceControler();
+        //ampController = new PluginSubtitleSearchTcpControler();
+
     }
 
     @Override
     public String getName() {
-        return NAME;
+        return PLUGIN_NAME;
     }
 
     @Override
@@ -61,8 +61,13 @@ public class SubtitleSearch implements MetaPlugin {
     }
 
     @Override
-    public PluginAMPController getAMPController() {
-        return ampController;
+    public void setPluginAPI(final MetAPI api) {
+        this.metApi = api;
+        wsController = new SubtitleSearchWSController(api);
     }
 
+//      @Override
+//    public PluginAMPController getAMPController() {
+//        return ampController;
+//    }
 }

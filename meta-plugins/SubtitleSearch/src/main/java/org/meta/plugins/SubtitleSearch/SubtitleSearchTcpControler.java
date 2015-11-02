@@ -34,7 +34,7 @@ import org.meta.plugins.SubtitleSearch.tcp.commands.SearchSubtitleCommand;
  *
  * @author nico
  */
-public class PluginSubtitleSearchTcpControler extends PluginAMPController {
+public class SubtitleSearchTcpControler extends PluginAMPController {
 
     @Override
     protected void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands) {

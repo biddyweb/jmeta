@@ -35,13 +35,13 @@ import org.meta.api.model.Searchable;
  *
  * @author nico
  */
-public class GetSubtitleCommand extends PluginAMPCommand{
+public class GetSubtitleCommand extends PluginAMPCommand {
 
     @Override
     public AMPAnswerBuilder execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();
         DataFile subtitle = (DataFile) myTCPControler.getInTheModel(hash);
-        if(subtitle != null){
+        if (subtitle != null) {
             datas.add(subtitle);
         }
         return new AMPAnswerBuilder(answer, datas);

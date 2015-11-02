@@ -34,8 +34,8 @@ import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.builder.AnnounceBuilder;
 import net.tomp2p.p2p.builder.DiscoverBuilder;
 import net.tomp2p.peers.PeerAddress;
-import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.common.MetaPeer;
+import org.meta.api.dht.BootstrapOperation;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
@@ -115,8 +115,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             //Do not consider an empty bootstrap list a failure, if we are alone in the world
             // we will just wait for someone to come!
         }
-        this.setState(OperationState.COMPLETE);
-        this.notifyListeners();
+        this.complete();
     }
 
     /**

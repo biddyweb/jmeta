@@ -24,7 +24,6 @@
  */
 package org.meta.dht.tomp2p;
 
-import java.net.InetAddress;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import net.tomp2p.dht.AddBuilder;
@@ -35,11 +34,14 @@ import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.utils.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Tomp2p implementation of the store operation.
+ *
+ * TODO do not always store to dht but only if needed (~ every hours) or if we changed identity.
  *
  * @author nico
  */
@@ -60,40 +62,20 @@ public class TomP2pStoreOperation extends StoreOperation {
         this.hash = storeHash;
     }
 
-    /**
-     * Serialize an ip/port couple into a byte array.
-     *
-     * @param port The udp port
-     * @param addr The ipv4/ipv6 address
-     *
-     * @return the serialized ip/port couple
-     */
-    private byte[] serializeAddress(final Short port, final InetAddress addr) {
-        byte[] addrBytes = addr.getAddress();
-        short dataSize = (short) (2 + addrBytes.length);
-        byte[] data = new byte[dataSize];
-
-        data[0] = (byte) (port & 0x00ff);
-        data[1] = (byte) ((port >> 8) & 0x00ff);
-        for (short i = 2; i < dataSize; ++i) {
-            data[i] = addrBytes[i - 2];
-        }
-        return data;
-    }
-
     @Override
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeer().peerAddress().peerSocketAddress();
-        Short port = MetaConfiguration.getAmpConfiguration().getAmpPort();
-        byte[] data = serializeAddress(port, peerAddr.inetAddress());
+        Short port = MetaConfiguration.getP2ppConfiguration().getNetworkConfig().getPort();
+        byte[] data = SerializationUtils.serializeAddress(port, peerAddr.inetAddress());
 
         NavigableMap<Number160, Data> dataMap = new TreeMap<>();
         dataMap.put(hash, new Data(data));
 
         AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
         Data toAdd = new Data(data);
-        toAdd.ttlSeconds(100);
-        logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
+        //toAdd.ttlSeconds(100);
+        //logger.debug("Tomp2p Data hash :" + toAdd.hash());
+        //logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
         addBuilder.data(toAdd).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override

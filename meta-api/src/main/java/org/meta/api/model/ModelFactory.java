@@ -25,52 +25,110 @@
 package org.meta.api.model;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
+import org.meta.api.common.MetHash;
 
 /**
- * This factory allows the manipulation of model objects easier.
+ * Interface describing the model object factory.
  *
- * It contains utility methods to create model objects and instance pools.
+ * This is the only way to retrieve model objects instances.
  *
+ * //TODO add more convenience methods here
+ *
+ * @author dyslesiq
  */
-public class ModelFactory {
-
-    private final Map<ModelType, InstancePool> pools;
-
-    /**
-     * Default constructor.
-     */
-    public ModelFactory() {
-        pools = new HashMap<>();
-        for (ModelType type : ModelType.values()) {
-            pools.put(type, new InstancePool(type.getTypeClass()));
-        }
-    }
+public interface ModelFactory {
 
     /**
      *
-     * @param type The model type to get
-     *
-     * @return An instance of the given type
+     * @return an empty Data
      */
-    public final Searchable getInstance(final ModelType type) {
-        return pools.get(type).getInstance();
-    }
+    Data getData();
 
     /**
+     * Build a new Data with the given string as content.
      *
-     * @return a fresh search from pool
+     * @param data a string containing what it pleases you
+     *
+     * @return The fully-initialized Data
      */
-    protected final Search getSearch() {
-        return (Search) pools.get(ModelType.SEARCH).getInstance();
-    }
+    Data getData(final String data);
 
     /**
-     * Create a Search with given parameters.
+     * Build a new Data with the given buffer as content.
+     *
+     * @param buffer the content of the data to create
+     *
+     * @return The fully-initialized Data
+     */
+    Data getData(final ByteBuffer buffer);
+
+    /**
+     * Creates a new DataFile with the given file.
+     *
+     * @param file the file
+     * @return the DataFile
+     */
+    DataFile getDataFile(final File file);
+
+    /**
+     * Creates a new DataFile with the given uri pointing to a local file.
+     *
+     * @param uri the URI
+     * @return the DataFile
+     */
+    DataFile getDataFile(final URI uri);
+
+    /**
+     * Creates a new DataFile from the given data, from which the URI of the file will be extracted.
+     *
+     * @param data the data
+     * @return the DataFile
+     */
+    DataFile getDataFile(final Data data);
+
+    /**
+     * Creates a new DataFile from the given data, from which the URI of the file will be extracted.
+     *
+     * @param hash the hash of the data file
+     * @param uri the uri of the file
+     * @param size the size of the file
+     * @return the new DataFile
+     */
+    DataFile getDataFile(final MetHash hash, final URI uri, final int size);
+
+    /**
+     * Build a SearchCriteria with given parameters.
+     *
+     * @param props the MetaProperties representing the metaData
+     *
+     * @return The fully-initialized SearchCriteria.
+     */
+    SearchCriteria createCriteria(final Set<MetaData> props);
+
+    /**
+     * Build a SearchCriteria with given array of criterion.
+     *
+     * @param criteria array of criterion. Can be null or empty.
+     * @return The fully-initialized SearchCriteria.
+     */
+    SearchCriteria createCriteria(final MetaData... criteria);
+
+    /**
+     * Create a MetaSearch with given parameters and empty results.
+     *
+     * @param source search's source
+     * @param metaData search's metaData
+     *
+     * @return a brand new search
+     */
+    Search createSearch(final Searchable source, final SearchCriteria metaData);
+
+    /**
+     * Create a MetaSearch with given parameters.
      *
      * @param source search's source
      * @param metaData search's metaData
@@ -78,104 +136,17 @@ public class ModelFactory {
      *
      * @return a brand new search
      */
-    public final Search createSearch(final Searchable source,
-            final MetaData metaData, final List<Data> datas) {
-        Search search = (Search) pools.get(ModelType.SEARCH).getInstance();
-        search.setSource(source);
-        search.setMetaData(metaData);
-        if (datas != null) {
-            search.addLinkedData(datas);
-        }
-        return search;
-    }
+    Search createSearch(final Searchable source, final SearchCriteria metaData, final List<Data> datas);
 
     /**
+     * Create a MetaSearch with given parameters.
      *
-     * @return a fresh dataString
+     * @param source search's source
+     * @param metaData search's metaData
+     * @param datas search's results
+     *
+     * @return a brand new search
      */
-    protected final DataString getDataString() {
-        return (DataString) pools.get(ModelType.DATASTRING).getInstance();
-    }
+    Search createSearch(final Searchable source, final SearchCriteria metaData, Data... datas);
 
-    /**
-     * Build a new DataString with the given parameters.
-     *
-     * @param data a string containing what it please you
-     *
-     * @return The fully-initialized dataString
-     */
-    public final DataString createDataString(final String data) {
-        DataString dataString = this.getDataString();
-        dataString.setString(data);
-        return dataString;
-    }
-
-    /**
-     * @return a fresh DataFile
-     */
-    protected final DataFile getDataFile() {
-        return (DataFile) pools.get(ModelType.DATAFILE).getInstance();
-    }
-
-    /**
-     * Build a new DataString with given parameters.
-     *
-     * @param file The file you want DataFile to point to
-     *
-     * @return The fully-initialized dataFile
-     */
-    public final DataFile createDataFile(final File file) {
-        DataFile dataFile = this.getDataFile();
-        dataFile.setFile(file);
-        return dataFile;
-    }
-
-    /**
-     *
-     * @return a fresh MetaData
-     */
-    protected final MetaData getMetaData() {
-        return (MetaData) pools.get(ModelType.METADATA).getInstance();
-    }
-
-    /**
-     * Build a MetaData with given parameters.
-     *
-     * @param props the MetaProperties representing the metaData
-     *
-     * @return The fully-initialized MetaData.
-     */
-    public final MetaData createMetaData(final TreeSet<MetaProperty> props) {
-        MetaData metaData = this.getMetaData();
-        metaData.setProperties(props);
-        return metaData;
-    }
-
-    /**
-     * Create a new instance of a Content type Model object have protected constructor, so you can't call a
-     * clazz.newinstance on those ? extends Searchable.class ;-)
-     *
-     * @param clazz the class to instantiate
-     * @return an instance of the given Class
-     * @throws InstantiationException if invalid class
-     * @throws IllegalAccessException if invalid class
-     */
-    public final Searchable newInstance(final Class clazz)
-            throws InstantiationException, IllegalAccessException {
-        return (Searchable) clazz.newInstance();
-    }
-
-    /**
-     * After retrieving an search from network, you may want to give him his childs Call this method.
-     *
-     * TODO check that the given children have the same hash that the search want
-     *
-     * @param search
-     * @param source
-     * @param metaData
-     * @param linked
-     */
-    public void updateFromNewtork(Search search, Searchable source, MetaData metaData, ArrayList<Data> linked) {
-        search.set(source, metaData, linked);
-    }
 }

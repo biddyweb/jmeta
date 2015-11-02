@@ -103,7 +103,9 @@ public class CacheEntry {
         ByteBuffer buf = ByteBuffer.allocate(Long.BYTES + this.applicationData.length);
         buf.putLong(this.timeout);
         buf.put(this.applicationData);
-        this.data = buf.array();
+        this.data = new byte[buf.limit()];
+        buf.rewind();
+        buf.get(data);
     }
 
     /**

@@ -9,6 +9,12 @@ package org.meta.api.storage;
 public interface MetaCache extends MetaStorage {
 
     /**
+     *
+     * @return the backing storage used by this cache
+     */
+    MetaStorage getStorage();
+
+    /**
      * Store the given value under key in the backing database.
      *
      * The entry is also associated with a timeout value, after which it will be considered invalid.

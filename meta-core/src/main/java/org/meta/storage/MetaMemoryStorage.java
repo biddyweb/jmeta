@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.meta.api.configuration.ModelConfiguration;
 import org.meta.api.storage.MetaStorage;
-import org.meta.storage.exceptions.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +56,8 @@ public class MetaMemoryStorage implements MetaStorage {
      *
      * @param config the configuration
      *
-     * @throws StorageException if the database failed to initialize
      */
-    public MetaMemoryStorage(final ModelConfiguration config) throws StorageException {
+    public MetaMemoryStorage(final ModelConfiguration config) {
         this.configuration = config;
         map = new HashMap<>();
     }

@@ -32,6 +32,8 @@ import java.util.TreeMap;
 import org.meta.api.storage.MetaCache;
 import org.meta.api.storage.MetaStorage;
 import org.meta.utils.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -51,6 +53,8 @@ public class MetaCacheStorage implements MetaCache {
      * The key under which the timeout manager structures will be stored in database.
      */
     public static final byte[] KEY = "metaCache".getBytes();
+
+    private final Logger logger = LoggerFactory.getLogger(MetaCacheStorage.class);
 
     /**
      * The underlying storage.
@@ -387,5 +391,10 @@ public class MetaCacheStorage implements MetaCache {
     @Override
     public long count() {
         return this.storage.count();
+    }
+
+    @Override
+    public MetaStorage getStorage() {
+        return this.storage;
     }
 }

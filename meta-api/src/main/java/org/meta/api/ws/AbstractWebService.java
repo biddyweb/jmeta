@@ -24,31 +24,24 @@
  */
 package org.meta.api.ws;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import org.meta.api.amp.AMPResponseCallback;
-import org.meta.api.common.AsyncOperation;
-import org.meta.api.common.OperationListener;
-import org.meta.api.model.Data;
-import org.meta.api.model.MetaProperty;
-import org.meta.api.model.Search;
-import org.meta.api.model.Searchable;
 import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.organizers.ColumnOrganizer;
 
 /**
- * Define how need to work a web service command.
+ * Defines a web service command.
  *
- * To register a new web service command you must extends this class, and override at least : - execute
- * command - apply small update
+ * To register a new web service command you must extends this class, and override at least :
+ * <ul>
+ * <li> execute command</li>
+ * <li>apply small update</li>
+ * </ul>
  *
  * You should build your interface in the default constructor, which is required
  *
  * @author faquin
- *
  */
-public abstract class AbstractWebService implements AMPResponseCallback {
+public abstract class AbstractWebService {
 
     /**
      *
@@ -113,26 +106,24 @@ public abstract class AbstractWebService implements AMPResponseCallback {
     }
 
     /**
-     * When a final user is ready to interact with your webservice command, he will execute it. Executing your
-     * command, mean, to give you some parameters to make it do some work.
+     * When a final user interacts with a webservice command, he will execute it.
      *
-     * Parameters come into the map of parameters.
+     * Executing a command means giving parameters to do a specific action.
+     *
+     * Parameters are a map of key/values.
      *
      * @param map a simple map, where for each key, you may find or not an array of values. Those are given by
-     * Jetty, which is a http server. So, parameters are given by the end user as a get string :
+     * Jetty, which is the http server. So, parameters are given by the end user as a get string :
      * ?key1=bar;key2=foo;key2=barfoo
      *
-     * you can easily lookup for parameters using the following tomcat style methods : - getParameter -
+     * you can easily lookup parameters using the following tomcat style methods : - getParameter -
      * getParameters
      *
      * If you want any output, make sure you apply small changes to your interface. Beware that big changes
      * are not tested yet, but you want to give a try, your feedback will be warm welcome.
      *
-     * Remember that your operation is bloking the user interface, so, faster you send him a result, better it
-     * is.
-     *
-     * You may surely not be able to give any results for now, especially if you search on the DHT see search
-     * method in {@link PluginAMPController}. They will arrive later in the callback method.
+     * Remember that your operation is blocking the user interface, so, faster you send him a result, better
+     * it is.
      *
      */
     protected abstract void executeCommand(final Map<String, String[]> map);
@@ -194,127 +185,4 @@ public abstract class AbstractWebService implements AMPResponseCallback {
         return parameter;
     }
 
-    /**
-     * Update a search with the new result.
-     *
-     * Will check in DB if the Data are already here, in these case, it will not override the data, but just
-     * apply changes.
-     *
-     * After calling this method newSearch will contain newResult has hi list of results.
-     *
-     * In this case, try to
-     *
-     * @param newSearch the search to update
-     * @param newResult the result to add
-     * @return the updated search
-     */
-    protected final Search updateSearch(final Search newSearch, final Data newResult) {
-        //try to get the same from model
-        Search searchDB = controller.getModel().getSearch(newSearch.getHash());
-        if (searchDB == null) {
-            searchDB = newSearch;
-        }
-        searchDB.setLinkedData(newResult);
-        return searchDB;
-    }
-
-    /**
-     * Look if the content already exist in the DB, and update the reference in this case.
-     *
-     * Auto merge the Data description objects. TODO This logic should not be here!
-     *
-     * @param newResult newResultToUpdate
-     * @return the updated data
-     */
-    protected final Data updateResult(final Data newResult) {
-        //If dbResult was not null, remove it and add the new result instead
-        //try to get it in the DB
-        Data resultDB = controller.getModel()
-                .getDataFile(newResult.getHash());
-        //if result exist in the DB, just adjust newResult reference
-        //to point to it
-
-        if (resultDB == null) {
-            return newResult;
-        }
-
-        //get new description
-        ArrayList<MetaProperty> newDescription = newResult.getDescription();
-
-        //get db description
-        ArrayList<MetaProperty> mergeDescription = resultDB.getDescription();
-
-        //for each description of the new one
-        for (MetaProperty desc : newDescription) {
-            boolean alreadyExist = false;
-            for (Iterator<MetaProperty> i = mergeDescription.iterator(); !alreadyExist && i.hasNext();) {
-                alreadyExist = desc.compareTo(i.next()) == 0;
-            }
-            //if do not exists, add it
-            if (!alreadyExist) {
-                mergeDescription.add(desc);
-            }
-        }
-        resultDB.setDescription(mergeDescription);
-        return resultDB;
-    }
-
-    /**
-     * Save the searchable in the DB and push his hash to the DHT.
-     *
-     * @param searchable the searchable to save and push
-     */
-    protected final void saveAndPush(final Searchable searchable) {
-        //write into dataBase
-        onlySave(searchable);
-        //and store it to the DHT
-        onlyPush(searchable);
-    }
-
-    /**
-     * Only save the searchable in the db.
-     *
-     * @param searchable the searchable to save
-     */
-    protected final void onlySave(final Searchable searchable) {
-        //TODO Error check
-        this.controller.getModel().set(searchable);
-    }
-
-    /**
-     * push the hash of the searchable to the DHT.
-     *
-     * @param searchable the searchable to push
-     */
-    protected final void onlyPush(final Searchable searchable) {
-        //store search into DHT
-        this.controller.getDht().store(searchable.getHash())
-                .addListener(new OperationListener<AsyncOperation>() {
-
-                    @Override
-                    public void failed(final AsyncOperation operation) {
-                        callbackFailedToPush(operation, searchable);
-                    }
-
-                    @Override
-                    public void complete(final AsyncOperation operation) {
-                        callbackSuccessToPush(operation, searchable);
-                    }
-
-                });
-    }
-
-    /**
-     * @param operation the operation that failed.
-     * @param searchable the searchable
-     */
-    protected void callbackFailedToPush(final AsyncOperation operation, final Searchable searchable) {
-    }
-
-    /**
-     * @param operation the operation that succeeded.
-     * @param searchable the searchable
-     */
-    protected void callbackSuccessToPush(final AsyncOperation operation, final Searchable searchable) {
-    }
 }

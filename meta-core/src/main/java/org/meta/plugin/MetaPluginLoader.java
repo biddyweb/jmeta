@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import org.meta.api.amp.PluginAMPController;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
@@ -173,26 +172,20 @@ public class MetaPluginLoader {
     }
 
     /**
-     * Registers the given plugin to amp and web service stacks and inject any required dependencies.
+     * Registers the given plugin web service stacks and inject any required dependencies.
      *
      * @param plugin the plugin to register.
      */
     private void registerPlugin(final MetaPlugin plugin) {
-        PluginAMPController ampController = plugin.getAMPController();
+
+        plugin.setPluginAPI(this.controller.getPluginAPI());
+
         AbstractPluginWebServiceControler wsController = plugin.getWebServiceController();
 
-        ampController.setModel(this.controller.getModel());
-        //give a link to the model to the web service controler
-        wsController.setModel(this.controller.getModel());
-        wsController.setDht(this.controller.getDht());
-        wsController.setAmpWriter(this.controller.getAmpWriter());
-        //give a link to the tcp part of the plugin to the web
-        //init AMP and WS parts
-        ampController.init(plugin.getName());
         wsController.init(plugin.getName());
         //give the plugin to webservicereader and TcpReader
         this.controller.getWebServiceReader().registerPlugin(plugin.getName(), wsController);
-        this.controller.getAmpServer().registerPlugin(plugin.getName(), ampController);
+        //this.controller.getAmpServer().registerPlugin(plugin.getName(), ampController);
 
     }
 

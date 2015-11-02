@@ -24,7 +24,6 @@
  */
 package org.meta.api.plugin;
 
-import org.meta.api.amp.PluginAMPController;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 
 /**
@@ -40,6 +39,13 @@ public interface MetaPlugin {
     String getName();
 
     /**
+     * Give an instance of the meta API to the plugin.
+     *
+     * @param api the api
+     */
+    void setPluginAPI(final MetAPI api);
+
+    /**
      * Return the instance of {@link AbstractPluginWebServiceControler} defined by this plugin.
      *
      * @return the web service controller.
@@ -51,5 +57,5 @@ public interface MetaPlugin {
      *
      * @return the AMP controller.
      */
-    PluginAMPController getAMPController();
+    //PluginAMPController getAMPController();
 }

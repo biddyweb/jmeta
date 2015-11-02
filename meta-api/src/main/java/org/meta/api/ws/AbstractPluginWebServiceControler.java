@@ -26,29 +26,23 @@ package org.meta.api.ws;
 
 import com.mongodb.util.JSONSerializers;
 import com.mongodb.util.ObjectSerializer;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.bson.types.BasicBSONList;
-import org.meta.api.amp.AMPResponseCallback;
-import org.meta.api.amp.AMPWriter;
-import org.meta.api.common.MetHash;
-import org.meta.api.common.OperationListener;
-import org.meta.api.dht.FindPeersOperation;
-import org.meta.api.dht.MetaDHT;
-import org.meta.api.common.MetaPeer;
-import org.meta.api.model.Model;
+import org.meta.api.plugin.MetAPI;
 
 /**
- * You may extend this class to create the WS part of a plugin. It's allow you to register command to the
- * webservice reader, that can be executed by the user on his interface.
+ * This class is to be extended to create the WS part of a plugin.
  *
- * Basically, this class offer generic treatment to serve interfaces and search over DHT
+ * It allows you to register commands to the web service, that can be executed by the user on his interface.
  *
- * You may extends registerCommands wich allow you to tel the {@link WebServiceReader} that you may have
+ * Basically, this class offer generic treatment to serve interfaces and handle specific plugin operations.
+ *
+ * You may extends registerCommands which allows you to tell the {@link WebServiceReader} that you may have
  * something to execute.
  *
- * You may use search to search a hash in the DHT, the datas, if founded will arrive in the calback method.
  *
  * @author Thomas LAVOCAT
  *
@@ -56,24 +50,19 @@ import org.meta.api.model.Model;
 public abstract class AbstractPluginWebServiceControler {
 
     /**
-     *
+     * The Meta api object.
      */
-    protected Model model = null;
-
-    /**
-     *
-     */
-    protected MetaDHT dht = null;
-
-    /**
-     *
-     */
-    protected AMPWriter ampWriter = null;
+    protected final MetAPI api;
 
     /**
      *
      */
     protected LinkedHashMap<String, Class<? extends AbstractWebService>> lstCommands = null;
+
+    /**
+     * Just a TEST!.
+     */
+    protected Map<String, Object> context;
 
     /**
      *
@@ -82,9 +71,12 @@ public abstract class AbstractPluginWebServiceControler {
 
     /**
      *
+     * @param pluginAPI the meta plugin api
      */
-    public AbstractPluginWebServiceControler() {
+    public AbstractPluginWebServiceControler(final MetAPI pluginAPI) {
+        this.api = pluginAPI;
         lstCommands = new LinkedHashMap<>();
+        this.context = new HashMap<>();
     }
 
     /**
@@ -98,10 +90,10 @@ public abstract class AbstractPluginWebServiceControler {
     }
 
     /**
-     * Fill the lstCommands with all the needed webservice commands.
+     * Fill the lstCommands with all the needed web service commands.
      *
-     * @param commands is a HashMap containing a key wich is the command name and a Clas wich is the Class of
-     * the command.
+     * @param commands is a HashMap containing a key which is the command name and a Class which is the
+     * handler of the command.
      */
     protected abstract void registercommands(
             LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
@@ -134,97 +126,18 @@ public abstract class AbstractPluginWebServiceControler {
     }
 
     /**
-     * Search something on the DHT. If you search a hash, you know which plugin and which command to contact.
-     * It corresponds to a command you've developed in TCP part.
      *
-     * TODO move this logic elsewhere!
-     *
-     * @param hash in fact something is this hash
-     * @param plugin name of the plugin to call
-     * @param command command to execute
-     * @param abstractWebService an abstractWebService to call back with the results (or failure)
+     * @return the plugin api
      */
-    public final void search(final MetHash hash,
-            final String plugin,
-            final String command,
-            final AMPResponseCallback abstractWebService) {
-
-        //Find peers for the given hash
-        FindPeersOperation peersOperation = this.dht.findPeers(hash);
-
-        //New operation
-        peersOperation.addListener(new OperationListener<FindPeersOperation>() {
-
-            @Override
-            public void failed(final FindPeersOperation operation) {
-                abstractWebService.callbackFailure(operation.getFailureMessage());
-            }
-
-            @Override
-            public void complete(final FindPeersOperation operation) {
-                /*
-                 * foreach peer found, launch a contact wit TCPWriter
-                 */
-
-                Collection<MetaPeer> peers = operation.getPeers();
-
-                for (Iterator<MetaPeer> i = peers.iterator(); i.hasNext();) {
-                    MetaPeer peer = i.next();
-                    //TODO control ID validity
-                    AbstractPluginWebServiceControler.this.ampWriter.askTo(peer.getSocketAddr().getAddress(),
-                            plugin,
-                            command,
-                            hash,
-                            abstractWebService,
-                            peer.getSocketAddr().getPort());
-                }
-            }
-        });
-    }
-
-    /**
-     * @param metaModel the model to set
-     */
-    public final void setModel(final Model metaModel) {
-        this.model = metaModel;
-    }
-
-    /**
-     * @return return the model object
-     */
-    public final Model getModel() {
-        return model;
+    public MetAPI getAPI() {
+        return this.api;
     }
 
     /**
      *
-     * @return the Meta DHT instance
+     * @return The WS controller context. FOR TESTS!.
      */
-    public final MetaDHT getDht() {
-        return dht;
-    }
-
-    /**
-     *
-     * @param metaDht define the DHT instance
-     */
-    public final void setDht(final MetaDHT metaDht) {
-        this.dht = metaDht;
-    }
-
-    /**
-     * @return the instance of the AMP writer.
-     */
-    public final AMPWriter getAmpWriter() {
-        return ampWriter;
-    }
-
-    /**
-     *
-     *
-     * @param metaAmpWriter define the AMP writer instance
-     */
-    public final void setAmpWriter(final AMPWriter metaAmpWriter) {
-        this.ampWriter = metaAmpWriter;
+    public Map<String, Object> getContext() {
+        return context;
     }
 }

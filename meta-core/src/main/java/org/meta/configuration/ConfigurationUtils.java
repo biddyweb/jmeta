@@ -34,8 +34,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
-import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.common.MetaPeer;
+import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,30 +77,26 @@ public final class ConfigurationUtils {
      * </ul>
      *
      * @param peersString The string to extract peers from.
-     * @return The collection of {@link MetaPeer} extracted from the given string representation or null if
-     * none found.
+     * @return The collection of {@link MetaPeer} extracted from the given string representation
      *
-     * @throws InvalidConfigurationException if an invalid ip/host is given.
+     * //@throws InvalidConfigurationException if an invalid ip/host is given.
      */
-    public static Collection<MetaPeer> peersFromString(final String peersString)
-            throws InvalidConfigurationException {
+    public static Collection<MetaPeer> peersFromString(final String peersString) {
         Collection<MetaPeer> peers = new ArrayList<>();
         String[] knownPeersStringList = asList(peersString);
 
         for (String peerString : knownPeersStringList) {
             String[] peerInfo = peerString.split(":");
             if (peerInfo.length != 2) {
-                logger.warn("Invalid peer specified in config..." + peersString);
+                logger.warn("Invalid peer specified in config: " + peersString);
                 continue;
             }
-            InetAddress addr;
             try {
-                addr = InetAddress.getByName(peerInfo[0]);
+                InetAddress addr = InetAddress.getByName(peerInfo[0]);
                 short peerPort = Short.valueOf(peerInfo[1]);
                 peers.add(new MetaPeer(null, addr, peerPort));
             } catch (UnknownHostException ex) {
-                throw new InvalidConfigurationException(
-                        "Invalid ip or hostname specified in configuration", ex);
+                //Do not throw if invalid peer
             }
         }
         return peers;

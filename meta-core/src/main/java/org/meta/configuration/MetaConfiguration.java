@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The main configuration class, holding sub-configuration objects per components (amp, webservices, model,
+ * The main configuration class, holding sub-configuration objects per components (p2pp, webservice, model,
  * dht).
  */
 public final class MetaConfiguration {
@@ -52,7 +52,7 @@ public final class MetaConfiguration {
     /**
      * Default AMP config file path.
      */
-    private static final String AMP_CONFIG_PATH = "conf/amp.conf";
+    private static final String P2PP_CONFIG_PATH = "conf/p2pp.conf";
 
     /**
      * Default Model config file path.
@@ -77,7 +77,7 @@ public final class MetaConfiguration {
     /**
      * The class responsible for the amp stack configuration.
      */
-    private static AMPConfigurationImpl ampConfiguration;
+    private static P2PPConfigurationImpl p2ppConfiguration;
 
     /**
      * The class responsible for the model configuration.
@@ -110,8 +110,8 @@ public final class MetaConfiguration {
             Properties wsProps = ConfigurationUtils.createProperties(WS_CONFIG_PATH);
             wsConfiguration = new WSConfigurationImpl(wsProps);
 
-            Properties ampProps = ConfigurationUtils.createProperties(AMP_CONFIG_PATH);
-            ampConfiguration = new AMPConfigurationImpl(ampProps);
+            Properties ampProps = ConfigurationUtils.createProperties(P2PP_CONFIG_PATH);
+            p2ppConfiguration = new P2PPConfigurationImpl(ampProps);
 
             Properties modelProps = ConfigurationUtils.createProperties(MODEL_CONFIG_PATH);
             modelConfiguration = new ModelConfigurationImpl(modelProps);
@@ -140,8 +140,8 @@ public final class MetaConfiguration {
     /**
      * @return The amp stack configuration object.
      */
-    public static AMPConfigurationImpl getAmpConfiguration() {
-        return ampConfiguration;
+    public static P2PPConfigurationImpl getP2ppConfiguration() {
+        return p2ppConfiguration;
     }
 
     /**
@@ -178,8 +178,8 @@ public final class MetaConfiguration {
      *
      * @param ampConfig the amp configuration
      */
-    public static void setAmpConfiguration(final AMPConfigurationImpl ampConfig) {
-        MetaConfiguration.ampConfiguration = ampConfig;
+    public static void setP2ppConfiguration(final P2PPConfigurationImpl ampConfig) {
+        MetaConfiguration.p2ppConfiguration = ampConfig;
     }
 
     /**

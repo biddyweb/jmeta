@@ -24,7 +24,7 @@
  */
 package org.meta.plugins.SimpleChat;
 
-import org.meta.api.amp.PluginAMPController;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 
@@ -37,17 +37,15 @@ public class SimpleChat implements MetaPlugin {
     /**
      *
      */
-    public static String NAME = "SimpleChat";
+    public static final String NAME = "SimpleChat";
 
-    private PluginAMPController ampController;
+    //private PluginAMPController ampController;
     private AbstractPluginWebServiceControler wsController;
 
     /**
      *
      */
     public SimpleChat() {
-        ampController = new SimpleChatTcpControler();
-        wsController = new SimpleChatWebServiceControler();
     }
 
     @Override
@@ -61,8 +59,12 @@ public class SimpleChat implements MetaPlugin {
     }
 
     @Override
-    public PluginAMPController getAMPController() {
-        return ampController;
+    public void setPluginAPI(final MetAPI api) {
+        wsController = new SimpleChatWebServiceControler(api);
     }
 
+//    @Override
+//    public PluginAMPController getAMPController() {
+//        return ampController;
+//    }
 }

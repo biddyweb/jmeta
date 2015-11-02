@@ -44,7 +44,7 @@ public class GetLastMessage extends PluginAMPCommand {
         Search s = (Search) myTCPControler.getInTheModel(hash);
         if (s != null) {
             datas.add(s);
-            datas.addAll(s.getLinkedData());
+            datas.addAll(s.getResults());
         }
         return new AMPAnswerBuilder(answer, datas);
     }

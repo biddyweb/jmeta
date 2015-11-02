@@ -25,24 +25,20 @@
 package org.meta.plugins.SimpleChat.webservice.commands;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.meta.api.common.OperationListener;
 import org.meta.api.dht.StoreOperation;
 import org.meta.api.model.Data;
-import org.meta.api.model.DataString;
 import org.meta.api.model.MetaData;
-import org.meta.api.model.MetaProperty;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
-import org.meta.api.model.Searchable;
+import org.meta.api.model.SearchCriteria;
+import org.meta.api.plugin.MetAPI;
+import org.meta.api.plugin.SearchOperation;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
@@ -56,26 +52,35 @@ import org.slf4j.LoggerFactory;
  *
  * @author nico
  */
-public class Chat extends AbstractWebService {
+public class Chat extends AbstractWebService implements OperationListener<SearchOperation> {
 
-    InterfaceDescriptor initialDescriptor = null;
-    TextOutput output = null;
-    ModelFactory factory = null;
-    MetaData chat = null;
-    private Search retrieveMessage = null;
+    private final Logger logger = LoggerFactory.getLogger(Chat.class);
+
+    private InterfaceDescriptor initialDescriptor = null;
+    private TextOutput output = null;
+    private SearchCriteria chat = null;
+    private Search channelSearch = null;
     private TextInput path;
     private TextInput nick;
-    private TreeMap<Date, String> results = null;
+    private Map<Long, String> results = null;
     private SimpleDateFormat sdf = null;
-    private Logger logger = LoggerFactory.getLogger(Chat.class);
+
+    private String errorMessage;
+
+    private final ModelFactory modelFactory;
+
+    private final MetAPI api;
 
     /**
      *
-     * @param controler
+     * @param controller the ws controller
      */
-    public Chat(AbstractPluginWebServiceControler controler) {
-        super(controler);
-        results = new TreeMap<Date, String>();
+    public Chat(final AbstractPluginWebServiceControler controller) {
+        super(controller);
+        api = controller.getAPI();
+        modelFactory = api.getModel().getFactory();
+
+        results = new TreeMap<>();
         sdf = new SimpleDateFormat("dd /MM / yyyy HH : mm : ss");
 
         path = new TextInput("channel", "Channel room");
@@ -92,11 +97,9 @@ public class Chat extends AbstractWebService {
 
         rootColumn.addChild(new SelfSubmitButton("send", "Send"));
 
-        factory = super.controller.getModel().getFactory();
-
-        TreeSet<MetaProperty> props = new TreeSet<MetaProperty>();
-        props.add(new MetaProperty("chat", "channel"));
-        chat = factory.createMetaData(props);
+        TreeSet<MetaData> props = new TreeSet<MetaData>();
+        props.add(new MetaData("chat", "channel"));
+        chat = modelFactory.createCriteria(props);
     }
 
     @Override
@@ -108,87 +111,85 @@ public class Chat extends AbstractWebService {
         path.setValue(channel);
         nick.setValue(nickName);
 
+        results.clear();
+
         if (channel != null && !channel.equals("")) {
-            DataString channelName = factory.createDataString(channel);
-            retrieveMessage = factory.createSearch(channelName, chat, null);
+            Data channelName = modelFactory.getData(channel);
+
+            channelSearch = modelFactory.createSearch(channelName, chat);
+            Search search = api.getModel().getSearch(channelSearch.getHash());
+            if (search != null) {
+                channelSearch = search;
+            }
+
             if (message != null && !message.equals("")) {
                 Date timeStamp = new Date();
-                Data messageToSave = factory.createDataString("" + nickName + ";" + timeStamp.getTime() + ";" + message);
-                results.put(timeStamp, nickName + " : " + message);
-                Search searchToSave = factory.createSearch(channelName, chat, Collections.singletonList(messageToSave));
+                Data messageToSave = modelFactory.getData("" + nickName + ";"
+                        + timeStamp.getTime() + ";" + message);
+                //results.put(timeStamp.getTime(), nickName + " : " + message);
+                channelSearch.addResult(messageToSave);
                 //write into dataBase
                 //and store it to the DHT
-                super.controller.getModel().set(searchToSave);
-                super.controller.getDht().store(searchToSave.getHash()).addListener(
+                if (!api.getModel().set(channelSearch)) {
+                    logger.warn("Failed to set search into model");
+                }
+                api.getDHT().store(channelSearch.getHash()).addListener(
                         new OperationListener<StoreOperation>() {
 
                             @Override
-                            public void failed(StoreOperation operation) {
+                            public void failed(final StoreOperation operation) {
                                 output.append("fail to push");
                             }
 
                             @Override
-                            public void complete(StoreOperation operation) {
+                            public void complete(final StoreOperation operation) {
                                 output.append("succes to push");
                             }
-
                         });
             }
-            super.controller.search(retrieveMessage.getHash(),
-                    "SimpleChat",
-                    "getLastMessages",
-                    this);
+        }
+        //ApplySmallUpdate does the search
+        applySmallUpdate();
+        redrawOutput();
+    }
 
+    @Override
+    public void failed(final SearchOperation operation) {
+        logger.warn("Search operation failed");
+        this.errorMessage = operation.getFailureMessage();
+        redrawOutput();
+    }
+
+    @Override
+    public void complete(final SearchOperation operation) {
+        Set<Data> searchResults = operation.getResults();
+
+        for (Data result : searchResults) {
+            String baseMessage = result.toString();
+            String[] split = baseMessage.split(";");
+            String pseudo = split[0];
+            Date sDate = new Date(Long.parseLong(split[1]));
+            String msg = split[2];
+            this.results.put(sDate.getTime(), "<b>" + pseudo + "</b> : " + msg);
         }
         redrawOutput();
     }
 
     @Override
     public void applySmallUpdate() {
-        super.controller.search(retrieveMessage.getHash(),
-                "SimpleChat",
-                "getLastMessages",
-                this);
-    }
-
-    @Override
-    public void callbackSuccess(ArrayList<Searchable> results) {
-        //Those results are incomplete ==> why ?
-        for (Iterator<Searchable> i = results.iterator(); i.hasNext();) {
-            Searchable searchable = i.next();
-
-            if (searchable instanceof Search) {
-                Search search = (Search) searchable;
-                Collection<Data> linkDatas = search.getLinkedData();
-
-                for (Iterator<Data> k = linkDatas.iterator(); k.hasNext();) {
-                    Data data = (Data) k.next();
-                    if (data instanceof DataString) {
-                        DataString distantMessage = (DataString) data;
-                        String baseMessage = distantMessage.getString();
-                        String[] split = baseMessage.split(";");
-                        String pseudo = split[0];
-                        Date sDate = new Date(Long.parseLong(split[1]));
-                        String msg = split[2];
-                        this.results.put(sDate, pseudo + " : " + msg);
-                    }
-
-                }
-            }
+        if (channelSearch != null) {
+            api.search(channelSearch.getHash(), true, true, null).addListener(this);
         }
-        redrawOutput();
-    }
-
-    @Override
-    public void callbackFailure(String failureMessage) {
-        // TODO Auto-generated method stub
-
     }
 
     private void redrawOutput() {
         output.flush();
-        for (Entry<Date, String> entry : this.results.entrySet()) {
-            output.append(sdf.format(entry.getKey()) + " " + entry.getValue());
+        if (errorMessage != null) {
+            output.append("Error in execution! : " + errorMessage);
+            output.append("");
+        }
+        for (String msg : this.results.values()) {
+            output.append(msg);
         }
     }
 }

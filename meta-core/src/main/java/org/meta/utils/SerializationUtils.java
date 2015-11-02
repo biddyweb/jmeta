@@ -24,6 +24,13 @@
  */
 package org.meta.utils;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import org.meta.api.common.MetaPeer;
+
 /**
  * Utility methods to (de)serialize various types to raw data for storage or network.
  *
@@ -31,8 +38,12 @@ package org.meta.utils;
  */
 public final class SerializationUtils {
 
-    private SerializationUtils() {
+    /**
+     * Hexadecimal chars for utility.
+     */
+    protected static final char[] HEX_CHAR_ARRAY = "0123456789ABCDEF".toCharArray();
 
+    private SerializationUtils() {
     }
 
     /**
@@ -81,6 +92,113 @@ public final class SerializationUtils {
         result[2] = (byte) (i >> 8);
         result[3] = (byte) (i /*>> 0*/);
         return result;
+    }
+
+    /**
+     * Decode the content of the given ByteBuffer, from its position to its limit, to a String.
+     *
+     * @param buf the UTF-8 encoded buffer to convert
+     * @return the newly decoded string
+     */
+    public static String decodeUTF8(final ByteBuffer buf) {
+        return Charset.forName("UTF-8").decode(buf).toString();
+    }
+
+    /**
+     * Encode the given String into UTF-8.
+     *
+     * @param str the string to encode in UTF-8
+     * @return the ByteBuffer containing encoded UTF8 data
+     */
+    public static ByteBuffer encodeUTF8(final String str) {
+        return Charset.forName("UTF-8").encode(str);
+    }
+
+    /**
+     * Creates an hexadecimal string representation of the given ByteBuffer.
+     *
+     * @param buffer the buffer
+     * @return the hexadecimal string
+     */
+    public static String toHexString(final ByteBuffer buffer) {
+        ByteBuffer buf = buffer.asReadOnlyBuffer();
+        buf.rewind();
+        char[] hexChars = new char[buffer.limit() * 2];
+
+        for (int j = 0; j < buf.limit(); j++) {
+            int v = buf.get() & 0xFF;
+            hexChars[j * 2] = HEX_CHAR_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_CHAR_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    /**
+     * Creates a ByteBuffer whose content is represented as hexadecimal in the given String.
+     *
+     * @param hexaString the hexadecimal string
+     * @return the created ByteBuffer
+     */
+    public static ByteBuffer fromHexString(final String hexaString) {
+        if ((hexaString.length() % 2) != 0) {
+            throw new IllegalArgumentException("Input string must contain an even number of characters");
+        }
+        int length = hexaString.length();
+        ByteBuffer buf = ByteBuffer.allocate(length / 2);
+
+        for (int i = 0; i < length; i += 2) {
+            buf.put((byte) ((Character.digit(hexaString.charAt(i), 16) << 4)
+                    + Character.digit(hexaString.charAt(i + 1), 16)));
+        }
+        return buf;
+    }
+
+    /**
+     * Serialize an ip/port couple into a byte array.
+     *
+     * @param port The udp port
+     * @param addr The ipv4/ipv6 address
+     *
+     * @return the serialized ip/port couple
+     */
+    public static byte[] serializeAddress(final Short port, final InetAddress addr) {
+        byte[] addrBytes = addr.getAddress();
+        short dataSize = (short) (2 + addrBytes.length);
+        byte[] data = new byte[dataSize];
+
+        data[0] = (byte) (port & 0x00ff);
+        data[1] = (byte) ((port >> 8) & 0x00ff);
+        for (short i = 2; i < dataSize; ++i) {
+            data[i] = addrBytes[i - 2];
+        }
+        return data;
+    }
+
+    /**
+     * De-serialize the Ip/port couple from the given data into a {@link  MetaPeer}.
+     *
+     * @param data The serialized ip:port couple.
+     * @return the created peer or null if invalid data.
+     */
+    public static MetaPeer peerFromData(final byte[] data) {
+        MetaPeer peer = new MetaPeer();
+        short addrSize = (short) (data.length - 2);
+        byte[] addrBytes = new byte[addrSize];
+        short port = (short) (((data[1] & 0xFF) << 8) | (data[0] & 0xFF));
+
+        for (int i = 0; i < addrSize; ++i) {
+            addrBytes[i] = data[i + 2];
+        }
+        try {
+            InetAddress inetAddr = InetAddress.getByAddress(addrBytes);
+            if (inetAddr == null) {
+                return null;
+            }
+            peer.setAddress(new InetSocketAddress(inetAddr, port));
+        } catch (UnknownHostException ex) {
+            return null;
+        }
+        return peer;
     }
 
 }

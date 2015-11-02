@@ -26,7 +26,6 @@ package org.meta.api.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Base interface representing a stateful asynchronous operation.
@@ -113,12 +112,14 @@ public abstract class AsyncOperation {
     /**
      * Start the operation.
      */
-    public abstract void start();
+    public void start() {
+    }
 
     /**
      * Finish the operation.
      */
-    public abstract void finish();
+    public void finish() {
+    }
 
     /**
      * Cancel the operation and notifies the listeners the operation was canceled.
@@ -220,6 +221,20 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * Mark the operation has complete and notify listeners.
+     */
+    public final void complete() {
+        if (this.hasFinished()) {
+            //No need to do anything if the operation already finished.
+            return;
+        }
+        synchronized (lock) {
+            this.state = OperationState.COMPLETE;
+        }
+        this.notifyListeners();
+    }
+
+    /**
      * @return true if the operation completed (even if it failed), false otherwise.
      */
     public final boolean hasFinished() {
@@ -276,15 +291,13 @@ public abstract class AsyncOperation {
      * Notify the listeners in case an event occurred (completion, cancellation, ...).
      */
     protected final void notifyListeners() {
-        for (Iterator<OperationListener<? extends AsyncOperation>> it = listeners.iterator(); it.hasNext();) {
-            OperationListener l = it.next();
+        for (OperationListener l : listeners) {
             if (this.isSuccess()) {
                 l.complete(this);
             } else {
                 l.failed(this);
             }
         }
-        this.listeners.clear();
         synchronized (lock) {
             this.lock.notifyAll();
         }

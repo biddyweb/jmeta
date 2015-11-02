@@ -27,6 +27,7 @@ package org.meta.api.dht;
 import java.io.IOException;
 import org.meta.api.common.MetHash;
 import org.meta.api.configuration.DHTConfiguration;
+import org.meta.api.storage.MetaCache;
 
 /**
  * @author nico
@@ -39,12 +40,19 @@ public abstract class MetaDHT {
     protected DHTConfiguration configuration;
 
     /**
-     * Initialize the DHT with the given configuration.
+     * The backing storage of the dht.
+     */
+    protected MetaCache storage;
+
+    /**
+     * Initialize the DHT with the given configuration and given storage.
      *
      * @param config The dht configuration.
+     * @param dbStorage The backing storage of the dht
      */
-    public MetaDHT(final DHTConfiguration config) {
+    public MetaDHT(final DHTConfiguration config, final MetaCache dbStorage) {
         this.configuration = config;
+        this.storage = dbStorage;
     }
 
     /**

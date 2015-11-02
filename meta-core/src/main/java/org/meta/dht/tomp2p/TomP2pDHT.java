@@ -48,6 +48,7 @@ import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
+import org.meta.api.storage.MetaCache;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
@@ -76,13 +77,17 @@ public final class TomP2pDHT extends MetaDHT {
      */
     private Peer peer;
 
+    private TomP2pStorage tomP2pStorage;
+
     /**
      * Create the tomp2p DHT with given configuration.
      *
-     * @param config The DHT configuration to use.
+     * @param config The DHT configuration to use
+     * @param dbStorage the backing storage for the dht
      */
-    public TomP2pDHT(final DHTConfigurationImpl config) {
-        super(config);
+    public TomP2pDHT(final DHTConfigurationImpl config, final MetaCache dbStorage) {
+        super(config, dbStorage);
+        this.tomP2pStorage = new TomP2pStorage(storage);
     }
 
     /**
@@ -201,9 +206,9 @@ public final class TomP2pDHT extends MetaDHT {
 //        });
 
         logger.debug("DHT address = " + this.peer.peerAddress());
-        this.peerDHT = new PeerBuilderDHT(peer).start();
-        //this.peerDHT.
-        // TODO Define custom storage layer for routing table etc on DHT peer.
+        PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
+        //peerBuilderDHT.storage(tomP2pStorage);
+        this.peerDHT = peerBuilderDHT.start();
     }
 
     @Override

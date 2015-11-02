@@ -26,7 +26,7 @@ package org.meta.plugin.tcp.amp;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
-import org.meta.api.model.ModelFactory;
+import org.meta.model.MetaObjectModelFactory;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public abstract class AMPParser {
     /**
      *
      */
-    protected ModelFactory factory = null;
+    protected MetaObjectModelFactory factory = null;
 
     /**
      *
@@ -52,7 +52,7 @@ public abstract class AMPParser {
      * @param modelFactory the model factory
      * @throws InvalidAMPCommand if the data contains invalid values
      */
-    public AMPParser(final byte[] bs, final ModelFactory modelFactory) throws InvalidAMPCommand {
+    public AMPParser(final byte[] bs, final MetaObjectModelFactory modelFactory) throws InvalidAMPCommand {
         this.factory = modelFactory;
         parse(bs);
     }

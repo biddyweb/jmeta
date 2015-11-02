@@ -26,7 +26,7 @@ package org.meta.api.amp;
 
 import java.util.HashMap;
 import org.meta.api.common.MetHash;
-import org.meta.api.model.Model;
+import org.meta.api.model.ModelStorage;
 import org.meta.api.model.Searchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public abstract class PluginAMPController {
     /**
      *
      */
-    protected Model model = null;
+    protected ModelStorage model = null;
 
     /**
      *
@@ -93,7 +93,7 @@ public abstract class PluginAMPController {
      *
      * @param metaModel the model instance
      */
-    public final void setModel(final Model metaModel) {
+    public final void setModel(final ModelStorage metaModel) {
         this.model = metaModel;
     }
 

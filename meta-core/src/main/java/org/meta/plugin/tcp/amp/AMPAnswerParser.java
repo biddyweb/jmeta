@@ -27,12 +27,8 @@ package org.meta.plugin.tcp.amp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import org.meta.api.model.DataFile;
-import org.meta.api.model.DataString;
-import org.meta.api.model.MetaData;
-import org.meta.api.model.ModelFactory;
-import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
+import org.meta.model.MetaObjectModelFactory;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
 import org.meta.plugin.tcp.amp.exception.InvalidAmpAnswerCommand;
 
@@ -55,7 +51,7 @@ public class AMPAnswerParser extends AMPParser {
      * @param factory the model factory
      * @throws InvalidAMPCommand if an invalid value is encountered in the data
      */
-    public AMPAnswerParser(final byte[] bs, final ModelFactory factory) throws InvalidAMPCommand {
+    public AMPAnswerParser(final byte[] bs, final MetaObjectModelFactory factory) throws InvalidAMPCommand {
         super(bs, factory);
     }
 
@@ -116,24 +112,23 @@ public class AMPAnswerParser extends AMPParser {
             //Now that we have a rebuild fragment
             //We can invoke the object by his type
             //and feed him with this fragment.
-            Class<?> clazz = null;
-            try {
-                clazz = Class.forName(new String(fragment.get("_type")));
-                Searchable searchable = factory.newInstance(clazz);
-
-                //security check. In case of someone wo'll try to execute somthing
-                //on an other object than on of the model.
-                if (searchable instanceof Search
-                        || searchable instanceof MetaData
-                        || searchable instanceof DataFile
-                        || searchable instanceof DataString) {
-                    searchable.unParseFromAmpFragment(fragment);
-                    datas.add(searchable);
-                }
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                throw new InvalidAmpAnswerCommand(type);
-            }
-
+//            Class<?> clazz = null;
+//            try {
+//                clazz = Class.forName(new String(fragment.get("_type")));
+//                Searchable searchable = factory.newInstance(clazz);
+//
+//                //security check. In case of someone wo'll try to execute somthing
+//                //on an other object than on of the model.
+//                if (searchable instanceof MetaSearch
+//                        || searchable instanceof SearchCriteria
+//                        || searchable instanceof DataFile
+//                        || searchable instanceof Data) {
+//                    searchable.unParseFromAmpFragment(fragment);
+//                    datas.add(searchable);
+//                }
+//            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+//                throw new InvalidAmpAnswerCommand(type);
+//            }
         }
     }
 

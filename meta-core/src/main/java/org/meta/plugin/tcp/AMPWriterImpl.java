@@ -31,8 +31,8 @@ import java.util.concurrent.Future;
 import org.meta.api.amp.AMPResponseCallback;
 import org.meta.api.amp.AMPWriter;
 import org.meta.api.common.MetHash;
-import org.meta.api.configuration.AMPConfiguration;
-import org.meta.api.model.ModelFactory;
+import org.meta.api.configuration.P2PPConfiguration;
+import org.meta.model.MetaObjectModelFactory;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 
 /**
@@ -45,18 +45,18 @@ public class AMPWriterImpl implements AMPWriter {
 
     private int lastAsk = 0;
     private ExecutorService executor = null;
-    private ModelFactory factory = null;
+    private MetaObjectModelFactory factory = null;
 
     /**
      * The global AMP configuration.
      */
-    private final AMPConfiguration configuration;
+    private final P2PPConfiguration configuration;
 
     /**
      * @param config the amp configuration
      * @param modelFactory the model factory
      */
-    public AMPWriterImpl(final AMPConfiguration config, final ModelFactory modelFactory) {
+    public AMPWriterImpl(final P2PPConfiguration config, final MetaObjectModelFactory modelFactory) {
         this.configuration = config;
         this.factory = modelFactory;
         this.executor = Executors.newFixedThreadPool(
@@ -66,7 +66,7 @@ public class AMPWriterImpl implements AMPWriter {
     /**
      * @param modelFactory the model factory
      */
-    public void setFactory(final ModelFactory modelFactory) {
+    public void setFactory(final MetaObjectModelFactory modelFactory) {
         this.factory = modelFactory;
     }
 

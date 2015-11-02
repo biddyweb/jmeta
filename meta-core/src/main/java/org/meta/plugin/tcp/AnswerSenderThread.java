@@ -33,10 +33,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import org.meta.api.amp.AMPResponseCallback;
 import org.meta.api.model.Data;
-import org.meta.api.model.MetaData;
-import org.meta.api.model.ModelFactory;
-import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
+import org.meta.model.MetaObjectModelFactory;
+import org.meta.model.MetaSearch;
 import org.meta.plugin.tcp.amp.AMPAnswerParser;
 import org.meta.plugin.tcp.amp.AMPAskBuilder;
 import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
@@ -53,7 +52,7 @@ public class AnswerSenderThread implements Runnable {
     private AMPAskBuilder ask = null;
     private ArrayList<Searchable> results = null;
     private int port = 0;
-    private ModelFactory factory = null;
+    private MetaObjectModelFactory factory = null;
     private Logger logger = LoggerFactory.getLogger(AnswerSenderThread.class);
     private AMPResponseCallback listener = null;
 
@@ -71,7 +70,7 @@ public class AnswerSenderThread implements Runnable {
             final InetAddress addr,
             final int p,
             final AMPResponseCallback callback,
-            final ModelFactory modelFactory) {
+            final MetaObjectModelFactory modelFactory) {
         this.ask = askBuilder;
         this.address = addr;
         this.port = p;
@@ -106,24 +105,24 @@ public class AnswerSenderThread implements Runnable {
                 this.results = parser.getDatas();
                 /*
                  * When results are retrieved.
-                 * Search objects are incompletes,
+                 * MetaSearch objects are incompletes,
                  * Iterate, find search, and look if an Element inside the rest
                  * of retrieved datas looks like the search's child data
                  */
                 for (Searchable searchable : this.results) {
-                    if (searchable instanceof Search) {
-                        Search search = (Search) searchable;
-                        Searchable source = searchElement(this.results, search.getTmpSourceHash());
-                        MetaData metaData = (MetaData) searchElement(this.results,
-                                search.getTmpmetaDataHash());
+                    if (searchable instanceof MetaSearch) {
+                        MetaSearch search = (MetaSearch) searchable;
+//                        Searchable source = searchElement(this.results, search.getTmpSourceHash());
+//                        SearchCriteria metaData = (SearchCriteria) searchElement(this.results,
+//                                search.getTmpmetaDataHash());
                         ArrayList<Data> linked = new ArrayList<>();
-                        for (String link : search.getTmpLinkedData()) {
-                            Searchable s = searchElement(this.results, link);
-                            if (s != null) {
-                                linked.add((Data) s);
-                            }
-                        }
-                        factory.updateFromNewtork(search, source, metaData, linked);
+//                        for (String link : search.getTmpLinkedData()) {
+//                            Searchable s = searchElement(this.results, link);
+//                            if (s != null) {
+//                                linked.add((Data) s);
+//                            }
+//                        }
+                        //factory.updateFromNewtork(search, source, metaData, linked);
                     }
                 }
             }

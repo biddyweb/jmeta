@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.meta.api.amp.PluginAMPCommand;
 import org.meta.api.amp.PluginAMPController;
-import org.meta.configuration.AMPConfigurationImpl;
+import org.meta.configuration.P2PPConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class AMPServer extends Thread {
     /**
      * The AMP configuration.
      */
-    private final AMPConfigurationImpl configuration;
+    private final P2PPConfigurationImpl configuration;
 
     /**
      * The list of plugins TCP handlers.
@@ -70,7 +70,7 @@ public class AMPServer extends Thread {
      *
      * @param config the amp configuration
      */
-    public AMPServer(final AMPConfigurationImpl config) {
+    public AMPServer(final P2PPConfigurationImpl config) {
         this.configuration = config;
         this.mapPlugin = new HashMap<>();
         this.executor = Executors.newFixedThreadPool(
@@ -83,7 +83,8 @@ public class AMPServer extends Thread {
     @Override
     public void run() {
         try {
-            Short port = this.configuration.getAmpPort();
+            Short port = 0;
+            //this.configuration.getAmpPort();
 
             socket = new ServerSocket(port);
             logger.info("AMPServer listening on port " + port);

@@ -24,19 +24,11 @@
  */
 package org.meta.api.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import org.bson.BSONObject;
-import org.bson.types.BasicBSONList;
 import org.meta.api.common.MetHash;
-import org.meta.api.common.MetamphetUtils;
 
 /**
+ * Interface describing a search.
  *
  * A Search object is made to point to a list of results. It can be given as a question or as a response.
  *
@@ -44,15 +36,16 @@ import org.meta.api.common.MetamphetUtils;
  * interrogation - the metaData which correspond to the criteria of the question/response - the results who
  * are all you now about the pair source/meteData
  *
- * How to represent a search ? --------------------------------------- | Search |
- * ---------------------------------------- | Source | MetaData | ----------------------------------------
+ * How to represent a search ? --------------------------------------- | MetaSearch |
+ * ---------------------------------------- | Source | SearchCriteria |
+ * ----------------------------------------
  *
  * |
  * -----> List OF Results
  *
  * The search Hash is composed by the concatenation of the source hash and the metaData hash. Wich allow
- * anyone who as a source and question about it to built a Search (who will be in this case a question) and
- * contact anyone who have declared knowing answers.
+ * anyone who as a source and question about it to built a MetaSearch (who will be in this case a question)
+ * and contact anyone who have declared knowing answers.
  *
  * A quick example : To find a subtitle to a movie, you can build a search like this :
  * --------------------------------------- | Unique search | ---------------------------------------- |
@@ -69,249 +62,71 @@ import org.meta.api.common.MetamphetUtils;
  *
  * @author Thomas LAVOCAT
  */
-public final class Search extends Searchable {
-
-    private Searchable source = null;
-    private MetaData metaData = null;
-    private HashMap<MetHash, Data> linkedData = null;
-    //Represent the state after network receiving
-    private List<String> tmpLinkedData = null;
-    private String tmpSourceHash = null;
-    private String tmpMetaDataHash = null;
+public abstract class Search extends Searchable {
 
     /**
      *
+     * @param hash the hash
      */
-    protected Search() {
-        super();
-        linkedData = new HashMap<>();
-        tmpLinkedData = new ArrayList<>();
+    public Search(final MetHash hash) {
+        super(hash);
     }
+
+    /**
+     * Add a result to this search.
+     *
+     * @param data the result to add
+     */
+    public abstract void addResult(final Data data);
+
+    /**
+     * Add results to the search.
+     *
+     * @param results the results to add to this search
+     */
+    public abstract void addResults(final Collection<Data> results);
+
+    /**
+     *
+     * @return a collection of every results for this search
+     */
+    public abstract Collection<Data> getResults();
 
     /**
      *
      * @return the source
      */
-    public Searchable getSource() {
-        return source;
-    }
+    public abstract Searchable getSource();
 
     /**
-     *
-     * @return the list of every data linked to this metaData. Those are stored in an hashMap, but return a
-     * Collection, for simplicity purposes
-     */
-    public Collection<Data> getLinkedData() {
-        return linkedData.values();
-    }
-
-    /**
-     * Add linked datas to the search. Those are stored as an hashMap with the data's hash for key.
-     *
-     * If a conflict on hash key occurred, the last one will be take.
-     *
-     * @param lnkData the resultsto add to this search
-     */
-    public void addLinkedData(final List<Data> lnkData) {
-        if (this.linkedData == null) {
-            this.linkedData = new HashMap<>();
-        }
-        for (Data d : lnkData) {
-            this.linkedData.put(d.getHash(), d);
-        }
-        this.updateState();
-    }
-
-    /**
-     * set a linked Data.
-     *
-     * @param data the linked data to set
-     *
-     * if share same hash than another, will be overriding
-     */
-    public void setLinkedData(final Data data) {
-        if (linkedData == null) {
-            linkedData = new HashMap<>();
-        }
-        this.linkedData.put(data.getHash(), data);
-        this.updateState();
-    }
-
-    /**
-     * set the source; Not accessible outside Model package, because of hash processing triggered.
+     * Defines the source of this search.
      *
      * @param src the source of this search
      */
-    public void setSource(final Searchable src) {
-        this.source = src;
-        this.updateState();
-        reHash();
-    }
+    public abstract void setSource(final Searchable src);
 
     /**
      *
-     * @return return the list of results
+     * @return return the search criteria
      */
-    public MetaData getMetaData() {
-        return metaData;
-    }
+    public abstract SearchCriteria getCriteria();
 
     /**
-     * set the metaData. Not accessible outside Model package, because of hash processing triggered
+     * Set the search criteria.
      *
      * @param metData the new meta data for this search.
      */
-    public void setMetaData(final MetaData metData) {
-        this.metaData = metData;
-        this.updateState();
-        reHash();
-    }
+    public abstract void setCriteria(final SearchCriteria metData);
 
-    @Override
-    public MetHash reHash() {
-        //Hash is composed of concatenation of sourcehash and metaData hash
-        String srcHash = null;
-        String dstHash = null;
-
-        if (source != null) {
-            srcHash = source.getHash().toString();
-        } else {
-            // TODO check that. This should not happend, ever ever ?!
-            srcHash = "";
-        }
-        if (metaData != null) {
-            dstHash = metaData.getHash().toString();
-        } else {
-            // TODO same as
-            dstHash = "";
-        }
-        String concat = srcHash + dstHash;
-        hash = MetamphetUtils.makeSHAHash(concat);
-        return hash;
-    }
+    /**
+     * @param criteria the criteria list to add to this search
+     */
+    public abstract void addCriteria(final Collection<MetaData> criteria);
 
     /**
      *
-     * @return transform the Search object into a BSON Object.
-     *
-     * Linked datas are only pointed by their hash
+     * @param criterion the criterion to be added to the search criteria
      */
-    @Override
-    public BSONObject getBson() {
-        BSONObject bsonObject = super.getBson();
+    public abstract void addCriterion(final MetaData criterion);
 
-        BasicBSONList bsonLinkedData = new BasicBSONList();
-        int i = 0;
-        for (Iterator<Entry<MetHash, Data>> it = linkedData.entrySet().iterator(); it.hasNext(); i++) {
-            Data data = it.next().getValue();
-            bsonLinkedData.put(i, data.getHash().toString());
-        }
-        bsonObject.put("linkedData", bsonLinkedData);
-
-        bsonObject.put("source", this.source.getHash().toString());
-        bsonObject.put("metaData", this.metaData.getHash().toString());
-        return bsonObject;
-    }
-
-    @Override
-    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
-        //write hash source
-        fragment.put("_source", source.getHash().toByteArray());
-        fragment.put("_metaData", metaData.getHash().toByteArray());
-
-        //write every data's hash
-        fragment.put("_nbLinkedData", (linkedData.size() + "").getBytes());
-        int i = 0;
-        for (Iterator<Entry<MetHash, Data>> it = linkedData.entrySet().iterator(); it.hasNext(); i++) {
-            Data data = it.next().getValue();
-            fragment.put("_i" + i + "_data", data.getHash().toByteArray());
-        }
-
-    }
-
-    @Override
-    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
-        //when this method is called in a Search, her state is no more a real
-        //Search but a temporary search, it means, it only represent what's
-        //over the network, so source = null, metaData = null and LinkedData = null;
-        source = null;
-        metaData = null;
-        linkedData = null;
-        //and the Search cannot be write or updated in database
-
-        //extract the source and delete from the fragment
-        tmpSourceHash = new MetHash(fragment.get("_source")).toString();
-        fragment.remove("_source");
-
-        //extract the metada and delete from fragment
-        tmpMetaDataHash = "";
-        tmpMetaDataHash = new MetHash(fragment.get("_metaData")).toString();
-
-        //extract all linkedDatas and delete it from the fragment too
-        int nbLinkedData = Integer.parseInt(new String(fragment.get("_nbLinkedData")));
-        tmpLinkedData = new ArrayList<>();
-        for (int i = 0; i < nbLinkedData; i++) {
-            String data = new MetHash(fragment.get("_i" + i + "_data")).toString();
-            fragment.remove("_i" + i + "_data");
-            tmpLinkedData.add(data);
-        }
-
-    }
-
-    /**
-     *
-     * @return a list of the futures results
-     */
-    public List<String> getTmpLinkedData() {
-        return tmpLinkedData;
-    }
-
-    /**
-     * TODO what is this ?
-     *
-     * @return ?
-     */
-    public String getTmpSourceHash() {
-        return tmpSourceHash;
-    }
-
-    /**
-     * TODO what is this ?
-     *
-     * @return ?
-     */
-    public String getTmpmetaDataHash() {
-        return tmpMetaDataHash;
-    }
-
-    @Override
-    public Searchable toOnlyTextData() {
-        //the OnlyText will return
-        //a clone of this search only containing source, metada and a list
-        //of results in an onyText way
-        Search searchClone = new Search();
-        searchClone.setSource(source.toOnlyTextData());
-        searchClone.setMetaData((MetaData) metaData.toOnlyTextData());
-
-        ArrayList<Data> linkedDataClone = new ArrayList<>();
-        for (Iterator<Data> i = linkedData.values().iterator(); i.hasNext();) {
-            Data data = i.next();
-            linkedDataClone.add((Data) data.toOnlyTextData());
-        }
-        searchClone.addLinkedData(linkedDataClone);
-        return searchClone;
-    }
-
-    /**
-     * Set all information to the search. TODO remove! normal setters are enough...
-     *
-     * @param src the new source of the search
-     * @param metaDat the new metadata of the search
-     * @param linked the new result list of the search
-     */
-    protected void set(final Searchable src, final MetaData metaDat, final ArrayList<Data> linked) {
-        this.source = src;
-        this.metaData = metaDat;
-        addLinkedData(linked);
-    }
 }

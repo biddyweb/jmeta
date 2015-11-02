@@ -24,109 +24,141 @@
  */
 package org.meta.api.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
-import org.bson.types.BasicBSONList;
+import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import org.meta.api.common.MetHash;
 
 /**
+ * Abstract data container.
+ *
+ * Contains a size, a type and a list of associated meta-data.
  *
  * @author Thomas LAVOCAT
- *
- * A Data Object is an element who contained final result for a search. This is an abstract Data meant to be
- * override to add a content. A Data object contains a list of MetaProperty who are complementary information
- * about the data.
- *
  */
 public abstract class Data extends Searchable {
 
     /**
-     *
+     * The size of this data.
      */
-    protected ArrayList<MetaProperty> description = null;
+    protected int size;
 
     /**
-     * Instantiate Data, create an empty description list.
+     * The type of this Data object.
      */
-    public Data() {
-        super();
-        description = new ArrayList<>();
-    }
+    protected DataType type;
 
     /**
-     * Instantiate a new Data -> use in case of creation.
      *
-     * @param hash the hash of this data
+     */
+    protected Set<MetaData> metaData = null;
+
+    /**
+     * Instantiate Data, create an empty metaData list.
+     *
+     * @param hash the hash of the data
      */
     public Data(final MetHash hash) {
         super(hash);
-    }
-
-    @Override
-    public BSONObject getBson() {
-        BSONObject bsonObject = super.getBson();
-        //foreach proerties, get her value and name and put it in the json
-        BasicBSONList bsonProperties = new BasicBSONList();
-        int count = 0;
-        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext(); count++) {
-            MetaProperty property = i.next();
-            BasicBSONObject bsonProperty = new BasicBSONObject();
-            bsonProperty.put("name", property.getName());
-            bsonProperty.put("value", property.getValue());
-            bsonProperties.put(count, bsonProperty);
-        }
-        bsonObject.put("description", bsonProperties);
-        return bsonObject;
-    }
-
-    @Override
-    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
-        //write every description
-        fragment.put("_nbProperties", (description.size() + "").getBytes());
-        int count = 0;
-        for (Iterator<MetaProperty> i = description.iterator(); i.hasNext(); count++) {
-            MetaProperty property = i.next();
-            fragment.put("_i" + count + "_property_value", property.getValue().getBytes());
-            fragment.put("_i" + count + "_property_name", property.getName().getBytes());
-        }
-    }
-
-    @Override
-    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
-        description = new ArrayList<>();
-        //and the Search cannot be write or updated in database
-        //extract all linkedDatas and delete it from the fragment too
-        int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
-        for (int i = 0; i < nbProperties; i++) {
-            String name = new String(fragment.get("_i" + i + "_property_name"));
-            String value = new String(fragment.get("_i" + i + "_property_value"));
-            MetaProperty property = new MetaProperty(name, value);
-            fragment.remove("_i" + i + "_property_name");
-            fragment.remove("_i" + i + "_property_value");
-            description.add(property);
-        }
+        metaData = new HashSet<>();
     }
 
     /**
-     * As description does not count in the Data hash calculation, this method is public and can be called by
-     * anyone.
+     * As metaData does not count in the hash calculation, this method is public and can be called by anyone.
      *
-     * @param desc an ArrayList of MetaProperty representing complementary information about the data. This
-     * may be a simple description, a title, a comment...
+     * @param desc a Set of MetaData representing complementary information about the data.
+     *
+     * This may be a simple metaData, a title, a comment...
      */
-    public final void setDescription(final ArrayList<MetaProperty> desc) {
-        this.description = desc;
-        updateState();
+    public final void setMetaData(final Set<MetaData> desc) {
+        this.metaData = desc;
     }
 
     /**
      *
-     * @return the description of the Data
+     * @return the metaData of the Data
      */
-    public final ArrayList<MetaProperty> getDescription() {
-        return description;
+    public final Set<MetaData> getMetaData() {
+        return metaData;
     }
+
+    /**
+     * Add the given meta data to the internal Set.
+     *
+     * @param property the meta-data
+     */
+    public final void addMetaData(final MetaData property) {
+        this.metaData.add(property);
+    }
+
+    /**
+     * Add the given Set of meta-data to the internal Set.
+     *
+     * @param properties the Set of meta-data to add
+     */
+    public final void addMetaData(final Set<MetaData> properties) {
+        this.metaData.addAll(properties);
+    }
+
+    /**
+     *
+     * @return the size of this data
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     *
+     * @param dataSize the size of this data
+     */
+    public void setSize(final int dataSize) {
+        this.size = dataSize;
+    }
+
+    /**
+     *
+     * @return The type of this data object
+     */
+    public DataType getType() {
+        return type;
+    }
+
+    /**
+     *
+     * @param dataType The type of this data object
+     */
+    public void setType(final DataType dataType) {
+        this.type = dataType;
+    }
+
+    /**
+     * Copies the internal data to a byte array.
+     *
+     * @return the internal data as a byte array
+     */
+    public abstract byte[] getBytes();
+
+    /**
+     * Retrieve the internal data as a {@link ByteBuffer}.
+     *
+     * The returned buffer is usable as-is, and is read-only and its position will be zero.
+     *
+     * @return the {@link ByteBuffer}.
+     */
+    public abstract ByteBuffer getBuffer();
+
+    /**
+     * Convert the underlying data to a String.
+     *
+     * Internal data will be decoded from UTF-8.
+     *
+     * If underlying data does not contains a valid UTF-8 sequence, the content of the returned string is
+     * undefined.
+     *
+     * @return the created String
+     */
+    @Override
+    public abstract String toString();
+
 }

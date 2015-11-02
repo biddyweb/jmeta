@@ -24,138 +24,93 @@
  */
 package org.meta.api.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.TreeSet;
-import org.bson.BSONObject;
-import org.bson.BasicBSONObject;
-import org.bson.types.BasicBSONList;
-import org.meta.api.common.MetHash;
-import org.meta.api.common.MetamphetUtils;
+import java.util.Map;
 
 /**
+ * A MetaData is a key value object used in two cases :
+ *
+ * - add a search criterion
+ *
+ * - add information to an object (Data)
+ *
+ * Since MetaData is not storable as is in the DB, it does not contain a hash value.
+ *
+ * It implements Comparable to be ordered by key:value in a TreeSet or other sorted collections.
  *
  * @author Thomas LAVOCAT
- *
- * A MetaData is describe by a list of properties. like {name:subtitles, value:vostfr} and a list of results.
- *
- * This class extends Searchable.
  */
-public final class MetaData extends Searchable {
-
-    private TreeSet<MetaProperty> properties = null;
+public final class MetaData implements Comparable<MetaData>, Map.Entry<String, String> {
 
     /**
-     * Needed for java Reflection.
+     * Char separator between key and value.
      */
-    protected MetaData() {
-        super();
+    public static final char SEPARATOR = ':';
+
+    private String key;
+    private String value;
+
+    /**
+     * Default empty constructor.
+     */
+    public MetaData() {
     }
 
     /**
-     * Create a MetaData -> use in case of creation.
+     * @param k the key of the property
+     * @param val the value of the property
+     */
+    public MetaData(final String k, final String val) {
+        this.key = k;
+        this.value = val;
+    }
+
+    /**
+     * copy constructor.
      *
-     * @param metHash hash of this MetaData
-     * @param props the list of properties
+     * @param other the MetaProperty to copy
      */
-    protected MetaData(final MetHash metHash, final TreeSet<MetaProperty> props) {
-        super(metHash);
-        this.setProperties(props);
+    public MetaData(final MetaData other) {
+        this.key = other.key;
+        this.value = other.value;
     }
 
     /**
-     * this will only return copies => TODO why ??
-     *
-     * @return the list of {@link MetaProperty} of this MetaData
+     * @return the key
      */
-    public ArrayList<MetaProperty> getProperties() {
-        ArrayList<MetaProperty> property = new ArrayList<>();
-        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
-            MetaProperty next = i.next();
-            property.add(new MetaProperty(next));
-        }
-        return property;
+    @Override
+    public String getKey() {
+        return key;
     }
 
     /**
-     * @param props the properties to set Since the MetaProperties are used in the hash calculation This
-     * method is only callable in the model package;
-     *
+     * @param k the key to set
      */
-    public void setProperties(final TreeSet<MetaProperty> props) {
-        this.properties = props;
-        this.updateState();
-        reHash();
+    public void setKey(final String k) {
+        this.key = k;
     }
 
     @Override
-    public MetHash reHash() {
-        //The hash is the hash of the concatenation of every key:value
-        //separate by ;
-        //TODO use string builder here
-        String concat = "";
-        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext();) {
-            MetaProperty property = i.next();
-            concat = concat + property.getName() + ":" + property.getValue() + ";";
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String setValue(final String val) {
+        String oldVal = this.value;
+
+        this.value = val;
+        return oldVal;
+    }
+
+    @Override
+    public int compareTo(final MetaData o) {
+        //compare to another property
+        // on key:value concatenation
+        int keyCompare = key.compareTo(o.key);
+        if (keyCompare != 0) {
+            return keyCompare;
         }
-        hash = MetamphetUtils.makeSHAHash(concat);
-        return hash;
+        return value.compareTo(o.value);
     }
 
-    @Override
-    public BSONObject getBson() {
-        BSONObject bsonObject = super.getBson();
-        //foreach proerties, get her value and name and put it in the json
-        BasicBSONList bsonProperties = new BasicBSONList();
-        int count = 0;
-        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext(); count++) {
-            MetaProperty property = i.next();
-            BasicBSONObject bsonProperty = new BasicBSONObject();
-            bsonProperty.put("name", property.getName());
-            bsonProperty.put("value", property.getValue());
-            bsonProperties.put(count, bsonProperty);
-        }
-        bsonObject.put("properties", bsonProperties);
-        return bsonObject;
-    }
-
-    @Override
-    protected void fillFragment(final LinkedHashMap<String, byte[]> fragment) {
-        //write every properties
-        fragment.put("_nbProperties", (properties.size() + "").getBytes());
-        int count = 0;
-        for (Iterator<MetaProperty> i = properties.iterator(); i.hasNext(); count++) {
-            MetaProperty property = i.next();
-            fragment.put("_i" + count + "_property_value", property.getValue().getBytes());
-            fragment.put("_i" + count + "_property_name", property.getName().getBytes());
-        }
-    }
-
-    @Override
-    protected void decodefragment(final LinkedHashMap<String, byte[]> fragment) {
-        //when this method is called in a metaData, her state is no more a real
-        //MetaData but a temporary metaData, it means, it only represent what's
-        //over the network, so source = null ans result = null
-        //but not properties
-        properties = new TreeSet<>();
-        //and the Search cannot be write or updated in database
-
-        //extract all linkedDatas and delete it from the fragment too
-        int nbProperties = Integer.parseInt(new String(fragment.get("_nbProperties")));
-        for (int i = 0; i < nbProperties; i++) {
-            String name = new String(fragment.get("_i" + i + "_property_name"));
-            String value = new String(fragment.get("_i" + i + "_property_value"));
-            MetaProperty property = new MetaProperty(name, value);
-            fragment.remove("_i" + i + "_property_name");
-            fragment.remove("_i" + i + "_property_value");
-            properties.add(property);
-        }
-    }
-
-    @Override
-    public Searchable toOnlyTextData() {
-        //Only this
-        return this;
-    }
 }

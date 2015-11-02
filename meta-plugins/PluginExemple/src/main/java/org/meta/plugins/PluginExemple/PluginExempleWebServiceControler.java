@@ -25,6 +25,7 @@
 package org.meta.plugins.PluginExemple;
 
 import java.util.LinkedHashMap;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.PluginExemple.webservice.commands.ExempleWsCommand;
@@ -35,6 +36,14 @@ import org.meta.plugins.PluginExemple.webservice.commands.SecondStateExempleWsCo
  * @author nico
  */
 public class PluginExempleWebServiceControler extends AbstractPluginWebServiceControler {
+
+    /**
+     *
+     * @param pluginAPI plugin api object
+     */
+    public PluginExempleWebServiceControler(final MetAPI pluginAPI) {
+        super(pluginAPI);
+    }
 
     @Override
     protected void registercommands(

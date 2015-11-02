@@ -24,7 +24,7 @@
  */
 package org.meta.plugins.PluginExemple;
 
-import org.meta.api.amp.PluginAMPController;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 
@@ -39,15 +39,16 @@ public class PluginExemple implements MetaPlugin {
      */
     public static String NAME = "PluginExample";
 
-    private AbstractPluginWebServiceControler wsController;
-    private PluginAMPController ampController;
+    private MetAPI pluginAPI;
 
+    private AbstractPluginWebServiceControler wsController;
+
+    //private PluginAMPController ampController;
     /**
      *
      */
     public PluginExemple() {
-        wsController = new PluginExempleWebServiceControler();
-        ampController = new PluginExempleTcpControler();
+        //ampController = new PluginExempleTcpControler();
     }
 
     @Override
@@ -61,8 +62,13 @@ public class PluginExemple implements MetaPlugin {
     }
 
     @Override
-    public PluginAMPController getAMPController() {
-        return ampController;
+    public void setPluginAPI(final MetAPI api) {
+        this.pluginAPI = api;
+        wsController = new PluginExempleWebServiceControler(api);
     }
 
+    //    @Override
+//    public PluginAMPController getAMPController() {
+//        return ampController;
+//    }
 }

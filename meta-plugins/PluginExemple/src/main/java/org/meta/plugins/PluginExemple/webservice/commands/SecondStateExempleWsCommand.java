@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.meta.api.model.Searchable;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.DateInput;
@@ -52,43 +51,43 @@ import org.meta.api.ws.forms.submit.SubmitToButton;
  */
 public class SecondStateExempleWsCommand extends AbstractWebService {
 
-    private TextOutput          output         = null;
-    private int                 nbRefresh      = 0;
-	private TextInput           firstName;
-	private TextInput           lastName;
-	private DateInput           dateInscription;
-	private DateInput           dateInscription1;
-	private DateInput           dateInscription2;
-	private Select              option1;
-	private Select              option2;
-	private Select              option3;
-	private RadioButton         radio1;
-	private RadioButton         radio2;
-	private RadioButton         radio3;
-	private CheckBox            check1;
-	private CheckBox            check2;
-	private CheckBox            check3;
-	private SelectList          select;
-	private RadioList           radioList;
-	private CheckBoxLists       checklist;
-	private DateInput birthDate;
+    private TextOutput output = null;
+    private int nbRefresh = 0;
+    private TextInput firstName;
+    private TextInput lastName;
+    private DateInput dateInscription;
+    private DateInput dateInscription1;
+    private DateInput dateInscription2;
+    private Select option1;
+    private Select option2;
+    private Select option3;
+    private RadioButton radio1;
+    private RadioButton radio2;
+    private RadioButton radio3;
+    private CheckBox check1;
+    private CheckBox check2;
+    private CheckBox check3;
+    private SelectList select;
+    private RadioList radioList;
+    private CheckBoxLists checklist;
+    private DateInput birthDate;
 
     /**
      *
      * @param controler
      */
-    public SecondStateExempleWsCommand(AbstractPluginWebServiceControler controler){
+    public SecondStateExempleWsCommand(AbstractPluginWebServiceControler controler) {
         super(controler);
         // Describe a full interface for test
         birthDate = new DateInput("birthDate", "Birth Date");
         rootColumn.addChild(birthDate);
-        LineOrganizer     line         = new LineOrganizer("ligne1");
+        LineOrganizer line = new LineOrganizer("ligne1");
         rootColumn.addChild(line);
         firstName = new TextInput("firstName", "First Name");
         line.addChild(firstName);
         lastName = new TextInput("lastName", "Last Name");
         line.addChild(lastName);
-        
+
         ColumnOrganizer right = new ColumnOrganizer("right");
         line.addChild(right);
         dateInscription = new DateInput("dateInscription", "Inscription Date");
@@ -136,7 +135,6 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         rootColumn.addChild(output);
     }
 
-
     @Override
     public void executeCommand(Map<String, String[]> map) {
         output.flush();
@@ -146,20 +144,20 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         dateInscription.setValue(getParameter(dateInscription.getId(), map));
         dateInscription1.setValue(getParameter(dateInscription1.getId(), map));
         dateInscription2.setValue(getParameter(dateInscription2.getId(), map));
-        if(getParameters(checklist.getId(), map) != null){
+        if (getParameters(checklist.getId(), map) != null) {
             List<String> checked = Arrays.asList(getParameters(checklist.getId(), map));
-            
+
             check1.setChecked(checked.contains(check1.getId()));
             check2.setChecked(checked.contains(check2.getId()));
             check3.setChecked(checked.contains(check3.getId()));
         }
-        if(getParameters(radioList.getId(), map) != null){
+        if (getParameters(radioList.getId(), map) != null) {
             List<String> selected = Arrays.asList(getParameters(radioList.getId(), map));
             radio1.setSelected(selected.contains(radio1.getId()));
             radio2.setSelected(selected.contains(radio2.getId()));
             radio3.setSelected(selected.contains(radio3.getId()));
         }
-        if(getParameters(select.getId(), map) != null){
+        if (getParameters(select.getId(), map) != null) {
             List<String> selected = Arrays.asList(getParameters(select.getId(), map));
             option1.setSelected(selected.contains(option1.getId()));
             option2.setSelected(selected.contains(option2.getId()));
@@ -168,25 +166,13 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         output.append("Your sended parameters are :");
         for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
             String key = (String) i.next();
-            output.append(" - "+key+" : "+map.get(key));
+            output.append(" - " + key + " : " + map.get(key));
         }
     }
 
     @Override
     public void applySmallUpdate() {
         nbRefresh++;
-        output.append("refresh number"+nbRefresh);
-    }
-
-    @Override
-    public void callbackSuccess(ArrayList<Searchable> results) {
-        // TODO Auto-generated method stub
-    }
-
-
-    @Override
-    public void callbackFailure(String failureMessage) {
-        // TODO Auto-generated method stub
-        
+        output.append("refresh number" + nbRefresh);
     }
 }

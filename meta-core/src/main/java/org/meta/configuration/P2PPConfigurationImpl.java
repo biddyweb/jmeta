@@ -24,15 +24,17 @@
  */
 package org.meta.configuration;
 
+import java.util.Collections;
 import java.util.Properties;
-import org.meta.api.configuration.AMPConfiguration;
 import org.meta.api.configuration.NetworkConfiguration;
+import org.meta.api.configuration.P2PPConfiguration;
+import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**
- * Class holding general configuration entries for the amp stack.
+ * Class holding general configuration entries for the p2pp stack.
  */
-public final class AMPConfigurationImpl extends PropertiesConfiguration
-    implements AMPConfiguration {
+public final class P2PPConfigurationImpl extends PropertiesConfiguration
+        implements P2PPConfiguration {
 
     /**
      * The default size for Sender thread pool.
@@ -40,7 +42,7 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration
     public static final int DEFAULT_SENDER_THREAD_POOL_SIZE = 100;
 
     /**
-     * The key for DEFAUL_SEND_THREAD_POOL_SIZE in amp.conf.
+     * The key for DEFAUL_SEND_THREAD_POOL_SIZE in p2pp.conf.
      */
     public static final String SENDER_TH_POOL_KEY = "senderThreadPoolSize";
 
@@ -50,47 +52,47 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration
     public static final int DEFAULT_SEVER_THREAD_POOL_SIZE = 100;
 
     /**
-     * The key for DEFAUL_SEVER_THREAD_POOL_SIZE in amp.conf.
+     * The key for DEFAUL_SEVER_THREAD_POOL_SIZE in p2pp.conf.
      */
     public static final String SERVER_TH_POOL_KEY = "serverThreadPoolSize";
 
     /**
-     * The default port to listen to AMP messages.
+     * The default port to listen to P2PP messages.
      */
-    public static final Short DEFAULT_AMP_PORT = 4242;
-
-    /**
-     * The key in configuration file for the amp port.
-     */
-    public static final String AMP_PORT_KEY = "ampPort";
+    public static final Short DEFAULT_P2PP_PORT = 4002;
 
     /**
      * The port the amp stack will listen to.
      */
-    private Short ampPort = DEFAULT_AMP_PORT;
     private Integer senderThPoolSize;
     private Integer serverThPoolSize;
 
     /**
      * The network parameters.
      */
-    private NetworkConfiguration networkConfig;
+    private NetworkConfigurationImpl networkConfig;
 
     /**
      * Empty initialization with default values.
      */
-    public AMPConfigurationImpl() {
+    public P2PPConfigurationImpl() {
         this.serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
         this.senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
+        this.networkConfig = new NetworkConfigurationImpl(
+                DEFAULT_P2PP_PORT,
+                Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST);
     }
 
     /**
      * Initializes the AMP config from properties.
      *
      * @param properties The properties to take configuration from.
+     * @throws InvalidConfigurationException if an invalid configuration entry is encountered
      */
-    public AMPConfigurationImpl(final Properties properties) {
+    public P2PPConfigurationImpl(final Properties properties) throws InvalidConfigurationException {
         super(properties);
+        this.networkConfig = new NetworkConfigurationImpl(properties);
         this.serverThPoolSize = DEFAULT_SEVER_THREAD_POOL_SIZE;
         this.senderThPoolSize = DEFAULT_SENDER_THREAD_POOL_SIZE;
         if (properties != null) {
@@ -99,11 +101,9 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration
     }
 
     @Override
-    void initFromProperties() {
-        Short port = this.getShort(AMP_PORT_KEY);
-        if (port != null) {
-            this.ampPort = port;
-        }
+    void initFromProperties() throws InvalidConfigurationException {
+        this.networkConfig.initFromProperties();
+
         Integer senderThreadPoolSize = this.getInt(SENDER_TH_POOL_KEY);
         if (senderThreadPoolSize != null) {
             this.senderThPoolSize = senderThreadPoolSize;
@@ -112,24 +112,6 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration
         if (serverThreadPoolSize != null) {
             this.serverThPoolSize = serverThreadPoolSize;
         }
-    }
-
-    /**
-     *
-     * @return The amp port
-     */
-    @Override
-    public Short getAmpPort() {
-        return ampPort;
-    }
-
-    /**
-     *
-     * @param port The new amp port
-     */
-    @Override
-    public void setAmpPort(final Short port) {
-        this.ampPort = port;
     }
 
     /**
@@ -178,7 +160,7 @@ public final class AMPConfigurationImpl extends PropertiesConfiguration
      */
     @Override
     public void setNetworkConfig(final NetworkConfiguration nwConfig) {
-        this.networkConfig = nwConfig;
+        this.networkConfig = (NetworkConfigurationImpl) nwConfig;
     }
 
 }

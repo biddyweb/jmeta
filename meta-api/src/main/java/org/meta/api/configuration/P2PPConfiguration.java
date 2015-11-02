@@ -28,12 +28,7 @@ package org.meta.api.configuration;
  *
  * @author nico
  */
-public interface AMPConfiguration {
-
-    /**
-     * @return The amp port
-     */
-    Short getAmpPort();
+public interface P2PPConfiguration {
 
     /**
      * @return The network configuration.
@@ -49,12 +44,6 @@ public interface AMPConfiguration {
      * @return the serverThPoolSize
      */
     Integer getServerThPoolSize();
-
-    /**
-     *
-     * @param ampPort The new amp port
-     */
-    void setAmpPort(Short ampPort);
 
     /**
      *

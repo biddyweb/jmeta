@@ -12,6 +12,7 @@
     <version>0.1</version>
   </parent>
   <properties>
+    <netbeans.hint.license>license_header</netbeans.hint.license>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>

@@ -27,8 +27,7 @@ package org.meta.api.dht;
 import org.meta.api.common.AsyncOperation;
 
 /**
- * An asynchronous DHT operation representing the process of storing a hash in
- * the DHT.
+ * An asynchronous DHT operation representing the process of storing a hash in the DHT.
  *
  * @author nico
  */

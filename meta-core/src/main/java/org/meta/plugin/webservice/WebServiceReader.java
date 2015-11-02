@@ -77,6 +77,7 @@ public class WebServiceReader extends Thread {
     @Override
     public void run() {
         //Launch the server on the right port
+        //TODO get addresses from configuration and bind them all
         logger.info("Web server listening on port " + this.configuration.getWsPort());
         server = new Server(this.configuration.getWsPort());
 

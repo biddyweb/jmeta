@@ -35,7 +35,7 @@ import org.meta.utils.SerializationUtils;
  *
  * Can be serialized and de-serialized.
  *
- * Used by the MetaCacheStorage.
+ * Used by the {@link  MetaCacheStorage}.
  *
  * @author dyslesiq
  */

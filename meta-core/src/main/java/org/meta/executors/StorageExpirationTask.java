@@ -63,9 +63,9 @@ public class StorageExpirationTask extends MetaScheduledTask {
 
     @Override
     public void run() {
-        logger.info("Removing epxired entries from cache...");
+        logger.debug("Removing expired entries from cache...");
         cache.removeExpiredEntries();
-        logger.info("Forcing synchronization of cache to storage...");
+        logger.debug("Forcing synchronization of cache to storage...");
         cache.flushToStorage();
     }
 

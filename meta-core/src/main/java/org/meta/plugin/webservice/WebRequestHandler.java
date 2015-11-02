@@ -34,6 +34,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handle a request received from the web server.
@@ -42,6 +44,8 @@ import org.meta.api.ws.AbstractWebService;
  *
  */
 public class WebRequestHandler extends AbstractHandler {
+
+    private Logger logger = LoggerFactory.getLogger(WebRequestHandler.class);
 
     private WebServiceReader webServiceReader = null;
     private HashMap<String, AbstractWebService> instanceMap = null;
@@ -155,7 +159,8 @@ public class WebRequestHandler extends AbstractHandler {
                     response.setStatus(HttpServletResponse.SC_OK);
                     base.setHandled(true);
                 } catch (Exception e) {
-                    response.getWriter().write(e.getMessage());
+                    logger.error("Exception in web service handler:", e);
+                    //response.getWriter().write(e.getMessage());
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     base.setHandled(true);
                 }

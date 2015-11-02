@@ -130,12 +130,10 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
         }
         Boolean preferIpV6 = this.getBoolean(IPV6_KEY);
         if (preferIpV6 != null) {
-            System.out.println("IPV6 enabled ? :" + preferIpV6);
             this.ipV6 = preferIpV6;
         }
         Boolean preferIpV4 = this.getBoolean(IPV4_KEY);
         if (preferIpV4 != null) {
-            System.out.println("IPV4 enabled ? :" + preferIpV4);
             this.ipV4 = preferIpV4;
         }
         if (!ipV4 && !ipV6) {

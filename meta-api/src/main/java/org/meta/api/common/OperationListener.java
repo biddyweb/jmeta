@@ -25,8 +25,7 @@
 package org.meta.api.common;
 
 /**
- *
- * Base class to get the result of an asynchronous operation.
+ * Base interface to get the result of an asynchronous operation.
  *
  * To be declined for each type of operation.
  *

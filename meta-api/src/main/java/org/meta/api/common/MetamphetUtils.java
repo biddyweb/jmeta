@@ -66,12 +66,12 @@ public final class MetamphetUtils {
             fis = new FileInputStream(file);
             channel = fis.getChannel();
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-            for (long offest = 0; offest < channel.size(); offest += 10 * 1024) {
+            for (long offest = 0; offest < channel.size(); offest += 64 * 1024) {
                 ByteBuffer buff;
-                if (channel.size() - offest < 10 * 1024) {
+                if (channel.size() - offest < 64 * 1024) {
                     buff = channel.map(FileChannel.MapMode.READ_ONLY, offest, (int) channel.size() - offest);
                 } else {
-                    buff = channel.map(FileChannel.MapMode.READ_ONLY, offest, 10 * 1024);
+                    buff = channel.map(FileChannel.MapMode.READ_ONLY, offest, 64 * 1024);
                 }
                 md.update(buff);
             }

@@ -25,25 +25,26 @@
 package org.meta.controler;
 
 import java.io.IOException;
+import org.meta.api.common.OperationListener;
 import org.meta.api.common.exceptions.MetaException;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.model.Model;
-import org.meta.api.model.ModelFactory;
+import org.meta.api.model.ModelStorage;
 import org.meta.api.storage.MetaCache;
 import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.MetaConfiguration;
-import org.meta.dht.exceptions.BootstrapException;
 import org.meta.dht.exceptions.DHTException;
 import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.executors.MetaTimedExecutor;
 import org.meta.executors.StorageExpirationTask;
-import org.meta.plugin.tcp.AMPServer;
-import org.meta.plugin.tcp.AMPWriterImpl;
+import org.meta.p2pp.P2PPManager;
+import org.meta.p2pp.client.MetaP2PPClient;
+import org.meta.p2pp.exceptions.P2PPException;
+import org.meta.plugin.MetaPluginAPI;
 import org.meta.plugin.webservice.WebServiceReader;
 import org.meta.storage.KyotoCabinetStorage;
 import org.meta.storage.MetaCacheStorage;
-import org.meta.storage.MetaObjectModel;
+import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.ModelException;
 import org.meta.storage.exceptions.StorageException;
 import org.slf4j.Logger;
@@ -60,12 +61,19 @@ public class MetaController {
 
     private MetaDHT dht = null;
 
-    private MetaStorage backendStorage = null;
-    private MetaCache cacheStorage = null;
-    private MetaObjectModel model = null;
-    private AMPServer ampServer = null;
-    private AMPWriterImpl ampWriter = null;
-    private WebServiceReader wsReader = null;
+    private MetaStorage backendStorage;
+
+    private MetaCache cacheStorage;
+
+    private MetaModelStorage model;
+
+    private WebServiceReader wsReader;
+
+    private P2PPManager p2ppManager;
+
+    private MetaP2PPClient p2ppClientAccessor;
+
+    private MetaPluginAPI pluginAPI;
 
     /**
      * Global meta controller constructor.
@@ -90,35 +98,41 @@ public class MetaController {
      */
     public void initAndStartAll() throws MetaException {
         try {
+            initModel();
+        } catch (ModelException ex) {
+            throw new MetaException("Failed to initialize Model.", ex);
+        }
+
+        try {
             initDht();
         } catch (DHTException ex) {
             throw new MetaException("Failed to initialize DHT.", ex);
         }
 
         try {
-            initModel();
-        } catch (ModelException ex) {
-            throw new MetaException("Failed to initialize Model.", ex);
+            initP2PPServer();
+        } catch (IOException | P2PPException ex) {
+            throw new MetaException("Failed to initialize P2PP server.", ex);
         }
-
         //TODO add and check exceptions
         initWebService();
 
-        //TODO add and check exceptions
-        initAMPServer();
+        //Create the P2PPClient accessor...
+        this.p2ppClientAccessor = new MetaP2PPClient(p2ppManager.getClient());
 
-        initAMPWriter(model.getFactory());
+        //Create the plugin API
+        this.pluginAPI = new MetaPluginAPI(this);
 
+        //Register and start timed tasks
         scheduleExecutorTasks();
     }
 
     /**
      * Initializes the DHT with the configuration and start bootstrap.
      *
-     * @throws BootstrapException If an error occurred.
      */
     private void initDht() throws DHTException {
-        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration());
+        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), this.cacheStorage);
 
         try {
             dht.start();
@@ -128,11 +142,23 @@ public class MetaController {
 
         //Maybe the boostrap should be done elsewhere ?
         BootstrapOperation bootstrapOperation = dht.bootstrap();
-        //Wait for boostraping to finish.
-        bootstrapOperation.awaitUninterruptibly();
-        if (bootstrapOperation.isFailure()) {
-            throw new BootstrapException("Bootstrap operation failed");
-        }
+        bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
+
+            @Override
+            public void failed(final BootstrapOperation operation) {
+                logger.warn("Bootstrap operation failed. Error: " + operation.getFailureMessage());
+            }
+
+            @Override
+            public void complete(final BootstrapOperation operation) {
+                logger.info("DHT bootstrap complete.");
+            }
+        });
+//        //Wait for boostraping to finish.
+//        bootstrapOperation.awaitUninterruptibly();
+//        if (bootstrapOperation.isFailure()) {
+//            throw new BootstrapException("Bootstrap operation failed");
+//        }
     }
 
     /**
@@ -141,24 +167,15 @@ public class MetaController {
     private void initModel() throws StorageException {
         backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
         cacheStorage = new MetaCacheStorage(backendStorage, 15000);
-        model = new MetaObjectModel(cacheStorage);
+        model = new MetaModelStorage(backendStorage);
     }
 
     /**
      * Initializes the AmpServer.
      */
-    private void initAMPServer() {
-        this.ampServer = new AMPServer(MetaConfiguration.getAmpConfiguration());
-
-        ampServer.start();
-        //return ampServer;
-    }
-
-    /**
-     * Initializes the AMPWriterImpl.
-     */
-    private void initAMPWriter(final ModelFactory factory) {
-        ampWriter = new AMPWriterImpl(MetaConfiguration.getAmpConfiguration(), factory);
+    private void initP2PPServer() throws IOException, P2PPException {
+        this.p2ppManager = new P2PPManager(MetaConfiguration.getP2ppConfiguration(), this.model);
+        this.p2ppManager.startServer();
     }
 
     /**
@@ -166,7 +183,6 @@ public class MetaController {
      */
     private void initWebService() {
         wsReader = new WebServiceReader(MetaConfiguration.getWSConfiguration());
-
         wsReader.start();
     }
 
@@ -174,7 +190,6 @@ public class MetaController {
      * Clean stop of controller. Call kill methods on tcpReader and WebService reader.
      */
     public void stop() {
-        this.ampServer.kill();
         this.wsReader.kill();
         this.model.close();
     }
@@ -183,7 +198,7 @@ public class MetaController {
      *
      * @return the instance of the model
      */
-    public Model getModel() {
+    public ModelStorage getModel() {
         return model;
     }
 
@@ -197,14 +212,6 @@ public class MetaController {
 
     /**
      *
-     * @return the instance of the amp server
-     */
-    public AMPServer getAmpServer() {
-        return ampServer;
-    }
-
-    /**
-     *
      * @return the instance of the dht
      */
     public MetaDHT getDht() {
@@ -213,10 +220,18 @@ public class MetaController {
 
     /**
      *
-     * @return the instance of the amp writer
+     * @return the peer-to-peer protocol client accessor
      */
-    public AMPWriterImpl getAmpWriter() {
-        return ampWriter;
+    public MetaP2PPClient getP2PPClient() {
+        return p2ppClientAccessor;
+    }
+
+    /**
+     *
+     * @return the plugin API
+     */
+    public MetaPluginAPI getPluginAPI() {
+        return this.pluginAPI;
     }
 
     /**

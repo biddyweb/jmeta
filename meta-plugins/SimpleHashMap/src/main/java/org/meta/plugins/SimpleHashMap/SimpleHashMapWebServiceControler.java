@@ -25,22 +25,30 @@
 package org.meta.plugins.SimpleHashMap;
 
 import java.util.LinkedHashMap;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
-import org.meta.plugins.SimpleHashMap.webservicecommands.Get;
-import org.meta.plugins.SimpleHashMap.webservicecommands.Put;
+import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapGet;
+import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapPut;
 
 /**
  *
- * @author nico
  */
-public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceControler{
+public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceControler {
+
+    /**
+     *
+     * @param pluginAPI plugin api object
+     */
+    public SimpleHashMapWebServiceControler(final MetAPI pluginAPI) {
+        super(pluginAPI);
+    }
 
     @Override
     protected void registercommands(
-            LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {
-        commands.put("put",     Put.class);
-        commands.put("read",    Get.class);
+            final LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {
+        commands.put("put", SimpleHashMapPut.class);
+        commands.put("read", SimpleHashMapGet.class);
     }
 
 }

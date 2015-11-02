@@ -33,12 +33,11 @@ import java.util.TreeSet;
 import org.meta.api.common.OperationListener;
 import org.meta.api.dht.StoreOperation;
 import org.meta.api.model.Data;
-import org.meta.api.model.DataString;
 import org.meta.api.model.MetaData;
-import org.meta.api.model.MetaProperty;
-import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
+import org.meta.api.model.SearchCriteria;
 import org.meta.api.model.Searchable;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
@@ -52,21 +51,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author nico
  */
-public class Put extends AbstractWebService{
+public class SimpleHashMapPut extends AbstractWebService {
 
-    InterfaceDescriptor  initialDescriptor   = null;
-    TextOutput           output              = null;
-    ModelFactory         factory             = null;
-    ArrayList<DataString>results             = null;
-    private Logger logger = LoggerFactory.getLogger(Put.class);
-    
+    private final MetAPI api;
+
+    InterfaceDescriptor initialDescriptor = null;
+    TextOutput output = null;
+    ArrayList<Data> results = null;
+    private Logger logger = LoggerFactory.getLogger(SimpleHashMapPut.class);
+
     /**
      *
-     * @param controler
+     * @param wsController
      */
-    public Put(AbstractPluginWebServiceControler controler){
-        super(controler);
-        results = new ArrayList<DataString>();
+    public SimpleHashMapPut(AbstractPluginWebServiceControler wsController) {
+        super(wsController);
+        results = new ArrayList<Data>();
         TextInput path = new TextInput("id", "ID");
         rootColumn.addChild(path);
         TextInput content = new TextInput("content", "Content");
@@ -75,45 +75,60 @@ public class Put extends AbstractWebService{
         rootColumn.addChild(new SelfSubmitButton("submitToMe", "put"));
         rootColumn.addChild(output);
         initialDescriptor = new InterfaceDescriptor(rootColumn);
-        factory = super.controller.getModel().getFactory();
+        api = wsController.getAPI();
     }
 
     @Override
     public void executeCommand(Map<String, String[]> map) {
-        String id      = getParameter("id", map);
+        String id = getParameter("id", map);
         String content = getParameter("content", map);
 
-        if(content != null && id != null){
+        if (content != null && id != null) {
             output.flush();
-            DataString res = factory.createDataString(content);
+            Data res = api.getModel().getFactory().getData(content);
             List<Data> lst = new ArrayList<Data>();
             lst.add(res);
-            TreeSet<MetaProperty> properties = new TreeSet<MetaProperty>();
-            properties.add(new MetaProperty("hashmap", "value"));
-            MetaData metaData = factory.createMetaData(properties);
-            DataString source = factory.createDataString(id);
-            Search hashM = factory.createSearch(source, metaData, lst);
-            logger.info("put hash : "+hashM.getHash().toString());
-            
-            
+            TreeSet<MetaData> properties = new TreeSet<MetaData>();
+            properties.add(new MetaData("hashmap", "value"));
+            SearchCriteria metaData = api.getModel().getFactory().createCriteria(properties);
+            Data source = api.getModel().getFactory().getData(id);
+            Search hashM = api.getModel().getFactory().createSearch(source, metaData, lst);
+            logger.info("Put search hash : " + hashM.getHash().toString());
+            logger.info("Put result hash : " + res.getHash().toString());
+
             //write into dataBase
             //and store it to the DHT
-            this.controller.getModel().set(hashM);
-            this.controller.getDht().store(hashM.getHash()).addListener(
+            if (!api.getModel().set(hashM)) {
+                logger.debug("Failed to store search into model...");
+                output.append("Failed to store search into model...");
+            }
+            Search test = api.getModel().getSearch(hashM.getHash());
+            if (test != null) {
+                if (test.getResults() != null || !test.getResults().isEmpty()) {
+                    for (Data data : test.getResults()) {
+                        logger.debug("JUST PUT SEARCH RESULT :" + data.getHash() + " content = " + data.toString());
+                    }
+                } else {
+                    logger.debug("WTTTTFFFF ???? results null");
+                }
+            } else {
+                logger.debug("WTTTTFFFF ????");
+            }
+            api.getDHT().store(hashM.getHash()).addListener(
                     new OperationListener<StoreOperation>() {
 
-                @Override
-                public void failed(StoreOperation operation) {
-                    output.append("fail to push");
-                }
+                        @Override
+                        public void failed(StoreOperation operation) {
+                            output.append("fail to push");
+                        }
 
-                @Override
-                public void complete(StoreOperation operation) {
-                    output.append("succes to push");
-                }
-            
-            });
-        }else{
+                        @Override
+                        public void complete(StoreOperation operation) {
+                            output.append("success to push");
+                        }
+
+                    });
+        } else {
             output.flush();
             output.append("Please set an id");
         }
@@ -122,9 +137,8 @@ public class Put extends AbstractWebService{
     @Override
     public void applySmallUpdate() {
     }
-    
 
-    @Override
+    //@Override
     public void callbackSuccess(ArrayList<Searchable> results) {
         output.flush();
         //Those results are incomplete
@@ -132,23 +146,24 @@ public class Put extends AbstractWebService{
             Searchable searchable = i.next();
             if (searchable instanceof Search) {
                 Search search = (Search) searchable;
-                Collection<Data> linkDatas =    search.getLinkedData();
-                for (Iterator<Data> k = linkDatas.iterator(); k .hasNext();) {
+                Collection<Data> linkDatas = search.getResults();
+                for (Iterator<Data> k = linkDatas.iterator(); k.hasNext();) {
                     Data data = (Data) k.next();
-                    if(data instanceof DataString)
-                        this.results.add((DataString) data);
+                    if (data instanceof Data) {
+                        this.results.add((Data) data);
+                    }
                 }
             }
         }
-        for(DataString result : this.results){
-            output.append(result.getString());
+        for (Data result : this.results) {
+            output.append(result.toString());
         }
         output.append("waiting for results");
     }
 
-    @Override
-    public void callbackFailure(String failureMessage) {
-        // TODO Auto-generated method stub
-        
-    }
+//    @Override
+//    public void callbackFailure(String failureMessage) {
+//        // TODO Auto-generated method stub
+//
+//    }
 }

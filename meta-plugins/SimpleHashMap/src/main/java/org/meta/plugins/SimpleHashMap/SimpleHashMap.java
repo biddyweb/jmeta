@@ -26,6 +26,7 @@ package org.meta.plugins.SimpleHashMap;
 
 import org.meta.api.amp.PluginAMPController;
 import org.meta.api.plugin.MetaPlugin;
+import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceControler;
 
 /**
@@ -34,10 +35,9 @@ import org.meta.api.ws.AbstractPluginWebServiceControler;
  */
 public class SimpleHashMap implements MetaPlugin {
 
-    /**
-     *
-     */
-    public static String NAME = "SimpleHashMap";
+    private static final String NAME = "SimpleHashMap";
+
+    private MetAPI pluginAPI;
 
     private PluginAMPController ampController;
     private AbstractPluginWebServiceControler wsController;
@@ -46,8 +46,7 @@ public class SimpleHashMap implements MetaPlugin {
      *
      */
     public SimpleHashMap() {
-        ampController = new SimpleHashMapTcpControler();
-        wsController = new SimpleHashMapWebServiceControler();
+        //ampController = new SimpleHashMapTcpControler();
     }
 
     @Override
@@ -56,13 +55,18 @@ public class SimpleHashMap implements MetaPlugin {
     }
 
     @Override
+    public void setPluginAPI(final MetAPI api) {
+        this.pluginAPI = api;
+        this.wsController = new SimpleHashMapWebServiceControler(pluginAPI);
+    }
+
+    @Override
     public AbstractPluginWebServiceControler getWebServiceController() {
         return wsController;
     }
 
-    @Override
-    public PluginAMPController getAMPController() {
-        return ampController;
-    }
-
+//    @Override
+//    public PluginAMPController getAMPController() {
+//        return ampController;
+//    }
 }

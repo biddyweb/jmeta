@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.meta.api.model.DataFile;
@@ -38,17 +40,17 @@ import org.meta.api.model.DataFile;
  * Provides a bit of caching to avoid opening too many files unnecessarily.
  *
  * TODO remove this and instead think of a way to store calcutated info about a data file (pieces, hash, ...)
- * in the storage.
+ * in the storage layer.
  *
  * @author dyslesiq
  */
 public final class DataFileAccessors {
 
-    private static Map<URI, DataFileAccessor> accessors;
+    private final static int EXECUTOR_THREADS = 2;
 
-    static {
-        accessors = new ConcurrentHashMap<>();
-    }
+    private final static ExecutorService filesExecutor = Executors.newFixedThreadPool(EXECUTOR_THREADS);
+
+    private static Map<URI, DataFileAccessor> accessors = new ConcurrentHashMap<>();
 
     private DataFileAccessors() {
     }
@@ -68,6 +70,14 @@ public final class DataFileAccessors {
             }
         }
         return accessors.get(dataFile.getURI());
+    }
+
+    /**
+     *
+     * @return the files executor service
+     */
+    public static ExecutorService getFilesExecutor() {
+        return filesExecutor;
     }
 
 }

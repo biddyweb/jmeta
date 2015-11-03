@@ -74,7 +74,7 @@ public class AMPServer extends Thread {
         this.configuration = config;
         this.mapPlugin = new HashMap<>();
         this.executor = Executors.newFixedThreadPool(
-                this.configuration.getServerThPoolSize());
+                this.configuration.getServerThreads());
     }
 
     /**

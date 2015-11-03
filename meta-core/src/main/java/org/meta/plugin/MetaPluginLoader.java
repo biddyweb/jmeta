@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.plugin.MetaPlugin;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.configuration.PluginConfigurationImpl;
 import org.meta.controler.MetaController;
 import org.meta.plugin.exceptions.PluginLoadException;
@@ -180,7 +180,7 @@ public class MetaPluginLoader {
 
         plugin.setPluginAPI(this.controller.getPluginAPI());
 
-        AbstractPluginWebServiceControler wsController = plugin.getWebServiceController();
+        AbstractPluginWebServiceController wsController = plugin.getWebServiceController();
 
         wsController.init(plugin.getName());
         //give the plugin to webservicereader and TcpReader

@@ -56,7 +56,7 @@ public abstract class AbstractWebService {
     /**
      *
      */
-    protected AbstractPluginWebServiceControler controller = null;
+    protected AbstractPluginWebServiceController controller = null;
 
     /**
      * You need to build you user interface in here. For that, you shall need the root element, named
@@ -66,7 +66,7 @@ public abstract class AbstractWebService {
      *
      * @param wsController the parent web service controller
      */
-    public AbstractWebService(final AbstractPluginWebServiceControler wsController) {
+    public AbstractWebService(final AbstractPluginWebServiceController wsController) {
         this.controller = wsController;
         rootColumn = new ColumnOrganizer("root");
         descriptor = new InterfaceDescriptor(rootColumn);
@@ -76,7 +76,7 @@ public abstract class AbstractWebService {
      *
      * @param wsController give WebServiceControler
      */
-    public final void setWebServiceControler(final AbstractPluginWebServiceControler wsController) {
+    public final void setWebServiceControler(final AbstractPluginWebServiceController wsController) {
         this.controller = wsController;
     }
 

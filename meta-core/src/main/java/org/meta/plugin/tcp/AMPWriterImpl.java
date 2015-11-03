@@ -60,7 +60,7 @@ public class AMPWriterImpl implements AMPWriter {
         this.configuration = config;
         this.factory = modelFactory;
         this.executor = Executors.newFixedThreadPool(
-                this.configuration.getSenderThPoolSize());
+                this.configuration.getClientThreads());
     }
 
     /**

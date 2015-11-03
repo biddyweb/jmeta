@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.BasicBSONObject;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class WebRequestHandler extends AbstractHandler {
 
     private Logger logger = LoggerFactory.getLogger(WebRequestHandler.class);
 
-    private WebServiceReader webServiceReader = null;
+    private MetaWebServer webServiceReader = null;
     private HashMap<String, AbstractWebService> instanceMap = null;
     private int nbCommands = 0;
 
@@ -55,7 +55,7 @@ public class WebRequestHandler extends AbstractHandler {
      *
      * @param wsServer the parent web service reader
      */
-    public WebRequestHandler(final WebServiceReader wsServer) {
+    public WebRequestHandler(final MetaWebServer wsServer) {
         webServiceReader = wsServer;
         instanceMap = new HashMap<>();
     }
@@ -89,17 +89,17 @@ public class WebRequestHandler extends AbstractHandler {
 
         response.setContentType("application/json; charset=utf-8");
 
-        AbstractPluginWebServiceControler pluginInstance = null;
+        AbstractPluginWebServiceController pluginInstance = null;
 
-        if (plugin != "") {
+        if (!plugin.isEmpty()) {
             pluginInstance = webServiceReader.getPlugin(plugin);
         }
 
-        //Tree cases :
+        //Three cases :
         // we have a command and a plugin
         // we only have a plugin
         // we have nothing
-        if (command != "" && pluginInstance != null) {
+        if (!command.isEmpty() && pluginInstance != null) {
             //First case, get the associated command
 
             Class<? extends AbstractWebService> clazzWs
@@ -111,13 +111,12 @@ public class WebRequestHandler extends AbstractHandler {
                     String idCommand = request.getParameter("idCommand");
                     AbstractWebService commandWs = null;
 
-                    if (idCommand != null && idCommand != "") {
+                    if (idCommand != null && !idCommand.isEmpty()) {
                         commandWs = instanceMap.get(idCommand);
                     }
                     if (commandWs == null) {
                         idCommand = getNewId();
-                        commandWs = clazzWs.getConstructor(
-                                AbstractPluginWebServiceControler.class)
+                        commandWs = clazzWs.getConstructor(AbstractPluginWebServiceController.class)
                                 .newInstance(pluginInstance);
                         instanceMap.put(idCommand, commandWs);
                     }
@@ -134,7 +133,6 @@ public class WebRequestHandler extends AbstractHandler {
                             instanceMap.remove(idCommand);
                             break;
 
-                        //getNextResults from network
                         case "retrieveUpdate":
                             result = commandWs.retrieveUpdate().toJson();
                             break;
@@ -158,17 +156,18 @@ public class WebRequestHandler extends AbstractHandler {
                     }
                     response.setStatus(HttpServletResponse.SC_OK);
                     base.setHandled(true);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger.error("Exception in web service handler:", e);
-                    //response.getWriter().write(e.getMessage());
+                    e.printStackTrace(response.getWriter());
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     base.setHandled(true);
                 }
             } else {
+                logger.warn("Resource not found");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 base.setHandled(true);
             }
-        } else if (plugin != "" && pluginInstance != null) {
+        } else if (!plugin.isEmpty() && pluginInstance != null) {
             //second case, we only have a plugin
             switch (action) {
                 case "getCommandList":
@@ -180,7 +179,7 @@ public class WebRequestHandler extends AbstractHandler {
             response.setStatus(HttpServletResponse.SC_OK);
             base.setHandled(true);
         } else {
-            //last case
+            //last case: list plugins
             switch (action) {
                 case "getPluginsList":
                 default:

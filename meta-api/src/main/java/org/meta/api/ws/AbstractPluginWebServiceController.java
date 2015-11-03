@@ -47,7 +47,7 @@ import org.meta.api.plugin.MetAPI;
  * @author Thomas LAVOCAT
  *
  */
-public abstract class AbstractPluginWebServiceControler {
+public abstract class AbstractPluginWebServiceController {
 
     /**
      * The Meta api object.
@@ -73,7 +73,7 @@ public abstract class AbstractPluginWebServiceControler {
      *
      * @param pluginAPI the meta plugin api
      */
-    public AbstractPluginWebServiceControler(final MetAPI pluginAPI) {
+    public AbstractPluginWebServiceController(final MetAPI pluginAPI) {
         this.api = pluginAPI;
         lstCommands = new LinkedHashMap<>();
         this.context = new HashMap<>();

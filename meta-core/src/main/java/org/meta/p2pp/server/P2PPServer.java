@@ -27,16 +27,20 @@ package org.meta.p2pp.server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.InterruptedByTimeoutException;
+import java.nio.channels.spi.AsynchronousChannelProvider;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.concurrent.Executors;
 import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.P2PPConfiguration;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.P2PPManager;
+import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.p2pp.server.handlers.P2PPGetHandler;
 import org.meta.p2pp.server.handlers.P2PPKeepAliveHandler;
 import org.meta.p2pp.server.handlers.P2PPSearchGetHandler;
@@ -57,7 +61,9 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     private final P2PPManager manager;
 
-    private final P2PPConfiguration configuration;
+    private final P2PPConfiguration config;
+
+    private AsynchronousChannelGroup channelGroup;
 
     private AsynchronousServerSocketChannel server;
 
@@ -75,7 +81,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
      */
     public P2PPServer(final P2PPManager p2ppManager, final P2PPConfiguration conf) {
         this.manager = p2ppManager;
-        this.configuration = conf;
+        this.config = conf;
         this.readHandler = new P2PPServerReadHandler();
         this.writeHandler = new P2PPServerWriteHandler();
         this.commandHandlers = new EnumMap<>(P2PPCommand.class);
@@ -116,10 +122,10 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         });
     }
 
-    private void bindServerSocket() {
-        NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
+    private void bindServerSocket() throws P2PPException {
+        NetworkConfiguration nwConfig = this.config.getNetworkConfig();
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
-        //For now only one address is supported! See for multi-binding of the Server...
+        //For now only one address is supported! TODO supper multi-binding of the Server...
 
         InetAddress addr = configAddresses.iterator().next();
         logger.info("P2PP Server listening on port " + nwConfig.getPort());
@@ -127,20 +133,27 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         try {
             server.bind(inetAddr);
         } catch (IOException ex) {
-            logger.error("Failed to bind server socket on address: " + inetAddr);
+            throw new P2PPException("Failed to bind server socket on address: " + inetAddr, ex);
         }
     }
 
     /**
      * Starts the server.
      *
-     * @throws IOException if the server failed to start
+     * @throws P2PPException if the server failed to start
      */
-    public void run() throws IOException {
-        server = this.manager.getChannelProvider().
-                openAsynchronousServerSocketChannel(this.manager.getChannelGroup());
-        bindServerSocket();
-        server.accept(this, this);
+    public void run() throws P2PPException {
+        try {
+            logger.info("Starting server with: " + this.config.getServerThreads() + " Threads");
+            this.channelGroup = AsynchronousChannelGroup.withFixedThreadPool(this.config.getServerThreads(),
+                    Executors.defaultThreadFactory());
+            server = AsynchronousChannelProvider.provider().
+                    openAsynchronousServerSocketChannel(this.channelGroup);
+            bindServerSocket();
+            server.accept(this, this);
+        } catch (IOException ex) {
+            throw new P2PPException("Failed to created channel group", ex);
+        }
     }
 
     /**

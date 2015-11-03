@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.common.OperationListener;
@@ -64,8 +65,9 @@ public class DataFileAccessor {
 
     private final MetHash[] piecesHash;
 
-    //private final Path filePath;
-    private final AsynchronousFileChannel fileChannel;
+    private AsynchronousFileChannel readChannel;
+
+    private AsynchronousFileChannel writeChannel;
 
     /**
      *
@@ -74,9 +76,6 @@ public class DataFileAccessor {
      */
     public DataFileAccessor(final DataFile file) throws IOException {
         this.dataFile = file;
-        //this.filePath = Paths.get(this.dataFile.getURI());
-        fileChannel = AsynchronousFileChannel.open(dataFile.getFile().toPath(),
-                StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 
         this.pieceCount = this.dataFile.getSize() / PIECE_SIZE;
         if (this.dataFile.getSize() % PIECE_SIZE != 0) {
@@ -91,6 +90,43 @@ public class DataFileAccessor {
     }
 
     /**
+     * Ensures that the file can be read.
+     *
+     * @throws IOException if not
+     */
+    private void checkRead() throws IOException {
+        if (!dataFile.getFile().canRead()) {
+            throw new IOException("Cannot read: insufficient right!");
+        }
+        if (this.readChannel == null) {
+            readChannel = AsynchronousFileChannel.open(dataFile.getFile().toPath(),
+                    Collections.singleton(StandardOpenOption.READ), DataFileAccessors.getFilesExecutor());
+        }
+    }
+
+    /**
+     * Ensures that the file can be written.
+     *
+     * @throws IOException if not
+     */
+    private void checkWrite() throws IOException {
+        if (!this.dataFile.getFile().exists()) {
+            this.dataFile.getFile().createNewFile();
+        } else {
+            if (!this.dataFile.getFile().canWrite()) {
+                throw new IOException("Cannot write: insufficient right!");
+            }
+            if (this.dataFile.getSize() < this.dataFile.getFile().length()) {
+                throw new IOException("Cannot write: file is already larger than given data file!");
+            }
+        }
+        if (this.writeChannel == null) {
+            writeChannel = AsynchronousFileChannel.open(dataFile.getFile().toPath(),
+                    Collections.singleton(StandardOpenOption.WRITE), DataFileAccessors.getFilesExecutor());
+        }
+    }
+
+    /**
      * Read data from a file asynchronously.
      *
      * @param offset the offset in the file
@@ -99,8 +135,12 @@ public class DataFileAccessor {
      */
     public synchronized FileReadOperation read(final int offset, final int length) {
         FileReadOperation operation = new FileReadOperation(offset, length);
-
-        fileChannel.read(operation.getBuffer(), offset, null, operation);
+        try {
+            checkRead();
+            readChannel.read(operation.getBuffer(), offset, null, operation);
+        } catch (final IOException ex) {
+            operation.setFailed(ex);
+        }
         return operation;
     }
 
@@ -116,9 +156,14 @@ public class DataFileAccessor {
      */
     public FileWriteOperation write(final int pieceIndex, final int byteOffset, final ByteBuffer buf) {
         FileWriteOperation op = new FileWriteOperation();
+        try {
+            checkWrite();
 
-        int writeOffset = (pieceIndex * PIECE_SIZE) + byteOffset;
-        fileChannel.write(buf, writeOffset, null, op);
+            int writeOffset = fileOffset(pieceIndex, byteOffset);
+            writeChannel.write(buf, writeOffset, null, op);
+        } catch (final IOException ex) {
+            op.setFailed(ex);
+        }
         return op;
     }
 
@@ -126,7 +171,7 @@ public class DataFileAccessor {
      * Get the hash of the given piece in the file asynchronously.
      *
      * @param pieceIndex the index of the piece to hash
-     * @return the hash of the piece
+     * @return the async operation
      */
     public PieceHashOperation getPieceHash(final int pieceIndex) {
         PieceHashOperation op = new PieceHashOperation(pieceIndex);
@@ -264,13 +309,4 @@ public class DataFileAccessor {
         return blockOffset / BLOCK_SIZE;
     }
 
-    /**
-     *
-     * @param pieceIdx
-     * @param blockNumber
-     * @return
-     */
-//    public int blockOffset(final int pieceIdx, final int blockNumber) {
-//
-//    }
 }

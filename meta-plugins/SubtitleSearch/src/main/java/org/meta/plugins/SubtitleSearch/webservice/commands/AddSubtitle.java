@@ -34,7 +34,7 @@ import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -64,7 +64,7 @@ public class AddSubtitle extends AbstractWebService {
      *
      * @param controller the web service controller
      */
-    public AddSubtitle(final AbstractPluginWebServiceControler controller) {
+    public AddSubtitle(final AbstractPluginWebServiceController controller) {
         super(controller);
         this.api = controller.getAPI();
         factory = this.api.getModel().getFactory();

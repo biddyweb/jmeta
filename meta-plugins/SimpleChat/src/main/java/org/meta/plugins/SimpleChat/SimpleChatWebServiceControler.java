@@ -26,7 +26,7 @@ package org.meta.plugins.SimpleChat;
 
 import java.util.LinkedHashMap;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SimpleChat.webservice.commands.Chat;
 
@@ -34,7 +34,7 @@ import org.meta.plugins.SimpleChat.webservice.commands.Chat;
  *
  * @author nico
  */
-public class SimpleChatWebServiceControler extends AbstractPluginWebServiceControler {
+public class SimpleChatWebServiceControler extends AbstractPluginWebServiceController {
 
     /**
      *

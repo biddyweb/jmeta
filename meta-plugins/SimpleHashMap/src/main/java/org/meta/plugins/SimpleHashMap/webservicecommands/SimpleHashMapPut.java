@@ -38,7 +38,7 @@ import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.model.Searchable;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -64,7 +64,7 @@ public class SimpleHashMapPut extends AbstractWebService {
      *
      * @param wsController
      */
-    public SimpleHashMapPut(AbstractPluginWebServiceControler wsController) {
+    public SimpleHashMapPut(AbstractPluginWebServiceController wsController) {
         super(wsController);
         results = new ArrayList<Data>();
         TextInput path = new TextInput("id", "ID");

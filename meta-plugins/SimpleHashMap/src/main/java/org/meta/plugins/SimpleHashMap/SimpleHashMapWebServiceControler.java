@@ -26,7 +26,7 @@ package org.meta.plugins.SimpleHashMap;
 
 import java.util.LinkedHashMap;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapGet;
 import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapPut;
@@ -34,7 +34,7 @@ import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapPut;
 /**
  *
  */
-public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceControler {
+public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceController {
 
     /**
      *

@@ -39,7 +39,7 @@ import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -75,7 +75,7 @@ public class Chat extends AbstractWebService implements OperationListener<Search
      *
      * @param controller the ws controller
      */
-    public Chat(final AbstractPluginWebServiceControler controller) {
+    public Chat(final AbstractPluginWebServiceController controller) {
         super(controller);
         api = controller.getAPI();
         modelFactory = api.getModel().getFactory();

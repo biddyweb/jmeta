@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.DateInput;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -76,7 +76,7 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
      *
      * @param controler
      */
-    public SecondStateExempleWsCommand(AbstractPluginWebServiceControler controler) {
+    public SecondStateExempleWsCommand(AbstractPluginWebServiceController controler) {
         super(controler);
         // Describe a full interface for test
         birthDate = new DateInput("birthDate", "Birth Date");

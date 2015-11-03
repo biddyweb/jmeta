@@ -26,7 +26,7 @@ package org.meta.plugins.PluginExemple;
 
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.MetaPlugin;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
  *
@@ -41,7 +41,7 @@ public class PluginExemple implements MetaPlugin {
 
     private MetAPI pluginAPI;
 
-    private AbstractPluginWebServiceControler wsController;
+    private AbstractPluginWebServiceController wsController;
 
     //private PluginAMPController ampController;
     /**
@@ -57,7 +57,7 @@ public class PluginExemple implements MetaPlugin {
     }
 
     @Override
-    public AbstractPluginWebServiceControler getWebServiceController() {
+    public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;
     }
 

@@ -26,7 +26,7 @@ package org.meta.plugins.PluginExemple.webservice.commands;
 
 import java.util.Iterator;
 import java.util.Map;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.DateInput;
 import org.meta.api.ws.forms.fields.TextOutput;
@@ -47,7 +47,7 @@ public class ExempleWsCommand extends AbstractWebService {
      *
      * @param controler
      */
-    public ExempleWsCommand(AbstractPluginWebServiceControler controler) {
+    public ExempleWsCommand(AbstractPluginWebServiceController controler) {
         super(controler);
         // Describe a full interface for test
         birthDate = new DateInput("birthDate", "Birth Date");

@@ -34,7 +34,7 @@ import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -64,7 +64,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
      *
      * @param wsController
      */
-    public SimpleHashMapGet(final AbstractPluginWebServiceControler wsController) {
+    public SimpleHashMapGet(final AbstractPluginWebServiceController wsController) {
         super(wsController);
         TextInput path = new TextInput("id", "ID");
         rootColumn.addChild(path);

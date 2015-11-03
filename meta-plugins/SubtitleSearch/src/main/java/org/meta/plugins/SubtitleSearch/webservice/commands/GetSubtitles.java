@@ -37,7 +37,7 @@ import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.plugin.DownloadOperation;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.TextInput;
 import org.meta.api.ws.forms.fields.TextOutput;
@@ -66,7 +66,7 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
      *
      * @param controller parent controller
      */
-    public GetSubtitles(final AbstractPluginWebServiceControler controller) {
+    public GetSubtitles(final AbstractPluginWebServiceController controller) {
         super(controller);
         api = controller.getAPI();
         factory = api.getModel().getFactory();

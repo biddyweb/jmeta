@@ -26,7 +26,7 @@ package org.meta.plugins.SubtitleSearch;
 
 import java.util.LinkedHashMap;
 import org.meta.api.plugin.MetAPI;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SubtitleSearch.webservice.commands.AddSubtitle;
 import org.meta.plugins.SubtitleSearch.webservice.commands.GetSubtitles;
@@ -36,7 +36,7 @@ import org.meta.plugins.SubtitleSearch.webservice.commands.SearchSubtitles;
  *
  * @author nico
  */
-public class SubtitleSearchWSController extends AbstractPluginWebServiceControler {
+public class SubtitleSearchWSController extends AbstractPluginWebServiceController {
 
     /**
      *

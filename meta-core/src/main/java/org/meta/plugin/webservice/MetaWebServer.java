@@ -29,11 +29,14 @@ import com.mongodb.util.ObjectSerializer;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.bson.types.BasicBSONList;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.configuration.WSConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +47,11 @@ import org.slf4j.LoggerFactory;
  * @author faquin
  *
  */
-public class WebServiceReader extends Thread {
+public class MetaWebServer {
 
-    private HashMap<String, AbstractPluginWebServiceControler> mapPlugins = null;
+    private HashMap<String, AbstractPluginWebServiceController> mapPlugins = null;
     private Server server = null;
-    private final Logger logger = LoggerFactory.getLogger(WebServiceReader.class);
+    private final Logger logger = LoggerFactory.getLogger(MetaWebServer.class);
 
     private final WSConfigurationImpl configuration;
 
@@ -56,7 +59,7 @@ public class WebServiceReader extends Thread {
      *
      * @param config the web service configuration
      */
-    public WebServiceReader(final WSConfigurationImpl config) {
+    public MetaWebServer(final WSConfigurationImpl config) {
         this.configuration = config;
         mapPlugins = new HashMap<>();
     }
@@ -67,19 +70,23 @@ public class WebServiceReader extends Thread {
      * @param pluginName the plugin name
      * @return the plugin if found, null otherwise
      */
-    public AbstractPluginWebServiceControler getPlugin(final String pluginName) {
+    public AbstractPluginWebServiceController getPlugin(final String pluginName) {
         return mapPlugins.get(pluginName);
     }
 
     /**
      *
      */
-    @Override
-    public void run() {
+    //@Override
+    public void start() {
         //Launch the server on the right port
         //TODO get addresses from configuration and bind them all
         logger.info("Web server listening on port " + this.configuration.getWsPort());
-        server = new Server(this.configuration.getWsPort());
+        //server = new Server(this.configuration.getWsPort()).;
+        server = new Server(new QueuedThreadPool(3, 2));
+        ServerConnector connector = new ServerConnector(server, 1, 1);
+        connector.setPort(this.configuration.getWsPort());
+        server.setConnectors(new Connector[]{connector});
 
         // serve statics files within 'static' directory
         ResourceHandler resourceHandler = new ResourceHandler();
@@ -98,9 +105,9 @@ public class WebServiceReader extends Thread {
         //start and join the server
         try {
             server.start();
-            server.join();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            //TODO throw MetaWSException here
         }
     }
 
@@ -111,7 +118,7 @@ public class WebServiceReader extends Thread {
      * @param abstractPluginWebServiceControler plugin webservice controler
      */
     public void registerPlugin(final String pluginName,
-            final AbstractPluginWebServiceControler abstractPluginWebServiceControler) {
+            final AbstractPluginWebServiceController abstractPluginWebServiceControler) {
         mapPlugins.put(pluginName, abstractPluginWebServiceControler);
     }
 

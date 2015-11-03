@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 /**
  * The kyoto cabinet implementation for {@link MetaStorage}.
  *
- * TODO check that nothing has been broken!
- *
  * @author dyslesiq
  */
 public class KyotoCabinetStorage implements MetaStorage {

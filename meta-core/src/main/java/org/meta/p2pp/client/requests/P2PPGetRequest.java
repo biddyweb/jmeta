@@ -24,9 +24,9 @@
  */
 package org.meta.p2pp.client.requests;
 
-import java.nio.ByteBuffer;
 import org.meta.api.common.MetHash;
 import org.meta.api.p2pp.GetOperation;
+import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.client.P2PPClient;
@@ -77,7 +77,7 @@ public class P2PPGetRequest extends P2PPRequest {
         if (requestSize > P2PPConstants.MAX_REQUEST_DATA_SIZE) {
             return false;
         }
-        this.buffer = ByteBuffer.allocateDirect(requestSize);
+        this.buffer = BufferManager.createDirectBuffer(requestSize);
         //Header
         this.buffer.putShort(token);
         this.buffer.put(this.commandId.getValue());
@@ -110,7 +110,7 @@ public class P2PPGetRequest extends P2PPRequest {
             return;
         }
         this.operation.setPieceHash(this.responseHandler.getPieceHash());
-        this.responseHandler.getData().rewind();
+        //this.responseHandler.getData().rewind();
         this.operation.setData(this.responseHandler.getData());
         this.operation.complete();
     }

@@ -118,7 +118,7 @@ public class CacheBucket {
      * @param entry the CacheEntry to remove
      */
     public synchronized void removeEntry(final CacheEntry entry) {
-        this.keys.remove(entry.getData());
+        this.keys.remove(entry.getKey());
     }
 
     /**

@@ -24,7 +24,7 @@
  */
 package org.meta.api.plugin;
 
-import org.meta.api.ws.AbstractPluginWebServiceControler;
+import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
  * Plugin interface to be implemented by plugins for META.
@@ -46,11 +46,11 @@ public interface MetaPlugin {
     void setPluginAPI(final MetAPI api);
 
     /**
-     * Return the instance of {@link AbstractPluginWebServiceControler} defined by this plugin.
+     * Return the instance of {@link AbstractPluginWebServiceController} defined by this plugin.
      *
      * @return the web service controller.
      */
-    AbstractPluginWebServiceControler getWebServiceController();
+    AbstractPluginWebServiceController getWebServiceController();
 
     /**
      * Return the instance of {@link PluginAMPController} defined by this plugin.

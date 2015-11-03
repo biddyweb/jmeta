@@ -41,7 +41,7 @@ import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.plugin.MetaPluginAPI;
-import org.meta.plugin.webservice.WebServiceReader;
+import org.meta.plugin.webservice.MetaWebServer;
 import org.meta.storage.KyotoCabinetStorage;
 import org.meta.storage.MetaCacheStorage;
 import org.meta.storage.MetaModelStorage;
@@ -67,7 +67,7 @@ public class MetaController {
 
     private MetaModelStorage model;
 
-    private WebServiceReader wsReader;
+    private MetaWebServer wsReader;
 
     private P2PPManager p2ppManager;
 
@@ -102,16 +102,14 @@ public class MetaController {
         } catch (ModelException ex) {
             throw new MetaException("Failed to initialize Model.", ex);
         }
-
         try {
             initDht();
         } catch (DHTException ex) {
             throw new MetaException("Failed to initialize DHT.", ex);
         }
-
         try {
             initP2PPServer();
-        } catch (IOException | P2PPException ex) {
+        } catch (P2PPException ex) {
             throw new MetaException("Failed to initialize P2PP server.", ex);
         }
         //TODO add and check exceptions
@@ -140,7 +138,7 @@ public class MetaController {
             throw new DHTException("DHT failed to start", ex);
         }
 
-        //Maybe the boostrap should be done elsewhere ?
+        //Maybe the boostrap should be done elsewhere ? => Yes, along with routing table retrieval from storage, etc...
         BootstrapOperation bootstrapOperation = dht.bootstrap();
         bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
 
@@ -154,11 +152,6 @@ public class MetaController {
                 logger.info("DHT bootstrap complete.");
             }
         });
-//        //Wait for boostraping to finish.
-//        bootstrapOperation.awaitUninterruptibly();
-//        if (bootstrapOperation.isFailure()) {
-//            throw new BootstrapException("Bootstrap operation failed");
-//        }
     }
 
     /**
@@ -166,14 +159,14 @@ public class MetaController {
      */
     private void initModel() throws StorageException {
         backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
-        cacheStorage = new MetaCacheStorage(backendStorage, 15000);
         model = new MetaModelStorage(backendStorage);
+        cacheStorage = new MetaCacheStorage(backendStorage, 1);
     }
 
     /**
      * Initializes the AmpServer.
      */
-    private void initP2PPServer() throws IOException, P2PPException {
+    private void initP2PPServer() throws P2PPException {
         this.p2ppManager = new P2PPManager(MetaConfiguration.getP2ppConfiguration(), this.model);
         this.p2ppManager.startServer();
     }
@@ -182,14 +175,16 @@ public class MetaController {
      * Initializes the web service server.
      */
     private void initWebService() {
-        wsReader = new WebServiceReader(MetaConfiguration.getWSConfiguration());
+        wsReader = new MetaWebServer(MetaConfiguration.getWSConfiguration());
         wsReader.start();
     }
 
     /**
-     * Clean stop of controller. Call kill methods on tcpReader and WebService reader.
+     * Clean stop of controller. Stops and closes all components.
      */
     public void stop() {
+        this.dht.stop();
+        this.p2ppManager.getServer().close();
         this.wsReader.kill();
         this.model.close();
     }
@@ -206,7 +201,7 @@ public class MetaController {
      *
      * @return the instance of the web service reader
      */
-    public WebServiceReader getWebServiceReader() {
+    public MetaWebServer getWebServiceReader() {
         return wsReader;
     }
 

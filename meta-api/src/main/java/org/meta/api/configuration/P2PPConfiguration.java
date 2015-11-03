@@ -38,12 +38,30 @@ public interface P2PPConfiguration {
     /**
      * @return the senderThPoolSize
      */
-    Integer getSenderThPoolSize();
+    Integer getClientThreads();
 
     /**
      * @return the serverThPoolSize
      */
-    Integer getServerThPoolSize();
+    Integer getServerThreads();
+
+    /**
+     *
+     * @return the maximum number of connections
+     */
+    Integer getMaxConnections();
+
+    /**
+     *
+     * @return the maximum download speed
+     */
+    Integer getMaxDownloadSpeed();
+
+    /**
+     *
+     * @return the maximum download speed
+     */
+    Integer getMaxUploadSpeed();
 
     /**
      *
@@ -52,13 +70,31 @@ public interface P2PPConfiguration {
     void setNetworkConfig(NetworkConfiguration networkConfig);
 
     /**
-     * @param senderThPoolSize the senderThPoolSize to set
+     * @param poolSize the client threads number to set
      */
-    void setSenderThPoolSize(Integer senderThPoolSize);
+    void setClientThreads(Integer poolSize);
 
     /**
-     * @param serverThPoolSize the serverThPoolSize to set
+     * @param poolSize the server threads number to set
      */
-    void setServerThPoolSize(Integer serverThPoolSize);
+    void setServerThreads(Integer poolSize);
+
+    /**
+     *
+     * @param maxConnections the maximum number of connections
+     */
+    void setMaxConnections(Integer maxConnections);
+
+    /**
+     *
+     * @param maxSpeed the maximum download speed
+     */
+    void setMaxDownloadSpeed(Integer maxSpeed);
+
+    /**
+     *
+     * @param maxSpeed the maximum upload speed
+     */
+    void setMaxUploadSpeed(Integer maxSpeed);
 
 }

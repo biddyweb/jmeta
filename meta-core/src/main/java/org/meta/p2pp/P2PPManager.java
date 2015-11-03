@@ -24,10 +24,7 @@
  */
 package org.meta.p2pp;
 
-import java.io.IOException;
-import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.spi.AsynchronousChannelProvider;
-import java.util.concurrent.Executors;
 import org.meta.api.configuration.P2PPConfiguration;
 import org.meta.api.model.ModelStorage;
 import org.meta.p2pp.client.P2PPClient;
@@ -45,18 +42,11 @@ import org.slf4j.LoggerFactory;
  */
 public class P2PPManager {
 
-    /**
-     * The maximum number of threads the P2PP stack can use. This should be configurable in the conf class.
-     */
-    private static final int NB_THREADS = 1;
-
     private static final Logger logger = LoggerFactory.getLogger(P2PPManager.class);
 
     private final P2PPConfiguration configuration;
 
     private final ModelStorage modelStorage;
-
-    private AsynchronousChannelGroup channelGroup;
 
     private AsynchronousChannelProvider channelProvider;
 
@@ -69,33 +59,13 @@ public class P2PPManager {
      *
      * @param conf the configuration
      * @param storage the model storage
-     * @throws IOException if failed to create provider or channel group
+     * @throws P2PPException if the client creation failed
      */
-    public P2PPManager(final P2PPConfiguration conf, final ModelStorage storage)
-            throws IOException, P2PPException {
+    public P2PPManager(final P2PPConfiguration conf, final ModelStorage storage) throws P2PPException {
         this.configuration = conf;
         this.modelStorage = storage;
-        this.channelGroup = AsynchronousChannelGroup.withFixedThreadPool(NB_THREADS,
-                Executors.defaultThreadFactory());
-        channelProvider = AsynchronousChannelProvider.provider();
         this.server = new P2PPServer(this, this.configuration);
         this.client = new P2PPClient(this, this.configuration);
-    }
-
-    /**
-     *
-     * @return the channel group for the p2pp stack
-     */
-    public AsynchronousChannelGroup getChannelGroup() {
-        return channelGroup;
-    }
-
-    /**
-     *
-     * @return the channel provider for the p2pp stack
-     */
-    public AsynchronousChannelProvider getChannelProvider() {
-        return channelProvider;
     }
 
     /**
@@ -104,11 +74,7 @@ public class P2PPManager {
      * @throws P2PPException if the server failed to start
      */
     public void startServer() throws P2PPException {
-        try {
-            this.server.run();
-        } catch (IOException ex) {
-            throw new P2PPException("Failed to start the server", ex);
-        }
+        this.server.run();
     }
 
     /**

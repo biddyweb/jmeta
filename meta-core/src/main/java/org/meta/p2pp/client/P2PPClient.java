@@ -31,10 +31,12 @@ import java.nio.channels.CompletionHandler;
 import java.nio.channels.InterruptedByTimeoutException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.configuration.P2PPConfiguration;
 import org.meta.api.model.ModelFactory;
 import org.meta.p2pp.P2PPManager;
+import org.meta.p2pp.exceptions.P2PPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +51,7 @@ public class P2PPClient {
 
     private final P2PPManager manager;
 
-    private final P2PPConfiguration configuration;
+    private final P2PPConfiguration config;
 
     private final P2PPClientReadHandler readHandler;
 
@@ -67,15 +69,22 @@ public class P2PPClient {
      *
      * @param p2ppManager the manager
      * @param conf the configuration
+     * @throws P2PPException if the channel group creation failed
      */
-    public P2PPClient(final P2PPManager p2ppManager, final P2PPConfiguration conf) {
+    public P2PPClient(final P2PPManager p2ppManager, final P2PPConfiguration conf) throws P2PPException {
         this.manager = p2ppManager;
         //Unused for now, but could be used for max connections/s, max global connections, etc...
-        this.configuration = conf;
+        this.config = conf;
         this.readHandler = new P2PPClientReadHandler();
         this.writeHandler = new P2PPClientWriteHandler();
         this.connections = new ConcurrentHashMap<>();
-        this.channelGroup = manager.getChannelGroup();
+        try {
+            logger.info("Starting client with: " + this.config.getClientThreads() + " Threads");
+            this.channelGroup = AsynchronousChannelGroup.withFixedThreadPool(this.config.getClientThreads(),
+                    Executors.defaultThreadFactory());
+        } catch (IOException ex) {
+            throw new P2PPException("Failed to create P2PP client channel group", ex);
+        }
     }
 
     /**

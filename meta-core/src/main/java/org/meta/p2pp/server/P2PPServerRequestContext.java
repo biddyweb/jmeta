@@ -81,7 +81,7 @@ public class P2PPServerRequestContext {
      *
      */
     public P2PPServerRequestContext() {
-        this.headerBuffer = BufferManager.createDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
+        this.headerBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
         this.status = ServerRequestStatus.HEADER_PENDING;
     }
 
@@ -205,7 +205,7 @@ public class P2PPServerRequestContext {
      */
     public void allocateDataBuffer() {
         if (requestDataSize > 0) {
-            this.requestBuffer = BufferManager.createDirectBuffer(requestDataSize);
+            this.requestBuffer = BufferManager.aquireDirectBuffer(requestDataSize);
             this.status = ServerRequestStatus.DATA_PENDING;
         }
     }

@@ -161,7 +161,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
             responseSize += prepareDataTypeResponse(data);
         }
         logger.debug("Response size = " + responseSize);
-        responseBuffer = BufferManager.createDirectBuffer(P2PPConstants.RESPONSE_HEADER_SIZE + responseSize);
+        responseBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.RESPONSE_HEADER_SIZE + responseSize);
         responseBuffer.putShort(this.request.getToken());
         responseBuffer.put((byte) 0); //Remaining frames, unused for now
         responseBuffer.putInt(responseSize);

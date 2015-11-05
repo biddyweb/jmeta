@@ -25,6 +25,8 @@
 package org.meta.p2pp;
 
 import java.nio.ByteBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ByteBuffer creation for Meta.
@@ -35,6 +37,8 @@ import java.nio.ByteBuffer;
  * @author dyslesiq
  */
 public final class BufferManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(BufferManager.class);
 
     /**
      *
@@ -49,7 +53,7 @@ public final class BufferManager {
      * @param size the size of the buffer
      * @return the created byte buffer
      */
-    public static ByteBuffer createDirectBuffer(final int size) {
+    public static ByteBuffer aquireDirectBuffer(final int size) {
         return ByteBuffer.allocateDirect(size);
     }
 
@@ -59,8 +63,16 @@ public final class BufferManager {
      * @param size the size of the buffer
      * @return the created byte buffer
      */
-    public static ByteBuffer createBuffer(final int size) {
+    public static ByteBuffer aquireBuffer(final int size) {
         return ByteBuffer.allocate(size);
+    }
+
+    /**
+     *
+     * @param buffer the buffer to release
+     */
+    public static void release(final ByteBuffer buffer) {
+        logger.debug("Releasing buffer with capacity: " + buffer.capacity());
     }
 
 }

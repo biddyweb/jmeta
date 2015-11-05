@@ -142,7 +142,7 @@ public class P2PPGetHandler extends P2PPCommandHandler {
     private void buildResponse() {
         int responseSize = Short.BYTES + MetHash.BYTE_ARRAY_SIZE + this.dataLength;
         logger.debug("Build response, response length = " + responseSize);
-        responseBuffer = BufferManager.createDirectBuffer(responseSize + P2PPConstants.RESPONSE_HEADER_SIZE);
+        responseBuffer = BufferManager.aquireDirectBuffer(responseSize + P2PPConstants.RESPONSE_HEADER_SIZE);
 
         responseBuffer.putShort(this.request.getToken());
         responseBuffer.put((byte) 0); //Remaining frames, unused for now

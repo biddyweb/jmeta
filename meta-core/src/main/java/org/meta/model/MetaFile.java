@@ -116,6 +116,7 @@ public final class MetaFile extends DataFile {
      * @throws URISyntaxException if invalid URI if found in given data
      */
     public MetaFile(final Data data) throws URISyntaxException {
+        this.hash = data.getHash();
         URI fileUri = new URI(data.toString());
         this.file = new File(fileUri);
         this.updateBuffer();

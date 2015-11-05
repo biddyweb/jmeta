@@ -150,7 +150,11 @@ public final class P2PPConstants {
     public enum ClientRequestStatus {
 
         /**
-         * The request has been built and is ready to be sent.
+         * The request has just been created.
+         */
+        CREATED,
+        /**
+         * The request buffer has been built and is ready to be sent.
          */
         BUILT,
         /**
@@ -222,6 +226,6 @@ public final class P2PPConstants {
     /**
      * The maximum number of pending requests on the same client wire. TODO define correctly
      */
-    public static final int CONCURRENT_CLIENT_REQUESTS = 30;
+    public static final int CONCURRENT_CLIENT_REQUESTS = 100;
 
 }

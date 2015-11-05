@@ -27,10 +27,8 @@ package org.meta.p2pp.client;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
 import org.meta.api.common.MetaPeer;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
@@ -45,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author dyslesiq
  */
-public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
+public class P2PPClientRequestManager {
 
     private final Logger logger = LoggerFactory.getLogger(P2PPClientRequestManager.class);
 
@@ -79,14 +77,19 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
     private final Queue<P2PPRequest> sendQueue;
 
     /**
-     * Buffers to use when there is no request.
+     * Requests waiting to be handled.
      */
-    private ByteBuffer headerBuffer;
+    private final Queue<P2PPRequest> waitQueue;
 
     /**
-     * If the header buffer is currently in use by read().
+     * Buffers to use when there is no request.
      */
-    private boolean headerReading;
+    private boolean headerBufferReading;
+
+    /**
+     * Buffers to use when there is no request.
+     */
+    private final ByteBuffer headerBuffer;
 
     /**
      * Unique token to give to request.
@@ -112,10 +115,18 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
     public P2PPClientRequestManager(final MetaPeer serverPeer, final P2PPClient p2ppClient) {
         this.peer = serverPeer;
         this.client = p2ppClient;
+        this.sendQueue = new ArrayDeque<>(P2PPConstants.CONCURRENT_CLIENT_REQUESTS);
         this.readQueue = new ArrayDeque<>();
-        this.sendQueue = new ArrayDeque<>();
-        //this.waitQueue = new ArrayDeque<>();
-        this.headerBuffer = BufferManager.createDirectBuffer(P2PPConstants.RESPONSE_HEADER_SIZE);
+        this.waitQueue = new ArrayDeque<>();
+        this.headerBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.RESPONSE_HEADER_SIZE);
+    }
+
+    /**
+     *
+     * @return the token for the next request
+     */
+    private short nextToken() {
+        return token++;
     }
 
     /**
@@ -131,7 +142,7 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
      * @return true if the socket is connected, false otherwise.
      */
     public final boolean isConnected() {
-        return this.socket != null && this.socket.isOpen() && connected;
+        return this.connected;
     }
 
     /**
@@ -143,16 +154,22 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
     }
 
     /**
-     * Try to connect to the server peer.
-     *
-     * @param socketChannel the socket to connect to
+     * Set the context's state to 'connected'.
      */
-    public final void connect(final AsynchronousSocketChannel socketChannel) {
+    public void connected() {
+        this.connecting = false;
+        this.connected = true;
+    }
+
+    /**
+     * Set the context's state to 'connecting'.
+     *
+     * @param socketChannel the socket we are connecting to
+     */
+    public final void connecting(final AsynchronousSocketChannel socketChannel) {
         this.connected = false;
         this.connecting = true;
         this.socket = socketChannel;
-        this.reset();
-        this.socket.connect(peer.getSocketAddr(), null, this);
     }
 
     /**
@@ -161,11 +178,11 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
     public void close() {
         try {
             this.connected = false;
-            this.connected = false;
+            this.connecting = false;
             if (this.socket != null) {
                 this.socket.close();
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
         }
         String failedReason = "Close requested";
         for (P2PPRequest req : this.readQueue) {
@@ -174,47 +191,6 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
         for (P2PPRequest req : this.sendQueue) {
             req.setFailed(failedReason);
         }
-    }
-
-    /**
-     * The socket has successfully connected to the server peer.
-     *
-     * @param v useless
-     * @param a should == this, but we are our own completion handler
-     */
-    @Override
-    public synchronized void completed(final Void v, final Void a) {
-        connected = true;
-        connecting = false;
-        logger.debug("Connected to " + this.peer);
-        scheduleRequests();
-    }
-
-    /**
-     * Called when the socket failed to connect.
-     *
-     * @param thrwbl the exception that caused the connection failure.
-     * @param a nothing
-     */
-    @Override
-    public void failed(final Throwable thrwbl, final Void a) {
-        logger.warn("Failed to connect to " + this.peer);
-        connecting = false;
-        if (!this.sendQueue.isEmpty()) {
-            for (P2PPRequest req : this.sendQueue) {
-                req.setFailed("Failed to connect.");
-            }
-        }
-        this.client.closeConnection(this.peer);
-    }
-
-    /**
-     * Reset internal state and put all pending requests to initial state, waiting for a new socket.
-     *
-     * Useful on server disconnection, when trying to re-send existing requests.
-     */
-    public void reset() {
-        //TODO
     }
 
     /**
@@ -229,167 +205,170 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
      * @param req the request to send
      */
     public void addRequest(final P2PPRequest req) {
-        //Build the request buffer
-        if (!req.build(this.nextToken())) {
-            //if the request failed to build then the user (or the dev...) made a mistake!
-            req.setFailed("Failed to build request.");
-            return;
+        if (sendQueue.size() < P2PPConstants.CONCURRENT_CLIENT_REQUESTS) {
+            if (!this.sendQueue.add(req)) {
+                logger.error("FAILED TO ADD REQUEST TO SEND QUEUE");
+            }
         } else {
-            req.setStatus(ClientRequestStatus.BUILT);
-            logger.debug("Request successfully built.");
+            if (!this.waitQueue.add(req)) {
+                logger.error("FAILED TO ADD REQUEST TO WAIT QUEUE");
+            }
         }
         logger.info("Adding request. Cmd id = " + req.getCommandId());
-        if (!this.sendQueue.add(req)) {
-            logger.info("FAILEDD TO ADD REQUESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-        }
-        this.scheduleRequests();
     }
 
     /**
      * Called by the async write handler to notify us that request data has been sent to the server peer.
      */
     public synchronized void dataSent() {
-        logger.debug("Data sent!");
-        P2PPRequest req = this.sendQueue.element();
+        P2PPRequest req = this.sendQueue.peek(); //element();
 
-        if (req.getStatus() == ClientRequestStatus.SEND_PENDING) {
+        if (req != null && req.getStatus() == ClientRequestStatus.SEND_PENDING) {
             if (!req.getBuffer().hasRemaining()) {
-                if (req.hasResponse()) {
-                    req.setStatus(ClientRequestStatus.SEND_COMPLETE);
+                if (!req.hasResponse()) {
+                    //req.setStatus(ClientRequestStatus.FINISHED);
+                    req.finish();
+                    this.sendQueue.poll();
                 } else {
-                    req.setStatus(ClientRequestStatus.FINISHED);
+                    req.setStatus(ClientRequestStatus.SEND_COMPLETE);
+                    if (!this.readQueue.add(this.sendQueue.poll())) {
+                        logger.error("FAILED TO MOVE REQUEST FROM SEND QUEUE TO READ QUEUE!");
+                    }
                 }
+            } else {
+                logger.warn("DATA SENT BUT buffer not full");
             }
+        } else {
+            logger.error("Data sent (send queue empty or status != SEND_PENDING) !!");
         }
-        this.scheduleRequests();
     }
 
     /**
      * Called by the async read handler to notify us that response data has been received.
      */
     public void dataReceived() {
-        logger.debug("Data received!");
-        if (this.readQueue.isEmpty()) {
-            logger.info("BIG PROBLEM!!! data received and read queue empty!!!!!!!!");
-            logger.info("!! Header reading ? " + headerReading + " buffer full ? " + headerBuffer.hasRemaining());
-            return;
-        }
-        P2PPRequest req = this.readQueue.element();
-        ClientRequestStatus status = req.getStatus();
+        P2PPRequest req = this.readQueue.peek();
 
-        if (status == ClientRequestStatus.RESPONSE_HEADER_PENDING) {
-            if (!this.headerBuffer.hasRemaining()) {
-                //Header has been fully received
-                if (!req.getResponseHandler().parseHeader(headerBuffer)) {
-                    logger.warn("Failed to parse response header!");
-                    this.client.closeConnection(this.peer);
-                    return;
+        if (req != null) {
+            if (headerBufferReading) {
+                if (req.getStatus() == ClientRequestStatus.SEND_COMPLETE
+                        || req.getStatus() == ClientRequestStatus.RESPONSE_HEADER_PENDING) {
+                    if (!headerBuffer.hasRemaining()) {
+                        headerBufferReading = false;
+                        if (req.getResponseHandler().parseHeader(headerBuffer)) {
+                            req.setStatus(ClientRequestStatus.RESPONSE_HEADER_RECEIVED);
+                        } else {
+                            req.setFailed("Failed to parse response header.");
+                            this.client.closeConnection(peer);
+                        }
+                    } else {
+                        logger.warn("req.setStatus(ClientRequestStatus.RESPONSE_HEADER_PENDING); ??");
+                    }
                 }
-                headerReading = false;
-                req.setStatus(ClientRequestStatus.RESPONSE_HEADER_RECEIVED);
-            }
-        } else if (status == ClientRequestStatus.RESPONSE_PENDING) {
-            if (!req.getResponseHandler().getPayloadBuffer().hasRemaining()) {
-                //Response has been fully received.
-                req.setStatus(ClientRequestStatus.FINISHED);
+            } else {
+                if (req.getStatus() == ClientRequestStatus.RESPONSE_PENDING) {
+                    if (!req.getResponseHandler().getPayloadBuffer().hasRemaining()) {
+                        if (!req.getResponseHandler().parse()) {
+                            req.setFailed("Failed to parse response.");
+                            this.client.closeConnection(peer);
+                        } else {
+                            req.finish();
+                            this.readQueue.poll();
+                        }
+                    } else {
+                        logger.warn("DATA RECEIVED BUT PAYLOAD BUFFER HAS REMAINING");
+                    }
+                } else {
+                    logger.warn("DATA PAYLOAD RECEIVED BUT reqStatus != " + ClientRequestStatus.RESPONSE_PENDING);
+                }
             }
         } else {
-            logger.info("Data received and no ******* matching status..........");
-        }
-        scheduleRequests();
-    }
-
-    /**
-     * Schedule I/O operations on queues of requests.
-     */
-    private synchronized void scheduleRequests() {
-        if (!isConnected()) {
-            logger.info("Not connected yet, skipping request scheduling.");
-            //Nothing to do if we are not connected yet...
-            return;
-        }
-        if (!this.sendQueue.isEmpty()) {
-            logger.debug("Send queue not empty.");
-            ClientRequestStatus status = this.sendQueue.element().getStatus();
-
-            if (status == ClientRequestStatus.SEND_COMPLETE) {
-                if (!this.readQueue.add(this.sendQueue.poll())) {
-                    logger.info("FAILED TO PASS REQUEST FROM SEND TO READ QUEUE!!!!");
-                }
-            } else if (status == ClientRequestStatus.FINISHED) {
-                logger.debug("Send complete, finished.");
-                this.sendQueue.poll().finish();
-            }
-        }
-        if (!this.readQueue.isEmpty()) {
-            logger.debug("Read queue not empty.");
-
-            if (this.readQueue.element().getStatus() == ClientRequestStatus.FINISHED) {
-                //logger.debug("Response received: finished.");
-                this.readQueue.poll().finish();
-            }
-        }
-        this.scheduleSend();
-        this.scheduleReceive();
-    }
-
-    /**
-     * Sends the current request to the server peer.
-     */
-    private void scheduleSend() {
-        if (!this.sendQueue.isEmpty()) {
-            P2PPRequest req = this.sendQueue.element();
-
-            if (req.getStatus() == ClientRequestStatus.BUILT) {
-                req.setStatus(ClientRequestStatus.SEND_PENDING);
-                this.socket.write(req.getBuffer(), P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS,
-                        this, this.client.getWriteHandler());
-            }
+            logger.error("DATA RECEIVED AND READ QUEUE EMPTY!!");
         }
     }
 
     /**
-     * Read from the server peer, if possible.
+     * Schedule requests and find the next buffer to be read.
+     *
+     *
+     * @return the next buffer that needs to be filled with read bytes
      */
-    private void scheduleReceive() {
-        boolean prepareHeaderBuffer = false;
-        ByteBuffer buf = null;
+    ByteBuffer getNextReadBuffer() {
+        P2PPRequest req = this.readQueue.peek();
 
-        if (this.readQueue.isEmpty()) {
-            if (!headerReading) {
-                prepareHeaderBuffer = true;
+        if (req == null) {
+            if (!headerBufferReading) {
+                this.headerBuffer.rewind();
+                headerBufferReading = true;
+                return this.headerBuffer;
+            } else {
+                logger.debug("Header buffer already being filled...");
             }
         } else {
-            P2PPRequest req = this.readQueue.element();
-            ClientRequestStatus status = req.getStatus();
-
-            if (status == ClientRequestStatus.SEND_COMPLETE) {
-                req.setStatus(ClientRequestStatus.RESPONSE_HEADER_PENDING);
-                if (!headerReading) {
-                    prepareHeaderBuffer = true;
+            if (headerBufferReading) {
+                if (req.getStatus() == ClientRequestStatus.SEND_COMPLETE) {
+//                    req.setStatus(ClientRequestStatus.RESPONSE_HEADER_PENDING);
                 }
-            } else if (status == ClientRequestStatus.RESPONSE_HEADER_RECEIVED) {
-                buf = req.getResponseHandler().getPayloadBuffer();
-                req.setStatus(ClientRequestStatus.RESPONSE_PENDING);
+            } else {
+                if (req.getStatus() == ClientRequestStatus.SEND_COMPLETE) {
+                    req.setStatus(ClientRequestStatus.RESPONSE_HEADER_PENDING);
+                    this.headerBuffer.rewind();
+                    headerBufferReading = true;
+                    return this.headerBuffer;
+                } else if (req.getStatus() == ClientRequestStatus.RESPONSE_HEADER_RECEIVED) {
+                    req.setStatus(ClientRequestStatus.RESPONSE_PENDING);
+                    return req.getResponseHandler().getPayloadBuffer();
+                } else {
+                    logger.debug("Next read buffer: the request doesn't need reading... Status=" + req.getStatus());
+                }
             }
         }
-        if (prepareHeaderBuffer) {
-            this.headerBuffer.rewind();
-            buf = this.headerBuffer;
-            headerReading = true;
-        }
-        if (buf != null) {
-            this.socket.read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS,
-                    this, this.client.getReadHandler());
-        }
+        return null;
     }
 
     /**
      *
-     * @return the token for the next request
+     * Schedule requests and find the next buffer to be written.
+     *
+     * Null is returned if there is nothing to write or if we are already reading.
+     *
+     * Otherwise the next pending request i built, its status set to {@code SEND_PENDING} and its buffer is
+     * returned.
+     *
+     * @return the next buffer that needs to be written to server peer or null
      */
-    private short nextToken() {
-        return token++;
+    ByteBuffer getNextWriteBuffer() {
+        P2PPRequest req = this.sendQueue.peek();
+
+        if (req == null) {
+            if (!waitQueue.isEmpty()) {
+                if (!this.sendQueue.add(waitQueue.poll())) {
+                    logger.error("FAILED TO PUT REQUEST FROM WAIT QUEUE TO SEND QUEUE!!");
+                }
+                return getNextWriteBuffer();
+            }
+        } else {
+            logger.debug("getNextWriteBuffer: send queue not empty");
+            if (req.getStatus() == ClientRequestStatus.CREATED) {
+                logger.debug("getNextWriteBuffer: Building request");
+                if (!req.build(this.nextToken())) {
+                    //if the request failed to build then the user (or the dev...) made a mistake!
+                    req.setFailed("Failed to build request.");
+                    this.sendQueue.poll();
+                    return this.getNextWriteBuffer();
+                } else {
+                    req.setStatus(P2PPConstants.ClientRequestStatus.BUILT);
+                    logger.debug("Request successfully built.");
+                }
+            }
+            if (req.getStatus() == ClientRequestStatus.BUILT) {
+                logger.debug("getNextWriteBuffer: request built, send buffer");
+                req.setStatus(ClientRequestStatus.SEND_PENDING);
+                return req.getBuffer();
+            }
+        }
+        //We don't need to send anything...
+        return null;
     }
 
     /**
@@ -400,4 +379,11 @@ public class P2PPClientRequestManager implements CompletionHandler<Void, Void> {
         return this.peer;
     }
 
+    /**
+     * Reset internal state and put all pending requests to initial state, waiting for a new socket.
+     *
+     * Useful on server disconnection, when trying to re-send existing requests.
+     */
+//    public void reset() {
+//    }
 }

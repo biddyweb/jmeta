@@ -77,7 +77,7 @@ public class P2PPGetRequest extends P2PPRequest {
         if (requestSize > P2PPConstants.MAX_REQUEST_DATA_SIZE) {
             return false;
         }
-        this.buffer = BufferManager.createDirectBuffer(requestSize);
+        this.buffer = BufferManager.aquireDirectBuffer(requestSize);
         //Header
         this.buffer.putShort(token);
         this.buffer.put(this.commandId.getValue());
@@ -90,12 +90,6 @@ public class P2PPGetRequest extends P2PPRequest {
         this.buffer.putInt(this.operation.getDataLength());
         this.buffer.rewind();
         return true;
-    }
-
-    @Override
-    public P2PPConstants.ClientRequestStatus dataReceived() {
-        this.status = this.responseHandler.dataReceived();
-        return this.status;
     }
 
     @Override

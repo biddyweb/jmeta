@@ -30,7 +30,6 @@ import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataType;
-import org.meta.p2pp.P2PPConstants.ClientRequestStatus;
 import org.meta.p2pp.client.P2PPRequest;
 import org.meta.p2pp.client.P2PPResponseHandler;
 import org.meta.utils.SerializationUtils;
@@ -57,12 +56,6 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
      */
     public P2PPSearchResponseHandler(final P2PPRequest req) {
         super(req);
-    }
-
-    @Override
-    public ClientRequestStatus dataReceived() {
-        //No use anymore ?
-        return ClientRequestStatus.INVALID;
     }
 
     /**
@@ -114,7 +107,7 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
 
     /**
      *
-     * @return the extracted results, if any
+     * @return the extracted results, if any, otherwise null
      */
     public Set<Data> getResults() {
         return this.results;

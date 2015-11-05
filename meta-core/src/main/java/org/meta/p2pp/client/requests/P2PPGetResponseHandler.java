@@ -26,8 +26,6 @@ package org.meta.p2pp.client.requests;
 
 import java.nio.ByteBuffer;
 import org.meta.api.common.MetHash;
-import org.meta.p2pp.P2PPConstants;
-import org.meta.p2pp.P2PPConstants.ClientRequestStatus;
 import org.meta.p2pp.client.P2PPRequest;
 import org.meta.p2pp.client.P2PPResponseHandler;
 
@@ -53,29 +51,6 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
     public P2PPGetResponseHandler(final P2PPRequest req, final int dataLength) {
         super(req);
         this.requestedLength = dataLength;
-    }
-
-    @Override
-    public P2PPConstants.ClientRequestStatus dataReceived() {
-        ClientRequestStatus status = this.request.getStatus();
-
-//        if (status == ClientRequestStatus.RESPONSE_HEADER_PENDING) {
-//            if (!this.buffers[0].hasRemaining()) {
-//                status = ClientRequestStatus.RESPONSE_HEADER_RECEIVED;
-//                if (!this.parseHeader()) {
-//                    status = ClientRequestStatus.INVALID;
-//                } else {
-//                    this.buffersOffset = 1;
-//                    this.buffersLength = 1;
-//                    this.buffers[this.buffersOffset] = ByteBuffer.allocateDirect(payloadSize);
-//                }
-//            }
-//        } else if (status == ClientRequestStatus.RESPONSE_PENDING) {
-//            if (!this.buffers[this.buffersOffset].hasRemaining()) {
-//                status = ClientRequestStatus.RESPONSE_RECEIVED;
-//            }
-//        }
-        return status;
     }
 
     @Override

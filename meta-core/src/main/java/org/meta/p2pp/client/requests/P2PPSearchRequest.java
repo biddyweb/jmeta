@@ -25,9 +25,9 @@
 package org.meta.p2pp.client.requests;
 
 import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
 import org.meta.api.common.MetHash;
 import org.meta.api.plugin.SearchOperation;
+import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.client.P2PPClient;
@@ -77,7 +77,7 @@ public class P2PPSearchRequest extends P2PPRequest {
         if (requestSize > P2PPConstants.MAX_REQUEST_DATA_SIZE) {
             return false;
         }
-        this.buffer = ByteBuffer.allocateDirect(requestSize);
+        this.buffer = BufferManager.aquireDirectBuffer(requestSize);
         try {
             this.buffer.putShort(token);
             this.buffer.put(this.commandId.getValue());
@@ -96,12 +96,6 @@ public class P2PPSearchRequest extends P2PPRequest {
     }
 
     @Override
-    public P2PPConstants.ClientRequestStatus dataReceived() {
-        this.status = this.responseHandler.dataReceived();
-        return this.status;
-    }
-
-    @Override
     public void finish() {
         if (!this.responseHandler.parse()) {
             this.operation.setFailed("Failed to parse response");
@@ -109,6 +103,7 @@ public class P2PPSearchRequest extends P2PPRequest {
             this.operation.setResults(this.responseHandler.getResults());
             this.operation.complete();
         }
+        BufferManager.release(buffer);
     }
 
     @Override

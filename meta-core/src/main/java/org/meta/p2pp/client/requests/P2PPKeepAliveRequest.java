@@ -24,8 +24,8 @@
  */
 package org.meta.p2pp.client.requests;
 
-import java.nio.ByteBuffer;
 import org.meta.api.common.AsyncOperation;
+import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.client.P2PPRequest;
@@ -48,13 +48,14 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
     public P2PPKeepAliveRequest() {
         //Giving null as p2p client because this request does not need it...
         super(P2PPCommand.KEEP_ALIVE, null);
-        this.buffer = ByteBuffer.allocateDirect(P2PPConstants.REQUEST_HEADER_SIZE);
+        this.buffer = BufferManager.aquireDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
         //placeholder for the token
         this.buffer.position(Short.BYTES);
         this.buffer.put(this.commandId.getValue());
         //Hard-coded request payload size of zero.
         this.buffer.putInt(0);
-        this.operation = new DummyAsyncOperation();
+        this.operation = new AsyncOperation() {
+        };
     }
 
     @Override
@@ -72,17 +73,13 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
     }
 
     @Override
-    public P2PPConstants.ClientRequestStatus dataReceived() {
-        return this.status;
-    }
-
-    @Override
     public boolean hasResponse() {
         return false;
     }
 
     @Override
     public void finish() {
+        BufferManager.release(buffer);
         operation.complete();
     }
 

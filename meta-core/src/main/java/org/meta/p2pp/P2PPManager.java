@@ -24,7 +24,6 @@
  */
 package org.meta.p2pp;
 
-import java.nio.channels.spi.AsynchronousChannelProvider;
 import org.meta.api.configuration.P2PPConfiguration;
 import org.meta.api.model.ModelStorage;
 import org.meta.p2pp.client.P2PPClient;
@@ -36,7 +35,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The meta peer to peer protocol manager.
  *
- * It handles socket creation and client sockets pooling.
+ * Doesn't do much for now but could be used for common part between server and client. Could be used to
+ * manage the maximum connections/up and down bandwith, etc...
  *
  * @author dyslesiq
  */
@@ -47,8 +47,6 @@ public class P2PPManager {
     private final P2PPConfiguration configuration;
 
     private final ModelStorage modelStorage;
-
-    private AsynchronousChannelProvider channelProvider;
 
     private final P2PPServer server;
 

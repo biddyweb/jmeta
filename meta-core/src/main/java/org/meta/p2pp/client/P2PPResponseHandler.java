@@ -27,7 +27,6 @@ package org.meta.p2pp.client;
 import java.nio.ByteBuffer;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
-import org.meta.p2pp.P2PPConstants.ClientRequestStatus;
 
 /**
  * Response handler (client-side) for a peer-to-peer protocol request.
@@ -80,7 +79,7 @@ public abstract class P2PPResponseHandler {
             return false;
         }
         if (payloadSize > 0) {
-            this.payloadBuffer = BufferManager.createDirectBuffer(payloadSize);
+            this.payloadBuffer = BufferManager.aquireDirectBuffer(payloadSize);
         }
         return true;
     }
@@ -100,13 +99,6 @@ public abstract class P2PPResponseHandler {
     public final ByteBuffer getPayloadBuffer() {
         return this.payloadBuffer;
     }
-
-    /**
-     * Called by the async completion handler to notify us that data has been received.
-     *
-     * @return the status after update
-     */
-    public abstract ClientRequestStatus dataReceived();
 
     /**
      * Used to extract usable data from the protocol response data.

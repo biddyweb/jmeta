@@ -111,12 +111,6 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
     }
 
     @Override
-    public P2PPConstants.ClientRequestStatus dataReceived() {
-        this.status = this.responseHandler.dataReceived();
-        return this.status;
-    }
-
-    @Override
     public void finish() {
         if (!this.responseHandler.parse()) {
             this.operation.setFailed("Failed to parse response");

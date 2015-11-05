@@ -69,6 +69,7 @@ public abstract class P2PPRequest {
      * @param p2ppClient the peer-to-peer protocol client
      */
     protected P2PPRequest(final P2PPCommand id, final P2PPClient p2ppClient) {
+        this.status = ClientRequestStatus.CREATED;
         this.commandId = id;
         this.client = p2ppClient;
     }
@@ -100,17 +101,6 @@ public abstract class P2PPRequest {
     public abstract boolean build(final short requestToken);
 
     /**
-     * Called by the async read handler to notify that some response data has been received.
-     *
-     * Should be defined by requests implementation to provide request-specific behavior.
-     *
-     * This also should be delegated to the request response handler.
-     *
-     * @return the new status after update
-     */
-    public abstract ClientRequestStatus dataReceived();
-
-    /**
      *
      * @return true if this request expect a response from the server, false otherwise
      */
@@ -118,6 +108,8 @@ public abstract class P2PPRequest {
 
     /**
      * Called on request completion.
+     *
+     * The request isn't used anymore after this method call.
      */
     public abstract void finish();
 
@@ -133,20 +125,6 @@ public abstract class P2PPRequest {
      *
      */
     public abstract void setFailed(final Throwable thrwbl);
-
-    /**
-     * Called by the async write handler to notify that request data has been sent to the server peer.
-     *
-     * @return the new status after update
-     */
-    public ClientRequestStatus dataSent() {
-        if (this.status == ClientRequestStatus.SEND_PENDING) {
-            if (!this.buffer.hasRemaining()) {
-                this.status = ClientRequestStatus.SEND_COMPLETE;
-            }
-        }
-        return this.status;
-    }
 
     /**
      *

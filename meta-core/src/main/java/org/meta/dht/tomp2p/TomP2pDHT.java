@@ -77,7 +77,7 @@ public final class TomP2pDHT extends MetaDHT {
      */
     private Peer peer;
 
-    private TomP2pStorage tomP2pStorage;
+    //private TomP2pStorage tomP2pStorage;
 
     /**
      * Create the tomp2p DHT with given configuration.
@@ -87,7 +87,7 @@ public final class TomP2pDHT extends MetaDHT {
      */
     public TomP2pDHT(final DHTConfigurationImpl config, final MetaCache dbStorage) {
         super(config, dbStorage);
-        this.tomP2pStorage = new TomP2pStorage(storage);
+        //this.tomP2pStorage = new TomP2pStorage(storage);
     }
 
     /**

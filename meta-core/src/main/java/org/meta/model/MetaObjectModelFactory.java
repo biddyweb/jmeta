@@ -36,7 +36,6 @@ import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.ModelFactory;
-import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.model.Searchable;
 
@@ -62,12 +61,13 @@ public class MetaObjectModelFactory implements ModelFactory {
     }
 
     @Override
-    public Search createSearch(final Searchable source, final SearchCriteria criteria) {
+    public MetaSearch createSearch(final Searchable source, final SearchCriteria criteria) {
         return new MetaSearch(criteria, source, null);
     }
 
     @Override
-    public Search createSearch(final Searchable source, final SearchCriteria criteria, final Data... datas) {
+    public MetaSearch createSearch(final Searchable source, final SearchCriteria criteria,
+            final Data... datas) {
         MetaSearch search = new MetaSearch(criteria, source, null);
 
         if (datas != null) {

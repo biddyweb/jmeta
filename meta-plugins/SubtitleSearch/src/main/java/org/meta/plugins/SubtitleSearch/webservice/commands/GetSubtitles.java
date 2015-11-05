@@ -33,6 +33,7 @@ import org.meta.api.common.MetaPeer;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
+import org.meta.api.model.MetaData;
 import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.plugin.DownloadOperation;
@@ -131,7 +132,7 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
             if (data != null) {
                 URI uri = null;
                 try {
-                    uri = new URI("file:/home/nico/Downloads/meta_subtitle_download");
+                    uri = new URI("file:/home/nico/Downloads/" + getFileName(data));
                     DataFile destinationFile = factory.getDataFile(hash, uri, data.getSize());
                     successTextOutput.append("Downloading to: " + uri);
                     api.download(destinationFile, peers).addListener(this);
@@ -145,6 +146,18 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
         } else {
             errorTextOutput.append("Please set a valide path name");
         }
+    }
+
+    private String getFileName(final Data data) {
+        String name = "meta_subtitle_download_";
+
+        for (MetaData d : data.getMetaData()) {
+            if (d.getKey().equals("name")) {
+                name += d.getValue();
+            }
+        }
+        name += "." + System.currentTimeMillis();
+        return name;
     }
 
     @Override

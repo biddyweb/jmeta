@@ -47,7 +47,7 @@ public class MetaTimedExecutor {
      */
     public MetaTimedExecutor() {
         futures = new ArrayList<>();
-        executor = Executors.newScheduledThreadPool(2);
+        executor = Executors.newScheduledThreadPool(1);
     }
 
     /**

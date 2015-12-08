@@ -107,6 +107,10 @@ public final class P2PPConstants {
     public enum ServerRequestStatus {
 
         /**
+         * The request has been created.
+         */
+        CREATED,
+        /**
          * The request header is being read.
          */
         HEADER_PENDING,
@@ -221,11 +225,11 @@ public final class P2PPConstants {
     /**
      * The number seconds after which a write on a socket will be considered invalid. TODO define correctly
      */
-    public static final int WRITE_TIMEOUT = 120;
+    public static final int WRITE_TIMEOUT = 30;
 
     /**
      * The maximum number of pending requests on the same client wire. TODO define correctly
      */
-    public static final int CONCURRENT_CLIENT_REQUESTS = 100;
+    public static final int CONCURRENT_CLIENT_REQUESTS = 30;
 
 }

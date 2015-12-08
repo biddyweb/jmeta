@@ -30,6 +30,8 @@ import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.P2PPConstants.ServerRequestStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a request state in an existing client context.
@@ -41,12 +43,14 @@ import org.meta.p2pp.P2PPConstants.ServerRequestStatus;
  */
 public class P2PPServerRequestContext {
 
-    private ServerRequestStatus status;
+    private Logger logger = LoggerFactory.getLogger(P2PPServerRequestContext.class);
+
+    private volatile ServerRequestStatus status;
 
     /**
      * The unique request token, as defined in the protocol.
      */
-    private short token;
+    private char token;
 
     /**
      * The command identifier, as defined in the protocol.
@@ -59,11 +63,6 @@ public class P2PPServerRequestContext {
     private int requestDataSize;
 
     /**
-     * The request header buffer (read).
-     */
-    private ByteBuffer headerBuffer;
-
-    /**
      * The request data (read).
      */
     private ByteBuffer requestBuffer;
@@ -74,79 +73,22 @@ public class P2PPServerRequestContext {
     private ByteBuffer responseBuffer;
 
     /**
-     * The response data (write).
-     */
-    //private final Queue<ByteBuffer> responseBuffers;
-    /**
      *
      */
     public P2PPServerRequestContext() {
-        this.headerBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
-        this.status = ServerRequestStatus.HEADER_PENDING;
+        this.status = ServerRequestStatus.CREATED;
     }
 
     /**
-     * Stops this request for immediate shutdown.
+     *
      */
     public void close() {
-    }
-
-    /**
-     * Reset all internal state to a clean one.
-     *
-     * After this call, this request can be safely used again.
-     *
-     * TODO create a pool of Request Contexts ?
-     */
-    public void reset() {
-        this.status = ServerRequestStatus.HEADER_PENDING;
-        this.headerBuffer.clear();
-        this.token = 0;
-        this.requestDataSize = 0;
-    }
-
-    /**
-     * Called by async completion handlers to notify that internal data has changed.
-     *
-     * @return the current status of this request after update
-     */
-    public ServerRequestStatus bufferUpdated() {
-        if (this.status == ServerRequestStatus.HEADER_PENDING) {
-            if (!this.headerBuffer.hasRemaining()) {
-                //We have fully received the request buffer.
-                this.status = ServerRequestStatus.HEADER_RECEIVED;
-            }
-        } else if (this.status == ServerRequestStatus.HEADER_RECEIVED
-                || this.status == ServerRequestStatus.DATA_PENDING) {
-            if (!this.requestBuffer.hasRemaining()) {
-                //We received the data
-                this.status = ServerRequestStatus.DATA_RECEIVED;
-            }
+        if (this.requestBuffer != null) {
+            BufferManager.release(requestBuffer);
         }
-        return this.status;
-    }
-
-    /**
-     * Called by the command handler to notify that it finished.
-     *
-     * Only changes internal status.
-     */
-    public void handlerComplete() {
-        if (this.hasResponseData()) {
-            this.status = ServerRequestStatus.RESPONSE_READY;
-        } else {
-            this.status = ServerRequestStatus.FINISHED;
+        if (this.responseBuffer != null) {
+            BufferManager.release(responseBuffer);
         }
-    }
-
-    /**
-     * Called by the async completion handler to notify that this request is ready to be dispatched to
-     * appropriate command handler.
-     *
-     * Only changes internal status.
-     */
-    public void dispatch() {
-        this.status = ServerRequestStatus.DISPTACHED;
     }
 
     /**
@@ -184,59 +126,46 @@ public class P2PPServerRequestContext {
     /**
      * Extracts data from the received request header.
      *
+     * @param headerBuffer the header buffer
      * @return true if the parsed header is valid, false otherwise
      */
-    public boolean parseRequestHeader() {
-        this.headerBuffer.rewind(); //Set position to 0 for data access
+    public boolean parseRequestHeader(final ByteBuffer headerBuffer) {
         try {
-            this.token = this.headerBuffer.getShort();
-            byte id = this.headerBuffer.get();
+            headerBuffer.rewind();
+            this.token = (char) headerBuffer.getShort();
+            logger.info("parseRequestHeader: token = " + (int) this.token);
+            byte id = headerBuffer.get();
             this.commandId = P2PPCommand.fromValue(id);
-            this.requestDataSize = this.headerBuffer.getInt();
+            this.requestDataSize = headerBuffer.getInt();
             return this.checkHeader();
-        } catch (BufferUnderflowException e) {
-            //What to do here ?? This should not happen...
+        } catch (final BufferUnderflowException e) {
+            logger.error("BufferUnderflowException!!", e);
             return false;
         }
     }
 
     /**
-     * Header is valid, prepare buffer for content retrieval.
+     * Header is valid, prepare buffer for request content retrieval.
      */
     public void allocateDataBuffer() {
         if (requestDataSize > 0) {
             this.requestBuffer = BufferManager.aquireDirectBuffer(requestDataSize);
-            this.status = ServerRequestStatus.DATA_PENDING;
         }
     }
 
     /**
-     * Called by async completion handlers to notify that response data has been sent.
      *
-     * @return the current status of this request after update
+     * @return true if the request has a data payload (request content), false otherwise
      */
-    public ServerRequestStatus responseDataSent() {
-        if (this.status == ServerRequestStatus.RESPONSE_PENDING) {
-            if (!this.responseBuffer.hasRemaining()) {
-                this.status = ServerRequestStatus.FINISHED;
-            }
-        }
-        return this.status;
+    public boolean hasPayload() {
+        return this.requestDataSize > 0;
     }
 
     /**
-     *
-     * @return true if the response data is available and ready to be sent
+     * @return true if the request has an associated response ready to be sent, false otherwise
      */
-    public boolean hasResponseData() {
+    public boolean hasResponse() {
         return this.responseBuffer != null;
-    }
-
-    /**
-     * @return a ByteBuffer large enough to contain the request header
-     */
-    public ByteBuffer getHeaderBuffer() {
-        return this.headerBuffer;
     }
 
     /**
@@ -265,7 +194,7 @@ public class P2PPServerRequestContext {
      *
      * @return the token of this request
      */
-    public short getToken() {
+    public char getToken() {
         return token;
     }
 

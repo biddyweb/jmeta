@@ -31,12 +31,11 @@ import java.util.Queue;
 import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
-import org.meta.api.model.ModelStorage;
 import org.meta.api.model.Search;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
-import org.meta.p2pp.P2PPConstants.ServerRequestStatus;
 import org.meta.p2pp.server.P2PPCommandHandler;
+import org.meta.p2pp.server.P2PPServer;
 import org.meta.p2pp.server.P2PPServerClientContext;
 import org.meta.p2pp.server.P2PPServerRequestContext;
 import org.meta.utils.SerializationUtils;
@@ -83,25 +82,34 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
 
     /**
      *
-     * @param modelStorage the model storage
+     * @param p2ppServer the p2pp server
      */
-    public P2PPSearchHandler(final ModelStorage modelStorage) {
-        super(modelStorage);
+    public P2PPSearchHandler(final P2PPServer p2ppServer) {
+        super(p2ppServer);
     }
 
     @Override
-    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
-        this.request = req;
+    public void run() {
         if (!this.parse()) {
             logger.debug("Failed to parse request.");
-            req.setStatus(ServerRequestStatus.DISCARDED);
+            this.request.setStatus(P2PPConstants.ServerRequestStatus.DISCARDED);
         } else {
             this.prepareResponse();
             this.buildResponse();
         }
-        clientCtx.handlerComplete(req);
+        server.handlerComplete(clientContext, request);
     }
 
+    @Override
+    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
+        this.clientContext = clientCtx;
+        this.request = req;
+    }
+
+    /**
+     *
+     * @return true on success, false otherwise
+     */
     protected boolean parse() {
         ByteBuffer buf = request.getDataBuffer();
         buf.rewind();
@@ -126,10 +134,8 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         this.results = new HashSet<>();
         Search tmpSearch;
         for (MetHash hash : this.requestedHashes) {
-            logger.debug("Getting search results from db...");
-            tmpSearch = P2PPSearchHandler.this.storage.getSearch(hash);
+            tmpSearch = this.server.getStorage().getSearch(hash);
             if (tmpSearch != null) {
-                logger.debug("Adding response results: " + tmpSearch.getResults().size());
                 this.results.addAll(tmpSearch.getResults());
             }
         }
@@ -143,7 +149,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     protected int prepareDataTypeResponse(final Data data) {
         ByteBuffer tmp = SerializationUtils.encodeUTF8(data.getType().toString());
         dataTypes.add(tmp);
-        logger.debug("Build response, add data type = " + data.getType().toString());
+        logger.debug("Build response, data type = " + data.getType().toString());
         return tmp.limit() + Short.BYTES;
     }
 
@@ -152,17 +158,16 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
      */
     private void buildResponse() {
         this.dataTypes = new LinkedList<>();
-
         int responseSize = Integer.BYTES + (this.results.size()
                 * (Short.BYTES + Short.BYTES + Integer.BYTES + MetHash.BYTE_ARRAY_SIZE));
-
         ByteBuffer tmp;
+
         for (Data data : this.results) {
             responseSize += prepareDataTypeResponse(data);
         }
         logger.debug("Response size = " + responseSize);
         responseBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.RESPONSE_HEADER_SIZE + responseSize);
-        responseBuffer.putShort(this.request.getToken());
+        responseBuffer.putShort((short) this.request.getToken());
         responseBuffer.put((byte) 0); //Remaining frames, unused for now
         responseBuffer.putInt(responseSize);
         responseBuffer.putInt(this.results.size());
@@ -176,7 +181,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         }
         this.responseBuffer.rewind();
         this.request.setResponseBuffer(responseBuffer);
-        this.request.handlerComplete();
+        //this.request.setStatus(P2PPConstants.ServerRequestStatus.RESPONSE_READY);
     }
 
 }

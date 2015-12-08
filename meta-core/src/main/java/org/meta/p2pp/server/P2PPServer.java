@@ -27,6 +27,7 @@ package org.meta.p2pp.server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -35,9 +36,13 @@ import java.nio.channels.InterruptedByTimeoutException;
 import java.nio.channels.spi.AsynchronousChannelProvider;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.meta.api.configuration.NetworkConfiguration;
 import org.meta.api.configuration.P2PPConfiguration;
+import org.meta.api.model.ModelStorage;
+import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.exceptions.P2PPException;
@@ -73,8 +78,11 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     private final EnumMap<P2PPCommand, CommandHandlerAccessor<?>> commandHandlers;
 
+    private final ExecutorService handlersExecutor;
+
+    //private final EnumMap<P2PPCommand, P2PPCommandHandler> cmdHandlers;
     /**
-     * Creates the server with the given manager.
+     * Creates the server with the given manager and configuration.
      *
      * @param p2ppManager the manager
      * @param conf the configuration
@@ -85,43 +93,66 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         this.readHandler = new P2PPServerReadHandler();
         this.writeHandler = new P2PPServerWriteHandler();
         this.commandHandlers = new EnumMap<>(P2PPCommand.class);
+        //this.cmdHandlers = new EnumMap<>(P2PPCommand.class);
+        this.handlersExecutor = Executors.newFixedThreadPool(2);
         this.initHandlers();
     }
 
     private void initHandlers() {
+//        this.cmdHandlers.put(P2PPCommand.KEEP_ALIVE,
+//                new P2PPKeepAliveHandler(this));
+//        this.cmdHandlers.put(P2PPCommand.SEARCH, new P2PPSearchHandler(this));
+//        this.cmdHandlers.put(P2PPCommand.SEARCH_META, new P2PPSearchHandler(this));
+//        this.cmdHandlers.put(P2PPCommand.SEARCH_GET, new P2PPSearchGetHandler(this));
+//        this.cmdHandlers.put(P2PPCommand.GET, new P2PPGetHandler(this));
         this.commandHandlers.put(P2PPCommand.KEEP_ALIVE, new CommandHandlerAccessor<P2PPKeepAliveHandler>() {
             @Override
             public P2PPKeepAliveHandler getHandler() {
-                return new P2PPKeepAliveHandler(P2PPServer.this.manager.getModelStorage());
+                return new P2PPKeepAliveHandler(P2PPServer.this);
             }
         });
         this.commandHandlers.put(P2PPCommand.SEARCH, new CommandHandlerAccessor<P2PPSearchHandler>() {
             @Override
             public P2PPSearchHandler getHandler() {
-                return new P2PPSearchHandler(P2PPServer.this.manager.getModelStorage());
+                return new P2PPSearchHandler(P2PPServer.this);
             }
         });
         this.commandHandlers.put(P2PPCommand.SEARCH_META,
                 new CommandHandlerAccessor<P2PPSearchMetaHandler>() {
-                    @Override
-                    public P2PPSearchMetaHandler getHandler() {
-                        return new P2PPSearchMetaHandler(P2PPServer.this.manager.getModelStorage());
-                    }
-                });
+            @Override
+            public P2PPSearchMetaHandler getHandler() {
+                return new P2PPSearchMetaHandler(P2PPServer.this);
+            }
+        });
         this.commandHandlers.put(P2PPCommand.SEARCH_GET, new CommandHandlerAccessor<P2PPSearchGetHandler>() {
             @Override
             public P2PPSearchGetHandler getHandler() {
-                return new P2PPSearchGetHandler(P2PPServer.this.manager.getModelStorage());
+                return new P2PPSearchGetHandler(P2PPServer.this);
             }
         });
         this.commandHandlers.put(P2PPCommand.GET, new CommandHandlerAccessor<P2PPGetHandler>() {
             @Override
             public P2PPGetHandler getHandler() {
-                return new P2PPGetHandler(P2PPServer.this.manager.getModelStorage());
+                return new P2PPGetHandler(P2PPServer.this);
             }
         });
     }
 
+    /**
+     * Get the request handler for the given command.
+     *
+     * @param commandId the command identifier
+     * @return the handler, or null if invalid command
+     */
+    public P2PPCommandHandler getCommandHandler(final P2PPCommand commandId) {
+        return this.commandHandlers.get(commandId).getHandler();
+    }
+
+    /**
+     * Bind the server socket(s) to configured local interfaces/addresses.
+     *
+     * @throws P2PPException
+     */
     private void bindServerSocket() throws P2PPException {
         NetworkConfiguration nwConfig = this.config.getNetworkConfig();
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
@@ -157,16 +188,29 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
+     * Close the server.
+     */
+    public void close() {
+        try {
+            //Try graceful shutdown here ?
+            //i.e wait for pending request to finish ?
+            this.channelGroup.shutdown();
+            this.server.close();
+        } catch (IOException ex) {
+            logger.warn("Got exception while closing server socket.", ex);
+        }
+    }
+
+    /**
      * @param socket the newly accepted socket channel
      * @param a should be == to 'this' here but we are our own completion handler
      */
     @Override
     public void completed(final AsynchronousSocketChannel socket, final P2PPServer a) {
-        logger.debug("ACCEPT Completed, socket = " + socket);
-        P2PPServerClientContext clientContext = new P2PPServerClientContext(this, socket,
-                this.readHandler, this.writeHandler);
-        clientContext.newRequest();
+        logger.info("ACCEPT Complete, socket = " + socket);
         server.accept(this, this);
+        P2PPServerClientContext clientContext = new P2PPServerClientContext(this, socket);
+        this.read(clientContext);
     }
 
     @Override
@@ -185,49 +229,84 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
-     *
-     * @param commandId the command id to check
-     * @return true if this command exists, false otherwise
-     */
-    public boolean hasCommand(final P2PPCommand commandId) {
-        return this.commandHandlers.containsKey(commandId);
-    }
-
-    /**
-     * Get the request handler for the given command.
-     *
-     * @param commandId the command identifier
-     * @return the handler, or null if invalid command
-     */
-    public P2PPCommandHandler getCommandHandler(final P2PPCommand commandId) {
-        return this.commandHandlers.get(commandId).getHandler();
-    }
-
-    /**
      * Close the given client socket context.
      *
      * @param clientContext the client context
      */
     public void closeClient(final P2PPServerClientContext clientContext) {
-        try {
-            logger.debug("Closing client context.");
-            clientContext.close();
-        } catch (IOException ex) {
-            logger.warn("Exception while closing client context.", ex);
+        logger.debug("Closing client context.");
+        clientContext.close();
+    }
+
+    /**
+     * Get the next request to dispatch, if any, from the given context and executes the appropriate handler.
+     *
+     * @param c the context
+     */
+//    void dispatch(final P2PPServerClientContext c) {
+//        P2PPServerRequestContext req = c.getNextDispatchRequest();
+//
+//        if (req != null) {
+//            P2PPCommandHandler handler = this.getCommandHandler(req.getId());
+//
+//            if (handler != null) {
+//                handler.handle(c, req);
+//                handler.run(); //This could be run in an executor service if needed.
+//            }
+//        }
+//    }
+    void dispatch(final P2PPServerClientContext c, final P2PPServerRequestContext req) {
+        if (req != null) {
+            P2PPCommandHandler handler = this.getCommandHandler(req.getId());
+
+            if (handler != null) {
+                handler.handle(c, req);
+                handler.run(); //This could be run in an executor service if needed.
+            }
         }
     }
 
     /**
-     * Close the server.
+     * Retrieve the next buffer to read, if any, from the given context and start a read operation.
+     *
+     * @param c the context
      */
-    public void close() {
-        try {
-            //Try graceful shutdown here ?
-            //i.e wait for pending request to finish ?
-            this.server.close();
-        } catch (IOException ex) {
-            logger.warn("Got exception while closing server socket.", ex);
+    private void read(final P2PPServerClientContext c) {
+        ByteBuffer buf = c.getNextReadBuffer();
+
+        if (buf != null) {
+            logger.debug("SERVER READING");
+            c.getClientSocket().read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS, c, readHandler);
+        } else {
+            logger.debug("Read: buffer null");
         }
+    }
+
+    /**
+     * Retrieve the next buffer to write, if any, from the given context and start a write operation.
+     *
+     * @param c the context
+     */
+    private void write(final P2PPServerClientContext c) {
+        ByteBuffer buf = c.getNextWriteBuffer();
+
+        if (buf != null) {
+            logger.debug("SERVER WRITING");
+            c.getClientSocket().write(buf, P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS, c, writeHandler);
+        } else {
+            logger.debug("Write: buffer null");
+        }
+    }
+
+    /**
+     * Called by command handlers to notify that the given request has been handled completely.
+     *
+     * @param c the client context
+     * @param request the handled request
+     */
+    public void handlerComplete(final P2PPServerClientContext c, final P2PPServerRequestContext request) {
+        c.handlerComplete(request);
+        this.write(c);
     }
 
     /**
@@ -240,9 +319,12 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
             logger.debug("Received bytes: " + bytes);
             if (bytes == -1) {
                 P2PPServer.this.handleSocketError(context);
-            } else if (bytes >= 0) {
+            } else {
                 synchronized (context) {
                     context.requestDataReceived();
+                    read(context);
+                    //dispatch(context);
+                    write(context);
                 }
             }
         }
@@ -268,9 +350,10 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
             logger.debug("Wrote bytes: " + bytes);
             if (bytes == -1) {
                 P2PPServer.this.handleSocketError(context);
-            } else if (bytes >= 0) {
+            } else {
                 synchronized (context) {
                     context.responseDataSent();
+                    write(context);
                 }
             }
         }
@@ -294,6 +377,14 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
         public abstract T getHandler();
 
+    }
+
+    /**
+     *
+     * @return the model object storage for use by handlers
+     */
+    public ModelStorage getStorage() {
+        return this.manager.getModelStorage();
     }
 
 }

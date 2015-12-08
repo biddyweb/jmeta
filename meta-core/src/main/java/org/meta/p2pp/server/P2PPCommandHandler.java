@@ -24,27 +24,25 @@
  */
 package org.meta.p2pp.server;
 
-import org.meta.api.model.ModelStorage;
-
 /**
  * Base class to be implemented for each server-side command handler in the peer-to-peer protocol.
  *
  * @author dyslesiq
  */
-public abstract class P2PPCommandHandler {
+public abstract class P2PPCommandHandler implements Runnable {
 
     /**
-     * The model storage.
+     * The P2PP server.
      */
-    protected final ModelStorage storage;
+    protected final P2PPServer server;
 
     /**
      *
      *
-     * @param modelStorage the model storage
+     * @param p2ppServer the server
      */
-    public P2PPCommandHandler(final ModelStorage modelStorage) {
-        this.storage = modelStorage;
+    public P2PPCommandHandler(final P2PPServer p2ppServer) {
+        this.server = p2ppServer;
     }
 
     /**

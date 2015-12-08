@@ -29,7 +29,6 @@ import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.DataFile;
-import org.meta.api.model.ModelStorage;
 import org.meta.model.files.DataFileAccessor;
 import org.meta.model.files.DataFileAccessors;
 import org.meta.model.files.FileReadOperation;
@@ -38,6 +37,7 @@ import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.ServerRequestStatus;
 import org.meta.p2pp.server.P2PPCommandHandler;
+import org.meta.p2pp.server.P2PPServer;
 import org.meta.p2pp.server.P2PPServerClientContext;
 import org.meta.p2pp.server.P2PPServerRequestContext;
 import org.slf4j.Logger;
@@ -53,9 +53,9 @@ public class P2PPGetHandler extends P2PPCommandHandler {
 
     private final Logger logger = LoggerFactory.getLogger(P2PPGetHandler.class);
 
-    protected P2PPServerClientContext clientContext;
+    private P2PPServerClientContext clientContext;
 
-    protected P2PPServerRequestContext request;
+    private P2PPServerRequestContext request;
 
     private MetHash requestedDataHash;
 
@@ -65,22 +65,24 @@ public class P2PPGetHandler extends P2PPCommandHandler {
 
     private int dataLength;
 
+    private ByteBuffer getBuffer;
+
+    private MetHash pieceHash;
+
     private GetBlockListener readBlockListener;
 
     private ByteBuffer responseBuffer;
 
     /**
      *
-     * @param modelStorage the model storage
+     * @param p2ppServer the p2ppServer
      */
-    public P2PPGetHandler(final ModelStorage modelStorage) {
-        super(modelStorage);
+    public P2PPGetHandler(final P2PPServer p2ppServer) {
+        super(p2ppServer);
     }
 
     @Override
-    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
-        this.clientContext = clientCtx;
-        this.request = req;
+    public void run() {
         logger.debug("handle get request");
 
         if (!this.parse()) {
@@ -88,12 +90,21 @@ public class P2PPGetHandler extends P2PPCommandHandler {
             requestError();
         } else {
             this.prepareResponse();
+            if (this.request.getStatus() != ServerRequestStatus.DISCARDED) {
+                buildResponse();
+            }
         }
+    }
+
+    @Override
+    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
+        this.clientContext = clientCtx;
+        this.request = req;
     }
 
     private void requestError() {
         this.request.setStatus(ServerRequestStatus.DISCARDED);
-        this.clientContext.handlerComplete(request);
+        this.server.handlerComplete(clientContext, request);
     }
 
     /**
@@ -113,30 +124,39 @@ public class P2PPGetHandler extends P2PPCommandHandler {
     }
 
     private void prepareResponse() {
-        DataFile dataFile = this.storage.getDataFile(requestedDataHash);
+        DataFile dataFile = this.server.getStorage().getDataFile(requestedDataHash);
 
         if (dataFile == null) {
-            logger.debug("Asked data file inexistent in DB.");
+            logger.warn("Asked data file inexistent in DB.");
             this.requestError();
             return;
         }
         DataFileAccessor dfAccessor = DataFileAccessors.getAccessor(dataFile);
         if (this.pieceIdx >= dfAccessor.getPieceCount()) {
-            logger.debug("Invalid piece number");
+            logger.warn("Invalid piece number");
             this.requestError();
             return;
         }
         if (this.dataLength > DataFileAccessor.BLOCK_SIZE
                 || this.byteOffset + this.dataLength > dfAccessor.pieceSize(pieceIdx)) {
-            logger.debug("Invalid block offset or block size");
+            logger.warn("Invalid block offset or block size");
             this.requestError();
             return;
         }
-        this.readBlockListener = new GetBlockListener();
-        dfAccessor.getPieceHash(pieceIdx).addListener(readBlockListener);
-        dfAccessor.read(dfAccessor.fileOffset(pieceIdx, byteOffset), dataLength)
-                .addListener(this.readBlockListener);
-
+        //this.readBlockListener = new GetBlockListener();
+        logger.info("GET HANDLER: PIECE IDX = " + pieceIdx);
+        this.pieceHash = dfAccessor.getPieceHashSync(pieceIdx);
+        if (this.pieceHash == MetHash.ZERO) {
+            requestError();
+            return;
+        }
+        this.getBuffer = dfAccessor.readSync(dfAccessor.fileOffset(pieceIdx, byteOffset), dataLength);
+        if (this.getBuffer == null) {
+            requestError();
+        }
+//        dfAccessor.getPieceHash(pieceIdx).addListener(readBlockListener);
+//        dfAccessor.read(dfAccessor.fileOffset(pieceIdx, byteOffset), dataLength)
+//                .addListener(this.readBlockListener);
     }
 
     private void buildResponse() {
@@ -144,16 +164,18 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         logger.debug("Build response, response length = " + responseSize);
         responseBuffer = BufferManager.aquireDirectBuffer(responseSize + P2PPConstants.RESPONSE_HEADER_SIZE);
 
-        responseBuffer.putShort(this.request.getToken());
+        responseBuffer.putShort((short) this.request.getToken());
         responseBuffer.put((byte) 0); //Remaining frames, unused for now
         responseBuffer.putInt(responseSize);
         responseBuffer.putShort((short) MetHash.BYTE_ARRAY_SIZE);
-        responseBuffer.put(this.readBlockListener.getPieceHash().toByteArray());
-        responseBuffer.put(this.readBlockListener.getOperation().getBuffer());
+        //responseBuffer.put(this.readBlockListener.getPieceHash().toByteArray());
+        responseBuffer.put(this.pieceHash.toByteArray());
+        responseBuffer.put(getBuffer);
+        //responseBuffer.put(this.readBlockListener.getOperation().getBuffer());
+        //this.readBlockListener.getOperation().getBuffer().rewind();
         this.responseBuffer.rewind();
         this.request.setResponseBuffer(responseBuffer);
-        this.request.handlerComplete();
-        clientContext.handlerComplete(request);
+        server.handlerComplete(clientContext, request);
     }
 
     /**
@@ -165,7 +187,9 @@ public class P2PPGetHandler extends P2PPCommandHandler {
 
         private MetHash pieceHash;
 
-        private boolean hashReceived, dataReceived;
+        private boolean hashReceived = false;
+
+        private boolean dataReceived = false;
 
         @Override
         public void failed(final AsyncOperation operation) {
@@ -176,9 +200,11 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         @Override
         public void complete(final AsyncOperation operation) {
             if (operation instanceof FileReadOperation) {
+                logger.debug("P2PP GET HANDLER GetBlockListener: RECEIVED DATA BUFFER     !!!!!");
                 this.op = (FileReadOperation) operation;
                 dataReceived = true;
             } else if (operation instanceof PieceHashOperation) {
+                logger.debug("P2PP GET HANDLER GetBlockListener: RECEIVED PIECE HASH      !!!!!");
                 this.pieceHash = ((PieceHashOperation) operation).getPieceHash();
                 hashReceived = true;
             }
@@ -202,7 +228,6 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         public MetHash getPieceHash() {
             return pieceHash;
         }
-
     }
 
 }

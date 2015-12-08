@@ -63,10 +63,6 @@ public class GetOperation extends AsyncOperation {
     }
 
     @Override
-    public void start() {
-    }
-
-    @Override
     public void finish() {
         this.complete();
     }

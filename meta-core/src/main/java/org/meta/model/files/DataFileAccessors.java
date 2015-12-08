@@ -24,14 +24,11 @@
  */
 package org.meta.model.files;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.meta.api.model.DataFile;
 
 /**
@@ -46,7 +43,7 @@ import org.meta.api.model.DataFile;
  */
 public final class DataFileAccessors {
 
-    private final static int EXECUTOR_THREADS = 2;
+    private final static int EXECUTOR_THREADS = 1;
 
     private final static ExecutorService filesExecutor = Executors.newFixedThreadPool(EXECUTOR_THREADS);
 
@@ -61,13 +58,9 @@ public final class DataFileAccessors {
      * @param dataFile the DataFile
      * @return the accessor for the given datafile
      */
-    public static DataFileAccessor getAccessor(final DataFile dataFile) {
+    public static synchronized DataFileAccessor getAccessor(final DataFile dataFile) {
         if (!accessors.containsKey(dataFile.getURI())) {
-            try {
-                accessors.put(dataFile.getURI(), new DataFileAccessor(dataFile));
-            } catch (IOException ex) {
-                Logger.getLogger(DataFileAccessors.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            accessors.put(dataFile.getURI(), new DataFileAccessor(dataFile));
         }
         return accessors.get(dataFile.getURI());
     }

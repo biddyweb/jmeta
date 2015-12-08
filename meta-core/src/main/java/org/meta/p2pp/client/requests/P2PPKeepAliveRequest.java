@@ -40,7 +40,7 @@ import org.meta.p2pp.client.P2PPResponseHandler;
  */
 public class P2PPKeepAliveRequest extends P2PPRequest {
 
-    private final AsyncOperation operation;
+    private AsyncOperation operation;
 
     /**
      * Default constructor.
@@ -64,10 +64,10 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
     }
 
     @Override
-    public boolean build(final short buildToken) {
+    public boolean build(final char buildToken) {
         this.token = buildToken;
         this.buffer.rewind();
-        this.buffer.putShort(this.token);
+        this.buffer.putShort((short) this.token);
         this.buffer.rewind();
         return true;
     }
@@ -85,11 +85,13 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
 
     @Override
     public void setFailed(final String failedReason) {
+        BufferManager.release(buffer);
         this.operation.setFailed(failedReason);
     }
 
     @Override
     public void setFailed(final Throwable thrwbl) {
+        BufferManager.release(buffer);
         this.operation.setFailed(thrwbl);
     }
 

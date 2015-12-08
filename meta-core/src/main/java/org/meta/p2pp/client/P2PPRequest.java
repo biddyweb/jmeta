@@ -56,12 +56,12 @@ public abstract class P2PPRequest {
     /**
      * The status of this request.
      */
-    protected ClientRequestStatus status;
+    protected volatile ClientRequestStatus status;
 
     /**
      * The unique token of this request.
      */
-    protected short token;
+    protected char token;
 
     /**
      *
@@ -98,7 +98,7 @@ public abstract class P2PPRequest {
      * @param requestToken the unique token of this request
      * @return true is successfully built, false otherwise
      */
-    public abstract boolean build(final short requestToken);
+    public abstract boolean build(final char requestToken);
 
     /**
      *
@@ -163,7 +163,7 @@ public abstract class P2PPRequest {
      *
      * @return the unique token of this request
      */
-    public final short getToken() {
+    public final char getToken() {
         return this.token;
     }
 

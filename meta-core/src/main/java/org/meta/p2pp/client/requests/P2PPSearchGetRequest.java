@@ -45,9 +45,9 @@ public class P2PPSearchGetRequest extends P2PPRequest {
 
     private final Set<String> keys;
 
-    private final P2PPSearchGetResponseHandler responseHandler;
+    private P2PPSearchGetResponseHandler responseHandler;
 
-    private final SearchOperation operation;
+    private SearchOperation operation;
 
     /**
      * Default constructor.
@@ -71,7 +71,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
     }
 
     @Override
-    public boolean build(final short requestToken) {
+    public boolean build(final char requestToken) {
         this.token = requestToken;
         int requestSize = P2PPConstants.REQUEST_HEADER_SIZE + Short.BYTES + Short.BYTES
                 + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES));
@@ -92,7 +92,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         }
         this.buffer = BufferManager.aquireDirectBuffer(requestSize);
         //Header
-        this.buffer.putShort(token);
+        this.buffer.putShort((short) token);
         this.buffer.put(this.commandId.getValue());
         this.buffer.putInt(requestSize - P2PPConstants.REQUEST_HEADER_SIZE);
         //Meta-Data Keys
@@ -115,19 +115,35 @@ public class P2PPSearchGetRequest extends P2PPRequest {
     public void finish() {
         if (!this.responseHandler.parse()) {
             this.operation.setFailed("Failed to parse response");
-            return;
+        } else {
+            this.operation.setResults(this.responseHandler.getResults());
+            this.operation.complete();
         }
-        this.operation.setResults(this.responseHandler.getResults());
-        this.operation.complete();
+        BufferManager.release(buffer);
+        BufferManager.release(this.responseHandler.getPayloadBuffer());
+        this.operation = null;
+        this.responseHandler = null;
     }
 
     @Override
     public void setFailed(final String failedReason) {
+        if (this.buffer != null) {
+            BufferManager.release(buffer);
+        }
+        if (this.responseHandler.getPayloadBuffer() != null) {
+            BufferManager.release(this.responseHandler.getPayloadBuffer());
+        }
         this.operation.setFailed(failedReason);
     }
 
     @Override
     public void setFailed(final Throwable thrwbl) {
+        if (this.buffer != null) {
+            BufferManager.release(buffer);
+        }
+        if (this.responseHandler.getPayloadBuffer() != null) {
+            BufferManager.release(this.responseHandler.getPayloadBuffer());
+        }
         this.operation.setFailed(thrwbl);
     }
 

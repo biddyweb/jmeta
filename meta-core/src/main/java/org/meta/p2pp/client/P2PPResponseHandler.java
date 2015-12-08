@@ -27,6 +27,8 @@ package org.meta.p2pp.client;
 import java.nio.ByteBuffer;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Response handler (client-side) for a peer-to-peer protocol request.
@@ -34,6 +36,8 @@ import org.meta.p2pp.P2PPConstants;
  * @author dyslesiq
  */
 public abstract class P2PPResponseHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(P2PPResponseHandler.class);
 
     /**
      * The request that created this response handler.
@@ -69,13 +73,17 @@ public abstract class P2PPResponseHandler {
     protected boolean parseHeader(final ByteBuffer headerBuffer) {
         headerBuffer.rewind();
         short responseToken = headerBuffer.getShort();
-        if (responseToken != this.request.getToken()) {
-            return false;
-        }
+        //logger.info("parseHeader: response token = " + (int) responseToken);
+//        if (responseToken != this.request.getToken()) {
+//            logger.error("parseHeader: tokens different!" + (int) responseToken
+//                    + " != " + (int) this.request.getToken());
+//            return false;
+//        }
         //Unused for now. Should be the remaining frames to complete the response.
         headerBuffer.get();
         this.payloadSize = headerBuffer.getInt();
         if (this.payloadSize > P2PPConstants.MAX_RESPONSE_SIZE) {
+            logger.error("parseHeader: payload size too big: " + this.payloadSize);
             return false;
         }
         if (payloadSize > 0) {

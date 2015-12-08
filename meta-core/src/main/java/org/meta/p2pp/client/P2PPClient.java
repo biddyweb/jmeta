@@ -151,12 +151,10 @@ public class P2PPClient {
                 c.addRequest(req);
                 if (!c.isConnected() && !c.isConnecting()) {
                     this.connect(c);
-
+                } else if (c.isConnected() && !c.isConnecting()) {
+                    write(c);
                 }
             }
-            //We don't have to wait to be connected to start read/write operations.
-            this.write(c);
-            this.read(c);
         } catch (IOException ex) {
             logger.warn("Failed to get socket channel from group.");
             req.setFailed(ex);
@@ -168,16 +166,12 @@ public class P2PPClient {
      * @param context the context that needs to read from server peer
      */
     public void read(final P2PPClientRequestManager context) {
-        synchronized (context) {
-            ByteBuffer buf = context.getNextReadBuffer();
+        ByteBuffer buf = context.getNextReadBuffer();
 
-            if (buf != null) {
-                context.getSocket().read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS,
-                        context, readHandler);
-            } else {
-                //No problem here, this might just mean that we are already reading...
-                logger.info("Context already reading....");
-            }
+        if (buf != null) {
+            logger.debug("CLIENT READING");
+            context.getSocket().read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS,
+                    context, readHandler);
         }
     }
 
@@ -186,16 +180,12 @@ public class P2PPClient {
      * @param context the context that needs to write to server peer
      */
     public void write(final P2PPClientRequestManager context) {
-        synchronized (context) {
-            ByteBuffer buf = context.getNextWriteBuffer();
+        ByteBuffer buf = context.getNextWriteBuffer();
 
-            if (buf != null) {
-                context.getSocket().write(buf, P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS,
-                        context, writeHandler);
-            } else {
-                //No problem here, this might just mean that we are already writing...
-                logger.info("Context already writing....");
-            }
+        if (buf != null) {
+            logger.debug("CLIENT WRITING");
+            context.getSocket().write(buf, P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS,
+                    context, writeHandler);
         }
     }
 
@@ -246,8 +236,12 @@ public class P2PPClient {
 
         @Override
         public void completed(final Void v, final P2PPClientRequestManager c) {
+            logger.info("Connected to :" + c.getServerPeer());
             synchronized (c) {
                 c.connected();
+                //Launch read/write once the socket is connected
+                write(c);
+                //read(c);
             }
         }
 
@@ -264,14 +258,17 @@ public class P2PPClient {
 
         @Override
         public void completed(final Integer bytes, final P2PPClientRequestManager context) {
-            logger.debug("Read bytes:" + bytes);
+            logger.info("Read bytes:" + bytes);
+            if (bytes == 0) {
+                logger.error("ZERO BYTES READ!!!!!!!!");
+                return;
+            }
             if (bytes == -1) {
                 P2PPClient.this.handleSocketError(null, context);
-            } else if (bytes > 0) {
+            } else if (bytes >= 0) {
                 synchronized (context) {
                     context.dataReceived();
-                    //P2PPClient.this.write(context);
-                    P2PPClient.this.read(context);
+                    read(context);
                 }
             }
         }
@@ -297,11 +294,11 @@ public class P2PPClient {
             logger.debug("Wrote bytes:" + bytes);
             if (bytes == -1) {
                 P2PPClient.this.handleSocketError(null, context);
-            } else if (bytes > 0) {
+            } else if (bytes >= 0) {
                 synchronized (context) {
                     context.dataSent();
-                    P2PPClient.this.write(context);
-                    //P2PPClient.this.read(context);
+                    write(context);
+                    read(context);
                 }
             }
         }

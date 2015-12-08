@@ -61,7 +61,10 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
         pieceHash = new MetHash(buf, sizeofHash);
         //this.data = BufferManager.createDirectBuffer(requestedLength);
         //data.put(buf);
-        this.data = payloadBuffer;
+        if (payloadBuffer.remaining() != requestedLength) {
+            return false;
+        }
+        this.data = payloadBuffer.asReadOnlyBuffer();
         return true;
     }
 

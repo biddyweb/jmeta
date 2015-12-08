@@ -35,8 +35,7 @@ import org.meta.api.p2pp.GetOperation;
 import org.meta.api.plugin.DownloadOperation;
 import org.meta.model.files.DataFileAccessor;
 import org.meta.model.files.DataFileAccessors;
-import org.meta.model.files.FileWriteOperation;
-import org.meta.model.files.PieceHashOperation;
+import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DownloadManager implements OperationListener<GetOperation> {
 
+    private static final int MAX_PENDING_GET = 100;
+
     private final Logger logger = LoggerFactory.getLogger(DownloadManager.class);
+
+    private final Random r = new Random();
 
     private final MetaP2PPClient client;
 
@@ -92,6 +95,9 @@ public class DownloadManager implements OperationListener<GetOperation> {
     private boolean isPieceComplete(final int pieceIndex) {
         boolean[] blocksField = this.piecesField[pieceIndex];
 
+        if (blocksField == null) {
+            return true;
+        }
         for (boolean b : blocksField) {
             if (!b) {
                 return false;
@@ -120,8 +126,6 @@ public class DownloadManager implements OperationListener<GetOperation> {
         this.piecesField = new boolean[this.accessor.getPieceCount()][];
 
         for (int i = 0; i < this.accessor.getPieceCount(); ++i) {
-            int pieceBlockCount = this.accessor.blockCount(i);
-            this.piecesField[i] = new boolean[pieceBlockCount];
             getPiece(i);
         }
     }
@@ -133,7 +137,9 @@ public class DownloadManager implements OperationListener<GetOperation> {
      */
     private void getPiece(final int pieceIndex) {
         int pieceBlockCount = this.accessor.blockCount(pieceIndex);
-        this.piecesField[pieceIndex] = new boolean[pieceBlockCount];
+        if (this.piecesField[pieceIndex] == null) {
+            this.piecesField[pieceIndex] = new boolean[pieceBlockCount];
+        }
         int blockOffset = 0;
 
         for (int j = 0; j < pieceBlockCount; ++j) {
@@ -148,8 +154,6 @@ public class DownloadManager implements OperationListener<GetOperation> {
      * @return a random peer from the pool
      */
     private MetaPeer getRandomPeer() {
-        Random r = new Random();
-
         Iterator<MetaPeer> it = this.peers.iterator();
         for (int i = 0; i < r.nextInt(this.peers.size()) - 1; ++i) {
             it.next();
@@ -175,30 +179,52 @@ public class DownloadManager implements OperationListener<GetOperation> {
      * @param byteOffset the byte offset within the piece
      * @param pieceHash the piece hash
      */
-    private void blockComplete(final int pieceIndex, final int byteOffset, final MetHash pieceHash) {
+    private synchronized void blockComplete(final int pieceIndex, final int byteOffset,
+            final MetHash pieceHash) {
+        logger.debug("Block written to disk");
         if (this.piecesField[pieceIndex] != null) {
             this.piecesField[pieceIndex][this.accessor.blockIndex(pieceIndex, byteOffset)] = true;
+        } else {
+            logger.error("RECEIVED BLOCK OF FINISHED PIECE!!!!!!!!");
         }
         if (isPieceComplete(pieceIndex)) {
-            this.accessor.getPieceHash(pieceIndex).addListener(new OperationListener<PieceHashOperation>() {
-
-                @Override
-                public void failed(final PieceHashOperation operation) {
-                    logger.error("Piece hash operation failed! Error: " + operation.getFailureMessage());
-                    pieceFailed(pieceIndex);
-                }
-
-                @Override
-                public void complete(final PieceHashOperation operation) {
-                    if (operation.getPieceHash().equals(pieceHash)) {
-                        //The piece is complete
-                        piecesField[pieceIndex] = null;
-                        if (isFinished()) {
-                            dop.complete();
-                        }
-                    }
-                }
-            });
+            MetHash filePieceHash = this.accessor.getPieceHashSync(pieceIndex);
+            if (filePieceHash == MetHash.ZERO) {
+                logger.error("PIECE HASH NOT VALID == MetHash.ZERO");
+                pieceFailed(pieceIndex);
+                return;
+            }
+            if (!filePieceHash.equals(pieceHash)) {
+                logger.error("PIECE HASH VALIDATION FAILED! : " + filePieceHash + " != " + pieceHash);
+                pieceFailed(pieceIndex);
+                return;
+            }
+            piecesField[pieceIndex] = null;
+            if (isFinished()) {
+                dop.complete();
+            }
+//            this.accessor.getPieceHash(pieceIndex).addListener(new OperationListener<PieceHashOperation>() {
+//
+//                @Override
+//                public void failed(final PieceHashOperation operation) {
+//                    logger.error("Piece hash operation failed! Error: " + operation.getFailureMessage());
+//                    pieceFailed(pieceIndex);
+//                }
+//
+//                @Override
+//                public void complete(final PieceHashOperation operation) {
+//                    if (operation.getPieceHash().equals(pieceHash)) {
+//                        //The piece is complete and integrity is verified.
+//                        piecesField[pieceIndex] = null;
+//                        if (isFinished()) {
+//                            dop.complete();
+//                        }
+//                    } else {
+//                        logger.error("PIECE HASH NOT VALID!!");
+//                        pieceFailed(pieceIndex);
+//                    }
+//                }
+//            });
         }
     }
 
@@ -209,8 +235,9 @@ public class DownloadManager implements OperationListener<GetOperation> {
      * @param byteOffset the byte offset within the piece
      */
     private void blockFailed(final int pieceIndex, final int byteOffset, final int length) {
+        logger.error("BLOCK FAILED.");
         //If a get block operation failed, try to fetch it from a different peer
-        getBlock(pieceIndex, byteOffset, length);
+        //getBlock(pieceIndex, byteOffset, length);
     }
 
     /**
@@ -219,11 +246,12 @@ public class DownloadManager implements OperationListener<GetOperation> {
      * @param pieceIndex the piece index
      */
     private void pieceFailed(final int pieceIndex) {
+        logger.error("PIECE FAILED: " + pieceIndex);
         //Invalidate each block first
         for (int i = 0; i < this.piecesField[pieceIndex].length; ++i) {
             this.piecesField[pieceIndex][i] = false;
         }
-        getPiece(pieceIndex);
+        //getPiece(pieceIndex);
     }
 
     @Override
@@ -234,21 +262,44 @@ public class DownloadManager implements OperationListener<GetOperation> {
 
     @Override
     public void complete(final GetOperation operation) {
-        this.accessor.write(operation.getPieceIndex(), operation.getByteOffset(), operation.getData())
-                .addListener(new OperationListener<FileWriteOperation>() {
+        if (operation.getDataLength() != operation.getData().remaining()) {
+            logger.error("INVALID BUFFER FROM GET OPERATION");
+            return;
+        }
+        boolean res = this.accessor.writeSync(operation.getPieceIndex(),
+                operation.getByteOffset(), operation.getData());
 
-                    @Override
-                    public void failed(final FileWriteOperation fwOperation) {
-                        logger.error("Write operation to file failed! Error: "
-                                + fwOperation.getFailureMessage());
-                    }
-
-                    @Override
-                    public void complete(final FileWriteOperation fwOperation) {
-                        blockComplete(operation.getPieceIndex(), operation.getByteOffset(),
-                                operation.getPieceHash());
-                    }
-                });
+        if (!res) {
+            logger.error("Write operation to file failed!");
+            blockFailed(operation.getPieceIndex(),
+                    operation.getByteOffset(), operation.getDataLength());
+        } else {
+            blockComplete(operation.getPieceIndex(), operation.getByteOffset(),
+                    operation.getPieceHash());
+        }
+        BufferManager.release(operation.getData());
+//        this.accessor.write(operation.getPieceIndex(), operation.getByteOffset(), operation.getData())
+//                .addListener(new OperationListener<FileWriteOperation>() {
+//
+//                    @Override
+//                    public void failed(final FileWriteOperation fwOperation
+//                    ) {
+//                        BufferManager.release(operation.getData());
+//                        logger.error("Write operation to file failed! Error: "
+//                                + fwOperation.getFailureMessage());
+//                        blockFailed(operation.getPieceIndex(),
+//                                operation.getByteOffset(), operation.getDataLength());
+//                    }
+//
+//                    @Override
+//                    public void complete(final FileWriteOperation fwOperation
+//                    ) {
+//                        BufferManager.release(operation.getData());
+//                        blockComplete(operation.getPieceIndex(), operation.getByteOffset(),
+//                                operation.getPieceHash());
+//                    }
+//                }
+//                );
     }
 
 }

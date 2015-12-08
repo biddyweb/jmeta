@@ -24,6 +24,7 @@
  */
 package org.meta.model.files;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.CompletionHandler;
 import org.meta.api.common.AsyncOperation;
 
@@ -34,6 +35,22 @@ import org.meta.api.common.AsyncOperation;
  * @author dyslesiq
  */
 public class FileWriteOperation extends AsyncOperation implements CompletionHandler<Integer, Void> {
+
+    final int pieceIndex;
+    final int byteOffset;
+    final ByteBuffer buffer;
+
+    /**
+     *
+     * @param pieceIdx the piece index
+     * @param offset
+     * @param buf
+     */
+    public FileWriteOperation(final int pieceIdx, final int offset, final ByteBuffer buf) {
+        this.pieceIndex = pieceIdx;
+        this.byteOffset = offset;
+        this.buffer = buf;
+    }
 
     @Override
     public void completed(final Integer v, final Void a) {

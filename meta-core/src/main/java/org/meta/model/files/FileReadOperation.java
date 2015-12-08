@@ -52,7 +52,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
     public FileReadOperation(final int offset, final int dataLength) {
         this.fileOffset = offset;
         this.length = dataLength;
-        this.readData = BufferManager.aquireDirectBuffer(length);
+        this.readData = BufferManager.aquireDirectBuffer(dataLength);
     }
 
     /**

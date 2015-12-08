@@ -48,6 +48,10 @@ public class CompositeSearchOperation extends SearchOperation {
 
     private final Logger logger = LoggerFactory.getLogger(CompositeSearchOperation.class);
 
+    private int operations;
+
+    private int completeOperations;
+
     private final CompositeSearchListener listener;
 
     /**
@@ -64,6 +68,7 @@ public class CompositeSearchOperation extends SearchOperation {
      * @param op the search operation to aggregate
      */
     public void addSearchOperation(final SearchOperation op) {
+        operations++;
         op.addListener(listener);
     }
 
@@ -76,20 +81,18 @@ public class CompositeSearchOperation extends SearchOperation {
         if (res == null) {
             return;
         }
-        if (this.results.addAll(res)) {
-            //only notify listeners if results changed...
-            this.operationReceived();
-        }
+        this.results.addAll(res);
     }
 
     /**
      * Called when a sub-operation completed.
      */
     private void operationReceived() {
-        if (!this.hasFinished()) {
-            this.complete(); //Complete isn't really adapted but...
+        this.completeOperations++;
+        if (this.completeOperations == this.operations) {
+            this.complete();
         } else {
-            this.notifyListeners();
+            this.notifyListeners(false);
         }
     }
 
@@ -103,13 +106,18 @@ public class CompositeSearchOperation extends SearchOperation {
             //There is nothing to do here really, just notify the operation
             logger.debug("Search operation failed: "
                     + operation.getFailureMessage());
-            CompositeSearchOperation.this.operationReceived();
+            synchronized (CompositeSearchOperation.this) {
+                CompositeSearchOperation.this.operationReceived();
+            }
         }
 
         @Override
         public void complete(final SearchOperation operation) {
-            CompositeSearchOperation.this.addResults(operation.getResults());
-            CompositeSearchOperation.this.peers.addAll(operation.getPeers());
+            synchronized (CompositeSearchOperation.this) {
+                CompositeSearchOperation.this.addResults(operation.getResults());
+                CompositeSearchOperation.this.peers.addAll(operation.getPeers());
+                CompositeSearchOperation.this.operationReceived();
+            }
         }
     }
 }

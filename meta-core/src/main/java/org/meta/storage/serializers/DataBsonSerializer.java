@@ -104,7 +104,6 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
         ByteBuffer buf = SerializationUtils.fromHexString((String) obj.get(DATA_KEY));
         int size = Integer.parseInt((String) obj.get(SIZE_KEY));
         String type = (String) obj.get(TYPE_KEY);
-        logger.info("Extract BSON Data, type = " + type);
 
         Data data = new GenericData(hash, buf, size);
 

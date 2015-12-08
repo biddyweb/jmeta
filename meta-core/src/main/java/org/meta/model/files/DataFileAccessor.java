@@ -24,9 +24,11 @@
  */
 package org.meta.model.files;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
@@ -35,6 +37,7 @@ import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.DataFile;
+import org.meta.p2pp.BufferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +68,10 @@ public class DataFileAccessor {
 
     private final MetHash[] piecesHash;
 
+    private FileChannel readSyncChannel;
+
+    private FileChannel writeSyncChannel;
+
     private AsynchronousFileChannel readChannel;
 
     private AsynchronousFileChannel writeChannel;
@@ -72,9 +79,8 @@ public class DataFileAccessor {
     /**
      *
      * @param file the data file to access
-     * @throws java.io.IOException If given an invalid file (TODO Explain)
      */
-    public DataFileAccessor(final DataFile file) throws IOException {
+    public DataFileAccessor(final DataFile file) {
         this.dataFile = file;
 
         this.pieceCount = this.dataFile.getSize() / PIECE_SIZE;
@@ -87,6 +93,12 @@ public class DataFileAccessor {
             this.blockCount++;
         }
         this.piecesHash = new MetHash[this.pieceCount];
+        try {
+            checkWrite();
+            checkRead();
+        } catch (final IOException ex) {
+            logger.error("check (read,write) failed: ", ex);
+        }
     }
 
     /**
@@ -95,6 +107,9 @@ public class DataFileAccessor {
      * @throws IOException if not
      */
     private void checkRead() throws IOException {
+        if (!this.dataFile.getFile().exists()) {
+            throw new IOException("Cannot read: file doesn't exists!");
+        }
         if (!dataFile.getFile().canRead()) {
             throw new IOException("Cannot read: insufficient right!");
         }
@@ -102,17 +117,22 @@ public class DataFileAccessor {
             readChannel = AsynchronousFileChannel.open(dataFile.getFile().toPath(),
                     Collections.singleton(StandardOpenOption.READ), DataFileAccessors.getFilesExecutor());
         }
+        if (this.readSyncChannel == null) {
+            this.readSyncChannel = FileChannel.open(dataFile.getFile().toPath(), StandardOpenOption.READ);
+            //this.readSyncChannel.force(true);
+        }
     }
 
     /**
-     * Ensures that the file can be written.
+     * Ensures that the file can be written and creates writable channels.
      *
      * @throws IOException if not
      */
     private void checkWrite() throws IOException {
         if (!this.dataFile.getFile().exists()) {
-            this.dataFile.getFile().createNewFile();
+            this.createFile();
         } else {
+            //TODO set file size if it already exists
             if (!this.dataFile.getFile().canWrite()) {
                 throw new IOException("Cannot write: insufficient right!");
             }
@@ -124,6 +144,26 @@ public class DataFileAccessor {
             writeChannel = AsynchronousFileChannel.open(dataFile.getFile().toPath(),
                     Collections.singleton(StandardOpenOption.WRITE), DataFileAccessors.getFilesExecutor());
         }
+        if (this.writeSyncChannel == null) {
+            this.writeSyncChannel = FileChannel.open(this.dataFile.getFile().toPath(),
+                    StandardOpenOption.READ, StandardOpenOption.WRITE);
+            //this.writeSyncChannel.force(true);
+        }
+    }
+
+    /**
+     * Creates the file and set its length to the expected length.
+     *
+     * After this call the actual FileSystem size of the file might be inferior (sparse file).
+     *
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private void createFile() throws FileNotFoundException, IOException {
+        this.dataFile.getFile().createNewFile();
+        try (RandomAccessFile raf = new RandomAccessFile(this.dataFile.getFile(), "rw")) {
+            raf.setLength(this.dataFile.getSize());
+        }
     }
 
     /**
@@ -133,15 +173,50 @@ public class DataFileAccessor {
      * @param length the number of bytes to read
      * @return the asynchronous operation
      */
-    public synchronized FileReadOperation read(final int offset, final int length) {
+    public FileReadOperation read(final int offset, final int length) {
         FileReadOperation operation = new FileReadOperation(offset, length);
-        try {
-            checkRead();
-            readChannel.read(operation.getBuffer(), offset, null, operation);
-        } catch (final IOException ex) {
-            operation.setFailed(ex);
-        }
+
+        readChannel.read(operation.getBuffer(), offset, null, operation);
         return operation;
+    }
+
+    /**
+     * Read data from a file synchronously using memory mapped file.
+     *
+     * @param offset the offset in the file
+     * @param length the number of bytes to read
+     * @return the read buffer, or null if an error occurred
+     */
+    public ByteBuffer readSync(final int offset, final int length) {
+        try {
+            MappedByteBuffer mappedBuffer = this.readSyncChannel.map(FileChannel.MapMode.READ_ONLY,
+                    offset, length);
+            return mappedBuffer;
+        } catch (final IOException ex) {
+            logger.error("Failed to map for read.", ex);
+            return null;
+        }
+    }
+
+    /**
+     * Write data to a file synchronously using memory mapped file.
+     *
+     * @param pieceIndex the piece index
+     * @param byteOffset the offset in the piece
+     * @param buf the buffer to write at given position
+     * @return true on success, false if an error occurred
+     */
+    public boolean writeSync(final int pieceIndex, final int byteOffset, final ByteBuffer buf) {
+        try {
+            int writeOffset = fileOffset(pieceIndex, byteOffset);
+            MappedByteBuffer writeBuffer = this.writeSyncChannel.map(FileChannel.MapMode.READ_WRITE,
+                    writeOffset, buf.remaining());
+            writeBuffer.put(buf);
+            return true;
+        } catch (IOException ex) {
+            logger.error("Failed to map for write.", ex);
+            return false;
+        }
     }
 
     /**
@@ -154,16 +229,12 @@ public class DataFileAccessor {
      * @param buf the buffer to write at given position
      * @return the asynchronous operation
      */
-    public FileWriteOperation write(final int pieceIndex, final int byteOffset, final ByteBuffer buf) {
-        FileWriteOperation op = new FileWriteOperation();
-        try {
-            checkWrite();
+    public FileWriteOperation write(final int pieceIndex, final int byteOffset,
+            final ByteBuffer buf) {
+        FileWriteOperation op = new FileWriteOperation(pieceIndex, byteOffset, buf);
 
-            int writeOffset = fileOffset(pieceIndex, byteOffset);
-            writeChannel.write(buf, writeOffset, null, op);
-        } catch (final IOException ex) {
-            op.setFailed(ex);
-        }
+        int writeOffset = fileOffset(pieceIndex, byteOffset);
+        writeChannel.write(buf, writeOffset, null, op);
         return op;
     }
 
@@ -175,8 +246,16 @@ public class DataFileAccessor {
      */
     public PieceHashOperation getPieceHash(final int pieceIndex) {
         PieceHashOperation op = new PieceHashOperation(pieceIndex);
-        FileReadOperation readOp = this.read(this.fileOffset(pieceIndex, 0), this.pieceSize(pieceIndex));
 
+        synchronized (piecesHash) {
+            if (piecesHash[pieceIndex] != null) {
+                op.setPieceHash(piecesHash[pieceIndex]);
+                op.complete();
+                return op;
+            }
+        }
+        //Read the whole piece
+        FileReadOperation readOp = this.read(this.fileOffset(pieceIndex, 0), this.pieceSize(pieceIndex));
         readOp.addListener(new OperationListener<FileReadOperation>() {
 
             @Override
@@ -186,7 +265,9 @@ public class DataFileAccessor {
 
             @Override
             public void complete(final FileReadOperation operation) {
-                piecesHash[pieceIndex] = MetamphetUtils.makeSHAHash(operation.getBuffer());
+                synchronized (piecesHash) {
+                    piecesHash[pieceIndex] = MetamphetUtils.makeSHAHash(operation.getBuffer());
+                }
                 op.setPieceHash(piecesHash[pieceIndex]);
                 op.complete();
             }
@@ -200,21 +281,11 @@ public class DataFileAccessor {
      * @param pieceIndex the index of the piece to hash
      * @return the hash of the piece
      */
-    public synchronized MetHash getPieceHashSync(final int pieceIndex) {
+    public MetHash getPieceHashSync(final int pieceIndex) {
         if (this.piecesHash[pieceIndex] == null) {
-            FileInputStream fis;
-            FileChannel channel;
-            ByteBuffer buff;
-            try {
-                fis = new FileInputStream(dataFile.getFile());
-                channel = fis.getChannel();
-                buff = channel.map(FileChannel.MapMode.READ_ONLY,
-                        pieceIndex * PIECE_SIZE, pieceSize(pieceIndex));
-                this.piecesHash[pieceIndex] = MetamphetUtils.makeSHAHash(buff);
-            } catch (IOException e) {
-                logger.error("IOException while getting piece data for hash calculation", e);
-                piecesHash[pieceIndex] = MetHash.ZERO;
-            }
+            ByteBuffer buff = this.readSync(fileOffset(pieceIndex, 0), pieceSize(pieceIndex));
+            this.piecesHash[pieceIndex] = MetamphetUtils.makeSHAHash(buff);
+            BufferManager.release(buff);
         }
         return this.piecesHash[pieceIndex];
     }

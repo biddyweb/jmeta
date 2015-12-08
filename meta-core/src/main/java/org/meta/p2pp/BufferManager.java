@@ -72,7 +72,7 @@ public final class BufferManager {
      * @param buffer the buffer to release
      */
     public static void release(final ByteBuffer buffer) {
-        logger.debug("Releasing buffer with capacity: " + buffer.capacity());
+        logger.debug("Releasing buffer with limit/capacity: " + buffer.limit() + "/" + buffer.capacity());
     }
 
 }

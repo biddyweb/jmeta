@@ -291,12 +291,19 @@ public abstract class AsyncOperation {
      * Notify the listeners in case an event occurred (completion, cancellation, ...).
      */
     protected final void notifyListeners() {
+        notifyListeners(true);
+    }
+
+    protected final void notifyListeners(final boolean clearListeners) {
         for (OperationListener l : listeners) {
             if (this.isSuccess()) {
                 l.complete(this);
             } else {
                 l.failed(this);
             }
+        }
+        if (clearListeners) {
+            this.listeners.clear();
         }
         synchronized (lock) {
             this.lock.notifyAll();

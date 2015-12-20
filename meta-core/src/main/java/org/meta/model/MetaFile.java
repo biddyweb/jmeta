@@ -121,7 +121,7 @@ public final class MetaFile extends DataFile {
         this.file = new File(fileUri);
         this.updateBuffer();
         this.size = data.getSize();
-        this.metaData = data.getMetaData();
+        this.metaDataMap = data.getMetaDataMap();
     }
 
     /**

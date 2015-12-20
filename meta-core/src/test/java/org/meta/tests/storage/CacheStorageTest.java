@@ -185,7 +185,7 @@ public class CacheStorageTest {
      *
      * @throws InterruptedException
      */
-    @Test
+    //@Test
     public void removeExpiredEntriesTest() throws InterruptedException {
         byte[] key1 = "removeExpiredEntriesTest1".getBytes();
         byte[] key2 = "removeExpiredEntriesTest2".getBytes();

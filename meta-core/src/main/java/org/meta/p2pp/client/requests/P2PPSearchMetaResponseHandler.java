@@ -26,11 +26,11 @@ package org.meta.p2pp.client.requests;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataType;
 import org.meta.api.model.MetaData;
+import org.meta.api.model.MetaDataMap;
 import org.meta.p2pp.client.P2PPRequest;
 import org.meta.utils.SerializationUtils;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
             return true;
         }
         this.results = new HashSet<>(nbResults);
-        Set<MetaData> metaData = null;
+        MetaDataMap metaData = null;
         short sizeofDataType;
         DataType dataType;
         int dataSize;
@@ -96,10 +96,10 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
      * @param buf data buffer from which to extract meta-datas
      * @return the Set of created meta-data. Might be empty.
      */
-    protected Set<MetaData> extractMetaData(final ByteBuffer buf) {
+    protected MetaDataMap extractMetaData(final ByteBuffer buf) {
         short metaDataNumber = buf.getShort();
         logger.debug("meta-data number = " + metaDataNumber);
-        Set<MetaData> metaData = new HashSet<>(metaDataNumber);
+        MetaDataMap metaData = new MetaDataMap();
 
         if (metaDataNumber == 0) {
             return metaData;
@@ -124,7 +124,7 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
             prop.setValue(SerializationUtils.decodeUTF8(roBuffer));
             logger.debug("extracted meta-data value: " + prop.getValue());
             buf.position(roBuffer.limit());
-            metaData.add(prop);
+            metaData.put(prop);
         }
         return metaData;
     }

@@ -151,10 +151,9 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
     private String getFileName(final Data data) {
         String name = "meta_subtitle_download_";
 
-        for (MetaData d : data.getMetaData()) {
-            if (d.getKey().equals("name")) {
-                name += d.getValue();
-            }
+        MetaData mdName = data.getMetaData("name");
+        if (mdName != null) {
+            name += mdName.getValue();
         }
         name += "." + System.currentTimeMillis();
         return name;

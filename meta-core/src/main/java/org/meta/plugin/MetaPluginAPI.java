@@ -191,7 +191,7 @@ public final class MetaPluginAPI implements MetAPI {
         if (resultDB != null) {
             //TODO talk about meta-data merge strategy
             //get new description
-            data.getMetaData().addAll(resultDB.getMetaData());
+            data.getMetaDataMap().putAll(resultDB.getMetaDataMap());
         }
         return data;
     }

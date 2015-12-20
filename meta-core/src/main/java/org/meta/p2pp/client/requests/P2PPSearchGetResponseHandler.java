@@ -26,11 +26,10 @@ package org.meta.p2pp.client.requests;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataType;
-import org.meta.api.model.MetaData;
+import org.meta.api.model.MetaDataMap;
 import org.meta.p2pp.client.P2PPRequest;
 
 /**
@@ -72,7 +71,7 @@ public class P2PPSearchGetResponseHandler extends P2PPSearchMetaResponseHandler 
             return true;
         }
         this.results = new HashSet<>(nbResults);
-        Set<MetaData> metaData = null;
+        MetaDataMap metaData = null;
         short sizeofDataType;
         DataType dataType;
         int dataSize;

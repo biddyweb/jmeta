@@ -131,28 +131,27 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     protected int prepareMetaDataResponse(final Data data) {
         int usedSize = Short.BYTES;
 
-        if (data.getMetaData().isEmpty() || this.requestedMetaKeys.isEmpty()) {
+        if (data.getMetaDataMap().isEmpty() || this.requestedMetaKeys.isEmpty()) {
             return usedSize;
         }
         ByteBuffer tmpBuffer;
-        for (MetaData md : data.getMetaData()) {
-            for (String key : this.requestedMetaKeys) {
-                if (key.equals(md.getKey())) {
-                    logger.debug("Match found for meta-data key:" + key);
-                    usedSize += (Short.BYTES * 2);
-                    tmpBuffer = SerializationUtils.encodeUTF8(key);
-                    if (this.mdKeys.get(data) == null) {
-                        this.mdKeys.put(data, new LinkedList<>());
-                    }
-                    this.mdKeys.get(data).add(tmpBuffer);
-                    usedSize += tmpBuffer.limit();
-                    tmpBuffer = SerializationUtils.encodeUTF8(md.getValue());
-                    if (this.mdValues.get(data) == null) {
-                        this.mdValues.put(data, new LinkedList<>());
-                    }
-                    this.mdValues.get(data).add(tmpBuffer);
-                    usedSize += tmpBuffer.limit();
+        for (String key : this.requestedMetaKeys) {
+            MetaData md = data.getMetaData(key);
+            if (md != null) {
+                logger.debug("Match found for meta-data key:" + key);
+                usedSize += (Short.BYTES * 2);
+                tmpBuffer = SerializationUtils.encodeUTF8(key);
+                if (this.mdKeys.get(data) == null) {
+                    this.mdKeys.put(data, new LinkedList<>());
                 }
+                this.mdKeys.get(data).add(tmpBuffer);
+                usedSize += tmpBuffer.limit();
+                tmpBuffer = SerializationUtils.encodeUTF8(md.getValue());
+                if (this.mdValues.get(data) == null) {
+                    this.mdValues.put(data, new LinkedList<>());
+                }
+                this.mdValues.get(data).add(tmpBuffer);
+                usedSize += tmpBuffer.limit();
             }
         }
         return usedSize;

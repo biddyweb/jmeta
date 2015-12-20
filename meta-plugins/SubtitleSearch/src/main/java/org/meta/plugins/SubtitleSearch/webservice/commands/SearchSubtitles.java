@@ -207,12 +207,13 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
     private String extractDescription(final Data data) {
         String description = "Subtitle: ";
 
-        for (MetaData property : data.getMetaData()) {
-            if (property.getKey().equals("description")) {
-                description += " description(" + property.getValue() + ")";
-            } else if (property.getKey().equals("name")) {
-                description += " name(" + property.getValue() + ")";
-            }
+        MetaData md = data.getMetaData("description");
+        if (md != null) {
+            description += " description(" + md.getValue() + ") ";
+        }
+        md = data.getMetaData("name");
+        if (md != null) {
+            description += " name(" + md.getValue() + ") ";
         }
         description += " size(" + data.getSize() + " bytes)";
         return description;

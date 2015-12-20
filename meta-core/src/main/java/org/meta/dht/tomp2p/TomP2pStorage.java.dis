@@ -1,0 +1,181 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.meta.dht.tomp2p;
+
+import java.nio.ByteBuffer;
+import java.security.PublicKey;
+import java.util.Collection;
+import java.util.NavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import net.tomp2p.dht.Storage;
+import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.Number320;
+import net.tomp2p.peers.Number480;
+import net.tomp2p.peers.Number640;
+import net.tomp2p.storage.Data;
+import org.meta.api.storage.MetaCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ *
+ * TomP2P specific storage implementation based on a meta {@link MetaStorage}.
+ *
+ * @author dyslesiq
+ */
+public class TomP2pStorage implements Storage {
+
+    private final Logger logger = LoggerFactory.getLogger(TomP2pStorage.class);
+
+    private final MetaCache backend;
+
+    private final NavigableMap<Number640, Data> dataMap = new ConcurrentSkipListMap<>();
+
+    /**
+     * @param storage the meta cache storage used as backend
+     */
+    public TomP2pStorage(final MetaCache storage) {
+        this.backend = storage;
+    }
+
+    private static byte[] serializeNumber640(final Number640 entry) {
+        ByteBuffer buf = ByteBuffer.allocate(Number160.BYTE_ARRAY_SIZE * 2);
+
+        buf.put(entry.locationKey().toByteArray());
+        buf.put(entry.contentKey().toByteArray());
+        return buf.array();
+    }
+
+    @Override
+    public Data put(final Number640 key, final Data value) {
+        logger.warn("PUT " + key + ":" + value);
+        logger.warn("PUT DATA based on ?" + value.basedOnSet().size());
+
+        //this.backend.store(serializeNumber640(key), value.toBytes());
+        return this.dataMap.put(key, value);
+    }
+
+    @Override
+    public Data get(final Number640 key) {
+        logger.warn("GET " + key);
+        return null;
+    }
+
+    @Override
+    public boolean contains(Number640 key) {
+        logger.warn("CONTAINS " + key);
+        return false;
+    }
+
+    @Override
+    public int contains(Number640 from, Number640 to) {
+        logger.warn("CONTAINS FROM:" + from + " TO:" + to);
+        return 0;
+    }
+
+    @Override
+    public Data remove(Number640 key, boolean returnData) {
+        logger.warn("REMOVE " + key);
+        return null;
+    }
+
+    @Override
+    public NavigableMap<Number640, Data> remove(Number640 from, Number640 to) {
+        logger.warn("REMOVE FROM:" + from + " TO:" + to);
+        return null;
+    }
+
+    @Override
+    public NavigableMap<Number640, Data> subMap(Number640 from, Number640 to, int limit, boolean ascending) {
+        try {
+            logger.warn("SUBMAP FROM:" + from + " TO:" + to);
+            throw new Exception();
+        } catch (Exception ex) {
+            logger.warn("SUBMAP", ex);
+        }
+        return null;
+    }
+
+    @Override
+    public NavigableMap<Number640, Data> map() {
+        logger.warn("MAP");
+        return null;
+    }
+
+    @Override
+    public void close() {
+        logger.warn("CLOSE");
+    }
+
+    @Override
+    public void addTimeout(Number640 key, long expiration) {
+        logger.warn("ADD TIMEOUT " + key + " timeout" + expiration);
+    }
+
+    @Override
+    public void removeTimeout(Number640 key) {
+        logger.warn("REMOVE TIMEOUT " + key);
+    }
+
+    @Override
+    public Collection<Number640> subMapTimeout(long to) {
+        logger.warn("SUBMAP TIMEOUT " + to);
+        return null;
+    }
+
+    @Override
+    public int storageCheckIntervalMillis() {
+        return 10000;
+    }
+
+    @Override
+    public boolean protectDomain(Number320 key, PublicKey publicKey) {
+        logger.warn("PROTECT DOMAIN " + key + " PUBLIC KEY" + publicKey);
+        return false;
+    }
+
+    @Override
+    public boolean isDomainProtectedByOthers(Number320 key, PublicKey publicKey) {
+        logger.warn("IS DOMAIN PROTECTED" + key + " PUBLIC KEY" + publicKey);
+        return false;
+    }
+
+    @Override
+    public boolean protectEntry(Number480 key, PublicKey publicKey) {
+        logger.warn("PROTECT ENTRY " + key + " PUBLIC KEY" + publicKey);
+        return false;
+    }
+
+    @Override
+    public boolean isEntryProtectedByOthers(Number480 key, PublicKey publicKey) {
+        logger.warn("IS ENTRY PROTECTED " + key + " PUBLIC KEY" + publicKey);
+        return false;
+    }
+
+    @Override
+    public Number160 findPeerIDsForResponsibleContent(Number160 locationKey) {
+        logger.warn("FIND PEERS RESPONSIBLE " + locationKey);
+        return null;
+    }
+
+    @Override
+    public Collection<Number160> findContentForResponsiblePeerID(Number160 peerID) {
+        logger.warn("FIND CONTENT RESPONSIBLE " + peerID);
+        return null;
+    }
+
+    @Override
+    public boolean updateResponsibilities(Number160 locationKey, Number160 peerId) {
+        logger.warn("UPDATE REPONSABILITIES " + locationKey + " PEER" + peerId);
+        return false;
+    }
+
+    @Override
+    public void removeResponsibility(Number160 locationKey) {
+        logger.warn("REMOVE REPONSABILITY " + locationKey);
+    }
+
+}

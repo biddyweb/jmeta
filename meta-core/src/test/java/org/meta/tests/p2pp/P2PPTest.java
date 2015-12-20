@@ -25,7 +25,6 @@
 package org.meta.tests.p2pp;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import org.meta.api.common.OperationListener;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
+import org.meta.api.model.MetaDataMap;
 import org.meta.api.model.ModelStorage;
 import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
@@ -124,7 +124,7 @@ public class P2PPTest extends MetaBaseTests {
             client = manager.getClient();
             metaP2ppClient = new MetaP2PPClient(client);
             manager.startServer();
-        } catch (IOException | P2PPException ex) {
+        } catch (P2PPException ex) {
             Assert.fail(ex.getMessage());
         }
         InetSocketAddress serverAddr = new InetSocketAddress(
@@ -138,25 +138,24 @@ public class P2PPTest extends MetaBaseTests {
     public static void fillModel() {
         result = model.getFactory().getData("result");
 
-        Set<MetaData> resultMetaDatas = new HashSet<>();
-        resultMetaDatas.add(new MetaData("key", "value"));
-        resultMetaDatas.add(new MetaData("a", "b"));
-        result.setMetaData(resultMetaDatas);
+        MetaDataMap mdMap = new MetaDataMap();
+        mdMap.put(new MetaData("key", "value"));
+        mdMap.put("a", "b");
+        result.setMetaData(mdMap);
 
         result2 = model.getFactory().getData("result2");
         //result2 has no meta-data
 
         Data source = model.getFactory().getData("source");
 
-        SearchCriteria criteria = model.getFactory().createCriteria(
-                Collections.singleton(new MetaData("key", "value")));
+        SearchCriteria criteria = model.getFactory().createCriteria(new MetaData("key", "value"));
 
-        SearchCriteria criteria2 = model.getFactory().createCriteria(
-                Collections.singleton(new MetaData("name", "crit")));
+        SearchCriteria criteria2 = model.getFactory().createCriteria(new MetaData("name", "crit"));
 
         Search search = model.getFactory().createSearch(source, criteria, Collections.singletonList(result));
 
-        Search search2 = model.getFactory().createSearch(source, criteria2, Collections.singletonList(result2));
+        Search search2 = model.getFactory().createSearch(source, criteria2,
+                Collections.singletonList(result2));
 
         searchHash = search.getHash();
 
@@ -231,10 +230,10 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("Search complete!");
                 for (Data data : results) {
                     logger.info("Result hash: " + data.getHash());
-                    for (MetaData md : data.getMetaData()) {
+                    for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
                         if (md.getKey().equals("key")) {
-                            //Assert.assertEquals(md.getValue(), P2PPTest.result.getMetaData().c);
+                            //Assert.assertEquals(md.getValue(), P2PPTest.result.getMetaDataMap().c);
                         }
                     }
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
@@ -270,7 +269,7 @@ public class P2PPTest extends MetaBaseTests {
                 Assert.assertEquals("There should be 2 results", results.size(), 2);
                 for (Data data : results) {
                     logger.info("Result hash: " + data.getHash());
-                    for (MetaData md : data.getMetaData()) {
+                    for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
                     }
                 }
@@ -305,11 +304,13 @@ public class P2PPTest extends MetaBaseTests {
                 for (Data data : results) {
                     logger.info("Result hash: " + data.getHash());
                     logger.info("Result data content = " + data.toString());
-                    for (MetaData md : data.getMetaData()) {
+                    for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
                     }
-                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
-                    Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
+                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(),
+                            data.getHash());
+                    Assert.assertEquals("Retrieved result size is different!", result.getSize(),
+                            data.getSize());
                 }
             }
         });
@@ -378,7 +379,7 @@ public class P2PPTest extends MetaBaseTests {
             @Override
             public void complete(final GetOperation operation) {
                 operation.getData().rewind();
-                logger.debug("GET block complete! Read data UTF-8 = {}", SerializationUtils.decodeUTF8(operation.getData()));
+                logger.debug("GET block complete! Read data UTF-8 =" + SerializationUtils.decodeUTF8(operation.getData()));
             }
         });
         op.awaitUninterruptibly();

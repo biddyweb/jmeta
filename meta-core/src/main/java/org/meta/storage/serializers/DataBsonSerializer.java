@@ -25,9 +25,7 @@
 package org.meta.storage.serializers;
 
 import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import org.bson.BSON;
 import org.bson.BSONObject;
 import org.bson.BasicBSONObject;
@@ -35,6 +33,7 @@ import org.bson.types.BasicBSONList;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
+import org.meta.api.model.MetaDataMap;
 import org.meta.model.GenericData;
 import org.meta.model.ModelType;
 import org.meta.utils.SerializationUtils;
@@ -64,7 +63,7 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
         //foreach proerties, get value and name and put it in the json
         BasicBSONList bsonProperties = new BasicBSONList();
         int count = 0;
-        for (Iterator<MetaData> i = obj.getMetaData().iterator(); i.hasNext(); count++) {
+        for (Iterator<MetaData> i = obj.getMetaDataMap().iterator(); i.hasNext(); count++) {
             MetaData property = i.next();
             BasicBSONObject bsonProperty = new BasicBSONObject();
             bsonProperty.put(METADATA_KEY, property.getKey());
@@ -108,15 +107,15 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
         Data data = new GenericData(hash, buf, size);
 
         BasicBSONList bsonProperties = (BasicBSONList) obj.get(DATA_META_KEY);
-        Set<MetaData> metaDatas = new HashSet<>();
+        MetaDataMap mdMap = new MetaDataMap();
         BSONObject tmp;
         MetaData toAdd;
         for (String k : bsonProperties.keySet()) {
             tmp = (BSONObject) bsonProperties.get(k);
             toAdd = new MetaData(tmp.get(METADATA_KEY).toString(), tmp.get(METADATA_VALUE_KEY).toString());
-            metaDatas.add(toAdd);
+            mdMap.put(toAdd);
         }
-        data.setMetaData(metaDatas);
+        data.setMetaData(mdMap);
         return data;
     }
 

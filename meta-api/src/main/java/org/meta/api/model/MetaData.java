@@ -24,7 +24,8 @@
  */
 package org.meta.api.model;
 
-import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * A MetaData is a key value object used in two cases :
@@ -39,7 +40,7 @@ import java.util.Map;
  *
  * @author Thomas LAVOCAT
  */
-public final class MetaData implements Comparable<MetaData>, Map.Entry<String, String> {
+public final class MetaData implements Comparable<MetaData>, Entry<String, String> {
 
     /**
      * Char separator between key and value.
@@ -111,6 +112,34 @@ public final class MetaData implements Comparable<MetaData>, Map.Entry<String, S
             return keyCompare;
         }
         return value.compareTo(o.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int keyHash = (key == null ? 0 : key.hashCode());
+        int valueHash = (value == null ? 0 : value.hashCode());
+        return keyHash ^ valueHash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MetaData other = (MetaData) obj;
+        if (!Objects.equals(this.key, other.key)) {
+            return false;
+        }
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        return true;
     }
 
 }

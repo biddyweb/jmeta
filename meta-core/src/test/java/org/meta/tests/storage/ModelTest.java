@@ -26,12 +26,8 @@ package org.meta.tests.storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -47,7 +43,6 @@ import org.meta.configuration.MetaConfiguration;
 import org.meta.model.MetaSearch;
 import org.meta.storage.KyotoCabinetStorage;
 import org.meta.storage.MetaModelStorage;
-import org.meta.storage.exceptions.ModelException;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
 import org.slf4j.Logger;
@@ -134,8 +129,8 @@ public class ModelTest extends MetaBaseTests {
             //lookup in db
             Data dataFromDb = model.getData(hash);
             Assert.assertNotNull("extracted data should not be null!", dataFromDb);
-            Assert.assertEquals("Meta-data size list should be = 1", 1, dataFromDb.getMetaData().size());
-            for (MetaData desc : dataFromDb.getMetaData()) {
+            Assert.assertEquals("Meta-data size list should be = 1", 1, dataFromDb.getMetaDataMap().size());
+            for (MetaData desc : dataFromDb.getMetaDataMap()) {
                 Assert.assertEquals(metaTitle.getKey(), desc.getKey());
                 Assert.assertEquals(metaTitle.getValue(), desc.getValue());
             }
@@ -156,9 +151,7 @@ public class ModelTest extends MetaBaseTests {
             DataFile data = model.getFactory().getDataFile(new File("/etc/hosts"));
 
             MetaData titre = new MetaData("titre", "toto");
-            Set<MetaData> description = new HashSet<MetaData>();
-            description.add(titre);
-            data.setMetaData(description);
+            data.addMetaData(titre);
 
             Assert.assertTrue(model.set(data));
             //get new hash
@@ -166,8 +159,8 @@ public class ModelTest extends MetaBaseTests {
             //lookup in db
             DataFile dataFromDb = model.getDataFile(hash);
             Assert.assertNotNull(dataFromDb);
-            Assert.assertEquals(1, dataFromDb.getMetaData().size());
-            for (MetaData desc : dataFromDb.getMetaData()) {
+            Assert.assertEquals(1, dataFromDb.getMetaDataMap().size());
+            for (MetaData desc : dataFromDb.getMetaDataMap()) {
                 Assert.assertEquals(titre.getKey(), desc.getKey());
                 Assert.assertEquals(titre.getValue(), desc.getValue());
             }
@@ -212,83 +205,70 @@ public class ModelTest extends MetaBaseTests {
 
     }
 
-    /**
-     *
-     * @throws ModelException
-     */
     @Test
-    public void fullTest() {
-        try {
-            /**
-             * *****************************************************************
-             *
-             * Create a new search
-             *
-             *****************************************************************
-             */
-            DataFile data = model.getFactory().getDataFile(new File("/etc/hosts"));
-            List<Data> linkedData = new ArrayList<Data>();
-            linkedData.add(data);
+    public void searchDataFileTest() {
+        /**
+         * *****************************************************************
+         *
+         * Create a new search
+         *
+         *****************************************************************
+         */
+        DataFile data = model.getFactory().getDataFile(new File("/etc/hosts"));
 
-            // -- MetaData
-            MetaData property = new MetaData("st", "fr");
-            TreeSet<MetaData> properties = new TreeSet<MetaData>();
-            properties.add(property);
+        SearchCriteria metaData = model.getFactory().createCriteria(new MetaData("st", "fr"));
 
-            // -- SearchCriteria answer
-            SearchCriteria metaData = model.getFactory().createCriteria(properties);
+        DataFile data2 = model.getFactory().getDataFile(new File("/etc/hostname"));
 
-            // -- SearchCriteria source
-            DataFile data2 = model.getFactory().getDataFile(new File("/etc/hostname"));
+        // -- MetaSearch
+        MetaSearch search = model.getFactory().createSearch(data2, metaData, data);
 
-            // -- MetaSearch
-            MetaSearch search = model.getFactory().createSearch(data2, metaData, linkedData);
+        /**
+         * *****************************************************************
+         *
+         *
+         * Write in base
+         *
+         *
+         *****************************************************************
+         */
+        Assert.assertTrue("Set search", model.set(search));
+        Assert.assertTrue("Set data2", model.set(data2));
+        Assert.assertTrue("Set data", model.set(data));
 
-            /**
-             * *****************************************************************
-             *
-             *
-             * Write in base
-             *
-             *
-             *****************************************************************
-             */
-            Assert.assertTrue("Set search", model.set(search));
-            Assert.assertTrue("Set data2", model.set(data2));
-            Assert.assertTrue("Set data", model.set(data));
+        logger.debug("DATA 2 : HASH = " + data2.getHash());
 
-            /**
-             * *****************************************************************
-             *
-             *
-             * read in base
-             *
-             *
-             *****************************************************************
-             */
-            MetaSearch readSearch = model.getSearch(search.getHash());
-            Assert.assertNotNull("readsearch", readSearch);
+        /**
+         * *****************************************************************
+         *
+         *
+         * read in base
+         *
+         *
+         *****************************************************************
+         */
+        MetaSearch readSearch = model.getSearch(search.getHash());
+        Assert.assertNotNull("readsearch", readSearch);
 
-            Data readData = model.getDataFile(data.getHash());
-            Assert.assertNotNull("readData", readData);
+        Data readData = model.getDataFile(data.getHash());
+        Assert.assertNotNull("readData should not be null!", readData);
 
-            Data readData2 = model.getDataFile(data2.getHash());
-            Assert.assertNotNull("readData2", readData2);
+        Data readData2 = model.getDataFile(data2.getHash());
+        Assert.assertNotNull("readData2 should not be null!", readData2);
+        logger.debug("READ DATA 2 : HASH = " + readData2.getHash());
 
-            /**
-             * *****************************************************************
-             *
-             *
-             * Delete in base
-             *
-             *
-             *****************************************************************
-             */
-            Assert.assertTrue(model.remove(readData));
-            Assert.assertTrue(model.remove(readData2));
-        } catch (Exception ex) {
-            logger.error(null, ex);
-        }
+        /**
+         * *****************************************************************
+         *
+         *
+         * Delete in base
+         *
+         *
+         *****************************************************************
+         */
+        Assert.assertNotNull("readData hash null!!", readData.getHash());
+        Assert.assertTrue(model.remove(readData));
+        Assert.assertTrue(model.remove(readData2));
     }
 
     //@Test

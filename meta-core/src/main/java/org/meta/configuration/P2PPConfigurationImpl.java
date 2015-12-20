@@ -39,7 +39,7 @@ public final class P2PPConfigurationImpl extends PropertiesConfiguration
     /**
      * The default size for Sender thread pool.
      */
-    public static final int DEFAULT_CLIENT_THREADS = 5;
+    public static final int DEFAULT_CLIENT_THREADS = 1;
 
     /**
      * The key for clientThreads in p2pp.conf.
@@ -49,7 +49,7 @@ public final class P2PPConfigurationImpl extends PropertiesConfiguration
     /**
      * The default size for Server thread pool.
      */
-    public static final int DEFAULT_SEVER_THREADS = 5;
+    public static final int DEFAULT_SEVER_THREADS = 1;
 
     /**
      * The key for serverThreads in p2pp.conf.

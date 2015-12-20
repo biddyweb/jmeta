@@ -25,14 +25,13 @@
 package org.meta.api.model;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 
 /**
- * A SearchCriteria is described by a list of criteria.
+ * A SearchCriteria is described by a list of criterion (MetaData).
  *
  * For example: {name:subtitles; value:vostfr}.
  *
@@ -44,7 +43,7 @@ public final class SearchCriteria extends Searchable {
 
     private static final char CRITERION_SEPARATOR = ';';
 
-    private Set<MetaData> criteria = null;
+    private MetaDataMap metaMap;
 
     /**
      * Creates an empty SearchCriteria.
@@ -52,7 +51,8 @@ public final class SearchCriteria extends Searchable {
      * Its hash will be {@link MetHash.ZERO} until a criterion is added.
      */
     public SearchCriteria() {
-        this(MetHash.ZERO, null);
+        super(MetHash.ZERO);
+        this.metaMap = new MetaDataMap();
     }
 
     /**
@@ -65,14 +65,34 @@ public final class SearchCriteria extends Searchable {
     }
 
     /**
-     * Create a MetaData -> use in case of creation.
+     * Create a MetaData with hash and initial Set of MetaData.
      *
      * @param metHash hash of this MetaData
      * @param crit the initial Set of criteria
      */
     public SearchCriteria(final MetHash metHash, final Set<MetaData> crit) {
         super(metHash);
-        this.setCriteria(crit);
+        this.metaMap = new MetaDataMap(crit);
+    }
+
+    /**
+     * Create a MetaData with initial MetaDataMap.
+     *
+     * @param metaDataMap the initial Map of criteria
+     */
+    public SearchCriteria(final MetaDataMap metaDataMap) {
+        this(MetHash.ZERO, metaDataMap);
+    }
+
+    /**
+     * Create a MetaData with initial hash and MetaDataMap.
+     *
+     * @param metHash hash of this MetaData
+     * @param metaDataMap the initial Map of criteria
+     */
+    public SearchCriteria(final MetHash metHash, final MetaDataMap metaDataMap) {
+        super(metHash);
+        this.metaMap = metaDataMap;
     }
 
     /**
@@ -80,36 +100,24 @@ public final class SearchCriteria extends Searchable {
      * @return the Set of {@link MetaData} of this SearchCriteria
      */
     public Set<MetaData> getCriteria() {
-        return criteria;
+        return metaMap.entrySet();
     }
 
     /**
-     * @param props the criteria Set to be used
-     */
-    public void setCriteria(final Set<MetaData> props) {
-        this.criteria = props;
-        if (this.criteria == null) {
-            this.criteria = new HashSet<>();
-        }
-        hash();
-    }
-
-    /**
-     * Adds the given property as a criterion to the criteria list.
+     * Adds the given MetaData as a criterion to the criteria list.
      *
      * @param criterion the new criterion
      */
     public void addCriterion(final MetaData criterion) {
-        if (this.criteria.add(criterion)) {
-            hash();
-        }
+        this.metaMap.put(criterion);
+        hash();
     }
 
     /**
      * @param props the criteria Set to be added
      */
     public void addCriteria(final Collection<MetaData> props) {
-        if (this.criteria.addAll(props)) {
+        if (this.metaMap.addAll(props)) {
             hash();
         }
     }
@@ -119,11 +127,11 @@ public final class SearchCriteria extends Searchable {
         //The hash is the hash of the concatenation of every key:value
         //separated by ;
         StringBuilder builder = new StringBuilder();
-        for (Iterator<MetaData> i = criteria.iterator(); i.hasNext();) {
-            MetaData property = i.next();
-            builder.append(property.getKey());
+        for (Iterator<MetaData> i = metaMap.entrySet().iterator(); i.hasNext();) {
+            MetaData md = i.next();
+            builder.append(md.getKey());
             builder.append(MetaData.SEPARATOR);
-            builder.append(property.getValue());
+            builder.append(md.getValue());
             if (i.hasNext()) {
                 builder.append(CRITERION_SEPARATOR);
             }

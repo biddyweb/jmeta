@@ -25,8 +25,6 @@
 package org.meta.api.model;
 
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Set;
 import org.meta.api.common.MetHash;
 
 /**
@@ -51,35 +49,45 @@ public abstract class Data extends Searchable {
     /**
      *
      */
-    protected Set<MetaData> metaData = null;
+    protected MetaDataMap metaDataMap;
 
     /**
-     * Instantiate Data, create an empty metaData list.
+     * Instantiate Data, with empty initial content and metaDataMap.
      *
      * @param hash the hash of the data
      */
     public Data(final MetHash hash) {
         super(hash);
-        metaData = new HashSet<>();
+        metaDataMap = new MetaDataMap();
     }
 
     /**
-     * As metaData does not count in the hash calculation, this method is public and can be called by anyone.
+     * As metaDataMap does not count in the hash calculation, this method is public and can be called by
+     * anyone.
      *
-     * @param desc a Set of MetaData representing complementary information about the data.
+     * @param map the map of MetaData representing complementary information about the data.
      *
-     * This may be a simple metaData, a title, a comment...
+     * This can be a title, a comment, anything really...
      */
-    public final void setMetaData(final Set<MetaData> desc) {
-        this.metaData = desc;
+    public final void setMetaData(final MetaDataMap map) {
+        this.metaDataMap = map;
     }
 
     /**
      *
-     * @return the metaData of the Data
+     * @return the metaDataMap of the Data
      */
-    public final Set<MetaData> getMetaData() {
-        return metaData;
+    public final MetaDataMap getMetaDataMap() {
+        return metaDataMap;
+    }
+
+    /**
+     *
+     * @param key the key of the meta data to retrieve
+     * @return the meta data object for the given key, if any, or null
+     */
+    public final MetaData getMetaData(final String key) {
+        return this.metaDataMap.getMetaData(key);
     }
 
     /**
@@ -88,7 +96,17 @@ public abstract class Data extends Searchable {
      * @param property the meta-data
      */
     public final void addMetaData(final MetaData property) {
-        this.metaData.add(property);
+        this.metaDataMap.put(property.getKey(), property.getValue());
+    }
+
+    /**
+     * Add the given key/value pair to the internal meta data.
+     *
+     * @param key the meta data key
+     * @param value the meta data value
+     */
+    public final void addMetaData(final String key, final String value) {
+        this.metaDataMap.put(key, value);
     }
 
     /**
@@ -96,10 +114,9 @@ public abstract class Data extends Searchable {
      *
      * @param properties the Set of meta-data to add
      */
-    public final void addMetaData(final Set<MetaData> properties) {
-        this.metaData.addAll(properties);
-    }
-
+//    public final void addMetaData(final Set<MetaData> properties) {
+//        this.metaDataMap.addAll(properties);
+//    }
     /**
      *
      * @return the size of this data

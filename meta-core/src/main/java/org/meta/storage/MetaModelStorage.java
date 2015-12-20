@@ -309,9 +309,9 @@ public class MetaModelStorage implements ModelStorage {
      */
     @Override
     public boolean remove(final MetHash hash) {
-        startTransaction(true);
-        boolean status = storage.remove(hash.toByteArray());
-        return commitTransaction(status) && status;
+        //startTransaction(true);
+        return storage.remove(hash.toByteArray());
+        //return commitTransaction(status) && status;
     }
 
     /**

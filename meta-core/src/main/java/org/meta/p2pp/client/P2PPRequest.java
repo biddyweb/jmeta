@@ -25,6 +25,8 @@
 package org.meta.p2pp.client;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+
 import org.meta.api.common.AsyncOperation;
 import org.meta.p2pp.P2PPConstants.ClientRequestStatus;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
@@ -63,10 +65,12 @@ public abstract class P2PPRequest {
      */
     protected char token;
 
+
     /**
      *
      * @param id the request command id
      * @param p2ppClient the peer-to-peer protocol client
+     * @param metaDataFilters 
      */
     protected P2PPRequest(final P2PPCommand id, final P2PPClient p2ppClient) {
         this.status = ClientRequestStatus.CREATED;

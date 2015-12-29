@@ -25,6 +25,7 @@
 package org.meta.api.plugin;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetaPeer;
@@ -86,10 +87,12 @@ public interface MetAPI {
      * @param searchLocal true if including local results, false otherwise
      * @param getData true to retrieve results data content, false if only retrieving hash
      * @param metaDataKeys the meta data keys to fetch for the results. Can be null.
+     * @param metaDataFilters the meta data keys and values the Data should respect.
+     *                        only the matchings datas will be received.
      * @return the asynchronous operation of the search
      */
     SearchOperation search(final MetHash search, final boolean searchLocal, final boolean getData,
-            final Set<String> metaDataKeys);
+            final Set<String> metaDataKeys, final Map<String, String> metaDataFilters);
 
     /**
      * High-level download operation.<br />

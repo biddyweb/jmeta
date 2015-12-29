@@ -181,7 +181,7 @@ public class P2PPTest extends MetaBaseTests {
     @Test
     public void simpleSearchTest() {
         logger.info("BEGIN TEST: simpleSearchTest");
-        SearchOperation op = metaP2ppClient.search(serverPeer, searchHash);
+        SearchOperation op = metaP2ppClient.search(serverPeer, null, searchHash);//TODO
 
         op.addListener(new OperationListener<SearchOperation>() {
 
@@ -213,7 +213,7 @@ public class P2PPTest extends MetaBaseTests {
         Set<String> metaDataKeys = new HashSet<>();
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
-        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, metaDataKeys, searchHash);
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash);//TODO
 
         op.addListener(new OperationListener<SearchOperation>() {
 
@@ -251,7 +251,7 @@ public class P2PPTest extends MetaBaseTests {
         Set<String> metaDataKeys = new HashSet<>();
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
-        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, metaDataKeys, searchHash, searchHash2);
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash, searchHash2);//TODO
 
         op.addListener(new OperationListener<SearchOperation>() {
 
@@ -286,7 +286,7 @@ public class P2PPTest extends MetaBaseTests {
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
         metaDataKeys.add("inexistent");
-        SearchOperation op = metaP2ppClient.searchGet(serverPeer, metaDataKeys, searchHash);
+        SearchOperation op = metaP2ppClient.searchGet(serverPeer, null, metaDataKeys, searchHash);//TODO
 
         op.addListener(new OperationListener<SearchOperation>() {
 

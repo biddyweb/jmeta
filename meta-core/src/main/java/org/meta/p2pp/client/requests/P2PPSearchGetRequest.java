@@ -25,6 +25,7 @@
 package org.meta.p2pp.client.requests;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.plugin.SearchOperation;
@@ -49,17 +50,21 @@ public class P2PPSearchGetRequest extends P2PPRequest {
 
     private SearchOperation operation;
 
+    private Map<String, String> metaDataFilters;
+
     /**
      * Default constructor.
      *
      * @param p2ppClient the peer-to-peer protocol client
+     * @param metaDataFilters 
      * @param metaDataKeys the meta data keys to get for each results. Can be null or empty.
      * @param hashes the hashes to search for
      */
-    public P2PPSearchGetRequest(final P2PPClient p2ppClient, final Set<String> metaDataKeys,
+    public P2PPSearchGetRequest(final P2PPClient p2ppClient, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys,
             final MetHash... hashes) {
         super(P2PPCommand.SEARCH_GET, p2ppClient);
         this.keys = metaDataKeys;
+        this.metaDataFilters = metaDataFilters;
         this.requestedHashes = hashes;
         this.responseHandler = new P2PPSearchGetResponseHandler(this);
         this.operation = new SearchOperation();
@@ -75,7 +80,6 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.token = requestToken;
         int requestSize = P2PPConstants.REQUEST_HEADER_SIZE + Short.BYTES + Short.BYTES
                 + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES));
-
         int nbKeys = this.keys != null ? this.keys.size() : 0;
         ByteBuffer[] keyBuffers = null;
         if (nbKeys > 0) {
@@ -87,6 +91,21 @@ public class P2PPSearchGetRequest extends P2PPRequest {
                 ++i;
             }
         }
+
+        int nbFilters = this.metaDataFilters != null ? this.metaDataFilters.size() : 0;
+        ByteBuffer[] filters = null;
+        if (nbFilters > 0) {
+            filters = new ByteBuffer[nbFilters*2];
+            int i = 0;
+            for (String filter : this.metaDataFilters.keySet()) {
+                filters[i]   = SerializationUtils.encodeUTF8(filter);
+                filters[i+1] = SerializationUtils.encodeUTF8(this.metaDataFilters.get(filter));
+                requestSize += (Short.BYTES + filters[i].limit());
+                requestSize += (Short.BYTES + filters[i+1].limit());
+                i+=2;
+            }
+        }
+        
         if (requestSize > P2PPConstants.MAX_REQUEST_DATA_SIZE) {
             return false;
         }
@@ -95,6 +114,12 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.buffer.putShort((short) token);
         this.buffer.put(this.commandId.getValue());
         this.buffer.putInt(requestSize - P2PPConstants.REQUEST_HEADER_SIZE);
+        //Meta-Data Filters
+        this.buffer.putShort((short) (nbFilters*2));
+        for (int i = 0; i < nbFilters; ++i) {
+            this.buffer.putShort((short) filters[i].limit());
+            this.buffer.put(filters[i]);
+        }
         //Meta-Data Keys
         this.buffer.putShort((short) nbKeys);
         for (int i = 0; i < nbKeys; ++i) {

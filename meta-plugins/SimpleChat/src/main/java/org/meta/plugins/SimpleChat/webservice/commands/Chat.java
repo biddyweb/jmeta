@@ -178,7 +178,7 @@ public class Chat extends AbstractWebService implements OperationListener<Search
     @Override
     public void applySmallUpdate() {
         if (channelSearch != null) {
-            api.search(channelSearch.getHash(), true, true, null).addListener(this);
+            api.search(channelSearch.getHash(), true, true, null, null).addListener(this);//TODO
         }
     }
 

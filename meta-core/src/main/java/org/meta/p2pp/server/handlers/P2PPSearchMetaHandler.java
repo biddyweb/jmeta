@@ -108,7 +108,11 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     protected boolean parse() {
         ByteBuffer buf = request.getDataBuffer();
         buf.rewind();
+        //filters
+        extractMetaDataFilters(buf);
+        //metaData keys
         extractMetaKeys(buf);
+        //hash
         short hashNumber = buf.getShort();
         logger.debug("Search request handler: hashNumber = " + hashNumber);
         this.requestedHashes = new HashSet<>((int) hashNumber);

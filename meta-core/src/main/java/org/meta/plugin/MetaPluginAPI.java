@@ -25,7 +25,9 @@
 package org.meta.plugin;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
@@ -84,7 +86,7 @@ public final class MetaPluginAPI implements MetAPI {
 
     @Override
     public SearchOperation search(final MetHash searchHash, final boolean searchLocal,
-            final boolean getData, final Set<String> metaDataKeys) {
+            final boolean getData, final Set<String> metaDataKeys, final Map<String, String> metaDataFilters) {
         CompositeSearchOperation op = new CompositeSearchOperation();
 
         if (searchLocal) {
@@ -113,11 +115,11 @@ public final class MetaPluginAPI implements MetAPI {
                         SearchOperation peerSearchOperation;
 
                         if (!getData && metaDataKeys == null) {
-                            peerSearchOperation = getP2PPClient().search(peer, searchHash);
+                            peerSearchOperation = getP2PPClient().search(peer, metaDataFilters, searchHash);
                         } else if (!getData && metaDataKeys != null) {
-                            peerSearchOperation = getP2PPClient().searchMeta(peer, metaDataKeys, searchHash);
+                            peerSearchOperation = getP2PPClient().searchMeta(peer, metaDataFilters, metaDataKeys, searchHash);
                         } else {
-                            peerSearchOperation = getP2PPClient().searchGet(peer, metaDataKeys, searchHash);
+                            peerSearchOperation = getP2PPClient().searchGet(peer, metaDataFilters, metaDataKeys, searchHash);
                         }
                         peerSearchOperation.setPeer(peer);
                         op.addSearchOperation(peerSearchOperation);

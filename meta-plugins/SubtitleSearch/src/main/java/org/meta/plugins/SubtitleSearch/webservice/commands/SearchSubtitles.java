@@ -132,7 +132,7 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
                 Search subtitleSearch = factory.createSearch(movieFile, metaData);
 
                 //lookup on the network to find the subtitles
-                this.api.search(subtitleSearch.getHash(), false, false, subtitleMetaKeys).addListener(this);
+                this.api.search(subtitleSearch.getHash(), false, false, subtitleMetaKeys, null).addListener(this);//TODO
             } else {
                 initialTextOutput.append("The file does not exist");
             }

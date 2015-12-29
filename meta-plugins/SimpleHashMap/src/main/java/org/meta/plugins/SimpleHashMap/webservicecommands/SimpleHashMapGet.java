@@ -90,7 +90,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
             Search contentSearch = api.getModel().getFactory().createSearch(source, metaData);
             logger.info("get hash : " + contentSearch.getHash().toString());
 
-            SearchOperation operation = api.search(contentSearch.getHash(), false, true, null);
+            SearchOperation operation = api.search(contentSearch.getHash(), false, true, null, null);//TODO
             operation.addListener(this);
 
             localResults = api.getLocalResults(contentSearch.getHash());

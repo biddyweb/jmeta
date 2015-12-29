@@ -25,6 +25,7 @@
 package org.meta.p2pp.server.handlers;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -32,6 +33,7 @@ import java.util.Set;
 import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.Search;
+import org.meta.model.ModelUtils;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.server.P2PPCommandHandler;
@@ -79,6 +81,11 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
      *
      */
     protected Queue<ByteBuffer> dataTypes;
+    
+    /**
+     * 
+     */
+    protected HashMap<String, String> metaDataFilters;
 
     /**
      *
@@ -86,6 +93,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
      */
     public P2PPSearchHandler(final P2PPServer p2ppServer) {
         super(p2ppServer);
+        this.metaDataFilters = new HashMap<String, String>();
     }
 
     @Override
@@ -113,6 +121,9 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     protected boolean parse() {
         ByteBuffer buf = request.getDataBuffer();
         buf.rewind();
+        //filters
+        extractMetaDataFilters(buf);
+        //Hash
         short hashNumber = buf.getShort();
         logger.debug("Search request handler: hashNumber = " + hashNumber);
         this.requestedHashes = new HashSet<>((int) hashNumber);
@@ -126,6 +137,27 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         }
         return true;
     }
+    
+    
+    protected void extractMetaDataFilters(final ByteBuffer buf){
+        short nbFilters = buf.getShort();
+        logger.debug("Search request handler: nb Filters = " + nbFilters);
+        for (int i = 0; i<nbFilters; i+=2) {
+            short      keySize = buf.getShort();
+            ByteBuffer tmp     = buf.asReadOnlyBuffer();
+            // avoid memory duplication using read only buffer
+            tmp.limit(buf.position() + keySize);
+            String keyValue = SerializationUtils.decodeUTF8(tmp);
+            logger.debug("Received key: " + keyValue.toString());
+            short valueSize = buf.getShort();
+            tmp = buf.asReadOnlyBuffer();
+            // avoid memory duplication using read only buffer
+            tmp.limit(buf.position() + valueSize);
+            String valueValue = SerializationUtils.decodeUTF8(tmp);
+            logger.debug("Received value: " + valueValue.toString());
+            metaDataFilters.put(keyValue, valueValue);
+        }
+    }
 
     /**
      * Retrieves search results from model.
@@ -136,7 +168,12 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         for (MetHash hash : this.requestedHashes) {
             tmpSearch = this.server.getStorage().getSearch(hash);
             if (tmpSearch != null) {
-                this.results.addAll(tmpSearch.getResults());
+                for(Data data : tmpSearch.getResults()){
+                    //Once a search is found, apply the filters on, each
+                    //results
+                    if(ModelUtils.matchDataMetaData(data, metaDataFilters))
+                        this.results.add(data);
+                }
             }
         }
     }

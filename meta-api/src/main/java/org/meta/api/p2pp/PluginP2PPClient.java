@@ -24,6 +24,7 @@
  */
 package org.meta.api.p2pp;
 
+import java.util.Map;
 import java.util.Set;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
@@ -49,60 +50,66 @@ public interface PluginP2PPClient {
      * Search results for the given hash.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param hash the hash to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation search(final MetaPeer peer, final MetHash hash);
+    SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters, final MetHash hash);
 
     /**
      * Search results for the given hashes.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation search(final MetaPeer peer, final MetHash... hashes);
+    SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters, final MetHash... hashes);
 
     /**
      * Search results for the given hash with associated meta-data.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param metaDataKeys the meta-data keys to fetch with results. Can be null or empty.
      * @param hash the hash to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchMeta(final MetaPeer peer, final Set<String> metaDataKeys, final MetHash hash);
+    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash);
 
     /**
      * Search results for the given hashes with associated meta-data.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param metaDataKeys the meta-data keys to fetch with results. Can be null or empty.
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchMeta(final MetaPeer peer, final Set<String> metaDataKeys,
+    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys,
             final MetHash... hashes);
 
     /**
      * Search results for the given hash with associated meta-data and data.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param metaDataKeys the meta-data keys to fetch with results. Can be null or empty.
      * @param hash the hash to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchGet(final MetaPeer peer, final Set<String> metaDataKeys, final MetHash hash);
+    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash);
 
     /**
      * Search results for the given hashes with associated meta-data and data.
      *
      * @param peer the peer to send the request to
+     * @param metaDataFilters the attendee metadas values
      * @param metaDataKeys the meta-data keys to fetch with results. Can be null or empty.
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchGet(final MetaPeer peer, final Set<String> metaDataKeys, final MetHash... hashes);
+    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash... hashes);
 
     /**
      * Get a block of data for the given {@link Data} hash.

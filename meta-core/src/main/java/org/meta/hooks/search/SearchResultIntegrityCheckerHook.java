@@ -32,7 +32,7 @@ public class SearchResultIntegrityCheckerHook implements OperationListener<Searc
         /*
          * Check if every data respects the filters
          */
-        for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getRaw().entrySet().iterator(); i.hasNext();){
+        for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getPeerResultMap().entrySet().iterator(); i.hasNext();){
             Entry<MetaPeer, Set<Data>> entry = i.next();
             for(Data data : entry.getValue()){
                 if(!ModelUtils.matchDataMetaData(data, metaDataFilters)){

@@ -55,8 +55,10 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
      * @param res the results
      */
     public void addResults(final MetaPeer peer, final Set<Data> res) {
-        this.results.put(peer, res);
-        nbResults = nbResults + res.size();
+        if(res.size() > 0){
+            this.results.put(peer, res);
+            nbResults = nbResults + res.size();
+        }
     }
 
     /**
@@ -67,7 +69,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
         return this.results.keySet();
     }
 
-    public HashMap<MetaPeer, Set<Data>> getRaw() {
+    public HashMap<MetaPeer, Set<Data>> getPeerResultMap() {
         return results;
     }
     
@@ -93,6 +95,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
 
             @Override
             public Data next() {
+                nbRead++;
                 /*
                  * if the first iterator is null, it's the first time we are called
                  */
@@ -121,7 +124,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
                     }
                 }
                 //At this point, may or may not give a next result.
-                return itData.next();
+                return itData.hasNext() ? itData.next() : null;
             }
         };
     }

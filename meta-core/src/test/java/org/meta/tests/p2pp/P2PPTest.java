@@ -222,7 +222,7 @@ public class P2PPTest extends MetaBaseTests {
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
-                Assert.assertEquals("There should be 0 fetched datas", 0, operation.getRaw().size());
+                Assert.assertEquals("There should be 0 fetched datas", 0, operation.getNbResults());
             }
         });
         op.awaitUninterruptibly();

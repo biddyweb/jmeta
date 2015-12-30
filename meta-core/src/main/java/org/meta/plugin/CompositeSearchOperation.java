@@ -104,7 +104,7 @@ public class CompositeSearchOperation extends SearchOperation {
         @Override
         public void complete(final SearchOperation operation) {
             synchronized (CompositeSearchOperation.this) {
-                for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getRaw().entrySet().iterator(); i.hasNext();){
+                for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getPeerResultMap().entrySet().iterator(); i.hasNext();){
                     Entry<MetaPeer, Set<Data>> entry = i.next();
                     addResults(entry.getKey(), entry.getValue());
                 }

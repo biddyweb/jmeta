@@ -42,7 +42,7 @@ import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.plugin.MetaPluginAPI;
 import org.meta.plugin.webservice.MetaWebServer;
-import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaCacheStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.ModelException;
@@ -158,7 +158,8 @@ public class MetaController {
      * Initializes kyotocabinet storage, cache and object model.
      */
     private void initModel() throws StorageException {
-        backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+        //backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+        backendStorage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
         model = new MetaModelStorage(backendStorage);
         cacheStorage = new MetaCacheStorage(backendStorage, 1);
     }

@@ -60,6 +60,7 @@ import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.client.P2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
@@ -109,7 +110,8 @@ public class P2PPTest extends MetaBaseTests {
      */
     public static void setUpModel() {
         try {
-            MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+//            MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+            MetaStorage storage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
             model = new MetaModelStorage(storage);
         } catch (StorageException ex) {
             Assert.fail(ex.getMessage());
@@ -166,7 +168,7 @@ public class P2PPTest extends MetaBaseTests {
         logger.debug("Result hash: " + result.getHash() + " result data size: " + result.getSize());
         logger.debug("Result2 hash: " + result2.getHash() + " result2 data size: " + result2.getSize());
 
-        dataFile = model.getFactory().getDataFile(new File("/home/nico/Documents/projects/jmeta/AUTHORS")); // TODO change
+        dataFile = model.getFactory().getDataFile(new File("/tmp/toto")); // TODO change
 
         if (!model.set(search) || !model.set(search2) || !model.set(dataFile)) {
             Assert.fail("Failed to model items");
@@ -248,7 +250,7 @@ public class P2PPTest extends MetaBaseTests {
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
-                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key").getValue(), "value");
                 }
             }
         });
@@ -278,7 +280,7 @@ public class P2PPTest extends MetaBaseTests {
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
-                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key").getValue(), "value");
                 }
             }
         });
@@ -376,7 +378,7 @@ public class P2PPTest extends MetaBaseTests {
                     }
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
-                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key").getValue(), "value");
                 }
             }
         });
@@ -415,7 +417,7 @@ public class P2PPTest extends MetaBaseTests {
                     }
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
-                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key").getValue(), "value");
                 }
             }
         });

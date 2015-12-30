@@ -79,7 +79,8 @@ public class P2PPSearchGetRequest extends P2PPRequest {
     public boolean build(final char requestToken) {
         this.token = requestToken;
         int requestSize = P2PPConstants.REQUEST_HEADER_SIZE + Short.BYTES + Short.BYTES
-                + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES));
+                + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES)+ Short.BYTES);
+
         int nbKeys = this.keys != null ? this.keys.size() : 0;
         ByteBuffer[] keyBuffers = null;
         if (nbKeys > 0) {
@@ -115,8 +116,8 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.buffer.put(this.commandId.getValue());
         this.buffer.putInt(requestSize - P2PPConstants.REQUEST_HEADER_SIZE);
         //Meta-Data Filters
-        this.buffer.putShort((short) (nbFilters*2));
-        for (int i = 0; i < nbFilters; ++i) {
+        this.buffer.putShort((short) (nbFilters));
+        for (int i = 0; i < nbFilters*2; ++i) {
             this.buffer.putShort((short) filters[i].limit());
             this.buffer.put(filters[i]);
         }

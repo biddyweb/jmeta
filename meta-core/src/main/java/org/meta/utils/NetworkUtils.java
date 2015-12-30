@@ -32,8 +32,9 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import org.meta.api.configuration.NetworkConfiguration;
+import java.util.Enumeration;
 import org.meta.api.common.MetaPeer;
+import org.meta.api.configuration.NetworkConfiguration;
 
 /**
  *
@@ -44,7 +45,6 @@ import org.meta.api.common.MetaPeer;
 public final class NetworkUtils {
 
     private NetworkUtils() {
-
     }
 
     /**
@@ -52,7 +52,7 @@ public final class NetworkUtils {
      *
      * @return the loopback interface name.
      */
-    public static String getLoopbackInterface() {
+    public static String getLoopbackInterfaceName() {
         try {
             for (NetworkInterface netIf : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 if (netIf == null) {
@@ -60,6 +60,33 @@ public final class NetworkUtils {
                 }
                 if (netIf.isLoopback()) {
                     return netIf.getName();
+                }
+            }
+        } catch (SocketException ex) {
+        }
+        return null;
+    }
+
+    /**
+     * Get the loopback interface name.
+     *
+     * @return the loopback interface name.
+     */
+    public static InetAddress getLoopbackAddress() {
+        try {
+            for (NetworkInterface netIf : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (netIf == null) {
+                    continue;
+                }
+                if (netIf.isLoopback()) {
+                    Enumeration<InetAddress> addrs = netIf.getInetAddresses();
+                    while (addrs.hasMoreElements()) {
+                        InetAddress addr = addrs.nextElement();
+                        if (addr instanceof Inet4Address) {
+                            return addr;
+                        }
+                    }
+                    //return netIf.getInetAddresses().nextElement();
                 }
             }
         } catch (SocketException ex) {

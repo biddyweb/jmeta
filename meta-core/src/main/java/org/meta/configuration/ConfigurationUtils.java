@@ -47,7 +47,7 @@ public final class ConfigurationUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
 
-    private static final String LOOPBACK = NetworkUtils.getLoopbackInterface();
+    private static final String LOOPBACK = NetworkUtils.getLoopbackInterfaceName();
 
     /**
      * Hidden default constructor.

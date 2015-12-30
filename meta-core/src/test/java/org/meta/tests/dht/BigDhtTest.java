@@ -56,7 +56,7 @@ public class BigDhtTest extends BaseDHTTests {
     @AfterClass
     public static void tearDown() {
         for (int i = 0; i < NB_PEERS; ++i) {
-            dhts[i].stop();
+            dhts[i].close();
         }
     }
 

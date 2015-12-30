@@ -141,7 +141,7 @@ public class MetaWebServer {
     /**
      * terminate the web server.
      */
-    public void kill() {
+    public void close() {
         try {
             if (server != null) {
                 server.stop();

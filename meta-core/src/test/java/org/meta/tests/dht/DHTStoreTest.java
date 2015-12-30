@@ -109,8 +109,8 @@ public class DHTStoreTest extends BaseDHTTests {
      */
     @AfterClass
     public static void shutDownDhtNodes() {
-        dhtNode1.stop();
-        dhtNode2.stop();
+        dhtNode1.close();
+        dhtNode2.close();
     }
 
     /**

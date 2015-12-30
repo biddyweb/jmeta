@@ -88,7 +88,7 @@ public abstract class MetaDHT {
     /**
      * Stop the DHT, closing all sockets and connections to peers.
      */
-    public abstract void stop();
+    public abstract void close();
 
     /**
      * Set the configuration of this DHT instance.

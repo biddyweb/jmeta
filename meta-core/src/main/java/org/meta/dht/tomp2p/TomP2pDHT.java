@@ -238,7 +238,7 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public void stop() {
+    public void close() {
         if (peer == null || peer.isShutdown()) {
             logger.info("DHT peer not initialized or already shutdown.");
             return;

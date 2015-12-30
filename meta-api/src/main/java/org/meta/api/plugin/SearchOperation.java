@@ -24,13 +24,11 @@
  */
 package org.meta.api.plugin;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.model.Data;
@@ -44,7 +42,8 @@ import org.meta.api.model.Data;
 public class SearchOperation extends AsyncOperation implements Iterable<Data>{
 
     protected HashMap<MetaPeer, Set<Data>> results;
-    private   int                          nbResults = 0; 
+    private   int                          nbResults = 0;
+    private   Logger logger = Logger.getLogger(SearchOperation.class);
 
     public SearchOperation(){
         results  = new HashMap<MetaPeer, Set<Data>>();
@@ -97,12 +96,6 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
             public Data next() {
                 nbRead++;
                 /*
-                 * if the first iterator is null, it's the first time we are called
-                 */
-                if(itResults == null){
-                    itResults = results.keySet().iterator();
-                }
-                /*
                  * if cMetaPeer equals null, it means it's the first time we call
                  * next.
                  * initialise cMetaPeer with the first row key
@@ -112,7 +105,8 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
                  * So we are somewhere on a row, we need to check if we are at
                  * the end of the row and if we can go further on the next one.
                  */
-                if(cMetaPeer == null){
+                if(itResults == null){
+                    itResults = results.keySet().iterator();
                     cMetaPeer = itResults.next();
                     itData    = results.get(cMetaPeer).iterator();
                 }else{

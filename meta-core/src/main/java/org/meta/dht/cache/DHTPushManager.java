@@ -2,6 +2,7 @@ package org.meta.dht.cache;
 
 import java.util.NavigableSet;
 
+import org.apache.log4j.Logger;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.OperationListener;
@@ -18,9 +19,10 @@ public class DHTPushManager extends MetaScheduledTask{
     private MetaDHT                      dht          = null;
     private ModelStorage                 model        = null;
     private NavigableSet<DHTPushElement> pushElements = null;
+    private Logger logger = Logger.getLogger(DHTPushManager.class);
 
     public DHTPushManager(CollectionStorage storageManager, MetaDHT dht, ModelStorage model) {
-        super(0, 120);
+        super(20, 20);
         this.model = model;
         this.dht = dht;
         this.pushElements = storageManager.getPersistentTreeSet(TREE_ID);
@@ -33,23 +35,27 @@ public class DHTPushManager extends MetaScheduledTask{
 
     @Override
     public void run() {
+        logger.debug("enter run");
         /*
          * TODO this mecanism is not crash proof.
          */
         long now = System.currentTimeMillis();
         synchronized (pushElements) {
-            while(!pushElements.isEmpty() && pushElements.first().getTimeStampNextPush() > now ){
+            while(!pushElements.isEmpty() && pushElements.first().getTimeStampNextPush() <= now ){
+                logger.debug("enter while");
                 DHTPushElement element = pushElements.pollFirst();
                 if(model.get(element.getHash()) != null && element.getTimeStampExpiration() < now){
                     dht.doStore(element.getHash()).addListener(new OperationListener<AsyncOperation>() {
                         @Override
                         public void failed(AsyncOperation operation) {
+                            logger.debug("failed");
                             pushElements.add(new DHTPushElement(element.getHash(),
                                     element.getTimeStampNextPush()+F_PUSHI,
                                     element.getTimeStampExpiration()));
                         }
                         @Override
                         public void complete(AsyncOperation operation) {
+                            logger.debug("succes");
                             pushElements.add(new DHTPushElement(element.getHash(),
                                     element.getTimeStampNextPush()+S_PUSHI,
                                     element.getTimeStampExpiration()));

@@ -134,19 +134,7 @@ public class Chat extends AbstractWebService implements OperationListener<Search
                 if (!api.getModel().set(channelSearch)) {
                     logger.warn("Failed to set search into model");
                 }
-                api.getDHT().store(channelSearch.getHash()).addListener(
-                        new OperationListener<StoreOperation>() {
-
-                            @Override
-                            public void failed(final StoreOperation operation) {
-                                output.append("fail to push");
-                            }
-
-                            @Override
-                            public void complete(final StoreOperation operation) {
-                                output.append("succes to push");
-                            }
-                        });
+                api.getDHT().push(channelSearch.getHash());
             }
         }
         //ApplySmallUpdate does the search

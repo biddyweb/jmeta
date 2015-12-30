@@ -124,7 +124,7 @@ public class DHTStoreTest extends BaseDHTTests {
         //Forcing AMP Port
         MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort(FIRST_AMP_PORT);
 
-        StoreOperation storeOperation = dhtNode1.store(validHash);
+        StoreOperation storeOperation = dhtNode1.doStore(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
             @Override
@@ -143,7 +143,7 @@ public class DHTStoreTest extends BaseDHTTests {
 
         //Re-setting P2pp port to avoid duplicate entry in the DHT.
         MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort(SECOND_AMP_PORT);
-        storeOperation = dhtNode2.store(validHash);
+        storeOperation = dhtNode2.doStore(validHash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
             @Override

@@ -114,20 +114,7 @@ public class SimpleHashMapPut extends AbstractWebService {
             } else {
                 logger.debug("WTTTTFFFF ????");
             }
-            api.getDHT().store(hashM.getHash()).addListener(
-                    new OperationListener<StoreOperation>() {
-
-                        @Override
-                        public void failed(StoreOperation operation) {
-                            output.append("fail to push");
-                        }
-
-                        @Override
-                        public void complete(StoreOperation operation) {
-                            output.append("success to push");
-                        }
-
-                    });
+            api.getDHT().push(hashM.getHash());
         } else {
             output.flush();
             output.append("Please set an id");

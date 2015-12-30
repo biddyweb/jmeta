@@ -116,7 +116,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @param hash
      */
     public static void StoreIntoDht(MetaDHT dht, final MetHash hash) {
-        StoreOperation storeOperation = dht.store(hash);
+        StoreOperation storeOperation = dht.doStore(hash);
         storeOperation.addListener(new OperationListener<StoreOperation>() {
 
             @Override

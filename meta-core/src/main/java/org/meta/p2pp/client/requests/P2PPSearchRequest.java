@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.plugin.SearchOperation;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
@@ -62,8 +63,11 @@ public class P2PPSearchRequest extends P2PPRequest {
      * @param metaDataFilters 
      * @param hashes the hashes to search for
      */
-    public P2PPSearchRequest(final P2PPClient p2ppClient, final Map<String, String> metaDataFilters, final MetHash... hashes) {
-        super(P2PPCommand.SEARCH, p2ppClient);
+    public P2PPSearchRequest(final P2PPClient p2ppClient, 
+            final Map<String, String> metaDataFilters, 
+            final MetaPeer peer,
+            final MetHash... hashes) {
+        super(P2PPCommand.SEARCH, p2ppClient, peer);
         this.metaDataFilters = metaDataFilters;
         this.requestedHashes = hashes;
         this.responseHandler = new P2PPSearchResponseHandler(this);
@@ -130,7 +134,7 @@ public class P2PPSearchRequest extends P2PPRequest {
         if (!this.responseHandler.parse()) {
             this.operation.setFailed("Failed to parse response");
         } else {
-            this.operation.setResults(this.responseHandler.getResults());
+            this.operation.addResults(this.peer, this.responseHandler.getResults());
             this.operation.complete();
         }
         BufferManager.release(buffer);

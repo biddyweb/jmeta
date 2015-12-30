@@ -47,7 +47,7 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
      */
     public P2PPKeepAliveRequest() {
         //Giving null as p2p client because this request does not need it...
-        super(P2PPCommand.KEEP_ALIVE, null);
+        super(P2PPCommand.KEEP_ALIVE, null, null);
         this.buffer = BufferManager.aquireDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
         //placeholder for the token
         this.buffer.position(Short.BYTES);

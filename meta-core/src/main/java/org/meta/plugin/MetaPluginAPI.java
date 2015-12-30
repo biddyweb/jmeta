@@ -25,7 +25,6 @@
 package org.meta.plugin;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +43,7 @@ import org.meta.api.plugin.DownloadOperation;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
 import org.meta.controler.MetaController;
+import org.meta.hooks.search.SearchResultIntegrityCheckerHook;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +90,7 @@ public final class MetaPluginAPI implements MetAPI {
         CompositeSearchOperation op = new CompositeSearchOperation();
 
         if (searchLocal) {
-            op.addResults(getLocalResults(searchHash));
+            op.addResults(null, getLocalResults(searchHash));
         }
 
         //Find peers for the given hash
@@ -121,8 +121,10 @@ public final class MetaPluginAPI implements MetAPI {
                         } else {
                             peerSearchOperation = getP2PPClient().searchGet(peer, metaDataFilters, metaDataKeys, searchHash);
                         }
-                        peerSearchOperation.setPeer(peer);
                         op.addSearchOperation(peerSearchOperation);
+                        //Add all core listeners to search operation
+                        //Notice that invocation order should be kept !
+                        peerSearchOperation.addListener(new SearchResultIntegrityCheckerHook(metaDataFilters));
                     }
                 }
             }

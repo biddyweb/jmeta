@@ -25,7 +25,11 @@
 package org.meta.api.plugin;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetaPeer;
@@ -37,59 +41,88 @@ import org.meta.api.model.Data;
  *
  * @author dyslesiq
  */
-public class SearchOperation extends AsyncOperation {
+public class SearchOperation extends AsyncOperation implements Iterable<Data>{
 
-    /**
-     * The results.
-     */
-    protected Set<Data> results;
+    protected HashMap<MetaPeer, Set<Data>> results;
+    private   int                          nbResults = 0; 
 
-    /**
-     * The peers we searched from.
-     */
-    protected Collection<MetaPeer> peers;
-
-    /**
-     *
-     * @return the results found once the search completed.
-     */
-    public Set<Data> getResults() {
-        return this.results;
+    public SearchOperation(){
+        results  = new HashMap<MetaPeer, Set<Data>>();
     }
 
     /**
      *
      * @param res the results
      */
-    public void setResults(final Set<Data> res) {
-        this.results = res;
+    public void addResults(final MetaPeer peer, final Set<Data> res) {
+        this.results.put(peer, res);
+        nbResults = nbResults + res.size();
     }
 
     /**
      *
      * @return the peers we searched from
      */
-    public Collection<MetaPeer> getPeers() {
-        return this.peers;
+    public Set<MetaPeer> getPeers() {
+        return this.results.keySet();
     }
 
-    /**
-     *
-     * @param peer the peer we search from
-     */
-    public void setPeer(final MetaPeer peer) {
-        if (this.peers == null) {
-            this.peers = new HashSet<>();
-        }
-        this.peers.add(peer);
+    public HashMap<MetaPeer, Set<Data>> getRaw() {
+        return results;
     }
-
-    /**
-     *
-     * @param searchPeers the peers we search from
-     */
-    public void setPeers(final Collection<MetaPeer> searchPeers) {
-        this.peers = searchPeers;
+    
+    public int getNbResults(){
+        return nbResults;
     }
+    @Override
+    public Iterator<Data> iterator() {
+        //This need to be tested TODO
+        return new Iterator<Data>() {
+            private Iterator<MetaPeer> itResults = null;
+            private MetaPeer           cMetaPeer = null;
+            private Iterator<Data>     itData    = null;
+            private int nbRead = 0;
+            
+            //The iterator call is only supposed to append when the data retrieving
+            //is over, so it only will be a read only opperation whithout concurency
+            //problem
+            @Override
+            public boolean hasNext() {
+                return nbRead < nbResults;
+            }
 
+            @Override
+            public Data next() {
+                /*
+                 * if the first iterator is null, it's the first time we are called
+                 */
+                if(itResults == null){
+                    itResults = results.keySet().iterator();
+                }
+                /*
+                 * if cMetaPeer equals null, it means it's the first time we call
+                 * next.
+                 * initialise cMetaPeer with the first row key
+                 * then initialise first row value iterator itData
+                 * 
+                 * otherwise, it means that we already have call this method.
+                 * So we are somewhere on a row, we need to check if we are at
+                 * the end of the row and if we can go further on the next one.
+                 */
+                if(cMetaPeer == null){
+                    cMetaPeer = itResults.next();
+                    itData    = results.get(cMetaPeer).iterator();
+                }else{
+                    //Make a step to the next row only if the current one is
+                    //done and if there is a next one
+                    if(!itData.hasNext() && itResults.hasNext()){
+                        cMetaPeer = itResults.next();
+                        itData    = results.get(cMetaPeer).iterator();
+                    }
+                }
+                //At this point, may or may not give a next result.
+                return itData.next();
+            }
+        };
+    }
 }

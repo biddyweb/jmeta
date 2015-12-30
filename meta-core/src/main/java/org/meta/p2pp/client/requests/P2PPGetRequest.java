@@ -25,6 +25,7 @@
 package org.meta.p2pp.client.requests;
 
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.p2pp.GetOperation;
 import org.meta.p2pp.BufferManager;
 import org.meta.p2pp.P2PPConstants;
@@ -52,8 +53,8 @@ public class P2PPGetRequest extends P2PPRequest {
      * @param length the requested data length
      */
     public P2PPGetRequest(final P2PPClient p2ppClient, final MetHash hash, final int pieceIdx,
-            final int offset, final int length) {
-        super(P2PPCommand.GET, p2ppClient);
+            final int offset, final int length, MetaPeer peer) {
+        super(P2PPCommand.GET, p2ppClient, peer);
         this.operation = new GetOperation(hash, pieceIdx, offset, length);
         this.responseHandler = new P2PPGetResponseHandler(this, length);
     }

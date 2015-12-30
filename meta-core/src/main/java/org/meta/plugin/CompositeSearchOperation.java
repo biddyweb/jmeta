@@ -25,7 +25,11 @@
 package org.meta.plugin;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.meta.api.common.MetaPeer;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.Data;
 import org.meta.api.plugin.SearchOperation;
@@ -59,8 +63,6 @@ public class CompositeSearchOperation extends SearchOperation {
      */
     public CompositeSearchOperation() {
         this.listener = new CompositeSearchListener();
-        this.results = new HashSet<>();
-        this.peers = new HashSet<>();
     }
 
     /**
@@ -70,18 +72,6 @@ public class CompositeSearchOperation extends SearchOperation {
     public void addSearchOperation(final SearchOperation op) {
         operations++;
         op.addListener(listener);
-    }
-
-    /**
-     * Add the given results to the final set of this operation.
-     *
-     * @param res results to add
-     */
-    public void addResults(final Set<Data> res) {
-        if (res == null) {
-            return;
-        }
-        this.results.addAll(res);
     }
 
     /**
@@ -114,9 +104,10 @@ public class CompositeSearchOperation extends SearchOperation {
         @Override
         public void complete(final SearchOperation operation) {
             synchronized (CompositeSearchOperation.this) {
-                CompositeSearchOperation.this.addResults(operation.getResults());
-                CompositeSearchOperation.this.peers.addAll(operation.getPeers());
-                CompositeSearchOperation.this.operationReceived();
+                for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getRaw().entrySet().iterator(); i.hasNext();){
+                    Entry<MetaPeer, Set<Data>> entry = i.next();
+                    addResults(entry.getKey(), entry.getValue());
+                }
             }
         }
     }

@@ -71,7 +71,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
 
     @Override
     public SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters, final MetHash... hashes) {
-        P2PPSearchRequest req = new P2PPSearchRequest(client, metaDataFilters, hashes);
+        P2PPSearchRequest req = new P2PPSearchRequest(client, metaDataFilters, peer, hashes);
         this.client.submitRequest(peer, req);
         return req.getOperation();
     }
@@ -85,7 +85,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
     @Override
     public SearchOperation searchMeta(final MetaPeer peer,
             final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash... hashes) {
-        P2PPSearchMetaRequest req = new P2PPSearchMetaRequest(client, metaDataFilters, metaDataKeys, hashes);
+        P2PPSearchMetaRequest req = new P2PPSearchMetaRequest(client, metaDataFilters, metaDataKeys, peer, hashes);
 
         this.client.submitRequest(peer, req);
         return req.getOperation();
@@ -94,7 +94,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
     @Override
     public SearchOperation searchGet(final MetaPeer peer,
             final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash) {
-        P2PPSearchGetRequest req = new P2PPSearchGetRequest(client, metaDataFilters, metaDataKeys, new MetHash[]{hash});
+        P2PPSearchGetRequest req = new P2PPSearchGetRequest(client, metaDataFilters, metaDataKeys, peer, new MetHash[]{hash});
 
         this.client.submitRequest(peer, req);
         return req.getOperation();
@@ -103,7 +103,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
     @Override
     public SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys,
             final MetHash... hashes) {
-        P2PPSearchGetRequest req = new P2PPSearchGetRequest(client, metaDataFilters, metaDataKeys, hashes);
+        P2PPSearchGetRequest req = new P2PPSearchGetRequest(client, metaDataFilters, metaDataKeys, peer, hashes);
 
         this.client.submitRequest(peer, req);
         return req.getOperation();
@@ -112,7 +112,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
     @Override
     public GetOperation get(final MetaPeer peer, final MetHash hash, final int pieceIndex,
             final int byteOffset, final int length) {
-        P2PPGetRequest req = new P2PPGetRequest(client, hash, pieceIndex, byteOffset, length);
+        P2PPGetRequest req = new P2PPGetRequest(client, hash, pieceIndex, byteOffset, length, peer);
 
         this.client.submitRequest(peer, req);
         return req.getOperation();

@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.meta.api.common.AsyncOperation;
+import org.meta.api.common.MetaPeer;
 import org.meta.p2pp.P2PPConstants.ClientRequestStatus;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 
@@ -65,6 +66,8 @@ public abstract class P2PPRequest {
      */
     protected char token;
 
+    protected MetaPeer peer;
+
 
     /**
      *
@@ -72,10 +75,11 @@ public abstract class P2PPRequest {
      * @param p2ppClient the peer-to-peer protocol client
      * @param metaDataFilters 
      */
-    protected P2PPRequest(final P2PPCommand id, final P2PPClient p2ppClient) {
+    protected P2PPRequest(final P2PPCommand id, final P2PPClient p2ppClient, final MetaPeer peer) {
         this.status = ClientRequestStatus.CREATED;
         this.commandId = id;
         this.client = p2ppClient;
+        this.peer   = peer;
     }
 
     /**

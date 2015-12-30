@@ -50,6 +50,7 @@ import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
 import org.meta.api.storage.MetaCache;
 import org.meta.configuration.DHTConfigurationImpl;
+import org.meta.dht.cache.DHTPushManager;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,8 @@ public final class TomP2pDHT extends MetaDHT {
      *
      */
     private Peer peer;
+
+    private DHTPushManager pushManager = null;
 
     //private TomP2pStorage tomP2pStorage;
 
@@ -229,7 +232,17 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public StoreOperation store(final MetHash hash) {
+    public void push(final MetHash hash, long expirationDate) {
+        pushManager.pushElement(hash, expirationDate);
+    }
+
+    @Override
+    public void push(final MetHash hash) {
+        push(hash, 0);
+    }
+
+    @Override
+    public StoreOperation doStore(final MetHash hash){
         Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
         TomP2pStoreOperation storeOperation = new TomP2pStoreOperation(this, tomp2pHash);
 
@@ -266,4 +279,10 @@ public final class TomP2pDHT extends MetaDHT {
         shutDownOperation.awaitUninterruptibly();
     }
 
+    /**
+     * @param pushManager the pushManager to set
+     */
+    public void setPushManager(DHTPushManager pushManager) {
+        this.pushManager = pushManager;
+    }
 }

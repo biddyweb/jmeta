@@ -25,6 +25,10 @@
 package org.meta.storage;
 
 import java.io.File;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
@@ -40,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author dyslesiq
  */
-public class MapDbStorage implements MetaStorage {
+public class MapDbStorage implements MetaStorage, CollectionStorage{
 
     /**
      *
@@ -157,6 +161,11 @@ public class MapDbStorage implements MetaStorage {
         commit();
         dataBase.close();
         mapDb.close();
+    }
+
+    @Override
+    public <T> NavigableSet<T> getPersistentTreeSet(String name) {
+        return mapDb.treeSet(name);
     }
 
 }

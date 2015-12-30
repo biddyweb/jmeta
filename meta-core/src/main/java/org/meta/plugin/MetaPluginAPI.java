@@ -214,18 +214,7 @@ public final class MetaPluginAPI implements MetAPI {
 
     @Override
     public boolean storePush(final Searchable searchable) {
-        getDHT().store(searchable.getHash()).addListener(new OperationListener<AsyncOperation>() {
-
-            @Override
-            public void failed(final AsyncOperation operation) {
-                logger.warn("StorePush: failed to push");
-            }
-
-            @Override
-            public void complete(final AsyncOperation operation) {
-                logger.info("StorePush: push success");
-            }
-        });
+        getDHT().push(searchable.getHash());
         return getModel().set(searchable);
     }
 

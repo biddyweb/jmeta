@@ -80,10 +80,26 @@ public abstract class MetaDHT {
 
     /**
      * @param hash The hash to store on the DHT.
+     * 
+     * This push will only be valid one hour.
      *
      * @return The asynchronous {@link StoreOperation} representing the outcome of the operation.
      */
-    public abstract StoreOperation store(MetHash hash);
+    public abstract StoreOperation doStore(MetHash hash);
+
+    /**
+     * @param hash The hash to store on the DHT.
+     * @param expirationDate The date when the hash will no longer be pushed
+     * on the dht
+     * A pushed element will be updated every hour on the dht
+     */
+    public abstract void push(MetHash hash, long expirationDate);
+
+    /**
+     * @param hash The hash to store on the DHT.
+     * A pushed element will be updated every hour on the dht
+     */
+    public abstract void push(MetHash hash);
 
     /**
      * Stop the DHT, closing all sockets and connections to peers.
@@ -107,5 +123,4 @@ public abstract class MetaDHT {
     public final DHTConfiguration getConfiguration() {
         return this.configuration;
     }
-
 }

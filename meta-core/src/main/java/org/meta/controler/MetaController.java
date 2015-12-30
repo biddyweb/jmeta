@@ -31,12 +31,12 @@ import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.model.ModelStorage;
 import org.meta.api.storage.MetaCache;
-import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.dht.cache.DHTPushManager;
 import org.meta.dht.exceptions.DHTException;
 import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.executors.MetaTimedExecutor;
-import org.meta.executors.StorageExpirationTask;
+import org.meta.model.StorageExpirationTask;
 import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
@@ -59,9 +59,9 @@ public class MetaController {
 
     private final MetaTimedExecutor executor;
 
-    private MetaDHT dht = null;
+    private TomP2pDHT dht = null;
 
-    private MetaStorage backendStorage;
+    private MapDbStorage backendStorage;
 
     private MetaCache cacheStorage;
 
@@ -74,6 +74,8 @@ public class MetaController {
     private MetaP2PPClient p2ppClientAccessor;
 
     private MetaPluginAPI pluginAPI;
+
+    private DHTPushManager pushManager;
 
     /**
      * Global meta controller constructor.
@@ -97,6 +99,7 @@ public class MetaController {
     private void scheduleExecutorTasks() {
         StorageExpirationTask expirationTask = new StorageExpirationTask(cacheStorage);
         this.executor.addTask(expirationTask);
+        this.executor.addTask(pushManager);
     }
 
     /**
@@ -138,7 +141,8 @@ public class MetaController {
      */
     private void initDht() throws DHTException {
         dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), this.cacheStorage);
-
+        pushManager = new DHTPushManager(backendStorage, dht, model);
+        dht.setPushManager(pushManager);
         try {
             dht.start();
         } catch (IOException ex) {

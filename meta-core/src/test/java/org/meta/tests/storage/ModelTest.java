@@ -148,8 +148,8 @@ public class ModelTest extends MetaBaseTests {
     @Test
     public void testDataFileUpdate() {
         try {
-            //TODO #1 : change files to something cleaner...
-            DataFile data = model.getFactory().getDataFile(new File("/etc/hosts"));
+            File file = createTempFile("modelTest-testDataFileUpdate", 100);
+            DataFile data = model.getFactory().getDataFile(file);
 
             MetaData titre = new MetaData("titre", "toto");
             data.addMetaData(titre);
@@ -167,7 +167,7 @@ public class ModelTest extends MetaBaseTests {
             }
             Assert.assertEquals(true, dataFromDb.getFile().exists());
             //TODO #1
-            Assert.assertEquals("hosts", dataFromDb.getFile().getName());
+            Assert.assertEquals(file.getName(), dataFromDb.getFile().getName());
         } catch (Exception ex) {
             Assert.fail(ex.getMessage());
             logger.error(null, ex);
@@ -207,7 +207,7 @@ public class ModelTest extends MetaBaseTests {
     }
 
     @Test
-    public void searchDataFileTest() {
+    public void searchDataFileTest() throws IOException {
         /**
          * *****************************************************************
          *
@@ -215,11 +215,11 @@ public class ModelTest extends MetaBaseTests {
          *
          *****************************************************************
          */
-        DataFile data = model.getFactory().getDataFile(new File("/etc/hosts"));
+        DataFile data = model.getFactory().getDataFile(createTempFile("modelTest-searchDataFileTest", 100));
 
         SearchCriteria metaData = model.getFactory().createCriteria(new MetaData("st", "fr"));
 
-        DataFile data2 = model.getFactory().getDataFile(new File("/etc/hostname"));
+        DataFile data2 = model.getFactory().getDataFile(createTempFile("modelTest-searchDataFileTest2", 100));
 
         // -- MetaSearch
         MetaSearch search = model.getFactory().createSearch(data2, metaData, data);
@@ -272,15 +272,15 @@ public class ModelTest extends MetaBaseTests {
         Assert.assertTrue(model.remove(readData2));
     }
 
-    @Test
     /**
      *
      */
-    public void perfTest() {
+    //@Test
+    public void perfTest() throws IOException {
         MetHash hash;
         int NB_IT = 100000;
         startTime = new Date().getTime();
-        File file = new File("/etc/hosts");
+        File file = createTempFile("modelTest-perfTest", 100);
         for (int i = 0; i < NB_IT; i++) {
             hash = MetamphetUtils.makeSHAHash("hashData" + i);
             DataFile data = model.getFactory().getDataFile(file);
@@ -312,11 +312,11 @@ public class ModelTest extends MetaBaseTests {
         logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
     }
 
-    @Test
     /**
      *
      * @throws InterruptedException
      */
+    //@Test
     public void threadTest() throws InterruptedException {
         final int NB_THREADS = 10;
         final int NB_IT = 100;

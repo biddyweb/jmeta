@@ -22,9 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.executors;
+package org.meta.model;
 
 import org.meta.api.storage.MetaCache;
+import org.meta.executors.MetaScheduledTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

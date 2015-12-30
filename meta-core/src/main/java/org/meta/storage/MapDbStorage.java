@@ -50,7 +50,7 @@ public class MapDbStorage implements MetaStorage {
     /**
      * The MapDb database ID.
      */
-    private static final String DATABASE_ID = "ID";
+    private static final String DATABASE_ID = "mapDbStorage";
 
     /**
      * The model configuration.
@@ -92,8 +92,7 @@ public class MapDbStorage implements MetaStorage {
         }
         mapDb = DBMaker.fileDB(new File(databaseFile)).fileMmapEnableIfSupported().
                 make();
-        dataBase = mapDb.hashMapCreate(DATABASE_ID).keySerializer(Serializer.BYTE_ARRAY).valueSerializer(Serializer.BYTE_ARRAY)
-                .make();
+        dataBase = mapDb.hashMap(DATABASE_ID, Serializer.BYTE_ARRAY, Serializer.BYTE_ARRAY);
     }
 
     @Override

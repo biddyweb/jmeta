@@ -41,7 +41,7 @@ import org.meta.api.model.SearchCriteria;
 import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.model.MetaSearch;
-import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
@@ -79,7 +79,8 @@ public class ModelTest extends MetaBaseTests {
     public static void setUpModel() {
         startTime = new Date().getTime();
         try {
-            MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+            ///MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
+            MetaStorage storage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
             model = new MetaModelStorage(storage);
         } catch (StorageException ex) {
             logger.error(null, ex);
@@ -271,7 +272,7 @@ public class ModelTest extends MetaBaseTests {
         Assert.assertTrue(model.remove(readData2));
     }
 
-    //@Test
+    @Test
     /**
      *
      */

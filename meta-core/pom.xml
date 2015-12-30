@@ -65,9 +65,6 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.7</version>
           <configuration>
-            <links>
-              <link>http://java.sun.com/javase/6/docs/api/</link>
-            </links>
             <detectOfflineLinks/>
             <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
             <!--

@@ -24,6 +24,7 @@
  */
 package org.meta.plugins.SimpleHashMap.webservicecommands;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,7 +54,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
 
     InterfaceDescriptor initialDescriptor = null;
     TextOutput output = null;
-    Set<Data> distantResults = null;
+    Iterator<Data> itDistantResults = null;
     Set<Data> localResults = null;
 
     String errorMesssage;
@@ -116,7 +117,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
     @Override
     public void complete(final SearchOperation operation) {
         logger.debug("Search Operation complete");
-        distantResults = operation.getResults();
+        itDistantResults = operation.iterator();
         redrawOutput();
     }
 
@@ -124,11 +125,11 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
         output.flush();
         output.append("Error ?: " + errorMesssage == null ? " no errors!" : errorMesssage);
 
-        if (distantResults == null || distantResults.isEmpty()) {
+        if (!itDistantResults.hasNext()) {
             output.append("No distant results found...");
         } else {
-            for (Data result : this.distantResults) {
-                output.append("distant : " + result.toString());
+            while(itDistantResults.hasNext()) {
+                output.append("distant : " + itDistantResults.next().toString());
             }
         }
         if (localResults == null || localResults.isEmpty()) {

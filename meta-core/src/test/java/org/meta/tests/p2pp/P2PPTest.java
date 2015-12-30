@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -192,9 +193,9 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("Search complete!");
-                for (Data data : results) {
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
@@ -220,9 +221,8 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("Search complete!");
-                Assert.assertEquals("There should be 0 fetched datas", 0, results.size());
+                Assert.assertEquals("There should be 0 fetched datas", 0, operation.getRaw().size());
             }
         });
         op.awaitUninterruptibly();
@@ -243,10 +243,10 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
-                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
                 logger.debug("Search complete!");
-                for (Data data : results) {
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
@@ -273,10 +273,10 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
-                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
                 logger.debug("Search complete!");
-                for (Data data : results) {
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
@@ -302,9 +302,8 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
-                logger.debug("Search complete!");
-                for (Data data : results) {
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
@@ -339,9 +338,8 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("Search complete!");
-                Assert.assertEquals("There should be 0 fetched datas", 0, results.size());
+                Assert.assertEquals("There should be 0 fetched datas", 0, operation.getNbResults());
             }
         });
         op.awaitUninterruptibly();
@@ -365,10 +363,10 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("Search complete!");
-                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
-                for (Data data : results) {
+                Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
@@ -404,10 +402,10 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("Search complete!");
-                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
-                for (Data data : results) {
+                Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
@@ -439,10 +437,10 @@ public class P2PPTest extends MetaBaseTests {
             }
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
                 logger.debug("two-hash Search complete!");
-                Assert.assertEquals("There should be 2 results", results.size(), 2);
-                for (Data data : results) {
+                Assert.assertEquals("There should be 2 results", operation.getNbResults(), 2);
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     for (MetaData md : data.getMetaDataMap()) {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
@@ -472,10 +470,9 @@ public class P2PPTest extends MetaBaseTests {
 
             @Override
             public void complete(final SearchOperation operation) {
-                Collection<Data> results = operation.getResults();
-
                 logger.debug("Search complete!");
-                for (Data data : results) {
+                for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+                    Data data = i.next();
                     logger.info("Result hash: " + data.getHash());
                     logger.info("Result data content = " + data.toString());
                     for (MetaData md : data.getMetaDataMap()) {

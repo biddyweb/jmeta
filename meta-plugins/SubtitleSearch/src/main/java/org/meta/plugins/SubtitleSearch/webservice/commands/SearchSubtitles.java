@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.meta.api.common.MetHash;
@@ -158,7 +159,8 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
         logger.info("Search complete! Results:  ");
 
         this.results.clear();
-        for (Data data : operation.getResults()) {
+        for (Iterator<Data> i = operation.iterator(); i.hasNext(); ) {
+            Data data = i.next();
             this.results.put(data.getHash(), data);
         }
         //FOr test.

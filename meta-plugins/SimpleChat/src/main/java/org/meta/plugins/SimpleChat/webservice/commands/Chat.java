@@ -26,6 +26,7 @@ package org.meta.plugins.SimpleChat.webservice.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -162,9 +163,8 @@ public class Chat extends AbstractWebService implements OperationListener<Search
 
     @Override
     public void complete(final SearchOperation operation) {
-        Set<Data> searchResults = operation.getResults();
-
-        for (Data result : searchResults) {
+        for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
+            Data result = i.next();
             String baseMessage = result.toString();
             String[] split = baseMessage.split(";");
             String pseudo = split[0];

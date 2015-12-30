@@ -79,10 +79,10 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
         ByteBuffer buf = this.payloadBuffer;
         buf.rewind();
         int nbResults = buf.getInt();
+        this.results = new HashSet<>(nbResults);
         if (nbResults == 0) {
             return true;
         }
-        this.results = new HashSet<>(nbResults);
         short sizeofDataType;
         DataType dataType;
         int dataSize;

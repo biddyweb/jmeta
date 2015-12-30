@@ -67,10 +67,10 @@ public class P2PPSearchGetResponseHandler extends P2PPSearchMetaResponseHandler 
         ByteBuffer buf = this.payloadBuffer;
         buf.rewind();
         int nbResults = buf.getInt();
+        this.results = new HashSet<>(nbResults);
         if (nbResults == 0) {
             return true;
         }
-        this.results = new HashSet<>(nbResults);
         MetaDataMap metaData = null;
         short sizeofDataType;
         DataType dataType;

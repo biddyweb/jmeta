@@ -80,6 +80,13 @@ public class MetaController {
      */
     public MetaController() {
         this.executor = new MetaTimedExecutor();
+        //Listen JVM shutdown events and close eveything properly
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                close();
+            }
+        }));
     }
 
     /**

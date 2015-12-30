@@ -142,17 +142,19 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     protected void extractMetaDataFilters(final ByteBuffer buf){
         short nbFilters = buf.getShort();
         logger.debug("Search request handler: nb Filters = " + nbFilters);
-        for (int i = 0; i<nbFilters; i+=2) {
+        for (int i = 0; i<nbFilters; i++) {
             short      keySize = buf.getShort();
             ByteBuffer tmp     = buf.asReadOnlyBuffer();
             // avoid memory duplication using read only buffer
             tmp.limit(buf.position() + keySize);
+            buf.position(tmp.limit());
             String keyValue = SerializationUtils.decodeUTF8(tmp);
             logger.debug("Received key: " + keyValue.toString());
             short valueSize = buf.getShort();
             tmp = buf.asReadOnlyBuffer();
             // avoid memory duplication using read only buffer
             tmp.limit(buf.position() + valueSize);
+            buf.position(tmp.limit());
             String valueValue = SerializationUtils.decodeUTF8(tmp);
             logger.debug("Received value: " + valueValue.toString());
             metaDataFilters.put(keyValue, valueValue);

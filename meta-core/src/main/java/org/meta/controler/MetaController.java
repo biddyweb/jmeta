@@ -191,10 +191,14 @@ public class MetaController {
      * Clean stop of controller. Stops and closes all components.
      */
     public void close() {
-        this.dht.close();
-        this.p2ppManager.getServer().close();
-        this.wsReader.close();
-        this.model.close();
+        if(dht !=  null)
+            this.dht.close();
+        if(p2ppManager != null)
+            this.p2ppManager.getServer().close();
+        if(wsReader != null)
+            this.wsReader.close();
+        if(model != null)
+            this.model.close();
     }
 
     /**

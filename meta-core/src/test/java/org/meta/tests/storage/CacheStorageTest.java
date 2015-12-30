@@ -17,6 +17,7 @@ import org.meta.api.storage.MetaCache;
 import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.ModelConfigurationImpl;
 import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaCacheStorage;
 import org.meta.storage.exceptions.StorageException;
 
@@ -30,15 +31,14 @@ public class CacheStorageTest {
 
     private static MetaCacheStorage storage;
 
-    private static MetaStorage getKyotoStorage(final String dbFile) throws IOException, StorageException {
+    private static MetaStorage getStorage(final String dbFile) throws IOException, StorageException {
         ModelConfiguration config = new ModelConfigurationImpl();
         config.setDatabasePath(dbFile);
-        return new KyotoCabinetStorage(config);
+        return new MapDbStorage(config);
     }
 
-    private static MetaStorage getKyotoStorage() throws IOException, StorageException {
-
-        return getKyotoStorage(File.createTempFile(Long.toString(System.currentTimeMillis())
+    private static MetaStorage getStorage() throws IOException, StorageException {
+        return getStorage(File.createTempFile(Long.toString(System.currentTimeMillis())
                 + "-CacheBenchmarkTest", ".kch").getAbsolutePath());
     }
 
@@ -54,7 +54,7 @@ public class CacheStorageTest {
             backingStorage = new KyotoCabinetStorage(config);
             storage = new MetaCacheStorage(backingStorage, 500);
         } catch (StorageException ex) {
-            Logger.getLogger(KyotoStorageTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseStorageTest.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail("Failed to initialize kyoto cabinet for cache storage tests");
         } catch (IOException ex) {
             Assert.fail("Failed to create temporary file for kyoto cabinet (for cache) storage tests.");
@@ -206,7 +206,7 @@ public class CacheStorageTest {
     public void syncToStorageTest() throws IOException, StorageException, InterruptedException {
         String dbPath = File.createTempFile("syncToStorageTest", ".kch")
                 .getAbsolutePath();
-        MetaStorage testSyncStorage = getKyotoStorage(dbPath);
+        MetaStorage testSyncStorage = getStorage(dbPath);
         MetaCache cacheStorage = new MetaCacheStorage(testSyncStorage, 500);
         byte[] key = "syncToStorageTest".getBytes();
         byte[] key1 = "syncToStorageTestExpire".getBytes();
@@ -218,7 +218,7 @@ public class CacheStorageTest {
         cacheStorage.flushToStorage();
         cacheStorage.close();
         //Re-create storage layers
-        testSyncStorage = getKyotoStorage(dbPath);
+        testSyncStorage = getStorage(dbPath);
         cacheStorage = new MetaCacheStorage(testSyncStorage, 500);
         Assert.assertArrayEquals(value, cacheStorage.get(key));
         Assert.assertArrayEquals(value, cacheStorage.get(key1));

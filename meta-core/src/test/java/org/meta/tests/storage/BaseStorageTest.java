@@ -1,11 +1,29 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *
+ * JMeta - Meta's java implementation
+ *
+ * Copyright (C) 2013-2015 Pablo Joubert
+ * Copyright (C) 2013-2015 Thomas Lavocat
+ * Copyright (C) 2013-2015 Nicolas Michon
+ *
+ * This file is part of JMeta.
+ *
+ * JMeta is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * JMeta is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package org.meta.tests.storage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +31,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.api.configuration.ModelConfiguration;
+import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.ModelConfigurationImpl;
-import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
 
@@ -22,19 +41,19 @@ import org.meta.tests.MetaBaseTests;
  *
  * @author dyslesiq
  */
-public class KyotoStorageTest extends MetaBaseTests {
+public class BaseStorageTest extends MetaBaseTests {
 
-    private static KyotoCabinetStorage storage;
+    private static MetaStorage storage;
 
     @BeforeClass
     public static void setup() {
         try {
             ModelConfiguration config = new ModelConfigurationImpl();
-            config.setDatabasePath(File.createTempFile(Long.toString(System.currentTimeMillis())
-                    + "-KyotoStorageTests", ".kch").getAbsolutePath());
-            storage = new KyotoCabinetStorage(config);
+            config.setDatabasePath(createTempFile("-KyotoStorageTests", 0).getAbsolutePath());
+            //storage = new KyotoCabinetStorage(config);
+            storage = new MapDbStorage(config);
         } catch (StorageException ex) {
-            Logger.getLogger(KyotoStorageTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseStorageTest.class.getName()).log(Level.SEVERE, null, ex);
             Assert.fail("Failed to initialize kyoto cabinet storage");
         } catch (IOException ex) {
             Assert.fail("Failed to create temporary file for kyoto cabinet storage.");

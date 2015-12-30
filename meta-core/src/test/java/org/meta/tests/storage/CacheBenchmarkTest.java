@@ -15,7 +15,7 @@ import org.meta.api.configuration.ModelConfiguration;
 import org.meta.api.storage.MetaCache;
 import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.ModelConfigurationImpl;
-import org.meta.storage.KyotoCabinetStorage;
+import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaCacheStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.utils.SerializationUtils;
@@ -32,16 +32,16 @@ public class CacheBenchmarkTest {
 
     private static int MAX_ENTRIES = 1000000;
 
-    private static MetaStorage getKyotoStorage() throws IOException, StorageException {
+    private static MetaStorage getStorage() throws IOException, StorageException {
         ModelConfiguration config = new ModelConfigurationImpl();
         config.setDatabasePath(File.createTempFile(Long.toString(System.currentTimeMillis())
                 + "-CacheBenchmarkTest", ".kch").getAbsolutePath());
-        return new KyotoCabinetStorage(config);
+        return new MapDbStorage(config);
     }
 
     public static void setupCache(final int maxEntries) {
         try {
-            backingStorage = getKyotoStorage();
+            backingStorage = getStorage();
             cacheStorage = new MetaCacheStorage(backingStorage, maxEntries);
         } catch (IOException ex) {
             Assert.fail("Failed to create temporary file for kyoto cabinet (for cache) storage tests.");
@@ -94,7 +94,7 @@ public class CacheBenchmarkTest {
      */
     @Test
     public void kindCacheBenchmark() throws IOException, StorageException {
-        kyotoStorage = getKyotoStorage();
+        kyotoStorage = getStorage();
         Long startTime = System.currentTimeMillis();
         insertRecords(kyotoStorage, MAX_ENTRIES);
         randomRead(kyotoStorage, MAX_ENTRIES);
@@ -124,7 +124,7 @@ public class CacheBenchmarkTest {
     @Test
     public void benchWriteTwiceHashes() throws IOException, StorageException {
         int nbEntries = 100000;
-        kyotoStorage = getKyotoStorage();
+        kyotoStorage = getStorage();
         Long startTime = System.currentTimeMillis();
         insertHashes(kyotoStorage, nbEntries);
         Long kyotoTime = System.currentTimeMillis() - startTime;
@@ -151,7 +151,7 @@ public class CacheBenchmarkTest {
     @Test
     public void benchWriteTwiceHashesTimeout() throws IOException, StorageException {
         int nbEntries = 100000;
-        kyotoStorage = getKyotoStorage();
+        kyotoStorage = getStorage();
         Long startTime = System.currentTimeMillis();
         insertHashes(kyotoStorage, nbEntries);
         Long kyotoTime = System.currentTimeMillis() - startTime;

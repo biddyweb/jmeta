@@ -24,6 +24,9 @@
  */
 package org.meta.tests;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -110,4 +113,23 @@ public abstract class MetaBaseTests {
         return InetAddress.getByName("127.0.0.1");
         //return localAddr;
     }
+
+    /**
+     * Creates a temporary file with the given name and size.
+     *
+     * @param name
+     * @param size
+     * @return the new temporary file
+     * @throws java.io.IOException
+     */
+    public static File createTempFile(final String name, final int size) throws IOException {
+        File tempFile = File.createTempFile(Long.toString(System.currentTimeMillis())
+                + name, "");
+
+        if (size > 0) {
+            new RandomAccessFile(tempFile, "rw").setLength(size);
+        }
+        return tempFile;
+    }
+
 }

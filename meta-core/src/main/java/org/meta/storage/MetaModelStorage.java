@@ -232,18 +232,31 @@ public class MetaModelStorage implements ModelStorage {
             logger.warn("Tried to store null or invalid object hash.");
             return false;
         }
+        if (startTx) {
+            if (!this.storage.begin()) {
+                return false;
+            }
+        }
+        boolean status = false;
         //Based on the object's type, redirects to specific set method.
         switch (ModelType.getType(searchable)) {
             case DATA:
                 logger.debug("set: isDATA: " + searchable.getHash());
-                return this.setData((Data) searchable);
+                status = this.setData((Data) searchable);
+                break;
             case SEARCH:
                 logger.debug("set: isSearch: " + searchable.getHash());
-                return this.setSearch((MetaSearch) searchable);
+                status = this.setSearch((MetaSearch) searchable);
+                break;
             default:
                 logger.warn("Unknown object type.");
-                return false;
         }
+        if (startTx) {
+            if (!this.storage.commit()) {
+                return this.storage.rollback();
+            }
+        }
+        return status;
     }
 
     /**
@@ -253,12 +266,9 @@ public class MetaModelStorage implements ModelStorage {
      * @return true on success, false on error
      */
     private boolean setSearch(final MetaSearch search) {
-        boolean status;
-
         logger.debug("SET SEARCH " + search.getHash());
         for (Data data : search.getResults()) {
-            status = this.set(data, false);
-            if (!status) {
+            if (!this.set(data, false)) {
                 return false;
             }
         }
@@ -285,7 +295,7 @@ public class MetaModelStorage implements ModelStorage {
         if (serialized != null) {
             return this.storage.store(data.getHash().toByteArray(), serialized);
         } else {
-            logger.debug("SERIALIZED DATA IS NULLLLLL! :(");
+            logger.error("SERIALIZED DATA IS NULL! :(");
         }
         return false;
     }
@@ -320,31 +330,29 @@ public class MetaModelStorage implements ModelStorage {
      * @param startTx if actually starting the transaction or not.
      * @return true on success, false otherwise.
      */
-    private boolean startTransaction(final boolean startTx) {
-        if (!startTx) {
-            return true;
-        }
-        if (!storage.begin()) {
-            logger.error("FAILED TO START TX!");
-            return false;
-        }
-        return true;
-    }
-
+//    private boolean startTransaction(final boolean startTx) {
+//        if (!startTx) {
+//            return true;
+//        }
+//        if (!storage.begin()) {
+//            logger.error("FAILED TO START TX!");
+//            return false;
+//        }
+//        return true;
+//    }
     /**
      *
      * @param commit if true commits the current transaction if false rollback.
      *
      * @return true on success, false otherwise
      */
-    private boolean commitTransaction(final boolean commit) {
-        if (commit) {
-            return storage.commit();
-        } else {
-            return storage.rollback();
-        }
-    }
-
+//    private boolean commitTransaction(final boolean commit) {
+//        if (commit) {
+//            return storage.commit();
+//        } else {
+//            return storage.rollback();
+//        }
+//    }
     @Override
     public MetaStorage getStorage() {
         return storage;

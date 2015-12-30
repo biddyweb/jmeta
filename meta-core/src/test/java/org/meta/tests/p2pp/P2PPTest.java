@@ -24,7 +24,7 @@
  */
 package org.meta.tests.p2pp;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +60,6 @@ import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.client.P2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
-import org.meta.storage.KyotoCabinetStorage;
 import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.StorageException;
@@ -100,7 +99,7 @@ public class P2PPTest extends MetaBaseTests {
     private static DataFile dataFile;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws IOException {
         setUpModel();
         setUpServer();
         fillModel();
@@ -111,7 +110,6 @@ public class P2PPTest extends MetaBaseTests {
      */
     public static void setUpModel() {
         try {
-//            MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
             MetaStorage storage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
             model = new MetaModelStorage(storage);
         } catch (StorageException ex) {
@@ -139,7 +137,7 @@ public class P2PPTest extends MetaBaseTests {
     /**
      * Just adds a few entries in the model to be retrieved using P2PP.
      */
-    public static void fillModel() {
+    public static void fillModel() throws IOException {
         result = model.getFactory().getData("result");
 
         MetaDataMap mdMap = new MetaDataMap();
@@ -169,7 +167,7 @@ public class P2PPTest extends MetaBaseTests {
         logger.debug("Result hash: " + result.getHash() + " result data size: " + result.getSize());
         logger.debug("Result2 hash: " + result2.getHash() + " result2 data size: " + result2.getSize());
 
-        dataFile = model.getFactory().getDataFile(new File("/tmp/toto")); // TODO change
+        dataFile = model.getFactory().getDataFile(createTempFile("P2PPTest-fillModel", 100));
 
         if (!model.set(search) || !model.set(search2) || !model.set(dataFile)) {
             Assert.fail("Failed to model items");
@@ -191,6 +189,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
@@ -219,6 +218,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
@@ -241,6 +241,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
@@ -271,6 +272,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 Assert.assertEquals("There should be 1 fetched datas", 1, operation.getNbResults());
@@ -300,6 +302,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
@@ -336,6 +339,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
@@ -361,6 +365,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
@@ -400,6 +405,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("Search complete!");
@@ -435,6 +441,7 @@ public class P2PPTest extends MetaBaseTests {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
+
             @Override
             public void complete(final SearchOperation operation) {
                 logger.debug("two-hash Search complete!");

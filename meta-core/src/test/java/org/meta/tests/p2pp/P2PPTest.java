@@ -28,6 +28,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.AfterClass;
@@ -154,8 +155,7 @@ public class P2PPTest extends MetaBaseTests {
 
         Search search = model.getFactory().createSearch(source, criteria, Collections.singletonList(result));
 
-        Search search2 = model.getFactory().createSearch(source, criteria2,
-                Collections.singletonList(result2));
+        Search search2 = model.getFactory().createSearch(source, criteria2, Collections.singletonList(result2));
 
         searchHash = search.getHash();
 
@@ -181,27 +181,105 @@ public class P2PPTest extends MetaBaseTests {
     @Test
     public void simpleSearchTest() {
         logger.info("BEGIN TEST: simpleSearchTest");
-        SearchOperation op = metaP2ppClient.search(serverPeer, null, searchHash);//TODO
-
+        SearchOperation op = metaP2ppClient.search(serverPeer, null, searchHash);
         op.addListener(new OperationListener<SearchOperation>() {
-
             @Override
             public void failed(final SearchOperation operation) {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
-
             @Override
             public void complete(final SearchOperation operation) {
                 Collection<Data> results = operation.getResults();
-
                 logger.debug("Search complete!");
                 for (Data data : results) {
                     logger.info("Result hash: " + data.getHash());
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
                 }
+            }
+        });
+        op.awaitUninterruptibly();
+    }
 
+    @Test
+    public void simpleSearchTestRefinementFailure() {
+        logger.info("BEGIN TEST: simpleSearchTest");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("key", "value2");
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.search(serverPeer, filter, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                logger.debug("Search complete!");
+                Assert.assertEquals("There should be 0 fetched datas", 0, results.size());
+            }
+        });
+        op.awaitUninterruptibly();
+    }
+
+    @Test
+    public void simpleSearchTestRefinementSuccess1() {
+        logger.info("BEGIN TEST: simpleSearchTest");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.search(serverPeer, filter, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                logger.debug("Search complete!");
+                for (Data data : results) {
+                    logger.info("Result hash: " + data.getHash());
+                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
+                    Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                }
+            }
+        });
+        op.awaitUninterruptibly();
+    }
+
+    @Test
+    public void simpleSearchTestRefinementSuccess2() {
+        logger.info("BEGIN TEST: simpleSearchTest");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("key", "value");
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.search(serverPeer, filter, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                logger.debug("Search complete!");
+                for (Data data : results) {
+                    logger.info("Result hash: " + data.getHash());
+                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
+                    Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                }
             }
         });
         op.awaitUninterruptibly();
@@ -213,20 +291,16 @@ public class P2PPTest extends MetaBaseTests {
         Set<String> metaDataKeys = new HashSet<>();
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
-        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash);//TODO
-
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash);
         op.addListener(new OperationListener<SearchOperation>() {
-
             @Override
             public void failed(final SearchOperation operation) {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
-
             @Override
             public void complete(final SearchOperation operation) {
                 Collection<Data> results = operation.getResults();
-
                 logger.debug("Search complete!");
                 for (Data data : results) {
                     logger.info("Result hash: " + data.getHash());
@@ -239,7 +313,110 @@ public class P2PPTest extends MetaBaseTests {
                     Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
                     Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
                 }
+            }
+        });
+        op.awaitUninterruptibly();
+    }
 
+    @Test
+    public void simpleSearchMetaTestRefinementFailure() {
+        logger.info("BEGIN TEST: simpleSearchMetaTest");
+        Set<String> metaDataKeys = new HashSet<>();
+        //only ask for a sub-set of results meta-data
+        metaDataKeys.add("key");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("key", "value2");
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, filter, metaDataKeys, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                logger.debug("Search complete!");
+                Assert.assertEquals("There should be 0 fetched datas", 0, results.size());
+            }
+        });
+        op.awaitUninterruptibly();
+    }
+
+    @Test
+    public void simpleSearchMetaTestRefinementSucess1() {
+        logger.info("BEGIN TEST: simpleSearchMetaTest");
+        Set<String> metaDataKeys = new HashSet<>();
+        //only ask for a sub-set of results meta-data
+        metaDataKeys.add("key");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, filter, metaDataKeys, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                logger.debug("Search complete!");
+                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                for (Data data : results) {
+                    logger.info("Result hash: " + data.getHash());
+                    for (MetaData md : data.getMetaDataMap()) {
+                        logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
+                        if (md.getKey().equals("key")) {
+                            //Assert.assertEquals(md.getValue(), P2PPTest.result.getMetaDataMap().c);
+                        }
+                    }
+                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
+                    Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                }
+            }
+        });
+        op.awaitUninterruptibly();
+    }
+
+    @Test
+    public void simpleSearchMetaTestRefinementSucess2() {
+        logger.info("BEGIN TEST: simpleSearchMetaTest");
+        Set<String> metaDataKeys = new HashSet<>();
+        //only ask for a sub-set of results meta-data
+        metaDataKeys.add("key");
+        //validate metadata refinement
+        HashMap<String, String> filter = new HashMap<String, String>();
+        filter.put("key", "value");
+        filter.put("a", "b");
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, filter, metaDataKeys, searchHash);
+        op.addListener(new OperationListener<SearchOperation>() {
+            @Override
+            public void failed(final SearchOperation operation) {
+                logger.debug("FAILED " + operation.getFailureMessage());
+                Assert.fail(operation.getFailureMessage());
+            }
+            @Override
+            public void complete(final SearchOperation operation) {
+                Collection<Data> results = operation.getResults();
+                logger.debug("Search complete!");
+                Assert.assertEquals("There should be 1 fetched datas", 1, results.size());
+                for (Data data : results) {
+                    logger.info("Result hash: " + data.getHash());
+                    for (MetaData md : data.getMetaDataMap()) {
+                        logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
+                        if (md.getKey().equals("key")) {
+                            //Assert.assertEquals(md.getValue(), P2PPTest.result.getMetaDataMap().c);
+                        }
+                    }
+                    Assert.assertEquals("Retrieved result hash is different!", result.getHash(), data.getHash());
+                    Assert.assertEquals("Retrieved result size is different!", result.getSize(), data.getSize());
+                    Assert.assertEquals("MetaData value is wrong", result.getMetaData("key"), "value");
+                }
             }
         });
         op.awaitUninterruptibly();
@@ -251,20 +428,16 @@ public class P2PPTest extends MetaBaseTests {
         Set<String> metaDataKeys = new HashSet<>();
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
-        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash, searchHash2);//TODO
-
+        SearchOperation op = metaP2ppClient.searchMeta(serverPeer, null, metaDataKeys, searchHash, searchHash2);
         op.addListener(new OperationListener<SearchOperation>() {
-
             @Override
             public void failed(final SearchOperation operation) {
                 logger.debug("FAILED " + operation.getFailureMessage());
                 Assert.fail(operation.getFailureMessage());
             }
-
             @Override
             public void complete(final SearchOperation operation) {
                 Collection<Data> results = operation.getResults();
-
                 logger.debug("two-hash Search complete!");
                 Assert.assertEquals("There should be 2 results", results.size(), 2);
                 for (Data data : results) {
@@ -273,7 +446,6 @@ public class P2PPTest extends MetaBaseTests {
                         logger.info("Retrieved meta-data: " + md.getKey() + ":" + md.getValue());
                     }
                 }
-
             }
         });
         op.awaitUninterruptibly();
@@ -286,7 +458,7 @@ public class P2PPTest extends MetaBaseTests {
         //only ask for a sub-set of results meta-data
         metaDataKeys.add("key");
         metaDataKeys.add("inexistent");
-        SearchOperation op = metaP2ppClient.searchGet(serverPeer, null, metaDataKeys, searchHash);//TODO
+        SearchOperation op = metaP2ppClient.searchGet(serverPeer, null, metaDataKeys, searchHash);
 
         op.addListener(new OperationListener<SearchOperation>() {
 

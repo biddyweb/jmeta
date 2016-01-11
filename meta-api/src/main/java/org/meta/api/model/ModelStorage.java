@@ -25,7 +25,7 @@
 package org.meta.api.model;
 
 import org.meta.api.common.MetHash;
-import org.meta.api.storage.MetaStorage;
+import org.meta.api.storage.KVStorage;
 
 /**
  *
@@ -127,6 +127,6 @@ public interface ModelStorage {
     /**
      * @return the backing storage used by this model.
      */
-    MetaStorage getStorage();
+    KVStorage getStorage();
 
 }

@@ -2,17 +2,17 @@ package org.meta.api.storage;
 
 /**
  *
- * Interface describing memory cache functionalities over MetaStorage.
+ * Interface describing memory cache functionalities over KVStorage.
  *
  * @author dyslesiq
  */
-public interface MetaCache extends MetaStorage {
+public interface MetaCache extends KVStorage {
 
     /**
      *
      * @return the backing storage used by this cache
      */
-    MetaStorage getStorage();
+    KVStorage getStorage();
 
     /**
      * Store the given value under key in the backing database.

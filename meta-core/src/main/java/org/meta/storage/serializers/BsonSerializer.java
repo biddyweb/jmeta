@@ -24,6 +24,7 @@
  */
 package org.meta.storage.serializers;
 
+import org.meta.api.storage.Serializer;
 import org.meta.api.model.Searchable;
 
 /**
@@ -32,7 +33,7 @@ import org.meta.api.model.Searchable;
  *
  * @author dyslesiq
  */
-public interface BsonSerializer<T extends Searchable> extends ObjectSerializer<T> {
+public interface BsonSerializer<T extends Searchable> extends Serializer<T> {
 
     /**
      * The key under which the type of object will be stored in bson.

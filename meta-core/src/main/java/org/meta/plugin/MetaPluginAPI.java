@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.common.OperationListener;
@@ -195,7 +194,7 @@ public final class MetaPluginAPI implements MetAPI {
         if (resultDB != null) {
             //TODO talk about meta-data merge strategy
             //get new description
-            data.getMetaDataMap().putAll(resultDB.getMetaDataMap());
+            data.getMetaDataMap().addAll(resultDB.getMetaDataMap().entrySet());
         }
         return data;
     }
@@ -214,8 +213,9 @@ public final class MetaPluginAPI implements MetAPI {
 
     @Override
     public boolean storePush(final Searchable searchable) {
+        boolean status = getModel().set(searchable);
         getDHT().push(searchable.getHash());
-        return getModel().set(searchable);
+        return status;
     }
 
 }

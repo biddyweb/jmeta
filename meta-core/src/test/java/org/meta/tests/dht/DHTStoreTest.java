@@ -43,8 +43,8 @@ import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
-import static org.meta.tests.MetaBaseTests.getLocalAddress;
 import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
+import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,9 +81,9 @@ public class DHTStoreTest extends BaseDHTTests {
     @BeforeClass
     public static void initDHtNodes() throws IOException {
 
-        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_ADDR = NetworkUtils.getLoopbackAddress();
         DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
-        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_ADDR = NetworkUtils.getLoopbackAddress();
         DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
         MetaConfiguration.getP2ppConfiguration().getNetworkConfig().setPort((short) 4243);
         configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),

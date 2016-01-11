@@ -32,13 +32,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.common.MetaPeer;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
 import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
+import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,10 +69,9 @@ public class DHTBootstrapTest extends BaseDHTTests {
      */
     @BeforeClass
     public static void initDHtNodes() throws IOException {
-
-        DHT1_PEER_ADDR = getLocalAddress();
+        DHT1_PEER_ADDR = NetworkUtils.getLoopbackAddress();///getLocalAddress();
         DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
-        DHT2_PEER_ADDR = getLocalAddress();
+        DHT2_PEER_ADDR = NetworkUtils.getLoopbackAddress();
         DHT2_PEER_STRING = DHT2_PEER_ADDR.getHostAddress() + ":" + DHT2_PORT;
         configurationDht1 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer1")),
                 DHT1_PORT,

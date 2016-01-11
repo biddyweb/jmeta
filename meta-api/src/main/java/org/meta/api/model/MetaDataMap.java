@@ -42,31 +42,31 @@ import java.util.Set;
  */
 public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
 
-    private static final int LIST_CAPACITY = 5;
+    private static final int INITIAL_CAPACITY = 5;
 
-    private Set<MetaData> list;
+    private Set<MetaData> set;
 
     /**
      * Default constructor.
      */
     public MetaDataMap() {
-        this.list = new HashSet<>(LIST_CAPACITY);
+        this.set = new HashSet<>(INITIAL_CAPACITY);
     }
 
     /**
      * Default constructor.
      */
     public MetaDataMap(final Collection<MetaData> metaDatas) {
-        this.list = new HashSet<>(LIST_CAPACITY);
-        this.list.addAll(metaDatas);
+        this.set = new HashSet<>(INITIAL_CAPACITY);
+        this.set.addAll(metaDatas);
     }
 
     /**
      * Copy constructor.
      */
     public MetaDataMap(final MetaDataMap map) {
-        this.list = new HashSet<>(LIST_CAPACITY);
-        this.list.addAll(map.list);
+        this.set = new HashSet<>(INITIAL_CAPACITY);
+        this.set.addAll(map.set);
     }
 
     /**
@@ -75,7 +75,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
      */
     @Override
     public Set<MetaData> entrySet() {
-        return list;
+        return set;
     }
 
     /**
@@ -95,7 +95,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
      * @return the meta data value if found, or null
      */
     public MetaData getMetaData(final String key) {
-        for (MetaData md : list) {
+        for (MetaData md : set) {
             if (md.getKey().equals(key)) {
                 return md;
             }
@@ -112,7 +112,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
     public String put(final MetaData metaData) {
         MetaData md = null;
 
-        for (MetaData entry : this.list) {
+        for (MetaData entry : this.set) {
             if (metaData.getKey().equals(entry.getKey())) {
                 md = entry;
                 break;
@@ -123,7 +123,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
             oldValue = md.getValue();
             md.setValue(metaData.getValue());
         } else {
-            this.list.add(metaData);
+            this.set.add(metaData);
         }
         return oldValue;
     }
@@ -145,11 +145,11 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
      * @return true if the underlying collection changed after adding entries, false otherwise
      */
     public boolean addAll(final Collection<MetaData> metaDataList) {
-        return this.list.addAll(metaDataList);
+        return this.set.addAll(metaDataList);
     }
 
     @Override
     public Iterator<MetaData> iterator() {
-        return this.list.iterator();
+        return this.set.iterator();
     }
 }

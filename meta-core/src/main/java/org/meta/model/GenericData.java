@@ -103,6 +103,7 @@ public class GenericData extends Data {
         super(hash);
         this.buffer = SerializationUtils.encodeUTF8(string);
         this.size = this.buffer.limit();
+        this.needRehash = true;
     }
 
     /**
@@ -115,6 +116,7 @@ public class GenericData extends Data {
         this.buffer = ByteBuffer.allocate(data.length);
         this.buffer.put(data);
         this.size = data.length;
+        this.needRehash = true;
     }
 
     /**

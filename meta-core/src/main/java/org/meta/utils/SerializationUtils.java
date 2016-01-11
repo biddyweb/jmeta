@@ -34,6 +34,8 @@ import org.meta.api.common.MetaPeer;
 /**
  * Utility methods to (de)serialize various types to raw data for storage or network.
  *
+ * Those method should be as efficient as possible.
+ *
  * @author dyslesiq
  */
 public final class SerializationUtils {
@@ -53,13 +55,26 @@ public final class SerializationUtils {
      * @return the byte array representing the long
      */
     public static byte[] longToBytes(final long l) {
-        long c = l;
-        byte[] result = new byte[8];
+        return longToBytes(l, new byte[8], 0);
+    }
 
-        for (int i = 7; i >= 0; i--) {
-            result[i] = (byte) (c & 0xFF);
-            c >>= 8;
-        }
+    /**
+     * Convert a long to a byte array.
+     *
+     * @param l the long to convert to byte[]
+     * @param result the destination array
+     * @param offset the offset within the destination array
+     * @return the given array
+     */
+    public static byte[] longToBytes(final long l, final byte[] result, final int offset) {
+        result[offset] = (byte) (l >>> 56);
+        result[offset + 1] = (byte) (l >>> 48);
+        result[offset + 2] = (byte) (l >>> 40);
+        result[offset + 3] = (byte) (l >>> 32);
+        result[offset + 4] = (byte) (l >>> 24);
+        result[offset + 5] = (byte) (l >>> 16);
+        result[offset + 6] = (byte) (l >>> 8);
+        result[offset + 7] = (byte) (l >>> 0);
         return result;
     }
 
@@ -70,9 +85,20 @@ public final class SerializationUtils {
      * @return the long value
      */
     public static long bytesToLong(final byte[] b) {
+        return bytesToLong(b, 0);
+    }
+
+    /**
+     * Convert a byte array to long.
+     *
+     * @param b the array to convert to long
+     * @param offset the offset in the array
+     * @return the long value
+     */
+    public static long bytesToLong(final byte[] b, final int offset) {
         long result = 0;
-        for (int i = 0; i < 8; i++) {
-            result <<= 8;
+        for (int i = offset; i < Long.BYTES; i++) {
+            result <<= Long.BYTES;
             result |= (b[i] & 0xFF);
         }
         return result;

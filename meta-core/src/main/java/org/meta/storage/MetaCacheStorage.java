@@ -29,19 +29,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import org.meta.api.storage.CollectionStorage;
+import org.meta.api.storage.KVStorage;
 import org.meta.api.storage.MetaCache;
-import org.meta.api.storage.MetaStorage;
+import org.meta.api.storage.MetaTx;
+import org.meta.api.storage.Serializer;
 import org.meta.utils.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
- * Cache implementation of {@link MetaStorage} providing LRU eviction and expiration of entries.
+ * Cache implementation of {@link KVStorage} providing LRU eviction and expiration of entries.
  *
- * It relies on a second MetaStorage implementation to actually store values.
+ * It relies on a second KVStorage implementation to actually store values.
  *
- * It is assumed that all operations of the backing MetaStorage are thread-safe.
+ * It is assumed that all operations of the backing KVStorage are thread-safe.
  *
  * There is an overhead in the backing storage of 8 bytes per entry for the TTL value.
  *
@@ -59,7 +62,7 @@ public class MetaCacheStorage implements MetaCache {
     /**
      * The underlying storage.
      */
-    private final MetaStorage storage;
+    private final KVStorage storage;
 
     /**
      * Sorted map of keys with expiration timestamp.
@@ -90,7 +93,7 @@ public class MetaCacheStorage implements MetaCache {
      * @param dbStorage the backing storage unit to use.
      * @param maxEntries the maximum number of entries this cache will retain in memory
      */
-    public MetaCacheStorage(final MetaStorage dbStorage, final int maxEntries) {
+    public MetaCacheStorage(final KVStorage dbStorage, final int maxEntries) {
         this.storage = dbStorage;
         this.maxSize = maxEntries;
         this.expiryKeys = new TreeMap<>();
@@ -230,7 +233,7 @@ public class MetaCacheStorage implements MetaCache {
             entry.previous().next(entry.next());
             entry.next().previous(entry.previous());
             if (removeFromStorage) {
-                this.storage.remove(entry.getKey());
+                this.storage.remove(null, entry.getKey());
                 //We can't rely on the return value of storage.remove() here because the stored value
                 //Might not by in sync with the backing storage...
             }
@@ -265,7 +268,7 @@ public class MetaCacheStorage implements MetaCache {
 //        return values;
 //    }
     @Override
-    public boolean store(final byte[] key, final byte[] value) {
+    public boolean store(final MetaTx tx, final byte[] key, final byte[] value) {
         return this.store(key, value, CacheEntry.ZERO_TIMEOUT);
     }
 
@@ -291,7 +294,7 @@ public class MetaCacheStorage implements MetaCache {
 //        return keys.length;
 //    }
     @Override
-    public boolean remove(final byte[] key) {
+    public boolean remove(final MetaTx tx, final byte[] key) {
         CacheEntry entry = this.getEntry(key);
 
         if (entry == null) {
@@ -301,19 +304,7 @@ public class MetaCacheStorage implements MetaCache {
     }
 
     @Override
-    public long removeBulk(final byte[]... keys) {
-        long removed = 0L;
-
-        for (byte[] key : keys) {
-            if (this.remove(key)) {
-                removed++;
-            }
-        }
-        return removed;
-    }
-
-    @Override
-    public byte[] pop(final byte[] key) {
+    public byte[] pop(final MetaTx tx, final byte[] key) {
         CacheEntry entry = this.getEntry(key);
 
         if (entry == null) {
@@ -324,18 +315,18 @@ public class MetaCacheStorage implements MetaCache {
     }
 
     @Override
-    public boolean begin() {
+    public MetaTx begin() {
         return this.storage.begin();
     }
 
     @Override
-    public boolean commit() {
-        return this.storage.commit();
+    public boolean commit(final MetaTx tx) {
+        return this.storage.commit(tx);
     }
 
     @Override
-    public boolean rollback() {
-        return this.storage.rollback();
+    public boolean rollback(final MetaTx tx) {
+        return this.storage.rollback(tx);
     }
 
     @Override
@@ -353,7 +344,7 @@ public class MetaCacheStorage implements MetaCache {
             for (Iterator<CacheBucket> it = toRemove.values().iterator(); it.hasNext();) {
                 CacheBucket bucket = it.next();
                 for (byte[] key : bucket.getKeys()) {
-                    this.remove(key);
+                    this.remove(null, key);
                 }
                 it.remove();
             }
@@ -368,12 +359,12 @@ public class MetaCacheStorage implements MetaCache {
             for (Map.Entry<Long, CacheBucket> mapEntry : this.expiryKeys.entrySet()) {
                 byte[] longKey = SerializationUtils.longToBytes(mapEntry.getKey());
                 buf.put(longKey);
-                this.storage.store(longKey, mapEntry.getValue().serialize());
+                this.storage.store(null, longKey, mapEntry.getValue().serialize());
             }
             for (CacheEntry entry : this.entries.values()) {
-                this.storage.store(entry.getKey(), entry.getData());
+                this.storage.store(null, entry.getKey(), entry.getData());
             }
-            this.storage.store(KEY, buf.array());
+            this.storage.store(null, KEY, buf.array());
         }
     }
 
@@ -394,7 +385,16 @@ public class MetaCacheStorage implements MetaCache {
     }
 
     @Override
-    public MetaStorage getStorage() {
+    public KVStorage getStorage() {
         return this.storage;
+    }
+
+    public <T> CollectionStorage<T> getCollection(String name, Serializer<T> serializer) {
+        return null;
+    }
+
+    @Override
+    public String getDatabaseName() {
+        return null;
     }
 }

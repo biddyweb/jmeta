@@ -50,7 +50,7 @@ import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
 import org.meta.api.storage.MetaCache;
 import org.meta.configuration.DHTConfigurationImpl;
-import org.meta.dht.cache.DHTPushManager;
+import org.meta.dht.DHTPushManager;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,6 @@ public final class TomP2pDHT extends MetaDHT {
     private DHTPushManager pushManager = null;
 
     //private TomP2pStorage tomP2pStorage;
-
     /**
      * Create the tomp2p DHT with given configuration.
      *
@@ -123,6 +122,7 @@ public final class TomP2pDHT extends MetaDHT {
     private Bindings configureBindings() {
         NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
         Bindings b = new Bindings();
+        b.clear();
 
         if (nwConfig.ipV4()) {
             b.addProtocol(StandardProtocolFamily.INET);
@@ -135,6 +135,7 @@ public final class TomP2pDHT extends MetaDHT {
             b.setListenAny(true);
         } else {
             for (InetAddress addr : configAddresses) {
+                logger.info("CONFIGURE BINDING DHT: ADDING BINDING TO ADDR: " + addr);
                 b.addAddress(addr);
             }
         }
@@ -181,6 +182,7 @@ public final class TomP2pDHT extends MetaDHT {
      */
     private void startAndListen() throws IOException {
         Number160 peerId = getPeerId();
+        logger.info("Identity on the DHT: " + peerId);
         PeerBuilder peerBuilder = new PeerBuilder(peerId);
         //Udp port from configuration.
         int udpPort = this.configuration.getNetworkConfig().getPort();
@@ -232,7 +234,7 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public void push(final MetHash hash, long expirationDate) {
+    public void push(final MetHash hash, final long expirationDate) {
         pushManager.pushElement(hash, expirationDate);
     }
 
@@ -242,9 +244,9 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     @Override
-    public StoreOperation doStore(final MetHash hash){
+    public StoreOperation doStore(final MetHash hash) {
         Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
-        TomP2pStoreOperation storeOperation = new TomP2pStoreOperation(this, tomp2pHash);
+        TomP2pStoreOperation storeOperation = new TomP2pStoreOperation(this, hash, tomp2pHash);
 
         storeOperation.start();
         return storeOperation;

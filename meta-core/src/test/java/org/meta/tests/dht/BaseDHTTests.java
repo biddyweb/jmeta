@@ -28,18 +28,13 @@ import java.util.Collection;
 import java.util.Collections;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
+import org.meta.api.common.MetaPeer;
 import org.meta.api.common.OperationListener;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
-import org.meta.api.common.MetaPeer;
 import org.meta.api.dht.StoreOperation;
-import org.meta.api.storage.MetaCache;
-import org.meta.api.storage.MetaStorage;
 import org.meta.configuration.DHTConfigurationImpl;
-import org.meta.configuration.MetaConfiguration;
 import org.meta.dht.tomp2p.TomP2pDHT;
-import org.meta.storage.MetaCacheStorage;
-import org.meta.storage.MetaMemoryStorage;
 import org.meta.tests.MetaBaseTests;
 import org.meta.utils.NetworkUtils;
 
@@ -63,8 +58,11 @@ public abstract class BaseDHTTests extends MetaBaseTests {
         DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
 
         dhtConfig.setIdentity(id);
+        dhtConfig.getNetworkConfig().setIpV6(false);
+        dhtConfig.getNetworkConfig().setIpV4(true);
         dhtConfig.getNetworkConfig().setPort(port);
-        dhtConfig.getNetworkConfig().setInterfaces(Collections.singletonList(NetworkUtils.getLoopbackInterface()));
+        //dhtConfig.getNetworkConfig().setInterfaces(Collections.singletonList(NetworkUtils.getLoopbackInterfaceName()));
+        dhtConfig.getNetworkConfig().setAddresses(Collections.singletonList(NetworkUtils.getLoopbackAddress()));
         dhtConfig.setKnwonPeers(peers);
         dhtConfig.setBootstrapBroadcast(broadcast);
         dhtConfig.setDhtLocalOnly(localOnly);
@@ -78,9 +76,9 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @return the created dht node.
      */
     public static MetaDHT createDHTNode(DHTConfigurationImpl config) {
-        MetaStorage storage = new MetaMemoryStorage(MetaConfiguration.getModelConfiguration());
-        MetaCache cache = new MetaCacheStorage(storage, 500);
-        return (MetaDHT) new TomP2pDHT(config, cache);
+        //KVStorage storage = new MetaMemoryStorage(MetaConfiguration.getModelConfiguration());
+        //MetaCache cache = new MetaCacheStorage(storage, 500);
+        return (MetaDHT) new TomP2pDHT(config, null);
     }
 
     /**

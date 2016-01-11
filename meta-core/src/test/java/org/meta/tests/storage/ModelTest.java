@@ -27,24 +27,21 @@ package org.meta.tests.storage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.meta.api.common.MetHash;
-import org.meta.api.common.MetamphetUtils;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.SearchCriteria;
-import org.meta.api.storage.MetaStorage;
-import org.meta.configuration.MetaConfiguration;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.model.MetaSearch;
-import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
+import org.meta.tests.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,19 +51,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ModelTest extends MetaBaseTests {
 
-    /**
-     *
-     */
     protected static MetaModelStorage model;
 
-    /**
-     *
-     */
     protected static Long startTime;
 
-    /**
-     *
-     */
     protected static Long endTime;
     private static final Logger logger = LoggerFactory.getLogger(ModelTest.class);
 
@@ -76,23 +64,17 @@ public class ModelTest extends MetaBaseTests {
      *
      */
     @BeforeClass
-    public static void setUpModel() {
-        startTime = new Date().getTime();
+    public static void setUpModel() throws IOException {
+        startTime = System.currentTimeMillis();
         try {
-            ///MetaStorage storage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
-            MetaStorage storage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
-            model = new MetaModelStorage(storage);
+            MetaDatabase db = getDatabase(ModelTest.class.getSimpleName());
+            model = new MetaModelStorage(db);
         } catch (StorageException ex) {
             logger.error(null, ex);
-            Assert.fail();
+            Assert.fail("Failed to initialize backing storage");
         }
-        endTime = new Date().getTime();
+        endTime = System.currentTimeMillis();
         logger.info("Took : " + (endTime - startTime) + "ms to instanciate model");
-    }
-
-    private static File getTmpFile() throws IOException {
-        return File.createTempFile(Long.toString(System.currentTimeMillis())
-                + "-TEMP", ".metaTmp");
     }
 
     /**
@@ -101,7 +83,7 @@ public class ModelTest extends MetaBaseTests {
     @Test
     public void basicDataFileTest() {
         try {
-            DataFile data = model.getFactory().getDataFile(getTmpFile());
+            DataFile data = model.getFactory().getDataFile(TestUtils.createRandomTempFile("basicDataFileTest", 100));
             hash = data.getHash();
             Assert.assertTrue(model.set(data));
             DataFile extracted = model.getDataFile(hash);
@@ -148,7 +130,7 @@ public class ModelTest extends MetaBaseTests {
     @Test
     public void testDataFileUpdate() {
         try {
-            File file = createTempFile("modelTest-testDataFileUpdate", 100);
+            File file = TestUtils.createRandomTempFile("modelTest-testDataFileUpdate", 100);
             DataFile data = model.getFactory().getDataFile(file);
 
             MetaData titre = new MetaData("titre", "toto");
@@ -203,7 +185,6 @@ public class ModelTest extends MetaBaseTests {
             logger.error(ex.getMessage(), ex);
             logger.error("ERROR IN testSearchUpdate");
         }
-
     }
 
     @Test
@@ -215,11 +196,11 @@ public class ModelTest extends MetaBaseTests {
          *
          *****************************************************************
          */
-        DataFile data = model.getFactory().getDataFile(createTempFile("modelTest-searchDataFileTest", 100));
+        DataFile data = model.getFactory().getDataFile(TestUtils.createRandomTempFile("modelTest-searchDataFileTest", 100));
 
         SearchCriteria metaData = model.getFactory().createCriteria(new MetaData("st", "fr"));
 
-        DataFile data2 = model.getFactory().getDataFile(createTempFile("modelTest-searchDataFileTest2", 100));
+        DataFile data2 = model.getFactory().getDataFile(TestUtils.createRandomTempFile("modelTest-searchDataFileTest2", 100));
 
         // -- MetaSearch
         MetaSearch search = model.getFactory().createSearch(data2, metaData, data);
@@ -275,40 +256,49 @@ public class ModelTest extends MetaBaseTests {
     /**
      *
      */
-    //@Test
+    @Test
     public void perfTest() throws IOException {
-        MetHash hash;
-        int NB_IT = 100000;
-        startTime = new Date().getTime();
-        File file = createTempFile("modelTest-perfTest", 100);
+        int NB_IT = 10000;
+        int DATA_SIZE = 100;
+        Data[] datas = new Data[NB_IT];
+
+        startTime = System.currentTimeMillis();
         for (int i = 0; i < NB_IT; i++) {
-            hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            DataFile data = model.getFactory().getDataFile(file);
-            Assert.assertTrue("perf set" + hash, model.set(data));
+            datas[i] = model.getFactory().getData(TestUtils.getRandomString(DATA_SIZE));
         }
-        endTime = new Date().getTime();
+        endTime = System.currentTimeMillis();
+        logger.info("Took : " + (endTime - startTime) + "ms to create " + NB_IT + " Data of size " + DATA_SIZE);
+
+        //*--------------------------------------------------------------
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < NB_IT; i++) {
+            Assert.assertTrue("perf set serialize", model.set(datas[i]));
+        }
+        endTime = System.currentTimeMillis();
         logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations");
-        startTime = new Date().getTime();
+
+        //*--------------------------------------------------------------
+        startTime = System.currentTimeMillis();
         for (int i = 0; i < NB_IT; i++) {
-            hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            DataFile data = model.getFactory().getDataFile(file);
-            Assert.assertTrue("perf set" + hash, model.set(data));
+            Assert.assertTrue("perf set updates", model.set(datas[i]));
         }
-        endTime = new Date().getTime();
+        endTime = System.currentTimeMillis();
         logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Serializations (updates)");
-        startTime = new Date().getTime();
+
+        //*--------------------------------------------------------------
+        startTime = System.currentTimeMillis();
         for (int i = 0; i < NB_IT; i++) {
-            hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            Assert.assertNotNull("perf get " + hash, model.getDataFile(hash));
+            Assert.assertNotNull("perf get deserialize", model.getData(datas[i].getHash()));
         }
-        endTime = new Date().getTime();
+        endTime = System.currentTimeMillis();
         logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " Deserializations");
-        startTime = new Date().getTime();
+
+        //*--------------------------------------------------------------
+        startTime = System.currentTimeMillis();
         for (int i = 0; i < NB_IT; i++) {
-            hash = MetamphetUtils.makeSHAHash("hashData" + i);
-            Assert.assertTrue("perf set" + hash, model.remove(hash));
+            Assert.assertTrue("perf set removal", model.remove(datas[i]));
         }
-        endTime = new Date().getTime();
+        endTime = System.currentTimeMillis();
         logger.info("Took : " + (endTime - startTime) + "ms to do " + NB_IT + " deletions");
     }
 
@@ -316,7 +306,7 @@ public class ModelTest extends MetaBaseTests {
      *
      * @throws InterruptedException
      */
-    //@Test
+    @Test
     public void threadTest() throws InterruptedException {
         final int NB_THREADS = 10;
         final int NB_IT = 100;
@@ -328,6 +318,9 @@ public class ModelTest extends MetaBaseTests {
             public boolean res;
 
             testThread(Integer id) {
+                if (id % 2 == 0) {
+                    id += 1;
+                }
                 value = id;
                 data = model.getFactory().getData(value.toString());
                 res = true;

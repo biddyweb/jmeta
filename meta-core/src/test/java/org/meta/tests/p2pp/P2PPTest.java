@@ -26,7 +26,6 @@ package org.meta.tests.p2pp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,7 +50,7 @@ import org.meta.api.model.SearchCriteria;
 import org.meta.api.p2pp.GetOperation;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
-import org.meta.api.storage.MetaStorage;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.model.files.DataFileAccessor;
 import org.meta.model.files.DataFileAccessors;
@@ -60,10 +59,10 @@ import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.client.P2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
-import org.meta.storage.MapDbStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
+import org.meta.tests.TestUtils;
 import org.meta.utils.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,10 +107,10 @@ public class P2PPTest extends MetaBaseTests {
     /**
      * Starts the database.
      */
-    public static void setUpModel() {
+    public static void setUpModel() throws IOException {
         try {
-            MetaStorage storage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
-            model = new MetaModelStorage(storage);
+            MetaDatabase db = getDatabase(P2PPTest.class.getSimpleName());
+            model = new MetaModelStorage(db);
         } catch (StorageException ex) {
             Assert.fail(ex.getMessage());
         }
@@ -167,7 +166,7 @@ public class P2PPTest extends MetaBaseTests {
         logger.debug("Result hash: " + result.getHash() + " result data size: " + result.getSize());
         logger.debug("Result2 hash: " + result2.getHash() + " result2 data size: " + result2.getSize());
 
-        dataFile = model.getFactory().getDataFile(createTempFile("P2PPTest-fillModel", 100));
+        dataFile = model.getFactory().getDataFile(TestUtils.createTempFile("P2PPTest-fillModel", 100));
 
         if (!model.set(search) || !model.set(search2) || !model.set(dataFile)) {
             Assert.fail("Failed to model items");

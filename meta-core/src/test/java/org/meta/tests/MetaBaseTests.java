@@ -24,21 +24,20 @@
  */
 package org.meta.tests;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import org.junit.BeforeClass;
+import org.meta.api.configuration.ModelConfiguration;
 import org.meta.api.configuration.NetworkConfiguration;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.configuration.ModelConfigurationImpl;
 import org.meta.configuration.NetworkConfigurationImpl;
 import org.meta.configuration.P2PPConfigurationImpl;
 import org.meta.configuration.WSConfigurationImpl;
+import org.meta.storage.BerkeleyDatabase;
+import org.meta.storage.exceptions.StorageException;
 import org.meta.utils.NetworkUtils;
 
 /**
@@ -49,10 +48,10 @@ public abstract class MetaBaseTests {
     /**
      *
      */
-    public static void initConfigurations() {
+    public static void initConfigurations() throws IOException {
         NetworkConfiguration dhtNetworkConfig = new NetworkConfigurationImpl(
                 DHTConfigurationImpl.DEFAULT_DHT_PORT,
-                Collections.singletonList(NetworkUtils.getLoopbackInterface()),
+                Collections.singletonList(NetworkUtils.getLoopbackInterfaceName()),
                 null);
         DHTConfigurationImpl dhtConfig = new DHTConfigurationImpl();
         dhtConfig.setNetworkConfig(dhtNetworkConfig);
@@ -60,76 +59,44 @@ public abstract class MetaBaseTests {
 
         NetworkConfiguration p2ppNetworkConfig = new NetworkConfigurationImpl(
                 P2PPConfigurationImpl.DEFAULT_P2PP_PORT,
-                Collections.singletonList(NetworkUtils.getLoopbackInterface()),
+                Collections.singletonList(NetworkUtils.getLoopbackInterfaceName()),
                 null);
         P2PPConfigurationImpl p2ppConfig = new P2PPConfigurationImpl();
         p2ppConfig.setNetworkConfig(p2ppNetworkConfig);
         MetaConfiguration.setP2ppConfiguration(p2ppConfig);
         MetaConfiguration.setWSConfiguration(new WSConfigurationImpl());
-        MetaConfiguration.setModelConfiguration(new ModelConfigurationImpl());
+
+        ModelConfigurationImpl modelConfig = new ModelConfigurationImpl();
+        modelConfig.setDatabasePath(TestUtils.createTempDir("DefaultBaseTestStorage").getAbsolutePath());
+        MetaConfiguration.setModelConfiguration(modelConfig);
+    }
+
+    /**
+     * Returns a Database implementation with the given name.
+     *
+     * The database is created if it did not exists.
+     *
+     * @param name the name of the file/directory where the actual db will be located in the Temp dir.
+     * @return @throws IOException
+     * @throws StorageException
+     */
+    protected static MetaDatabase getDatabase(final String name) throws IOException, StorageException {
+        ModelConfiguration config = new ModelConfigurationImpl();
+        config.setDatabasePath(TestUtils.createTempDir(name + ".metadb").getAbsolutePath());
+        try {
+            return new BerkeleyDatabase(config);
+        } catch (StorageException ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     /**
      *
      */
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         initConfigurations();
-    }
-
-    /**
-     * Look for a usable network interface address to use for tests. It must be routable (even locally). Falls
-     * back to 'localhost'
-     *
-     * //TODO better addr choice (no more randomness...)
-     *
-     * @return The local inetAddress for tests
-     *
-     * @throws UnknownHostException
-     * @throws SocketException
-     */
-    public static InetAddress getLocalAddress() throws UnknownHostException, SocketException {
-//        InetAddress localAddr = null;
-//        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-//
-//        for (NetworkInterface netIf : Collections.list(networkInterfaces)) {
-//            if (netIf.isUp()) {
-//                for (InetAddress ifAddr : Collections.list(netIf.getInetAddresses())) {
-//
-//                    if (ifAddr instanceof Inet4Address) {
-//                        //We prefer ipv4 for tests...
-//                        localAddr = ifAddr;
-//                        break;
-//                    }
-//                }
-//                if (localAddr != null) {
-//                    break;
-//                }
-//            }
-//        }
-//        if (localAddr == null) {
-//            localAddr = InetAddress.getByName("localhost");
-//        }
-        return InetAddress.getByName("127.0.0.1");
-        //return localAddr;
-    }
-
-    /**
-     * Creates a temporary file with the given name and size.
-     *
-     * @param name
-     * @param size
-     * @return the new temporary file
-     * @throws java.io.IOException
-     */
-    public static File createTempFile(final String name, final int size) throws IOException {
-        File tempFile = File.createTempFile(Long.toString(System.currentTimeMillis())
-                + name, "");
-
-        if (size > 0) {
-            new RandomAccessFile(tempFile, "rw").setLength(size);
-        }
-        return tempFile;
     }
 
 }

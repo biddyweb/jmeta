@@ -163,5 +163,9 @@
       <groupId>org.mapdb</groupId>
       <artifactId>mapdb</artifactId>
     </dependency>
+    <dependency>
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
+    </dependency>
   </dependencies>
 </project>

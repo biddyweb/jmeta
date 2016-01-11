@@ -24,14 +24,13 @@
  */
 package org.meta.dht.tomp2p;
 
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import net.tomp2p.dht.AddBuilder;
 import net.tomp2p.dht.FuturePut;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerSocketAddress;
 import net.tomp2p.storage.Data;
+import org.meta.api.common.MetHash;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.MetaConfiguration;
 import org.meta.utils.SerializationUtils;
@@ -48,18 +47,20 @@ import org.slf4j.LoggerFactory;
 public class TomP2pStoreOperation extends StoreOperation {
 
     private final TomP2pDHT dht;
-    private final Number160 hash;
+    private final Number160 tomp2pHash;
     private static final Logger logger = LoggerFactory.getLogger(TomP2pStoreOperation.class);
 
     /**
      * Create the store operation with given arguments.
      *
      * @param dhtNode The dht node.
-     * @param storeHash The hash to store in the DHT.
+     * @param hash the MetHash to store. Kept to avoid converting it from the TomP2P one unnecessarily.
+     * @param storeHash The TomP2P hash to store in the DHT.
      */
-    public TomP2pStoreOperation(final TomP2pDHT dhtNode, final Number160 storeHash) {
+    public TomP2pStoreOperation(final TomP2pDHT dhtNode, final MetHash hash, final Number160 storeHash) {
         this.dht = dhtNode;
-        this.hash = storeHash;
+        this.hash = hash;
+        this.tomp2pHash = storeHash;
     }
 
     @Override
@@ -68,12 +69,12 @@ public class TomP2pStoreOperation extends StoreOperation {
         Short port = MetaConfiguration.getP2ppConfiguration().getNetworkConfig().getPort();
         byte[] data = SerializationUtils.serializeAddress(port, peerAddr.inetAddress());
 
-        NavigableMap<Number160, Data> dataMap = new TreeMap<>();
-        dataMap.put(hash, new Data(data));
-
-        AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), hash);
+//        NavigableMap<Number160, Data> dataMap = new TreeMap<>();
+//        dataMap.put(tomp2pHash, new Data(data));
+        AddBuilder addBuilder = new AddBuilder(this.dht.getPeerDHT(), tomp2pHash);
         Data toAdd = new Data(data);
-        //toAdd.ttlSeconds(100);
+        toAdd.ttlSeconds(3600); //TODO move to global parameters
+
         //logger.debug("Tomp2p Data hash :" + toAdd.hash());
         //logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
         addBuilder.data(toAdd).start().addListener(new BaseFutureListener<FuturePut>() {

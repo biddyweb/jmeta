@@ -25,11 +25,26 @@
 package org.meta.api.dht;
 
 import org.meta.api.common.AsyncOperation;
+import org.meta.api.common.MetHash;
 
 /**
- * An asynchronous DHT operation representing the process of storing a hash in the DHT.
+ * An asynchronous DHT operation representing the process of pushing a hash in the DHT.
  *
  * @author nico
  */
 public abstract class StoreOperation extends AsyncOperation {
+
+    /**
+     * The hash to push.
+     */
+    protected MetHash hash;
+
+    /**
+     *
+     * @return the hash this operation pushed
+     */
+    public MetHash getHash() {
+        return this.hash;
+    }
+
 }

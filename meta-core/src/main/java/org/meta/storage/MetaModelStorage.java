@@ -31,7 +31,9 @@ import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.ModelStorage;
 import org.meta.api.model.Searchable;
-import org.meta.api.storage.MetaStorage;
+import org.meta.api.storage.KVStorage;
+import org.meta.api.storage.MetaDatabase;
+import org.meta.api.storage.MetaTx;
 import org.meta.model.GenericData;
 import org.meta.model.MetaObjectModelFactory;
 import org.meta.model.MetaSearch;
@@ -44,14 +46,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * The {@link ModelStorage} implementation using low-level database as underlying storage.
- *
+ * The {@link ModelStorage} implementation using low-level {@link KVStorage} as underlying storage.
  */
 public class MetaModelStorage implements ModelStorage {
 
     private static final Logger logger = LoggerFactory.getLogger(MetaModelStorage.class);
 
-    private final MetaStorage storage;
+    private static final String MODEL_DB_NAME = "mainModel";
+
+    private final KVStorage storage;
 
     private final DataBsonSerializer dataSerializer;
 
@@ -65,10 +68,10 @@ public class MetaModelStorage implements ModelStorage {
     /**
      * Instantiate a new model with the given backing storage unit.
      *
-     * @param storageDb the storage unit to uses
+     * @param storageDb the storage unit to use
      */
-    public MetaModelStorage(final MetaStorage storageDb) {
-        this.storage = storageDb;
+    public MetaModelStorage(final MetaDatabase database) {
+        this.storage = database.getKVStorage(MODEL_DB_NAME);
         factory = new MetaObjectModelFactory();
         this.dataSerializer = new DataBsonSerializer();
         this.searchSerializer = new SearchBsonSerializer();
@@ -232,10 +235,9 @@ public class MetaModelStorage implements ModelStorage {
             logger.warn("Tried to store null or invalid object hash.");
             return false;
         }
+        MetaTx tx = null;
         if (startTx) {
-            if (!this.storage.begin()) {
-                return false;
-            }
+            tx = this.storage.begin();
         }
         boolean status = false;
         //Based on the object's type, redirects to specific set method.
@@ -252,8 +254,13 @@ public class MetaModelStorage implements ModelStorage {
                 logger.warn("Unknown object type.");
         }
         if (startTx) {
-            if (!this.storage.commit()) {
-                return this.storage.rollback();
+            if (status) {
+                if (!this.storage.commit(tx)) {
+                    this.storage.rollback(tx);
+                    return false;
+                }
+            } else {
+                this.storage.rollback(tx);
             }
         }
         return status;
@@ -277,7 +284,7 @@ public class MetaModelStorage implements ModelStorage {
         }
         byte[] serialized = this.searchSerializer.serialize(search);
         if (serialized != null) {
-            return storage.store(search.getHash().toByteArray(), serialized);
+            return storage.store(null, search.getHash().toByteArray(), serialized);
         }
         return false;
     }
@@ -293,7 +300,7 @@ public class MetaModelStorage implements ModelStorage {
         byte[] serialized = this.dataSerializer.serialize(data);
 
         if (serialized != null) {
-            return this.storage.store(data.getHash().toByteArray(), serialized);
+            return this.storage.store(null, data.getHash().toByteArray(), serialized);
         } else {
             logger.error("SERIALIZED DATA IS NULL! :(");
         }
@@ -319,42 +326,15 @@ public class MetaModelStorage implements ModelStorage {
      */
     @Override
     public boolean remove(final MetHash hash) {
-        //startTransaction(true);
-        return storage.remove(hash.toByteArray());
-        //return commitTransaction(status) && status;
+        MetaTx tx = this.storage.begin();
+        if (this.storage.remove(tx, hash.toByteArray())) {
+            return this.storage.commit(tx);
+        }
+        return false;
     }
 
-    /**
-     * Start a db transaction.
-     *
-     * @param startTx if actually starting the transaction or not.
-     * @return true on success, false otherwise.
-     */
-//    private boolean startTransaction(final boolean startTx) {
-//        if (!startTx) {
-//            return true;
-//        }
-//        if (!storage.begin()) {
-//            logger.error("FAILED TO START TX!");
-//            return false;
-//        }
-//        return true;
-//    }
-    /**
-     *
-     * @param commit if true commits the current transaction if false rollback.
-     *
-     * @return true on success, false otherwise
-     */
-//    private boolean commitTransaction(final boolean commit) {
-//        if (commit) {
-//            return storage.commit();
-//        } else {
-//            return storage.rollback();
-//        }
-//    }
     @Override
-    public MetaStorage getStorage() {
+    public KVStorage getStorage() {
         return storage;
     }
 }

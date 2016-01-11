@@ -133,7 +133,6 @@ public class P2PPServerRequestContext {
         try {
             headerBuffer.rewind();
             this.token = (char) headerBuffer.getShort();
-            logger.info("parseRequestHeader: token = " + (int) this.token);
             byte id = headerBuffer.get();
             this.commandId = P2PPCommand.fromValue(id);
             this.requestDataSize = headerBuffer.getInt();

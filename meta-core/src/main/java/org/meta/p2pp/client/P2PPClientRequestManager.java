@@ -204,7 +204,7 @@ public class P2PPClientRequestManager {
             logger.error("FAILED TO ADD REQUEST TO SEND QUEUE");
             req.getOperation().setFailed("Failed to add request to send queue.");
         }
-        logger.info("Adding request. Cmd id = " + req.getCommandId());
+        logger.debug("Adding request. Cmd id = " + req.getCommandId());
     }
 
     /**

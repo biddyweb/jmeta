@@ -258,12 +258,9 @@ public class P2PPClient {
 
         @Override
         public void completed(final Integer bytes, final P2PPClientRequestManager context) {
-            logger.info("Read bytes:" + bytes);
-            if (bytes == 0) {
-                logger.error("ZERO BYTES READ!!!!!!!!");
-                return;
-            }
-            if (bytes == -1) {
+            logger.debug("Read bytes:" + bytes);
+
+            if (bytes <= 0) {
                 P2PPClient.this.handleSocketError(null, context);
             } else if (bytes >= 0) {
                 synchronized (context) {
@@ -292,7 +289,7 @@ public class P2PPClient {
         @Override
         public void completed(final Integer bytes, final P2PPClientRequestManager context) {
             logger.debug("Wrote bytes:" + bytes);
-            if (bytes == -1) {
+            if (bytes <= 0) {
                 P2PPClient.this.handleSocketError(null, context);
             } else if (bytes >= 0) {
                 synchronized (context) {

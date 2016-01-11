@@ -279,6 +279,25 @@ public class MetHash extends Number implements Comparable<MetHash> {
     }
 
     /**
+     * TODO
+     *
+     * @param buf the buffer to fill
+     */
+    public final void toByteBuffer(final ByteBuffer buf) {
+        if (buf.remaining() < BYTE_ARRAY_SIZE) {
+            throw new RuntimeException("ByteBuffer too small");
+        }
+        for (int i = 0; i < INT_ARRAY_SIZE; i++) {
+            // multiply by four
+            final int idx = (i << 2);
+            buf.put((byte) (val[i] >> 24));
+            buf.put((byte) (val[i] >> 16));
+            buf.put((byte) (val[i] >> 8));
+            buf.put((byte) (val[i]));
+        }
+    }
+
+    /**
      * Returns a byte array, which is always of size 20.
      *
      * @return a byte array

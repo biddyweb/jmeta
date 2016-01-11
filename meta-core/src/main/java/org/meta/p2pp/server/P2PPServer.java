@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -36,7 +37,6 @@ import java.nio.channels.InterruptedByTimeoutException;
 import java.nio.channels.spi.AsynchronousChannelProvider;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.meta.api.configuration.NetworkConfiguration;
@@ -78,8 +78,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     private final EnumMap<P2PPCommand, CommandHandlerAccessor<?>> commandHandlers;
 
-    private final ExecutorService handlersExecutor;
-
+    //private final ExecutorService handlersExecutor;
     //private final EnumMap<P2PPCommand, P2PPCommandHandler> cmdHandlers;
     /**
      * Creates the server with the given manager and configuration.
@@ -94,17 +93,11 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         this.writeHandler = new P2PPServerWriteHandler();
         this.commandHandlers = new EnumMap<>(P2PPCommand.class);
         //this.cmdHandlers = new EnumMap<>(P2PPCommand.class);
-        this.handlersExecutor = Executors.newFixedThreadPool(2);
+        //this.handlersExecutor = Executors.newFixedThreadPool(2);
         this.initHandlers();
     }
 
     private void initHandlers() {
-//        this.cmdHandlers.put(P2PPCommand.KEEP_ALIVE,
-//                new P2PPKeepAliveHandler(this));
-//        this.cmdHandlers.put(P2PPCommand.SEARCH, new P2PPSearchHandler(this));
-//        this.cmdHandlers.put(P2PPCommand.SEARCH_META, new P2PPSearchHandler(this));
-//        this.cmdHandlers.put(P2PPCommand.SEARCH_GET, new P2PPSearchGetHandler(this));
-//        this.cmdHandlers.put(P2PPCommand.GET, new P2PPGetHandler(this));
         this.commandHandlers.put(P2PPCommand.KEEP_ALIVE, new CommandHandlerAccessor<P2PPKeepAliveHandler>() {
             @Override
             public P2PPKeepAliveHandler getHandler() {
@@ -156,7 +149,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     private void bindServerSocket() throws P2PPException {
         NetworkConfiguration nwConfig = this.config.getNetworkConfig();
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
-        //For now only one address is supported! TODO supper multi-binding of the Server...
+        //For now only one address is supported! TODO support multi-binding of the Server...
 
         InetAddress addr = configAddresses.iterator().next();
         logger.info("P2PP Server listening on port " + nwConfig.getPort());
@@ -192,12 +185,14 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
      */
     public void close() {
         try {
+            //TODO keep a list of client contexts and close them properly here...
             //Try graceful shutdown here ?
-            //i.e wait for pending request to finish ?
-            this.channelGroup.shutdown();
+            //i.e wait for pending request to finish ? => I think not
             this.server.close();
-        } catch (IOException ex) {
-            logger.warn("Got exception while closing server socket.", ex);
+            this.channelGroup.shutdownNow();
+        } catch (final IOException ex) {
+            //Nothing to do here, we may abort ongoing work thus catch an exception
+            logger.warn("Got exception while closing server socket.");
         }
     }
 
@@ -215,7 +210,11 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     @Override
     public void failed(final Throwable thrwbl, final P2PPServer a) {
-        logger.error("An error occured while accepting client connections.", thrwbl);
+        if (thrwbl instanceof AsynchronousCloseException) {
+            //The server is shutting down, it's alright
+        } else {
+            logger.error("An error occured while accepting client connections.", thrwbl);
+        }
     }
 
     /**
@@ -323,7 +322,6 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
                 synchronized (context) {
                     context.requestDataReceived();
                     read(context);
-                    //dispatch(context);
                     write(context);
                 }
             }
@@ -333,8 +331,12 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         public void failed(final Throwable thrwbl, final P2PPServerClientContext context) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Read completion handler: interrupted by timeout.");
+            } else if (thrwbl instanceof AsynchronousCloseException) {
+                //Nothing to do, we are shuting down
             } else {
-                logger.warn("Exception catched by read completion handler: {}", thrwbl.getMessage(), thrwbl);
+                //TODO handle exceptions based on their types.
+                //AsynchronousCloseException should be ignored.
+                logger.warn("Exception catched by read completion handler.", thrwbl);
             }
             P2PPServer.this.handleSocketError(context);
         }
@@ -362,6 +364,8 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         public void failed(final Throwable thrwbl, final P2PPServerClientContext context) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Write completion handler: interrupted by timeout.");
+            } else if (thrwbl instanceof AsynchronousCloseException) {
+                //Nothing to do, we are shuting down
             } else {
                 logger.warn("Exception catched by write completion handler: {}", thrwbl.getMessage(), thrwbl);
             }

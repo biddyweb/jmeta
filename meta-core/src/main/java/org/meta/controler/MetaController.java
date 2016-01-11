@@ -30,20 +30,19 @@ import org.meta.api.common.exceptions.MetaException;
 import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.model.ModelStorage;
-import org.meta.api.storage.MetaCache;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.configuration.MetaConfiguration;
-import org.meta.dht.cache.DHTPushManager;
+import org.meta.dht.DHTPushManager;
 import org.meta.dht.exceptions.DHTException;
 import org.meta.dht.tomp2p.TomP2pDHT;
 import org.meta.executors.MetaTimedExecutor;
-import org.meta.model.StorageExpirationTask;
 import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.plugin.MetaPluginAPI;
 import org.meta.plugin.webservice.MetaWebServer;
-import org.meta.storage.MapDbStorage;
-import org.meta.storage.MetaCacheStorage;
+import org.meta.storage.BerkeleyDatabase;
+import org.meta.storage.BerkeleyKVStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.ModelException;
 import org.meta.storage.exceptions.StorageException;
@@ -61,10 +60,11 @@ public class MetaController {
 
     private TomP2pDHT dht = null;
 
-    private MapDbStorage backendStorage;
+    private MetaDatabase db;
 
-    private MetaCache cacheStorage;
+    private BerkeleyKVStorage backendStorage;
 
+    //private MetaCache cacheStorage;
     private MetaModelStorage model;
 
     private MetaWebServer wsReader;
@@ -97,8 +97,8 @@ public class MetaController {
      * (Cache cleanup, DHT data announce, etc)
      */
     private void scheduleExecutorTasks() {
-        StorageExpirationTask expirationTask = new StorageExpirationTask(cacheStorage);
-        this.executor.addTask(expirationTask);
+        //StorageExpirationTask expirationTask = new StorageExpirationTask(cacheStorage);
+        //this.executor.addTask(expirationTask);
         this.executor.addTask(pushManager);
     }
 
@@ -108,7 +108,7 @@ public class MetaController {
      */
     public void initAndStartAll() throws MetaException {
         try {
-            initModel();
+            initStorage();
         } catch (ModelException ex) {
             throw new MetaException("Failed to initialize Model.", ex);
         }
@@ -122,6 +122,7 @@ public class MetaController {
         } catch (P2PPException ex) {
             throw new MetaException("Failed to initialize P2PP server.", ex);
         }
+
         //TODO add and check exceptions
         initWebService();
 
@@ -140,8 +141,8 @@ public class MetaController {
      *
      */
     private void initDht() throws DHTException {
-        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), this.cacheStorage);
-        pushManager = new DHTPushManager(backendStorage, dht, model);
+        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), null);
+        pushManager = new DHTPushManager(dht, db, model);
         dht.setPushManager(pushManager);
         try {
             dht.start();
@@ -149,7 +150,7 @@ public class MetaController {
             throw new DHTException("DHT failed to start", ex);
         }
 
-        //Maybe the boostrap should be done elsewhere ? => Yes, along with routing table retrieval from storage, etc...
+        //TODO Maybe the boostrap should be done elsewhere ? => Yes, after routing table retrieval from storage, etc...
         BootstrapOperation bootstrapOperation = dht.bootstrap();
         bootstrapOperation.addListener(new OperationListener<BootstrapOperation>() {
 
@@ -166,13 +167,12 @@ public class MetaController {
     }
 
     /**
-     * Initializes kyotocabinet storage, cache and object model.
+     * Initializes storage units.
      */
-    private void initModel() throws StorageException {
-        //backendStorage = new KyotoCabinetStorage(MetaConfiguration.getModelConfiguration());
-        backendStorage = new MapDbStorage(MetaConfiguration.getModelConfiguration());
-        model = new MetaModelStorage(backendStorage);
-        cacheStorage = new MetaCacheStorage(backendStorage, 1);
+    private void initStorage() throws StorageException {
+        this.db = new BerkeleyDatabase(MetaConfiguration.getModelConfiguration());
+        model = new MetaModelStorage(this.db);
+        //cacheStorage = new MetaCacheStorage(backendStorage, 1);
     }
 
     /**
@@ -196,14 +196,18 @@ public class MetaController {
      */
     public void close() {
         logger.debug("Enter closing method");
-        if(dht !=  null)
+        if (dht != null) {
             this.dht.close();
-        if(p2ppManager != null)
+        }
+        if (p2ppManager != null) {
             this.p2ppManager.getServer().close();
-        if(wsReader != null)
+        }
+        if (wsReader != null) {
             this.wsReader.close();
-        if(model != null)
+        }
+        if (model != null) {
             this.model.close();
+        }
         logger.debug("Closing method done properly");
     }
 

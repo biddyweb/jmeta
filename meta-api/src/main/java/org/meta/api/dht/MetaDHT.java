@@ -79,9 +79,10 @@ public abstract class MetaDHT {
     public abstract FindPeersOperation findPeers(MetHash hash);
 
     /**
-     * @param hash The hash to store on the DHT.
-     * 
+     *
      * This push will only be valid one hour.
+     *
+     * @param hash The hash to store on the DHT
      *
      * @return The asynchronous {@link StoreOperation} representing the outcome of the operation.
      */
@@ -89,15 +90,13 @@ public abstract class MetaDHT {
 
     /**
      * @param hash The hash to store on the DHT.
-     * @param expirationDate The date when the hash will no longer be pushed
-     * on the dht
-     * A pushed element will be updated every hour on the dht
+     * @param expirationDate The date when the hash will no longer be pushed on the dht. A pushed element will
+     * be updated every hour on the dht
      */
     public abstract void push(MetHash hash, long expirationDate);
 
     /**
-     * @param hash The hash to store on the DHT.
-     * A pushed element will be updated every hour on the dht
+     * @param hash The hash to store on the DHT. A pushed element will be updated every hour on the dht
      */
     public abstract void push(MetHash hash);
 

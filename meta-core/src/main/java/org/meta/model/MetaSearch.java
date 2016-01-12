@@ -49,6 +49,8 @@ public final class MetaSearch extends Search {
     private SearchCriteria criteria = null;
     private HashMap<MetHash, Data> results = null;
 
+    private boolean needRehash = false;
+
     /**
      * Creates an empty Search.
      *
@@ -56,7 +58,6 @@ public final class MetaSearch extends Search {
      */
     public MetaSearch() {
         super(MetHash.ZERO);
-        results = new HashMap<>();
     }
 
     /**
@@ -81,7 +82,7 @@ public final class MetaSearch extends Search {
         super(MetHash.ZERO);
         this.criteria = crit;
         this.source = src;
-        hash();
+        this.needRehash = true;
         this.addResults(res);
     }
 
@@ -104,7 +105,19 @@ public final class MetaSearch extends Search {
     }
 
     @Override
+    public MetHash getHash() {
+        if (this.needRehash) {
+            return hash();
+        }
+        return this.hash;
+    }
+
+    @Override
     public MetHash hash() {
+        if (!needRehash) {
+            return this.hash;
+        }
+        this.needRehash = false;
         //Hash is composed of concatenation of source hash and criteria hash
         if (this.criteria == null || this.source == null) {
             this.hash = MetHash.ZERO;
@@ -149,7 +162,7 @@ public final class MetaSearch extends Search {
     @Override
     public void setSource(final Searchable src) {
         this.source = src;
-        hash();
+        this.needRehash = true;
     }
 
     @Override
@@ -160,19 +173,19 @@ public final class MetaSearch extends Search {
     @Override
     public void setCriteria(final SearchCriteria metData) {
         this.criteria = metData;
-        hash();
+        this.needRehash = true;
     }
 
     @Override
     public void addCriteria(final Collection<MetaData> criterionList) {
         this.criteria.addCriteria(criterionList);
-        hash();
+        this.needRehash = true;
     }
 
     @Override
     public void addCriterion(final MetaData criterion) {
         this.criteria.addCriterion(criterion);
-        hash();
+        this.needRehash = true;
     }
 
 }

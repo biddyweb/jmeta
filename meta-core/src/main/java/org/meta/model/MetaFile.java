@@ -139,7 +139,7 @@ public final class MetaFile extends DataFile {
     private void sizeFromFile() {
         if (file != null) {
             if (file.isFile() && file.exists()) {
-                //this means we can't handle files larger than 4GB (for now)
+                //TODO this means we can't handle files larger than 4GB
                 this.size = (int) file.length();
             }
         }

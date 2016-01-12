@@ -45,6 +45,8 @@ public final class SearchCriteria extends Searchable {
 
     private MetaDataMap metaMap;
 
+    private boolean needRehash = false;
+
     /**
      * Creates an empty SearchCriteria.
      *
@@ -62,6 +64,7 @@ public final class SearchCriteria extends Searchable {
      */
     public SearchCriteria(final Set<MetaData> crit) {
         this(MetHash.ZERO, crit);
+        this.needRehash = true;
     }
 
     /**
@@ -82,6 +85,7 @@ public final class SearchCriteria extends Searchable {
      */
     public SearchCriteria(final MetaDataMap metaDataMap) {
         this(MetHash.ZERO, metaDataMap);
+        this.needRehash = true;
     }
 
     /**
@@ -110,7 +114,7 @@ public final class SearchCriteria extends Searchable {
      */
     public void addCriterion(final MetaData criterion) {
         this.metaMap.put(criterion);
-        hash();
+        this.needRehash = true;
     }
 
     /**
@@ -118,12 +122,24 @@ public final class SearchCriteria extends Searchable {
      */
     public void addCriteria(final Collection<MetaData> props) {
         if (this.metaMap.addAll(props)) {
-            hash();
+            this.needRehash = true;
         }
     }
 
     @Override
+    public MetHash getHash() {
+        if (this.needRehash) {
+            return this.hash();
+        }
+        return this.hash;
+    }
+
+    @Override
     public MetHash hash() {
+        if (!this.needRehash) {
+            return this.hash;
+        }
+        this.needRehash = false;
         //The hash is the hash of the concatenation of every key:value
         //separated by ;
         StringBuilder builder = new StringBuilder();

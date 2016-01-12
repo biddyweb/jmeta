@@ -185,7 +185,6 @@ public class MetaModelStorage implements ModelStorage {
 
         if (search != null) {
             MetHash srcHash = extractor.getSearchSourceHash();
-            logger.debug("Extractor got search source: " + srcHash.toString());
             Searchable src = this.load(srcHash.toByteArray());
             search.setSource(src);
             Set<MetHash> resultHashs = extractor.getSearchResultsHash();

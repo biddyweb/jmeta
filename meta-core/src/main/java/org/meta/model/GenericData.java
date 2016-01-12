@@ -46,7 +46,7 @@ public class GenericData extends Data {
      * To avoid computing the hash every time a property changes, allow 'lazy hashing'. True if the hash needs
      * to be computed, false otherwise.
      */
-    private boolean needRehash;
+    private boolean needRehash = false;
 
     /**
      * The underlying buffer buffer.
@@ -58,7 +58,6 @@ public class GenericData extends Data {
      */
     protected GenericData() {
         super(MetHash.ZERO);
-        needRehash = false;
     }
 
     /**
@@ -66,14 +65,15 @@ public class GenericData extends Data {
      */
     public GenericData(final MetHash hash) {
         super(hash);
-        needRehash = false;
     }
 
     /**
      * @param buf byteBuffer to be copied as internal buffer. The given buffer's position remains unchanged.
      */
     public GenericData(final ByteBuffer buf) {
-        this(MetHash.ZERO, buf);
+        super(MetHash.ZERO);
+        this.buffer = buf;
+        this.size = buf.limit();
         needRehash = true;
     }
 
@@ -82,8 +82,11 @@ public class GenericData extends Data {
      * @param data content to be copied as internal buffer
      */
     public GenericData(final byte[] data) {
-        this(MetHash.ZERO, data);
-        needRehash = true;
+        super(MetHash.ZERO);
+        this.buffer = ByteBuffer.allocate(data.length);
+        this.buffer.put(data);
+        this.size = data.length;
+        this.needRehash = true;
     }
 
     /**
@@ -91,8 +94,10 @@ public class GenericData extends Data {
      * @param string the string to be added as UTF-8 encoded buffer
      */
     public GenericData(final String string) {
-        this(MetHash.ZERO, string);
-        needRehash = true;
+        super(MetHash.ZERO);
+        this.buffer = SerializationUtils.encodeUTF8(string);
+        this.size = this.buffer.limit();
+        this.needRehash = true;
     }
 
     /**
@@ -103,7 +108,6 @@ public class GenericData extends Data {
         super(hash);
         this.buffer = SerializationUtils.encodeUTF8(string);
         this.size = this.buffer.limit();
-        this.needRehash = true;
     }
 
     /**
@@ -116,7 +120,6 @@ public class GenericData extends Data {
         this.buffer = ByteBuffer.allocate(data.length);
         this.buffer.put(data);
         this.size = data.length;
-        this.needRehash = true;
     }
 
     /**

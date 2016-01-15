@@ -34,8 +34,10 @@ You also need to have a valid internet connection.
 
 Get the last sources:
 `# git clone https://gitlab.ouahpiti.info/meta/jmeta.git`
+
 Change to the cloned directory:
 `# cd jmeta`
+
 Launch the provided build script to start building: 
 `# ./mvnbuild.sh`
 

@@ -148,10 +148,9 @@ public abstract class AsyncOperation {
         boolean notifyNow = false;
 
         synchronized (lock) {
-            if (this.listeners.contains(listener)) {
+            if (!this.listeners.add(listener)) {
                 return this;
             }
-            this.listeners.add(listener);
             if (this.hasFinished()) {
                 notifyNow = true;
             }
@@ -294,6 +293,10 @@ public abstract class AsyncOperation {
         notifyListeners(true);
     }
 
+    /**
+     *
+     * @param clearListeners true if listeners are cleared after being notifier, false to keep them
+     */
     protected final void notifyListeners(final boolean clearListeners) {
         for (OperationListener l : listeners) {
             if (this.isSuccess()) {

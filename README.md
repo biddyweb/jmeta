@@ -4,7 +4,7 @@
 JMeta is an open-source project, written in Java, aiming to provide a platform and a framework for building fully-decentralized P2P search applications.  
 JMeta is currently based on [TomP2P](https://github.com/tomp2p/TomP2P), an advanced DHT library.  
 
-More information about the project : [Project concepts](concepts)
+More information about the project : [Project concepts](https://gitlab.ouahpiti.info/meta/jmeta/wikis/concepts)
 
 ## License
 
@@ -15,14 +15,14 @@ JMeta is released under the terms of the AGPL v3 License.
 JMeta is at a very early stage of development and is under heavy changes.  
 But we always need testers, reviewers and hackers to enhance the project and report bugs.  
 If you feel excited about the project, please see [How to contribute](contribute)  
-See the also the [developers documentation](dev/developers)
+See the also the [developers documentation](https://gitlab.ouahpiti.info/meta/jmeta/wikis/dev/developers)
 
 You have an interesting application idea to build upon JMeta ?  
 We need you!
 
 Feel free to contact us for any questions, ideas or remarks!  
 
-More on how to add plugins to Jmeta and start building your own P2P-based search app: [Plugin Development](dev/plugins)  
+More on how to add plugins to Jmeta and start building your own P2P-based search app: [Plugin Development](https://gitlab.ouahpiti.info/meta/jmeta/wikis/dev/plugins)  
 
 ## Building and installing
 

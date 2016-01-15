@@ -49,39 +49,11 @@ public final class Identity extends MetHash {
     }
 
     /**
-     * Creates an identity with an integer array.
-     *
-     * @param val The integer array.
-     */
-    public Identity(final int... val) {
-        super(val);
-    }
-
-    /**
      * Creates an identity from an hexadecimal string.
      *
      * @param val The hexadecimal string.
      */
     public Identity(final String val) {
-        super(val);
-    }
-
-    /**
-     *
-     * Creates an identity with the integer value.
-     *
-     * @param val The integer value.
-     */
-    public Identity(final int val) {
-        super(val);
-    }
-
-    /**
-     * Creates an identity with a long value.
-     *
-     * @param val The Long value.
-     */
-    public Identity(final long val) {
         super(val);
     }
 

@@ -26,8 +26,9 @@ package org.meta.api.plugin;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.meta.api.common.AsyncOperation;
 import org.meta.api.common.MetaPeer;
@@ -39,24 +40,33 @@ import org.meta.api.model.Data;
  *
  * @author dyslesiq
  */
-public class SearchOperation extends AsyncOperation implements Iterable<Data>{
+public class SearchOperation extends AsyncOperation implements Iterable<Data> {
 
-    protected HashMap<MetaPeer, Set<Data>> results;
-    private   int                          nbResults = 0;
-    private   Logger logger = Logger.getLogger(SearchOperation.class);
+    private final Logger logger = Logger.getLogger(SearchOperation.class);
 
-    public SearchOperation(){
-        results  = new HashMap<MetaPeer, Set<Data>>();
+    /**
+     * Peers to results association.
+     */
+    protected Map<MetaPeer, Set<Data>> results;
+
+    private int nbResults;
+
+    /**
+     *
+     */
+    public SearchOperation() {
+        results = new HashMap<>();
     }
 
     /**
      *
-     * @param res the results
+     * @param peer the peer that gave us the results
+     * @param res the result list
      */
     public void addResults(final MetaPeer peer, final Set<Data> res) {
-        if(res.size() > 0){
+        if (res.size() > 0) {
             this.results.put(peer, res);
-            nbResults = nbResults + res.size();
+            nbResults += res.size();
         }
     }
 
@@ -68,25 +78,34 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
         return this.results.keySet();
     }
 
-    public HashMap<MetaPeer, Set<Data>> getPeerResultMap() {
+    /**
+     *
+     * @return the map associating peers and results
+     */
+    public Map<MetaPeer, Set<Data>> getPeerResultsMap() {
         return results;
     }
-    
-    public int getNbResults(){
-        return nbResults;
+
+    /**
+     *
+     * @return the total number of results
+     */
+    public int getNbResults() {
+        return this.nbResults;
     }
+
     @Override
     public Iterator<Data> iterator() {
         //This need to be tested TODO
         return new Iterator<Data>() {
-            private Iterator<MetaPeer> itResults = null;
-            private MetaPeer           cMetaPeer = null;
-            private Iterator<Data>     itData    = null;
+            private Iterator<MetaPeer> itPeers = null;
+            private Iterator<Data> itData = null;
             private int nbRead = 0;
-            
-            //The iterator call is only supposed to append when the data retrieving
+
+            //The iterator call is only supposed to happen when the data retrieving
             //is over, so it only will be a read only opperation whithout concurency
-            //problem
+            //problem => wrong! in case of a CompositeSearchOperation, we might iterate over incomplete data.
+            //TODO see if there gonna be concurrency issues.
             @Override
             public boolean hasNext() {
                 return nbRead < nbResults;
@@ -100,25 +119,24 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data>{
                  * next.
                  * initialise cMetaPeer with the first row key
                  * then initialise first row value iterator itData
-                 * 
-                 * otherwise, it means that we already have call this method.
+                 *
+                 * otherwise, it means that we already have called this method.
                  * So we are somewhere on a row, we need to check if we are at
                  * the end of the row and if we can go further on the next one.
                  */
-                if(itResults == null){
-                    itResults = results.keySet().iterator();
-                    cMetaPeer = itResults.next();
-                    itData    = results.get(cMetaPeer).iterator();
-                }else{
-                    //Make a step to the next row only if the current one is
-                    //done and if there is a next one
-                    if(!itData.hasNext() && itResults.hasNext()){
-                        cMetaPeer = itResults.next();
-                        itData    = results.get(cMetaPeer).iterator();
+                if (itPeers == null) {
+                    itPeers = results.keySet().iterator();
+                    if (!itPeers.hasNext()) {
+                        throw new NoSuchElementException();
                     }
+                    itData = results.get(itPeers.next()).iterator();
+                } else if (!itData.hasNext() && itPeers.hasNext()) {
+                    itData = results.get(itPeers.next()).iterator();
                 }
-                //At this point, may or may not give a next result.
-                return itData.hasNext() ? itData.next() : null;
+                if (!itData.hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return itData.next();
             }
         };
     }

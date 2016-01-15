@@ -24,14 +24,10 @@
  */
 package org.meta.plugin;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.common.OperationListener;
-import org.meta.api.model.Data;
 import org.meta.api.plugin.SearchOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +48,7 @@ public class CompositeSearchOperation extends SearchOperation {
 
     private final Logger logger = LoggerFactory.getLogger(CompositeSearchOperation.class);
 
-    private int operations;
+    private List<SearchOperation> operations;
 
     private int completeOperations;
 
@@ -62,6 +58,7 @@ public class CompositeSearchOperation extends SearchOperation {
      *
      */
     public CompositeSearchOperation() {
+        this.operations = new ArrayList<>();
         this.listener = new CompositeSearchListener();
     }
 
@@ -70,16 +67,16 @@ public class CompositeSearchOperation extends SearchOperation {
      * @param op the search operation to aggregate
      */
     public void addSearchOperation(final SearchOperation op) {
-        operations++;
+        this.operations.add(op);
         op.addListener(listener);
     }
 
     /**
      * Called when a sub-operation completed.
      */
-    private void operationReceived() {
+    private synchronized void operationReceived() {
         this.completeOperations++;
-        if (this.completeOperations == this.operations) {
+        if (this.completeOperations == this.operations.size()) {
             this.complete();
         } else {
             this.notifyListeners(false);
@@ -94,21 +91,20 @@ public class CompositeSearchOperation extends SearchOperation {
         @Override
         public void failed(final SearchOperation operation) {
             //There is nothing to do here really, just notify the operation
-            logger.debug("Search operation failed: "
-                    + operation.getFailureMessage());
-            synchronized (CompositeSearchOperation.this) {
-                CompositeSearchOperation.this.operationReceived();
-            }
+            logger.info("Search operation failed: " + operation.getFailureMessage());
+            operationReceived();
         }
 
         @Override
         public void complete(final SearchOperation operation) {
-            synchronized (CompositeSearchOperation.this) {
-                for(Iterator<Entry<MetaPeer, Set<Data>>> i = operation.getPeerResultMap().entrySet().iterator(); i.hasNext();){
-                    Entry<MetaPeer, Set<Data>> entry = i.next();
-                    addResults(entry.getKey(), entry.getValue());
+            logger.info("Aggregated search operation succes.");
+
+            synchronized (this) {
+                for (MetaPeer peer : operation.getPeerResultsMap().keySet()) {
+                    addResults(peer, operation.getPeerResultsMap().get(peer));
                 }
             }
+            operationReceived();
         }
     }
 }

@@ -96,6 +96,12 @@ public class MetaObjectModelFactory implements ModelFactory {
     }
 
     @Override
+    public Data getData(final MetHash hash, final ByteBuffer buffer, final int size) {
+        return new GenericData(hash, buffer, size);
+    }
+
+    @Override
+
     public DataFile getDataFile(final File file) {
         return new MetaFile(file);
     }

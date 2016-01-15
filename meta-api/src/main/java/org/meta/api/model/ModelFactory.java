@@ -67,6 +67,19 @@ public interface ModelFactory {
     Data getData(final ByteBuffer buffer);
 
     /**
+     * Fully initialized a Data with hash, content and size.
+     *
+     * Note that the size can be different that buffer.limit().
+     *
+     * @param hash the hash
+     * @param buffer the content of the data to create
+     * @param size the real size of the data
+     *
+     * @return The fully-initialized Data
+     */
+    Data getData(final MetHash hash, final ByteBuffer buffer, final int size);
+
+    /**
      * Creates a new DataFile with the given file.
      *
      * @param file the file

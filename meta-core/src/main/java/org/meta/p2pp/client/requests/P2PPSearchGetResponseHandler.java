@@ -87,10 +87,8 @@ public class P2PPSearchGetResponseHandler extends P2PPSearchMetaResponseHandler 
             sizeofHash = buf.getShort();
             hash = new MetHash(buf, sizeofHash);
             dataContent = this.getDataContent(buf, dataSize);
-            dataResult = this.request.getClient().getModelFactory().getData(dataContent);
+            dataResult = this.request.getClient().getModelFactory().getData(hash, dataContent, dataSize);
             dataResult.setType(dataType);
-            dataResult.setHash(hash);
-            dataResult.setSize(dataSize);
             dataResult.setMetaData(metaData);
             this.results.add(dataResult);
         }

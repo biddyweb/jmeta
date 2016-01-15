@@ -39,7 +39,7 @@ public class SearchResultIntegrityCheckerHook implements OperationListener<Searc
         /*
          * Check if every data respects the filters
          */
-        for (Entry<MetaPeer, Set<Data>> entry : operation.getPeerResultMap().entrySet()) {
+        for (Entry<MetaPeer, Set<Data>> entry : operation.getPeerResultsMap().entrySet()) {
             for (Data data : entry.getValue()) {
                 if (!ModelUtils.matchDataMetaData(data, metaDataFilters)) {
                     logger.warn("The peer " + entry.getKey() + " has given a non wishes data");

@@ -81,9 +81,9 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
      *
      */
     protected Queue<ByteBuffer> dataTypes;
-    
+
     /**
-     * 
+     *
      */
     protected HashMap<String, String> metaDataFilters;
 
@@ -137,14 +137,13 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         }
         return true;
     }
-    
-    
-    protected void extractMetaDataFilters(final ByteBuffer buf){
+
+    protected void extractMetaDataFilters(final ByteBuffer buf) {
         short nbFilters = buf.getShort();
         logger.debug("Search request handler: nb Filters = " + nbFilters);
-        for (int i = 0; i<nbFilters; i++) {
-            short      keySize = buf.getShort();
-            ByteBuffer tmp     = buf.asReadOnlyBuffer();
+        for (int i = 0; i < nbFilters; i++) {
+            short keySize = buf.getShort();
+            ByteBuffer tmp = buf.asReadOnlyBuffer();
             // avoid memory duplication using read only buffer
             tmp.limit(buf.position() + keySize);
             buf.position(tmp.limit());
@@ -170,11 +169,12 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         for (MetHash hash : this.requestedHashes) {
             tmpSearch = this.server.getStorage().getSearch(hash);
             if (tmpSearch != null) {
-                for(Data data : tmpSearch.getResults()){
+                for (Data data : tmpSearch.getResults()) {
                     //Once a search is found, apply the filters on, each
                     //results
-                    if(ModelUtils.matchDataMetaData(data, metaDataFilters))
+                    if (ModelUtils.matchDataMetaData(data, metaDataFilters)) {
                         this.results.add(data);
+                    }
                 }
             }
         }

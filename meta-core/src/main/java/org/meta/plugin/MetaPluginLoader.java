@@ -38,7 +38,7 @@ import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.configuration.PluginConfigurationImpl;
-import org.meta.controler.MetaController;
+import org.meta.controller.MetaController;
 import org.meta.plugin.exceptions.PluginLoadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

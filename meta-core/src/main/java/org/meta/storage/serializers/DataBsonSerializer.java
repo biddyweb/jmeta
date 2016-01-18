@@ -100,7 +100,7 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
      */
     public Data deserialize(final BSONObject obj) {
         MetHash hash = new MetHash((String) obj.get(HASH_KEY));
-        ByteBuffer buf = SerializationUtils.fromHexString((String) obj.get(DATA_KEY));
+        ByteBuffer buf = ByteBuffer.wrap(SerializationUtils.fromHexString((String) obj.get(DATA_KEY)));
         int size = Integer.parseInt((String) obj.get(SIZE_KEY));
         String type = (String) obj.get(TYPE_KEY);
 

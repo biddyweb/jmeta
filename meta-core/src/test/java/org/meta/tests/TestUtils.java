@@ -49,10 +49,10 @@ public class TestUtils {
     private static final Random rnd = new Random();
 
     // temporary directory location
-    private static final Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
+    public static final Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
 
     //All meta-related tests files will be created under this directory
-    private static final Path metaTmpDir = Paths.get(tmpDir.toString(), "meta-tests");
+    public static final Path metaTmpDir = Paths.get(tmpDir.toString(), "meta-tests");
 
     private TestUtils() {
     }

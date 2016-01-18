@@ -36,6 +36,7 @@ import org.meta.api.common.MetaPeer;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
+import org.meta.storage.exceptions.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,16 +66,16 @@ public class BigDhtTest extends BaseDHTTests {
      * @throws IOException
      */
     @Test
-    public void testManyNodesOneHash() throws IOException {
+    public void testManyNodesOneHash() throws IOException, StorageException {
         try {
             short port = 15000;
             Collection<MetaPeer> knownPeer = Collections.singletonList(new MetaPeer(null, InetAddress.getByName("127.0.0.1"), port));
 
-            dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, Collections.EMPTY_LIST, false, true));
+            dhts[0] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, port, Collections.EMPTY_LIST, false, true), "BigDhtTest-masternode");
             dhts[0].start();
             for (int i = 1; i < NB_PEERS; ++i) {
                 ++port;
-                dhts[i] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, (short) (port), knownPeer, false, true));
+                dhts[i] = BigDhtTest.createDHTNode(BaseDHTTests.createDhtConfig(null, (short) (port), knownPeer, false, true), "BigDhtTest-node" + i);
                 dhts[i].start();
             }
 

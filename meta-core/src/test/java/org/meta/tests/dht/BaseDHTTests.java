@@ -24,6 +24,7 @@
  */
 package org.meta.tests.dht;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import org.meta.api.common.Identity;
@@ -35,6 +36,7 @@ import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.dht.tomp2p.TomP2pDHT;
+import org.meta.storage.exceptions.StorageException;
 import org.meta.tests.MetaBaseTests;
 import org.meta.utils.NetworkUtils;
 
@@ -75,10 +77,11 @@ public abstract class BaseDHTTests extends MetaBaseTests {
      * @param config
      * @return the created dht node.
      */
-    public static MetaDHT createDHTNode(DHTConfigurationImpl config) {
+    public static MetaDHT createDHTNode(DHTConfigurationImpl config, String dbName) throws IOException, StorageException {
+
         //KVStorage storage = new MetaMemoryStorage(MetaConfiguration.getModelConfiguration());
         //MetaCache cache = new MetaCacheStorage(storage, 500);
-        return (MetaDHT) new TomP2pDHT(config, null);
+        return (MetaDHT) new TomP2pDHT(config, getDatabase(dbName));
     }
 
     /**

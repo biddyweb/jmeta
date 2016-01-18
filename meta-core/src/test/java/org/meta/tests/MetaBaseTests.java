@@ -25,6 +25,12 @@
 package org.meta.tests;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import org.junit.BeforeClass;
 import org.meta.api.configuration.ModelConfiguration;
@@ -44,6 +50,30 @@ import org.meta.utils.NetworkUtils;
  * Base class for tests to pre-configure the JMETA env.
  */
 public abstract class MetaBaseTests {
+
+    static {
+        //Removes the base test directory to ensure clean start.
+        //JUnit does not provides a clean way to execute something before and after all tests...
+        //So here it is! A beautiful static block
+        FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path t, BasicFileAttributes bfa) throws IOException {
+                Files.delete(t);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path t, IOException ioe) throws IOException {
+                Files.delete(t);
+                return FileVisitResult.CONTINUE;
+            }
+        };
+        try {
+            Files.walkFileTree(TestUtils.metaTmpDir, visitor);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      *

@@ -43,6 +43,7 @@ import org.meta.api.dht.StoreOperation;
 import org.meta.configuration.ConfigurationUtils;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.configuration.MetaConfiguration;
+import org.meta.storage.exceptions.StorageException;
 import static org.meta.tests.dht.BaseDHTTests.createDhtConfig;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
@@ -79,7 +80,7 @@ public class DHTStoreTest extends BaseDHTTests {
      * @throws IOException
      */
     @BeforeClass
-    public static void initDHtNodes() throws IOException {
+    public static void initDHtNodes() throws IOException, StorageException {
 
         DHT1_PEER_ADDR = NetworkUtils.getLoopbackAddress();
         DHT1_PEER_STRING = DHT1_PEER_ADDR.getHostAddress() + ":" + DHT1_PORT;
@@ -91,14 +92,14 @@ public class DHTStoreTest extends BaseDHTTests {
                 ConfigurationUtils.peersFromString(DHT2_PEER_STRING),
                 false,
                 true);
-        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1);
+        dhtNode1 = BaseDHTTests.createDHTNode(configurationDht1, "DHTStoreTest-node1");
         dhtNode1.start();
         configurationDht2 = createDhtConfig(new Identity(MetamphetUtils.makeSHAHash("Peer2")),
                 DHT2_PORT,
                 ConfigurationUtils.peersFromString(DHT1_PEER_STRING),
                 false,
                 true);
-        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2);
+        dhtNode2 = BaseDHTTests.createDHTNode(configurationDht2, "DHTStoreTest-node2");
         dhtNode2.start();
         bootstrapDht(dhtNode1, false);
         bootstrapDht(dhtNode2, true);

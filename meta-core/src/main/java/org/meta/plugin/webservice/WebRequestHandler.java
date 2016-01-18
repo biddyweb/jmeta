@@ -74,7 +74,7 @@ public class WebRequestHandler extends AbstractHandler {
         String command = "";
 
         if (urlParse.length == 4) {
-            //if theres 3 it means we've got two parameters, an action and
+            //if theres 4 it means we've got two parameters, an action and
             //a command
             action = urlParse[urlParse.length - 3];
             plugin = urlParse[urlParse.length - 2];

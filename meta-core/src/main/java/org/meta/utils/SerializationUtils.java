@@ -91,6 +91,8 @@ public final class SerializationUtils {
     /**
      * Convert a byte array to long.
      *
+     * Only 8 bytes are read from the given array starting at offset.
+     *
      * @param b the array to convert to long
      * @param offset the offset in the array
      * @return the long value

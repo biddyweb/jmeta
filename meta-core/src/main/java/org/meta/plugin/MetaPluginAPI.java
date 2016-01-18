@@ -41,7 +41,7 @@ import org.meta.api.model.Searchable;
 import org.meta.api.plugin.DownloadOperation;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
-import org.meta.controler.MetaController;
+import org.meta.controller.MetaController;
 import org.meta.hooks.search.SearchResultIntegrityCheckerHook;
 import org.meta.p2pp.client.MetaP2PPClient;
 import org.slf4j.Logger;
@@ -84,8 +84,8 @@ public final class MetaPluginAPI implements MetAPI {
     }
 
     @Override
-    public SearchOperation search(final MetHash searchHash, final boolean searchLocal,
-            final boolean getData, final Set<String> metaDataKeys, final Map<String, String> metaDataFilters) {
+    public SearchOperation search(final MetHash searchHash, final boolean searchLocal, final boolean getData,
+            final Set<String> metaDataKeys, final Map<String, String> metaDataFilters) {
         CompositeSearchOperation op = new CompositeSearchOperation();
 
         if (searchLocal) {
@@ -123,7 +123,10 @@ public final class MetaPluginAPI implements MetAPI {
                         op.addSearchOperation(peerSearchOperation);
                         //Add all core listeners to search operation
                         //Notice that invocation order should be kept !
-                        peerSearchOperation.addListener(new SearchResultIntegrityCheckerHook(metaDataFilters));
+                        if (metaDataFilters != null && !metaDataFilters.isEmpty()) {
+                            //Only add the check if we have something to check
+                            peerSearchOperation.addListener(new SearchResultIntegrityCheckerHook(metaDataFilters));
+                        }
                     }
                 }
             }
@@ -172,6 +175,8 @@ public final class MetaPluginAPI implements MetAPI {
      * The given hash is interpreted as a search.
      *
      * If not a search, or inexistent in database, an empty set of results is returned.
+     *
+     * TODO why copy the results instead of returning them directly ?
      *
      * @param searchHash the hash of the search
      * @return the results for the given search

@@ -60,8 +60,6 @@ public class BerkeleyDatabase implements MetaDatabase {
 
     private Environment dbEnv;
 
-    private DatabaseConfig dbConfig;
-
     private final TransactionConfig txConfig;
 
     private final CursorConfig cursorConfig;
@@ -94,11 +92,7 @@ public class BerkeleyDatabase implements MetaDatabase {
             envConfig.setCacheMode(CacheMode.DEFAULT); //LRU caching by default
             envConfig.setSharedCache(false);
             this.dbEnv = new Environment(dbDir, envConfig);
-            dbConfig = new DatabaseConfig();
-            dbConfig.setTransactionalVoid(true); //We need explicit transactions
-            dbConfig.setSortedDuplicatesVoid(false); //Only 1 <-> 1 mapping of key/value
-            dbConfig.setAllowCreateVoid(true); //Create the database if it does not exists
-            dbConfig.setReplicated(false);
+
         } catch (final EnvironmentFailureException ex) {
             throw new StorageException("Failed to initialize Berkeley DB environment", ex);
         }
@@ -120,6 +114,15 @@ public class BerkeleyDatabase implements MetaDatabase {
         return dbDir;
     }
 
+    private DatabaseConfig getDbConfig() {
+        DatabaseConfig dbConfig = new DatabaseConfig();
+        dbConfig.setTransactionalVoid(true); //We need explicit transactions
+        dbConfig.setSortedDuplicatesVoid(false); //Only 1 <-> 1 mapping of key/value
+        dbConfig.setAllowCreateVoid(true); //Create the database if it does not exists
+        dbConfig.setReplicated(false);
+        return dbConfig;
+    }
+
     /**
      * Internal use. Creates a database of the given name.
      *
@@ -130,10 +133,10 @@ public class BerkeleyDatabase implements MetaDatabase {
         Database db = this.databases.get(dbName);
 
         if (db == null) {
-            DatabaseConfig c = dbConfig.clone();
+            DatabaseConfig c = getDbConfig();
             if (comparator != null) {
-                c.setOverrideBtreeComparator(true);
-                c.setBtreeComparator(comparator);
+                c.setOverrideBtreeComparatorVoid(true);
+                c.setBtreeComparatorVoid(comparator);
             }
             db = this.dbEnv.openDatabase(null, dbName, c);
             this.databases.put(dbName, db);

@@ -75,8 +75,10 @@ public class TomP2pStoreOperation extends StoreOperation {
         Data toAdd = new Data(data);
         toAdd.ttlSeconds(3600); //TODO move to global parameters
 
-        //logger.debug("Tomp2p Data hash :" + toAdd.hash());
-        //logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
+        logger.info("Pushing addr to DHT:" + peerAddr);
+
+        logger.debug("Tomp2p Data hash :" + toAdd.hash());
+        logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
         addBuilder.data(toAdd).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override

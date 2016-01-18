@@ -34,12 +34,17 @@ import net.tomp2p.connection.Ports;
 import net.tomp2p.connection.StandardProtocolFamily;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
+import net.tomp2p.dht.StorageLayer.ProtectionEnable;
+import net.tomp2p.dht.StorageLayer.ProtectionMode;
 import net.tomp2p.futures.BaseFuture;
 import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.FutureDone;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.peers.PeerMapChangeListener;
+import net.tomp2p.peers.PeerStatistic;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
@@ -48,9 +53,10 @@ import org.meta.api.dht.BootstrapOperation;
 import org.meta.api.dht.FindPeersOperation;
 import org.meta.api.dht.MetaDHT;
 import org.meta.api.dht.StoreOperation;
-import org.meta.api.storage.MetaCache;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.dht.DHTPushManager;
+import org.meta.dht.tomp2p.storage.TomP2pStorage;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +65,8 @@ import org.slf4j.LoggerFactory;
  *
  * Tomp2p implementation of MetaDHT.
  *
- * Uses the tomp2p library as a backend for DHT operations.
- *
- * It is a first implementation and will improve with time.
+ * Uses the tomp2p library as a backend for DHT operations. It is a first implementation and will improve with
+ * time.
  *
  */
 public final class TomP2pDHT extends MetaDHT {
@@ -80,16 +85,20 @@ public final class TomP2pDHT extends MetaDHT {
 
     private DHTPushManager pushManager = null;
 
-    //private TomP2pStorage tomP2pStorage;
+    private final TomP2pStorage tomP2pStorage;
+
+    private final MetaDatabase db;
+
     /**
      * Create the tomp2p DHT with given configuration.
      *
      * @param config The DHT configuration to use
-     * @param dbStorage the backing storage for the dht
+     * @param database the global storage used to get backing storage for the dht
      */
-    public TomP2pDHT(final DHTConfigurationImpl config, final MetaCache dbStorage) {
-        super(config, dbStorage);
-        //this.tomP2pStorage = new TomP2pStorage(storage);
+    public TomP2pDHT(final DHTConfigurationImpl config, final MetaDatabase database) {
+        super(config);
+        this.db = database;
+        this.tomP2pStorage = new TomP2pStorage(db);
     }
 
     /**
@@ -197,7 +206,7 @@ public final class TomP2pDHT extends MetaDHT {
 //
 //            @Override
 //            public boolean peerFailed(PeerAddress remotePeer, PeerException exception) {
-//                logger.debug("Peer status listener, peer failed. Remote peer = " + remotePeer, exception);
+//logger.debug("Peer status listener, peer failed. Remote peer = " + remotePeer, exception);
 //                return false;
 //            }
 //
@@ -205,15 +214,36 @@ public final class TomP2pDHT extends MetaDHT {
 //            public boolean peerFound(PeerAddress remotePeer, PeerAddress referrer,
 //                    PeerConnection peerConnection, RTT roundTripTime) {
 //                logger.debug("Peer status listener, peer FOUND. Remote peer = "
-//                              + remotePeer + " referrer = " + referrer);
+//                        + remotePeer + " referrer = " + referrer);
 //                return true;
 //            }
 //        });
 
-        logger.debug("DHT address = " + this.peer.peerAddress());
+        this.peer.peerBean().peerMap().addPeerMapChangeListener(new PeerMapChangeListener() {
+            @Override
+            public void peerInserted(final PeerAddress peerAddress, final boolean verified) {
+                logger.info("peerInserted: " + peerAddress + " verifid ? " + verified);
+            }
+
+            @Override
+            public void peerRemoved(final PeerAddress peerAddress, final PeerStatistic storedPeerAddress) {
+                logger.info("peerRemoved: " + peerAddress);
+            }
+
+            @Override
+            public void peerUpdated(final PeerAddress peerAddress, final PeerStatistic storedPeerAddress) {
+                logger.info("peerUpdated: " + peerAddress);
+            }
+        });
+        logger.info("Initial DHT address = " + this.peer.peerAddress());
         PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
-        //peerBuilderDHT.storage(tomP2pStorage);
+
+        //Use our custom storage.
+        peerBuilderDHT.storage(tomP2pStorage);
         this.peerDHT = peerBuilderDHT.start();
+        //No protection on dht entries.
+        this.peerDHT.storageLayer().protection(ProtectionEnable.NONE, ProtectionMode.NO_MASTER,
+                ProtectionEnable.NONE, ProtectionMode.NO_MASTER);
     }
 
     @Override
@@ -229,6 +259,8 @@ public final class TomP2pDHT extends MetaDHT {
         Number160 contentHash = TomP2pUtils.toNumber160(hash);
         TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
 
+        //TODO instead of always launching a find peers operation, first check if nwe need it.
+        //We could return local results directly.
         operation.start();
         return operation;
     }
@@ -282,9 +314,9 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     * @param pushManager the pushManager to set
+     * @param dhtPushManager the pushManager to set
      */
-    public void setPushManager(DHTPushManager pushManager) {
-        this.pushManager = pushManager;
+    public void setPushManager(final DHTPushManager dhtPushManager) {
+        this.pushManager = dhtPushManager;
     }
 }

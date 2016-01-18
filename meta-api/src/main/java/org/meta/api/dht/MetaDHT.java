@@ -27,7 +27,6 @@ package org.meta.api.dht;
 import java.io.IOException;
 import org.meta.api.common.MetHash;
 import org.meta.api.configuration.DHTConfiguration;
-import org.meta.api.storage.MetaCache;
 
 /**
  * @author nico
@@ -42,17 +41,14 @@ public abstract class MetaDHT {
     /**
      * The backing storage of the dht.
      */
-    protected MetaCache storage;
-
+    //protected MetaCache storage;
     /**
      * Initialize the DHT with the given configuration and given storage.
      *
      * @param config The dht configuration.
-     * @param dbStorage The backing storage of the dht
      */
-    public MetaDHT(final DHTConfiguration config, final MetaCache dbStorage) {
+    public MetaDHT(final DHTConfiguration config) {
         this.configuration = config;
-        this.storage = dbStorage;
     }
 
     /**
@@ -79,8 +75,9 @@ public abstract class MetaDHT {
     public abstract FindPeersOperation findPeers(MetHash hash);
 
     /**
+     * Do the actual push on the DHT.
      *
-     * This push will only be valid one hour.
+     * The hash will be valid only one hour.
      *
      * @param hash The hash to store on the DHT
      *
@@ -89,13 +86,16 @@ public abstract class MetaDHT {
     public abstract StoreOperation doStore(MetHash hash);
 
     /**
+     * Add the given hash to the list of 'push elements'. This hash will be registered and pushed regularly.
+     *
      * @param hash The hash to store on the DHT.
-     * @param expirationDate The date when the hash will no longer be pushed on the dht. A pushed element will
-     * be updated every hour on the dht
+     * @param expirationDate The date when the hash will no longer be pushed on the dht.
      */
     public abstract void push(MetHash hash, long expirationDate);
 
     /**
+     * Push without expiration.
+     *
      * @param hash The hash to store on the DHT. A pushed element will be updated every hour on the dht
      */
     public abstract void push(MetHash hash);

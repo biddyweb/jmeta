@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.controler;
+package org.meta.controller;
 
 import java.io.IOException;
 import org.meta.api.common.OperationListener;
@@ -97,8 +97,6 @@ public class MetaController {
      * (Cache cleanup, DHT data announce, etc)
      */
     private void scheduleExecutorTasks() {
-        //StorageExpirationTask expirationTask = new StorageExpirationTask(cacheStorage);
-        //this.executor.addTask(expirationTask);
         this.executor.addTask(pushManager);
     }
 
@@ -122,7 +120,6 @@ public class MetaController {
         } catch (P2PPException ex) {
             throw new MetaException("Failed to initialize P2PP server.", ex);
         }
-
         //TODO add and check exceptions
         initWebService();
 
@@ -141,7 +138,7 @@ public class MetaController {
      *
      */
     private void initDht() throws DHTException {
-        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), null);
+        dht = new TomP2pDHT(MetaConfiguration.getDHTConfiguration(), db);
         pushManager = new DHTPushManager(dht, db, model);
         dht.setPushManager(pushManager);
         try {
@@ -176,7 +173,7 @@ public class MetaController {
     }
 
     /**
-     * Initializes the AmpServer.
+     * Initializes the p2pp Server.
      */
     private void initP2PPServer() throws P2PPException {
         this.p2ppManager = new P2PPManager(MetaConfiguration.getP2ppConfiguration(), this.model);
@@ -195,12 +192,12 @@ public class MetaController {
      * Clean stop of controller. Stops and closes all components.
      */
     public void close() {
-        logger.debug("Enter closing method");
         if (dht != null) {
             this.dht.close();
         }
         if (p2ppManager != null) {
             this.p2ppManager.getServer().close();
+            this.p2ppManager.getClient().close();
         }
         if (wsReader != null) {
             this.wsReader.close();
@@ -208,7 +205,7 @@ public class MetaController {
         if (model != null) {
             this.model.close();
         }
-        logger.debug("Closing method done properly");
+        logger.debug("All components stopped.");
     }
 
     /**

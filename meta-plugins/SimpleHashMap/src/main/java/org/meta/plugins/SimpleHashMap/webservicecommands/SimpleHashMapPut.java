@@ -30,8 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-import org.meta.api.common.OperationListener;
-import org.meta.api.dht.StoreOperation;
 import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.Search;

@@ -133,19 +133,21 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
                 Search subtitleSearch = factory.createSearch(movieFile, metaData);
 
                 //lookup on the network to find the subtitles
-                this.api.search(subtitleSearch.getHash(), false, false, subtitleMetaKeys, null).addListener(this);//TODO
+                this.api.search(subtitleSearch.getHash(), false, false, subtitleMetaKeys, null)
+                        .addListener(this);
             } else {
                 initialTextOutput.append("The file does not exist");
             }
         } else {
             initialTextOutput.append("Please set a valide path name");
         }
-        //Change the label of the selfSubmit to me to "make a new search"
+        //Change the label of the selfSubmit button to "make a new search"
         submitToMe.setLabel("Make a new search");
     }
 
     @Override
     public void applySmallUpdate() {
+        logger.info("applySmallUpdate");
     }
 
     @Override
@@ -156,10 +158,10 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
 
     @Override
     public void complete(final SearchOperation operation) {
-        logger.info("Search complete! Results:  ");
+        logger.info("Search complete! nb results: " + operation.getNbResults());
 
         this.results.clear();
-        for (Iterator<Data> i = operation.iterator(); i.hasNext(); ) {
+        for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
             Data data = i.next();
             this.results.put(data.getHash(), data);
         }

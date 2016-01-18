@@ -121,21 +121,27 @@ public class AddSubtitle extends AbstractWebService {
      */
     private void processCreation(final File fResult, final File fSource, final String desc) {
         //Create the empty search
-        SearchCriteria metaData = factory.createCriteria(new MetaData("st", "fr"));
+        SearchCriteria criteria = factory.createCriteria(new MetaData("st", "fr"));
 
+        //logger.info("Creating subtitle search. Source = " + fSource + ". Result = " + fResult);
         DataFile src = factory.getDataFile(fSource);
 
         DataFile newResult = factory.getDataFile(fResult);
-        newResult.addMetaData(new MetaData("description", desc));
-        newResult.addMetaData(new MetaData("name", fResult.getName()));
+        newResult.addMetaData("description", desc);
+        newResult.addMetaData("name", fResult.getName());
 
+        src = (DataFile) api.consolidateData(src);
+
+        //Merge with local meta-data , if any
         newResult = (DataFile) api.consolidateData(newResult);
 
-        Search newSearch = factory.createSearch(src, metaData, newResult);
+        Search newSearch = factory.createSearch(src, criteria, newResult);
+
+        //Merge local results, if any
         newSearch = api.consolidateSearch(newSearch);
 
         if (!api.storePush(newSearch)) {
-            logger.error("Failed to store the seach into db...");
+            logger.error("Failed to register the seach.");
         } else {
             output.flush();
             output.append("Subtitle registered successfully.");

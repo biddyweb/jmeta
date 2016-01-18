@@ -91,7 +91,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
             Search contentSearch = api.getModel().getFactory().createSearch(source, metaData);
             logger.info("get hash : " + contentSearch.getHash().toString());
 
-            SearchOperation operation = api.search(contentSearch.getHash(), false, true, null, null);//TODO
+            SearchOperation operation = api.search(contentSearch.getHash(), false, true, null, null); //TODO
             operation.addListener(this);
 
             localResults = api.getLocalResults(contentSearch.getHash());
@@ -128,7 +128,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
         if (!itDistantResults.hasNext()) {
             output.append("No distant results found...");
         } else {
-            while(itDistantResults.hasNext()) {
+            while (itDistantResults.hasNext()) {
                 output.append("distant : " + itDistantResults.next().toString());
             }
         }

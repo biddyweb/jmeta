@@ -38,7 +38,6 @@ import org.meta.model.MetaSearch;
 import org.meta.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Bson de/serializer for a Search.
@@ -82,7 +81,7 @@ public class SearchBsonSerializer implements BsonSerializer<MetaSearch> {
 
     @Override
     public MetaSearch fromJson(final String json) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

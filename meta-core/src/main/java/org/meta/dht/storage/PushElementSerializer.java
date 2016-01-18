@@ -22,12 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.dht.storage.serializers;
+package org.meta.dht.storage;
 
 import org.meta.api.common.MetHash;
 import org.meta.api.storage.Serializer;
 import org.meta.dht.DHTPushElement;
-import org.meta.storage.comparators.LongComparator;
 import org.meta.utils.SerializationUtils;
 
 /**

@@ -41,7 +41,7 @@ import org.meta.api.storage.KVMapStorage;
 import org.meta.api.storage.MetaDatabase;
 import org.meta.api.storage.MetaTx;
 import org.meta.api.storage.Serializer;
-import org.meta.dht.storage.serializers.PushElementSerializer;
+import org.meta.dht.storage.PushElementSerializer;
 import org.meta.executors.MetaScheduledTask;
 import org.meta.storage.comparators.Comparators;
 import org.meta.storage.serializers.Serializers;
@@ -158,11 +158,11 @@ public class DHTPushManager extends MetaScheduledTask {
                     DHTPushElement kvElement = this.pushElements.get(element.getHash());
                     if (kvElement != null && s != null && (element.getExpiration() == 0
                             || element.getExpiration() >= now)) {
-                        elements.put(element.getHash(), element);
                         operations.add(dht.doStore(element.getHash()));
+                        elements.put(element.getHash(), element);
                     } else {
                         this.pushElements.remove(kvTx, element.getHash());
-                        //If associated hah doesn't exists in the model or if the element has expired, just remove the hash from the KV storage. All elements in the headSet will be removed anyways.
+                        //If associated hash doesn't exists in the model or if the element has expired, just remove the hash from the KV storage. All elements in the headSet will be removed anyways.
                     }
                 } else {
                     //We might retrieve null element from the Set (See serializer).
@@ -206,7 +206,6 @@ public class DHTPushManager extends MetaScheduledTask {
             this.elements = toPush;
             this.nbOperations = operations.size();
             for (StoreOperation op : ops) {
-                //logger.info("Before add Listener");
                 op.addListener(this);
             }
         }

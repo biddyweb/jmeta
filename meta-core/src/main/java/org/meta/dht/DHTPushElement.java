@@ -80,10 +80,10 @@ public class DHTPushElement {
 
     /**
      *
-     * @param expiration expiration timestamp
+     * @param exp expiration timestamp
      */
-    public void setExpiration(final long expiration) {
-        this.expiration = expiration;
+    public void setExpiration(final long exp) {
+        this.expiration = exp;
     }
 
 }

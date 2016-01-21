@@ -40,9 +40,9 @@ import org.meta.p2pp.client.P2PPRequest;
  */
 public class P2PPGetRequest extends P2PPRequest {
 
-    private P2PPGetResponseHandler responseHandler;
+    private final P2PPGetResponseHandler responseHandler;
 
-    private GetOperation operation;
+    private final GetOperation operation;
 
     /**
      *
@@ -51,9 +51,10 @@ public class P2PPGetRequest extends P2PPRequest {
      * @param pieceIdx the piece index
      * @param offset the byte offset inside the piece
      * @param length the requested data length
+     * @param peer the server peer
      */
     public P2PPGetRequest(final P2PPClient p2ppClient, final MetHash hash, final int pieceIdx,
-            final int offset, final int length, MetaPeer peer) {
+            final int offset, final int length, final MetaPeer peer) {
         super(P2PPCommand.GET, p2ppClient, peer);
         this.operation = new GetOperation(hash, pieceIdx, offset, length);
         this.responseHandler = new P2PPGetResponseHandler(this, length);
@@ -100,16 +101,11 @@ public class P2PPGetRequest extends P2PPRequest {
 
     @Override
     public void finish() {
-        if (!this.responseHandler.parse()) {
-            this.operation.setFailed("Failed to parse response");
-        } else {
-            this.operation.setPieceHash(this.responseHandler.getPieceHash());
-            this.operation.setData(this.responseHandler.getData());
-            this.operation.complete();
-        }
         BufferManager.release(buffer);
-        this.operation = null;
-        this.responseHandler = null;
+        //Don't release the response buffer here because it is still used by the operation (getData).
+        this.operation.setPieceHash(this.responseHandler.getPieceHash());
+        this.operation.setData(this.responseHandler.getData());
+        this.operation.complete();
     }
 
     @Override
@@ -117,6 +113,7 @@ public class P2PPGetRequest extends P2PPRequest {
         if (this.buffer != null) {
             BufferManager.release(buffer);
         }
+        //Here we can release the response buffer because the operation won't use it
         if (this.responseHandler.getPayloadBuffer() != null) {
             BufferManager.release(this.responseHandler.getPayloadBuffer());
         }
@@ -128,6 +125,7 @@ public class P2PPGetRequest extends P2PPRequest {
         if (this.buffer != null) {
             BufferManager.release(buffer);
         }
+        //Here we can release the response buffer because the operation won't use it
         if (this.responseHandler.getPayloadBuffer() != null) {
             BufferManager.release(this.responseHandler.getPayloadBuffer());
         }

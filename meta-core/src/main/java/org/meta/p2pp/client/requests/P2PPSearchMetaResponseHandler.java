@@ -70,6 +70,7 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
         MetHash hash;
         Data dataResult;
 
+        logger.debug("P2PPSearchMetaResponseHandler: received results nb = " + nbResults);
         for (int i = 0; i < nbResults; ++i) {
             metaData = this.extractMetaData(buf);
             sizeofDataType = buf.getShort();

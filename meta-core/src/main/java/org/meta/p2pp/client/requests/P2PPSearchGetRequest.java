@@ -47,27 +47,27 @@ public class P2PPSearchGetRequest extends P2PPRequest {
 
     private final Set<String> keys;
 
-    private P2PPSearchGetResponseHandler responseHandler;
+    private final P2PPSearchGetResponseHandler responseHandler;
 
-    private SearchOperation operation;
+    private final SearchOperation operation;
 
-    private Map<String, String> metaDataFilters;
+    private final Map<String, String> metaDataFilters;
 
     /**
      * Default constructor.
      *
      * @param p2ppClient the peer-to-peer protocol client
-     * @param metaDataFilters 
+     * @param filters the meta-data filters
      * @param metaDataKeys the meta data keys to get for each results. Can be null or empty.
      * @param hashes the hashes to search for
      */
-    public P2PPSearchGetRequest(final P2PPClient p2ppClient, 
-            final Map<String, String> metaDataFilters, final Set<String> metaDataKeys,
+    public P2PPSearchGetRequest(final P2PPClient p2ppClient,
+            final Map<String, String> filters, final Set<String> metaDataKeys,
             final MetaPeer peer,
             final MetHash... hashes) {
         super(P2PPCommand.SEARCH_GET, p2ppClient, peer);
         this.keys = metaDataKeys;
-        this.metaDataFilters = metaDataFilters;
+        this.metaDataFilters = filters;
         this.requestedHashes = hashes;
         this.responseHandler = new P2PPSearchGetResponseHandler(this);
         this.operation = new SearchOperation();
@@ -82,7 +82,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
     public boolean build(final char requestToken) {
         this.token = requestToken;
         int requestSize = P2PPConstants.REQUEST_HEADER_SIZE + Short.BYTES + Short.BYTES
-                + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES)+ Short.BYTES);
+                + (requestedHashes.length * (MetHash.BYTE_ARRAY_SIZE + Short.BYTES) + Short.BYTES);
 
         int nbKeys = this.keys != null ? this.keys.size() : 0;
         ByteBuffer[] keyBuffers = null;
@@ -99,17 +99,17 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         int nbFilters = this.metaDataFilters != null ? this.metaDataFilters.size() : 0;
         ByteBuffer[] filters = null;
         if (nbFilters > 0) {
-            filters = new ByteBuffer[nbFilters*2];
+            filters = new ByteBuffer[nbFilters * 2];
             int i = 0;
             for (String filter : this.metaDataFilters.keySet()) {
-                filters[i]   = SerializationUtils.encodeUTF8(filter);
-                filters[i+1] = SerializationUtils.encodeUTF8(this.metaDataFilters.get(filter));
+                filters[i] = SerializationUtils.encodeUTF8(filter);
+                filters[i + 1] = SerializationUtils.encodeUTF8(this.metaDataFilters.get(filter));
                 requestSize += (Short.BYTES + filters[i].limit());
-                requestSize += (Short.BYTES + filters[i+1].limit());
-                i+=2;
+                requestSize += (Short.BYTES + filters[i + 1].limit());
+                i += 2;
             }
         }
-        
+
         if (requestSize > P2PPConstants.MAX_REQUEST_DATA_SIZE) {
             return false;
         }
@@ -120,7 +120,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.buffer.putInt(requestSize - P2PPConstants.REQUEST_HEADER_SIZE);
         //Meta-Data Filters
         this.buffer.putShort((short) (nbFilters));
-        for (int i = 0; i < nbFilters*2; ++i) {
+        for (int i = 0; i < nbFilters * 2; ++i) {
             this.buffer.putShort((short) filters[i].limit());
             this.buffer.put(filters[i]);
         }
@@ -142,16 +142,10 @@ public class P2PPSearchGetRequest extends P2PPRequest {
 
     @Override
     public void finish() {
-        if (!this.responseHandler.parse()) {
-            this.operation.setFailed("Failed to parse response");
-        } else {
-            this.operation.addResults(this.peer, this.responseHandler.getResults());
-            this.operation.complete();
-        }
         BufferManager.release(buffer);
         BufferManager.release(this.responseHandler.getPayloadBuffer());
-        this.operation = null;
-        this.responseHandler = null;
+        this.operation.addResults(this.peer, this.responseHandler.getResults());
+        this.operation.complete();
     }
 
     @Override

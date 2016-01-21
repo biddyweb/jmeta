@@ -131,16 +131,10 @@ public class P2PPSearchRequest extends P2PPRequest {
 
     @Override
     public void finish() {
-        if (!this.responseHandler.parse()) {
-            this.operation.setFailed("Failed to parse response");
-        } else {
-            this.operation.addResults(this.peer, this.responseHandler.getResults());
-            this.operation.complete();
-        }
         BufferManager.release(buffer);
         BufferManager.release(this.responseHandler.getPayloadBuffer());
-        this.operation = null;
-        this.responseHandler = null;
+        this.operation.addResults(this.peer, this.responseHandler.getResults());
+        this.operation.complete();
     }
 
     @Override

@@ -47,8 +47,7 @@ public final class JMeta {
     /**
      * @param args Do we really need to describe this?
      */
-    public static void main(final String[] args) {
-
+    public static void main(final String[] args) throws MetaException {
         try {
             logger.info("Reading configuration files");
             MetaConfiguration.initConfiguration();
@@ -60,9 +59,10 @@ public final class JMeta {
         MetaController controller = new MetaController();
         try {
             controller.initAndStartAll();
-        } catch (MetaException ex) {
+        } catch (final MetaException ex) {
             logger.error("Failed to start JMeta!", ex);
-            return;
+            controller.close();
+            System.exit(-1);
         }
         logger.info("Loading plugins...");
         MetaPluginLoader pluginLoader = new MetaPluginLoader(MetaConfiguration.getPluginsConfiguration(),
@@ -71,7 +71,6 @@ public final class JMeta {
             pluginLoader.loadPlugins();
         } catch (PluginLoadException ex) {
             logger.error("Failed to load plugins!", ex);
-            return;
         }
         logger.info("JMeta started!");
     }

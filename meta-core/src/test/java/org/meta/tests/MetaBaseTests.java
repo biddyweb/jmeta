@@ -69,7 +69,9 @@ public abstract class MetaBaseTests {
             }
         };
         try {
-            Files.walkFileTree(TestUtils.metaTmpDir, visitor);
+            if (TestUtils.metaTmpDir.toFile().exists()) {
+                Files.walkFileTree(TestUtils.metaTmpDir, visitor);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

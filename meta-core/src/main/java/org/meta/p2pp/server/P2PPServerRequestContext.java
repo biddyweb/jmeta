@@ -136,7 +136,11 @@ public class P2PPServerRequestContext {
             byte id = headerBuffer.get();
             this.commandId = P2PPCommand.fromValue(id);
             this.requestDataSize = headerBuffer.getInt();
-            return this.checkHeader();
+            if (!this.checkHeader()) {
+                return false;
+            }
+            this.allocateDataBuffer();
+            return true;
         } catch (final BufferUnderflowException e) {
             logger.error("BufferUnderflowException!!", e);
             return false;

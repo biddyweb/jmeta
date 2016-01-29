@@ -38,7 +38,6 @@ import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.ServerRequestStatus;
 import org.meta.p2pp.server.P2PPCommandHandler;
 import org.meta.p2pp.server.P2PPServer;
-import org.meta.p2pp.server.P2PPServerClientContext;
 import org.meta.p2pp.server.P2PPServerRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +52,7 @@ public class P2PPGetHandler extends P2PPCommandHandler {
 
     private final Logger logger = LoggerFactory.getLogger(P2PPGetHandler.class);
 
-    private P2PPServerClientContext clientContext;
-
+    //private P2PPServerClientContext clientContext;
     private P2PPServerRequestContext request;
 
     private MetHash requestedDataHash;
@@ -69,8 +67,7 @@ public class P2PPGetHandler extends P2PPCommandHandler {
 
     private MetHash pieceHash;
 
-    private GetBlockListener readBlockListener;
-
+    //private GetBlockListener readBlockListener;
     private ByteBuffer responseBuffer;
 
     /**
@@ -82,7 +79,8 @@ public class P2PPGetHandler extends P2PPCommandHandler {
     }
 
     @Override
-    public void run() {
+    public void handle(final P2PPServerRequestContext req) {
+        this.request = req;
         logger.debug("handle get request");
 
         if (!this.parse()) {
@@ -96,15 +94,8 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         }
     }
 
-    @Override
-    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
-        this.clientContext = clientCtx;
-        this.request = req;
-    }
-
     private void requestError() {
         this.request.setStatus(ServerRequestStatus.DISCARDED);
-        this.server.handlerComplete(clientContext, request);
     }
 
     /**
@@ -143,10 +134,9 @@ public class P2PPGetHandler extends P2PPCommandHandler {
             this.requestError();
             return;
         }
-        //this.readBlockListener = new GetBlockListener();
-        logger.info("GET HANDLER: PIECE IDX = " + pieceIdx);
         this.pieceHash = dfAccessor.getPieceHashSync(pieceIdx);
         if (this.pieceHash == MetHash.ZERO) {
+            logger.error("Piece hash failed ( ==MetHash.ZERO )");
             requestError();
             return;
         }
@@ -154,9 +144,6 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         if (this.getBuffer == null) {
             requestError();
         }
-//        dfAccessor.getPieceHash(pieceIdx).addListener(readBlockListener);
-//        dfAccessor.read(dfAccessor.fileOffset(pieceIdx, byteOffset), dataLength)
-//                .addListener(this.readBlockListener);
     }
 
     private void buildResponse() {
@@ -168,14 +155,10 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         responseBuffer.put((byte) 0); //Remaining frames, unused for now
         responseBuffer.putInt(responseSize);
         responseBuffer.putShort((short) MetHash.BYTE_ARRAY_SIZE);
-        //responseBuffer.put(this.readBlockListener.getPieceHash().toByteArray());
         responseBuffer.put(this.pieceHash.toByteArray());
         responseBuffer.put(getBuffer);
-        //responseBuffer.put(this.readBlockListener.getOperation().getBuffer());
-        //this.readBlockListener.getOperation().getBuffer().rewind();
         this.responseBuffer.rewind();
         this.request.setResponseBuffer(responseBuffer);
-        server.handlerComplete(clientContext, request);
     }
 
     /**

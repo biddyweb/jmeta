@@ -1,6 +1,6 @@
 /*
  *
- * JMeta - Meta's java implementation
+* JMeta - Meta's java implementation
  *
  * Copyright (C) 2013-2015 Pablo Joubert
  * Copyright (C) 2013-2015 Thomas Lavocat
@@ -203,7 +203,6 @@ public class P2PPServerClientContext {
         logger.debug("responseDataSent");
         if (this.sendRequest == null) {
             logger.error("OMG!!! responseDataSent and sendRequest NULL!!!!");
-            this.server.closeClient(this);
             return;
         }
         if (this.sendRequest.getStatus() == ServerRequestStatus.RESPONSE_PENDING) {
@@ -212,7 +211,8 @@ public class P2PPServerClientContext {
                 this.sendRequest.close();
                 this.sendRequest = null;
             } else {
-                logger.error("responseDataSent RESPONSE BUFFER has REMAINING!!!!!!");
+                logger.error("responseDataSent RESPONSE BUFFER has REMAINING: "
+                        + this.sendRequest.getResponseBuffer().remaining() + "/" + this.sendRequest.getResponseBuffer().limit());
                 this.handleInvalidRequest(sendRequest);
             }
         } else {
@@ -236,7 +236,7 @@ public class P2PPServerClientContext {
         this.sendRequest = this.sendQueue.poll();
 
         if (this.sendRequest.getStatus() == ServerRequestStatus.DATA_RECEIVED) {
-            this.server.dispatch(this, this.sendRequest);
+
         } else {
             logger.debug("getNextWriteBuffer: sendReq status != DATA_RECEIVED");
         }
@@ -314,7 +314,7 @@ public class P2PPServerClientContext {
      */
     private synchronized void handleInvalidRequest(final P2PPServerRequestContext req) {
         req.setStatus(ServerRequestStatus.DISCARDED);
-        this.server.closeClient(this);
+        //this.server.closeClient(this);
     }
 
 }

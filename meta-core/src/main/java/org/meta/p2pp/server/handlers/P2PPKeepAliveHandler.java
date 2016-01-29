@@ -26,7 +26,6 @@ package org.meta.p2pp.server.handlers;
 
 import org.meta.p2pp.server.P2PPCommandHandler;
 import org.meta.p2pp.server.P2PPServer;
-import org.meta.p2pp.server.P2PPServerClientContext;
 import org.meta.p2pp.server.P2PPServerRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,15 +47,10 @@ public class P2PPKeepAliveHandler extends P2PPCommandHandler {
     }
 
     @Override
-    public void handle(final P2PPServerClientContext clientContext, final P2PPServerRequestContext request) {
+    public void handle(final P2PPServerRequestContext request) {
         logger.debug("handle keep alive");
         //Nothing to do for keep-alive request
         //request.setStatus(P2PPConstants.ServerRequestStatus.FINISHED);
-        server.handlerComplete(clientContext, request);
-    }
-
-    @Override
-    public void run() {
     }
 
 }

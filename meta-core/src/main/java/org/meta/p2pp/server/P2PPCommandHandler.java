@@ -29,7 +29,7 @@ package org.meta.p2pp.server;
  *
  * @author dyslesiq
  */
-public abstract class P2PPCommandHandler implements Runnable {
+public abstract class P2PPCommandHandler {
 
     /**
      * The P2PP server.
@@ -48,13 +48,8 @@ public abstract class P2PPCommandHandler implements Runnable {
     /**
      * Handles a request.
      *
-     * Implementations of this method should take care of writing the response data asynchronously with the
-     * help of the client context.
-     *
-     * @param clientContext the client context of the request
      * @param request the request to handle
      */
-    public abstract void handle(final P2PPServerClientContext clientContext,
-            final P2PPServerRequestContext request);
+    public abstract void handle(final P2PPServerRequestContext request);
 
 }

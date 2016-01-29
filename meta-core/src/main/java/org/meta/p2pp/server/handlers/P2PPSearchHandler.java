@@ -97,7 +97,8 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     }
 
     @Override
-    public void run() {
+    public void handle(final P2PPServerRequestContext req) {
+        this.request = req;
         if (!this.parse()) {
             logger.debug("Failed to parse request.");
             this.request.setStatus(P2PPConstants.ServerRequestStatus.DISCARDED);
@@ -105,13 +106,6 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
             this.prepareResponse();
             this.buildResponse();
         }
-        server.handlerComplete(clientContext, request);
-    }
-
-    @Override
-    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
-        this.clientContext = clientCtx;
-        this.request = req;
     }
 
     /**

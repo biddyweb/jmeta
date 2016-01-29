@@ -27,7 +27,7 @@ package org.meta.p2pp.server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
+import java.net.UnknownHostException;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.AsynchronousServerSocketChannel;
@@ -46,6 +46,7 @@ import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPConstants.P2PPCommand;
 import org.meta.p2pp.P2PPManager;
 import org.meta.p2pp.exceptions.P2PPException;
+import org.meta.p2pp.server.P2PPServerEventHandler.ServerActionContext;
 import org.meta.p2pp.server.handlers.P2PPGetHandler;
 import org.meta.p2pp.server.handlers.P2PPKeepAliveHandler;
 import org.meta.p2pp.server.handlers.P2PPSearchGetHandler;
@@ -70,7 +71,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     private AsynchronousChannelGroup channelGroup;
 
-    private AsynchronousServerSocketChannel server;
+    private AsynchronousServerSocketChannel serverSocket;
 
     private final P2PPServerReadHandler readHandler;
 
@@ -78,8 +79,6 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
 
     private final EnumMap<P2PPCommand, CommandHandlerAccessor<?>> commandHandlers;
 
-    //private final ExecutorService handlersExecutor;
-    //private final EnumMap<P2PPCommand, P2PPCommandHandler> cmdHandlers;
     /**
      * Creates the server with the given manager and configuration.
      *
@@ -92,8 +91,6 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         this.readHandler = new P2PPServerReadHandler();
         this.writeHandler = new P2PPServerWriteHandler();
         this.commandHandlers = new EnumMap<>(P2PPCommand.class);
-        //this.cmdHandlers = new EnumMap<>(P2PPCommand.class);
-        //this.handlersExecutor = Executors.newFixedThreadPool(2);
         this.initHandlers();
     }
 
@@ -146,18 +143,24 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
      *
      * @throws P2PPException
      */
-    private void bindServerSocket() throws P2PPException {
+    private void bindServerSocket() throws P2PPException, UnknownHostException {
         NetworkConfiguration nwConfig = this.config.getNetworkConfig();
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
         //For now only one address is supported! TODO support multi-binding of the Server...
-
-        InetAddress addr = configAddresses.iterator().next();
-        logger.info("P2PP Server listening on port " + nwConfig.getPort());
-        InetSocketAddress inetAddr = new InetSocketAddress(addr, nwConfig.getPort());
         try {
-            server.bind(inetAddr);
+            InetAddress addr;
+            if (configAddresses.iterator().hasNext()) {
+                addr = configAddresses.iterator().next();
+            } else {
+                //TODO proper binding
+                //Ugly fix when there is no addresses configured. Bind to everything
+                addr = InetAddress.getByName("0.0.0.0");
+            }
+            InetSocketAddress inetAddr = new InetSocketAddress(addr, nwConfig.getPort());
+            serverSocket.bind(inetAddr);
+            logger.info("P2PP Server started on port " + nwConfig.getPort());
         } catch (IOException ex) {
-            throw new P2PPException("Failed to bind server socket on address: " + inetAddr, ex);
+            throw new P2PPException("Failed to bind server socket.", ex);
         }
     }
 
@@ -171,10 +174,10 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
             logger.info("Starting server with: " + this.config.getServerThreads() + " Threads");
             this.channelGroup = AsynchronousChannelGroup.withFixedThreadPool(this.config.getServerThreads(),
                     Executors.defaultThreadFactory());
-            server = AsynchronousChannelProvider.provider().
+            serverSocket = AsynchronousChannelProvider.provider().
                     openAsynchronousServerSocketChannel(this.channelGroup);
             bindServerSocket();
-            server.accept(this, this);
+            serverSocket.accept(null, this);
         } catch (IOException ex) {
             throw new P2PPException("Failed to created channel group", ex);
         }
@@ -187,8 +190,8 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
         try {
             //TODO keep a list of client contexts and close them properly here...
             //Try graceful shutdown here ?
-            //i.e wait for pending request to finish ? => I think not
-            this.server.close();
+            //i.e wait for pending request to finish ?
+            this.serverSocket.close();
             this.channelGroup.shutdownNow();
         } catch (final IOException ex) {
             //Nothing to do here, we may abort ongoing work thus catch an exception
@@ -197,21 +200,63 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
+     * Executes actions.
+     *
+     * @param actionContext
+     */
+    private void dispatchActions(ServerActionContext actionContext) {
+        ServerActionContext tmp;
+        while (actionContext != null) {
+            tmp = actionContext.next();
+            actionContext.next(null);
+            switch (actionContext.getAction()) {
+                case READ:
+                    this.read(actionContext);
+                    break;
+                case WRITE:
+                    this.write(actionContext);
+                    break;
+                case DISPATCH:
+                    this.dispatch(actionContext);
+                    break;
+                case ERROR:
+                    this.handleSocketError(actionContext);
+                    break;
+                case NONE:
+                    logger.info("dispatchActions: nothing to do");
+                    break;
+                default:
+                    throw new AssertionError(actionContext.getAction().name());
+            }
+            actionContext = tmp;
+        }
+    }
+
+    /**
+     * Success completion handler for accept().
+     *
      * @param socket the newly accepted socket channel
      * @param a should be == to 'this' here but we are our own completion handler
      */
     @Override
     public void completed(final AsynchronousSocketChannel socket, final P2PPServer a) {
-        logger.info("ACCEPT Complete, socket = " + socket);
-        server.accept(this, this);
-        P2PPServerClientContext clientContext = new P2PPServerClientContext(this, socket);
-        this.read(clientContext);
+        logger.debug("ACCEPT Complete, socket = {}", socket);
+        serverSocket.accept(null, this);
+        ServerSocketContext socketContext = new ServerSocketContext();
+        this.dispatchActions(socketContext.accepted(socket));
     }
 
+    /**
+     * Failure completion handler for accept().
+     *
+     * @param thrwbl the error
+     * @param a == null
+     */
     @Override
     public void failed(final Throwable thrwbl, final P2PPServer a) {
         if (thrwbl instanceof AsynchronousCloseException) {
             //The server is shutting down, it's alright
+            logger.warn("Closed server channel group resulted in failed accept.");
         } else {
             logger.error("An error occured while accepting client connections.", thrwbl);
         }
@@ -222,120 +267,73 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
      *
      * @param context the client context
      */
-    private void handleSocketError(final P2PPServerClientContext context) {
-        logger.debug("Socket error: " + context.getClientSocket());
-        this.closeClient(context);
+    private void handleSocketError(final ServerActionContext context) {
+        logger.error("Socket error: " + context.getHandler().getSocket());
+        context.getHandler().close();
     }
 
     /**
-     * Close the given client socket context.
+     * Starts an asynchronous read operation with the given action context content.
      *
-     * @param clientContext the client context
+     * @param context the action context
      */
-    public void closeClient(final P2PPServerClientContext clientContext) {
-        logger.debug("Closing client context.");
-        clientContext.close();
+    private void read(final ServerActionContext context) {
+        context.getHandler().getSocket().read(context.getAttachment(), P2PPConstants.READ_TIMEOUT,
+                TimeUnit.SECONDS, context, readHandler);
     }
 
     /**
-     * Get the next request to dispatch, if any, from the given context and executes the appropriate handler.
+     * Starts an asynchronous write operation with the given action context content.
      *
-     * @param c the context
+     * @param context the context
      */
-//    void dispatch(final P2PPServerClientContext c) {
-//        P2PPServerRequestContext req = c.getNextDispatchRequest();
-//
-//        if (req != null) {
-//            P2PPCommandHandler handler = this.getCommandHandler(req.getId());
-//
-//            if (handler != null) {
-//                handler.handle(c, req);
-//                handler.run(); //This could be run in an executor service if needed.
-//            }
-//        }
-//    }
-    void dispatch(final P2PPServerClientContext c, final P2PPServerRequestContext req) {
-        if (req != null) {
-            P2PPCommandHandler handler = this.getCommandHandler(req.getId());
+    private void write(final ServerActionContext context) {
+        context.getHandler().getSocket().write(context.getAttachment(), P2PPConstants.WRITE_TIMEOUT,
+                TimeUnit.SECONDS, context, writeHandler);
+    }
 
-            if (handler != null) {
-                handler.handle(c, req);
-                handler.run(); //This could be run in an executor service if needed.
-            }
+    /**
+     * Actions in this method are synchronous.
+     *
+     * dispatchActions() will be called directly after the request has been handled.
+     *
+     * @param context
+     */
+    private void dispatch(final ServerActionContext context) {
+        P2PPServerRequestContext req = context.getAttachment();
+
+        P2PPCommandHandler handler = this.getCommandHandler(req.getId());
+        if (handler == null) {
+            this.handleSocketError(context);
+            return;
         }
-    }
-
-    /**
-     * Retrieve the next buffer to read, if any, from the given context and start a read operation.
-     *
-     * @param c the context
-     */
-    private void read(final P2PPServerClientContext c) {
-        ByteBuffer buf = c.getNextReadBuffer();
-
-        if (buf != null) {
-            logger.debug("SERVER READING");
-            c.getClientSocket().read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS, c, readHandler);
-        } else {
-            logger.debug("Read: buffer null");
-        }
-    }
-
-    /**
-     * Retrieve the next buffer to write, if any, from the given context and start a write operation.
-     *
-     * @param c the context
-     */
-    private void write(final P2PPServerClientContext c) {
-        ByteBuffer buf = c.getNextWriteBuffer();
-
-        if (buf != null) {
-            logger.debug("SERVER WRITING");
-            c.getClientSocket().write(buf, P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS, c, writeHandler);
-        } else {
-            logger.debug("Write: buffer null");
-        }
-    }
-
-    /**
-     * Called by command handlers to notify that the given request has been handled completely.
-     *
-     * @param c the client context
-     * @param request the handled request
-     */
-    public void handlerComplete(final P2PPServerClientContext c, final P2PPServerRequestContext request) {
-        c.handlerComplete(request);
-        this.write(c);
+        handler.handle(req);
+        this.dispatchActions(context.getHandler().handlerComplete(context));
     }
 
     /**
      * Handler for client requests read operations.
      */
-    class P2PPServerReadHandler implements CompletionHandler<Integer, P2PPServerClientContext> {
+    class P2PPServerReadHandler implements CompletionHandler<Integer, ServerActionContext> {
 
         @Override
-        public void completed(final Integer bytes, final P2PPServerClientContext context) {
-            logger.debug("Received bytes: " + bytes);
+        public void completed(final Integer bytes, final ServerActionContext context) {
             if (bytes == -1) {
                 P2PPServer.this.handleSocketError(context);
             } else {
-                synchronized (context) {
-                    context.requestDataReceived();
-                    read(context);
-                    write(context);
-                }
+                P2PPServer.this.dispatchActions(context.getHandler().dataReceived(context));
             }
         }
 
         @Override
-        public void failed(final Throwable thrwbl, final P2PPServerClientContext context) {
+        public void failed(final Throwable thrwbl, final ServerActionContext context) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Read completion handler: interrupted by timeout.");
             } else if (thrwbl instanceof AsynchronousCloseException) {
                 //Nothing to do, we are shuting down
+                logger.warn("Read interrupted: socket close requested.");
             } else {
                 //TODO handle exceptions based on their types.
-                //AsynchronousCloseException should be ignored.
                 logger.warn("Exception catched by read completion handler.", thrwbl);
             }
             P2PPServer.this.handleSocketError(context);
@@ -345,27 +343,25 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     /**
      * Handler for client requests responses write operations.
      */
-    class P2PPServerWriteHandler implements CompletionHandler<Integer, P2PPServerClientContext> {
+    class P2PPServerWriteHandler implements CompletionHandler<Integer, ServerActionContext> {
 
         @Override
-        public void completed(final Integer bytes, final P2PPServerClientContext context) {
-            logger.debug("Wrote bytes: " + bytes);
+        public void completed(final Integer bytes, final ServerActionContext context) {
             if (bytes == -1) {
                 P2PPServer.this.handleSocketError(context);
             } else {
-                synchronized (context) {
-                    context.responseDataSent();
-                    write(context);
-                }
+                logger.info("P2PPServerReadHandler: wrote " + bytes + " bytes");
+                P2PPServer.this.dispatchActions(context.getHandler().dataSent(context));
             }
         }
 
         @Override
-        public void failed(final Throwable thrwbl, final P2PPServerClientContext context) {
+        public void failed(final Throwable thrwbl, final ServerActionContext context) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Write completion handler: interrupted by timeout.");
             } else if (thrwbl instanceof AsynchronousCloseException) {
                 //Nothing to do, we are shuting down
+                logger.warn("Write interrupted: socket close requested.");
             } else {
                 logger.warn("Exception catched by write completion handler: {}", thrwbl.getMessage(), thrwbl);
             }

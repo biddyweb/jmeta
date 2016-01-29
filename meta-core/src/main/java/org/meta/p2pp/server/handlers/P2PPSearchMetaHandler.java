@@ -36,7 +36,6 @@ import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.server.P2PPServer;
-import org.meta.p2pp.server.P2PPServerClientContext;
 import org.meta.p2pp.server.P2PPServerRequestContext;
 import org.meta.utils.SerializationUtils;
 import org.slf4j.Logger;
@@ -65,7 +64,8 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     }
 
     @Override
-    public void run() {
+    public void handle(final P2PPServerRequestContext req) {
+        this.request = req;
         if (!this.parse()) {
             logger.debug("Failed to parse request.");
             this.request.setStatus(P2PPConstants.ServerRequestStatus.DISCARDED);
@@ -73,13 +73,6 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
             this.prepareResponse();
             this.buildResponse();
         }
-        server.handlerComplete(clientContext, request);
-    }
-
-    @Override
-    public void handle(final P2PPServerClientContext clientCtx, final P2PPServerRequestContext req) {
-        this.clientContext = clientCtx;
-        this.request = req;
     }
 
     /**

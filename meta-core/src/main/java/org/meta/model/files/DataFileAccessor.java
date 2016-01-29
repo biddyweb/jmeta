@@ -37,7 +37,6 @@ import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
 import org.meta.api.common.OperationListener;
 import org.meta.api.model.DataFile;
-import org.meta.p2pp.BufferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -285,7 +284,6 @@ public class DataFileAccessor {
         if (this.piecesHash[pieceIndex] == null) {
             ByteBuffer buff = this.readSync(fileOffset(pieceIndex, 0), pieceSize(pieceIndex));
             this.piecesHash[pieceIndex] = MetamphetUtils.makeSHAHash(buff);
-            BufferManager.release(buff);
         }
         return this.piecesHash[pieceIndex];
     }

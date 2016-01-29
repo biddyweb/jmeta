@@ -147,7 +147,6 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
 
     @Override
     public void applySmallUpdate() {
-        logger.info("applySmallUpdate");
     }
 
     @Override

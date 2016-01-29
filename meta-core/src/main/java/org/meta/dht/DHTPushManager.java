@@ -98,7 +98,7 @@ public class DHTPushManager extends MetaScheduledTask {
             final ModelStorage modelStorage) {
         //TODO we should start this timed task only once the DHT has bootstraped
         //TODO the execution interval should also be the same as 'F_PUSHI' to re-push failed hash asap
-        super(20, 10);
+        super(5, 10);
         this.dht = metaDht;
         this.db = database;
         this.model = modelStorage;

@@ -1,7 +1,6 @@
-
 # JMETA
 
-JMeta is an open-source project, written in Java, aiming to provide a platform and a framework for building fully-decentralized P2P search applications.  
+JMeta is a free software project, written in Java, aiming to provide a platform and a framework for building fully-decentralized P2P search applications.  
 JMeta is currently based on [TomP2P](https://github.com/tomp2p/TomP2P), an advanced DHT library.  
 
 More information about the project : [Project concepts](https://gitlab.ouahpiti.info/meta/jmeta/wikis/concepts)

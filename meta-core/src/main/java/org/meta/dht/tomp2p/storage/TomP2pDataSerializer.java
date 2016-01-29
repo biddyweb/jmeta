@@ -43,7 +43,6 @@ public class TomP2pDataSerializer implements Serializer<Data> {
     @Override
     public byte[] serialize(final Data data) {
         byte[] buf = new byte[data.length() + Long.BYTES];
-        System.out.println("TomP2pDataSerializer.serialize() nb bytes = " + buf.length);
 
         SerializationUtils.longToBytes(data.expirationMillis(), buf, 0);
         ByteBuffer[] buffers = data.toByteBuffers();
@@ -58,7 +57,6 @@ public class TomP2pDataSerializer implements Serializer<Data> {
 
     @Override
     public Data deserialize(final byte[] buf) {
-        System.out.println("TomP2pDataSerializer.DEserialize() nb bytes = " + buf.length);
         long expirationMilis = SerializationUtils.bytesToLong(buf);
 
         Data data = new Data(buf, Long.BYTES, buf.length - Long.BYTES);

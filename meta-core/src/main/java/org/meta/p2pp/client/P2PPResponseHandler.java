@@ -111,8 +111,9 @@ public abstract class P2PPResponseHandler {
     /**
      * Used to extract usable data from the protocol response data.
      *
+     * @param headerBuffer the buffer to parse
      * @return true is successfully parsed, false otherwise
      */
-    public abstract boolean parse();
+    public abstract boolean parse(final ByteBuffer headerBuffer);
 
 }

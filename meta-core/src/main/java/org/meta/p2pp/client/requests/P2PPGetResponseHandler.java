@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import org.meta.api.common.MetHash;
 import org.meta.p2pp.client.P2PPRequest;
 import org.meta.p2pp.client.P2PPResponseHandler;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -54,15 +55,15 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
     }
 
     @Override
-    public boolean parse() {
-        ByteBuffer buf = this.payloadBuffer;
+    public boolean parse(final ByteBuffer buf) {
         buf.rewind();
         short sizeofHash = buf.getShort();
         pieceHash = new MetHash(buf, sizeofHash);
-        if (payloadBuffer.remaining() != requestedLength) {
+        if (buf.remaining() != requestedLength) {
+            LoggerFactory.getLogger(P2PPGetResponseHandler.class).error("P2PPGetResponseHandler: buf.remaining() != requestedLength. " + buf.remaining() + " != " + requestedLength);
             return false;
         }
-        this.data = payloadBuffer.asReadOnlyBuffer();
+        this.data = buf.asReadOnlyBuffer();
         return true;
     }
 

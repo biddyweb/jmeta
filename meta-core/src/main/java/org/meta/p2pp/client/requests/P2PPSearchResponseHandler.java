@@ -75,8 +75,7 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
     }
 
     @Override
-    public boolean parse() {
-        ByteBuffer buf = this.payloadBuffer;
+    public boolean parse(final ByteBuffer buf) {
         buf.rewind();
         int nbResults = buf.getInt();
         this.results = new HashSet<>(nbResults);

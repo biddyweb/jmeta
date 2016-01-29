@@ -213,24 +213,24 @@ public class P2PPClientRequestManager {
     public void dataSent() {
         if (this.sendRequest == null) {
             logger.error("dataSent: SEND REQ == NULL!!");
-            this.client.closeConnection(peer);
+            this.client.closeContext(peer);
             return;
         }
         if (this.sendRequest.getStatus() != ClientRequestStatus.SEND_PENDING) {
             logger.debug("dataSent SEND REQ STATUS != SEND_PENDING");
-            this.client.closeConnection(peer);
+            this.client.closeContext(peer);
             return;
         }
         if (this.sendRequest.getBuffer().hasRemaining()) {
             logger.debug("dataSent SEND REQ BUFFER HAS REMAINING!");
-            this.client.closeConnection(peer);
+            this.client.closeContext(peer);
             return;
         }
         if (this.sendRequest.hasResponse()) {
             this.sendRequest.setStatus(ClientRequestStatus.SEND_COMPLETE);
             if (!this.readQueue.add(this.sendRequest)) {
                 logger.error("FAILED TO MOVE REQUEST FROM SEND QUEUE TO READ QUEUE!");
-                this.client.closeConnection(peer);
+                this.client.closeContext(peer);
             }
             this.sendRequest = null;
         } else {
@@ -278,28 +278,28 @@ public class P2PPClientRequestManager {
             if (this.recvRequest == null) {
                 if (this.readQueue.isEmpty()) {
                     logger.error("dataReceived: readQueue.isEmpty() AND recvRequest == null!!!!!!!");
-                    this.client.closeConnection(peer);
+                    this.client.closeContext(peer);
                     return;
                 }
                 this.recvRequest = this.readQueue.poll();
             }
             if (!this.recvRequest.getResponseHandler().parseHeader(headerBuffer)) {
                 this.recvRequest.setFailed("Failed to parse response header.");
-                this.client.closeConnection(peer);
+                this.client.closeContext(peer);
                 return;
             }
             this.recvRequest.setStatus(ClientRequestStatus.RESPONSE_HEADER_RECEIVED);
         } else {
             if (this.recvRequest == null) {
                 logger.error("dataReceived: recvRequest == null!!!!!!!");
-                this.client.closeConnection(peer);
+                this.client.closeContext(peer);
                 return;
             }
-            if (!this.recvRequest.getResponseHandler().parse()) {
-                this.recvRequest.setFailed("Failed to parse response.");
-                this.client.closeConnection(peer);
-                return;
-            }
+//            if (!this.recvRequest.getResponseHandler().parse()) {
+//                this.recvRequest.setFailed("Failed to parse response.");
+//                this.client.closeContext(peer);
+//                return;
+//            }
             this.recvRequest.finish();
             this.recvRequest = null;
         }

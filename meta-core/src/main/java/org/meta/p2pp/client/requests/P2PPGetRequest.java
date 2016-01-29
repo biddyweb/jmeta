@@ -40,7 +40,7 @@ import org.meta.p2pp.client.P2PPRequest;
  */
 public class P2PPGetRequest extends P2PPRequest {
 
-    private final P2PPGetResponseHandler responseHandler;
+    private P2PPGetResponseHandler responseHandler;
 
     private final GetOperation operation;
 
@@ -105,6 +105,7 @@ public class P2PPGetRequest extends P2PPRequest {
         //Don't release the response buffer here because it is still used by the operation (getData).
         this.operation.setPieceHash(this.responseHandler.getPieceHash());
         this.operation.setData(this.responseHandler.getData());
+        this.responseHandler = null;
         this.operation.complete();
     }
 

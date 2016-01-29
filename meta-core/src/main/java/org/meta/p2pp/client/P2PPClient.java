@@ -25,20 +25,22 @@
 package org.meta.p2pp.client;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.InterruptedByTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.configuration.P2PPConfiguration;
 import org.meta.api.model.ModelFactory;
 import org.meta.p2pp.P2PPConstants;
 import org.meta.p2pp.P2PPManager;
+import org.meta.p2pp.client.P2PPClientEventHandler.ClientActionContext;
 import org.meta.p2pp.exceptions.P2PPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 public class P2PPClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(P2PPClient.class);
+    private final Logger logger = LoggerFactory.getLogger(P2PPClient.class);
+
+    private static final int MAX_REQUEST_HANDLERS_THREADS = 10;
 
     private final P2PPManager manager;
 
@@ -64,10 +68,12 @@ public class P2PPClient {
 
     private final AsynchronousChannelGroup channelGroup;
 
+    private final RequestCompletionExecutor operationExecutor;
+
     /**
      * Opened connections to server peers.
      */
-    private final Map<MetaPeer, P2PPClientRequestManager> connections;
+    private final Map<MetaPeer, ClientSocketContext> connections;
 
     /**
      * Creates the P2PP client with the given manager and configuration.
@@ -80,12 +86,18 @@ public class P2PPClient {
         this.manager = p2ppManager;
         this.config = conf;
         try {
-            logger.debug("Starting client channelGroup with: " + this.config.getClientThreads() + " Threads");
-            this.channelGroup = AsynchronousChannelGroup.withFixedThreadPool(conf.getClientThreads(),
-                    Executors.defaultThreadFactory());
+            //Unbounded cached pool. This will use more and more threads if needed, depending on the load
+            //Created threads will be shut down after 60s.
+            ExecutorService ioExecutor = new ThreadPoolExecutor(1, this.config.getClientThreads(), 120L,
+                    TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+            logger.debug("Starting P2PP client with: " + this.config.getClientThreads()
+                    + " Threads for I/O events");
+            this.channelGroup = AsynchronousChannelGroup.withThreadPool(ioExecutor);
         } catch (IOException ex) {
             throw new P2PPException("Failed to create P2PP client channel group", ex);
         }
+        //Executor service handling the execution of the requests's completion handlers
+        this.operationExecutor = new RequestCompletionExecutor();
         this.readHandler = new P2PPClientReadHandler();
         this.writeHandler = new P2PPClientWriteHandler();
         this.connectHandler = new P2PPClientConnectHandler();
@@ -100,23 +112,20 @@ public class P2PPClient {
      * All pending requests are set to failed state.
      */
     public void close() {
-        this.channelGroup.shutdown();
-        for (P2PPClientRequestManager c : this.connections.values()) {
+        for (ClientSocketContext c : this.connections.values()) {
             c.close();
         }
-    }
-
-    /**
-     *
-     * @param context the context to connecting
-     * @throws java.io.IOException if failed to create the client socket
-     */
-    public void connect(final P2PPClientRequestManager context) throws IOException {
-        logger.debug("Socket needs to connect!");
-        AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open(
-                this.channelGroup);
-        context.connecting(socketChannel);
-        socketChannel.connect(context.getServerPeer().getSocketAddr(), context, this.connectHandler);
+        if (!this.channelGroup.isShutdown()) {
+            this.channelGroup.shutdown();
+        }
+        if (!this.channelGroup.isTerminated()) {
+            try {
+                this.channelGroup.shutdownNow();
+            } catch (final IOException ex) {
+                logger.error("Exception while shutting down P2PP Client channel group.", ex);
+            }
+        }
+        this.operationExecutor.close();
     }
 
     /**
@@ -135,90 +144,126 @@ public class P2PPClient {
      *
      */
     public void submitRequest(final MetaPeer peer, final P2PPRequest req) {
-        P2PPClientRequestManager c;
+        ClientSocketContext c;
 
         synchronized (this.connections) {
             c = this.connections.get(peer);
 
             if (c == null) {
                 logger.info("New client request manager for server peer: " + peer);
-                c = new P2PPClientRequestManager(peer, this);
+                c = new ClientSocketContext(peer);
                 this.connections.put(peer, c);
             }
         }
+        dispatchActions(c.addRequest(req));
+    }
+
+    /**
+     * Executes the actions of the given ClientActionContext.
+     *
+     * @param actionContext
+     */
+    private void dispatchActions(ClientActionContext actionContext) {
         try {
-            synchronized (c) {
-                c.addRequest(req);
-                if (!c.isConnected() && !c.isConnecting()) {
-                    this.connect(c);
-                } else if (c.isConnected() && !c.isConnecting()) {
-                    write(c);
+            ClientActionContext tmp;
+            while (actionContext != null) {
+                logger.info("dispatchIoActions: " + actionContext.getAction());
+                tmp = actionContext.next();
+                //Cut the next action if any
+                actionContext.next(null);
+                switch (actionContext.getAction()) {
+                    case CONNECT:
+                        this.connect(actionContext);
+                        break;
+                    case READ:
+                        this.read(actionContext);
+                        break;
+                    case WRITE:
+                        this.write(actionContext);
+                        break;
+                    case ERROR:
+                        this.handleError(null, actionContext);
+                        break;
+                    case NONE:
+                        logger.info("dispatchActions: nothing to do");
+                        break;
+                    case COMPLETE_REQUEST:
+                        this.operationExecutor.submitRequest(actionContext.getAttachment());
+                        break;
+                    default:
+                        throw new AssertionError(actionContext.getAction().name());
                 }
+                actionContext = tmp;
             }
-        } catch (IOException ex) {
-            logger.warn("Failed to get socket channel from group.");
-            req.setFailed(ex);
+        } catch (IOException | IllegalStateException ex) {
+            this.handleError(ex, actionContext);
         }
+    }
+
+    /**
+     *
+     * @param ioContext
+     * @throws java.io.IOException if failed to create the client socket
+     */
+    private void connect(final ClientActionContext ioContext) throws IOException {
+        AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open(
+                this.channelGroup);
+        ioContext.getEventHandler().connecting(socketChannel);
+        socketChannel.connect(ioContext.getEventHandler().getServerPeer().getSocketAddr(), ioContext,
+                this.connectHandler);
     }
 
     /**
      *
      * @param context the context that needs to read from server peer
      */
-    public void read(final P2PPClientRequestManager context) {
-        ByteBuffer buf = context.getNextReadBuffer();
-
-        if (buf != null) {
-            logger.debug("CLIENT READING");
-            context.getSocket().read(buf, P2PPConstants.READ_TIMEOUT, TimeUnit.SECONDS,
-                    context, readHandler);
-        }
+    private void read(final ClientActionContext context) {
+        logger.debug("CLIENT READING");
+        context.getEventHandler().getSocket().read(context.getAttachment(), P2PPConstants.READ_TIMEOUT,
+                TimeUnit.SECONDS, context, readHandler);
     }
 
     /**
      *
      * @param context the context that needs to write to server peer
      */
-    public void write(final P2PPClientRequestManager context) {
-        ByteBuffer buf = context.getNextWriteBuffer();
-
-        if (buf != null) {
-            logger.debug("CLIENT WRITING");
-            context.getSocket().write(buf, P2PPConstants.WRITE_TIMEOUT, TimeUnit.SECONDS,
-                    context, writeHandler);
-        }
+    private void write(final ClientActionContext context) {
+        logger.debug("CLIENT WRITING");
+        context.getEventHandler().getSocket().write(context.getAttachment(), P2PPConstants.WRITE_TIMEOUT,
+                TimeUnit.SECONDS, context, writeHandler);
     }
 
     /**
-     * Removes the connection to the given peer from the connection pool.
+     * Removes the connection context to the given peer from the connection pool.
      *
      * All pending requests are set to failed state.
      *
      * @param peer the server peer
      */
-    public void closeConnection(final MetaPeer peer) {
-        P2PPClientRequestManager c;
+    public void closeContext(final MetaPeer peer) {
+        ClientSocketContext c;
 
         synchronized (this.connections) {
             logger.info("Closing client manager for peer : " + peer);
             c = this.connections.remove(peer);
         }
         if (c != null) {
-            synchronized (c) {
-                c.close();
-            }
+            c.close();
         }
     }
 
     /**
      * On read or write failure, dispose of the connection context.
      */
-    private void handleSocketError(final Throwable t, final P2PPClientRequestManager clientManager) {
+    private void handleError(final Throwable t, final ClientActionContext ioContext) {
         //Try to reconnect on server disconnection or not ?
         //Needs discussion.
         //Maybe a dead peer is a dead peer and should not be contacted after a certain timeout (30minutes?)
-        logger.warn("Socket error for server peer: " + clientManager.getServerPeer());
-        this.closeConnection(clientManager.getServerPeer());
+        logger.warn("Socket error for server peer: " + ioContext.getEventHandler().getServerPeer());
+        if (t != null) {
+            logger.warn("Error in P2PP Client:", t);
+        }
+        this.closeContext(ioContext.getEventHandler().getServerPeer());
     }
 
     /**
@@ -227,87 +272,124 @@ public class P2PPClient {
      */
     public final ModelFactory getModelFactory() {
         return this.manager.getModelStorage().getFactory();
+
     }
 
     /**
      * Handler for client connections.
      */
-    private class P2PPClientConnectHandler implements CompletionHandler<Void, P2PPClientRequestManager> {
+    private class P2PPClientConnectHandler implements CompletionHandler<Void, ClientActionContext> {
 
         @Override
-        public void completed(final Void v, final P2PPClientRequestManager c) {
-            logger.info("Connected to :" + c.getServerPeer());
-            synchronized (c) {
-                c.connected();
-                //Launch read/write once the socket is connected
-                write(c);
-                //read(c);
-            }
+        public void completed(final Void v, final ClientActionContext ioContext) {
+            dispatchActions(ioContext.getEventHandler().connected(ioContext));
         }
 
         @Override
-        public void failed(final Throwable thrwbl, final P2PPClientRequestManager c) {
-            P2PPClient.this.handleSocketError(thrwbl, c);
+        public void failed(final Throwable thrwbl, final ClientActionContext context) {
+            P2PPClient.this.handleError(thrwbl, context);
         }
     }
 
     /**
      * Handler for client requests read operations.
      */
-    private class P2PPClientReadHandler implements CompletionHandler<Integer, P2PPClientRequestManager> {
+    private class P2PPClientReadHandler implements CompletionHandler<Integer, ClientActionContext> {
 
         @Override
-        public void completed(final Integer bytes, final P2PPClientRequestManager context) {
+        public void completed(final Integer bytes, final ClientActionContext ioContext) {
             logger.debug("Read bytes:" + bytes);
-
             if (bytes <= 0) {
-                P2PPClient.this.handleSocketError(null, context);
+                P2PPClient.this.handleError(null, ioContext);
             } else if (bytes >= 0) {
-                synchronized (context) {
-                    context.dataReceived();
-                    read(context);
-                }
+                dispatchActions(ioContext.getEventHandler().dataReceived(ioContext));
             }
         }
 
         @Override
-        public void failed(final Throwable thrwbl, final P2PPClientRequestManager context) {
+        public void failed(final Throwable thrwbl, final ClientActionContext ioContext) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Read interrupted by timeout.");
             } else {
                 logger.warn("Exception catched by read completion handler: {}", thrwbl.getMessage(), thrwbl);
             }
-            P2PPClient.this.handleSocketError(thrwbl, context);
+            P2PPClient.this.handleError(thrwbl, ioContext);
         }
     }
 
     /**
      * Handler for client requests write operations.
      */
-    private class P2PPClientWriteHandler implements CompletionHandler<Integer, P2PPClientRequestManager> {
+    private class P2PPClientWriteHandler implements CompletionHandler<Integer, ClientActionContext> {
 
         @Override
-        public void completed(final Integer bytes, final P2PPClientRequestManager context) {
+        public void completed(final Integer bytes, final ClientActionContext ioContext) {
             logger.debug("Wrote bytes:" + bytes);
             if (bytes <= 0) {
-                P2PPClient.this.handleSocketError(null, context);
+                P2PPClient.this.handleError(null, ioContext);
             } else if (bytes >= 0) {
-                synchronized (context) {
-                    context.dataSent();
-                    write(context);
-                    read(context);
-                }
+                dispatchActions(ioContext.getEventHandler().dataSent(ioContext));
             }
         }
 
         @Override
-        public void failed(final Throwable thrwbl, final P2PPClientRequestManager context) {
+        public void failed(final Throwable thrwbl, final ClientActionContext ioContext) {
             if (thrwbl instanceof InterruptedByTimeoutException) {
                 logger.warn("Write interrupted by timeout.");
             } else {
                 logger.warn("Exception catched by write completion handler: {}", thrwbl.getMessage(), thrwbl);
             }
-            P2PPClient.this.handleSocketError(thrwbl, context);
+            P2PPClient.this.handleError(thrwbl, ioContext);
         }
     }
+
+    /**
+     * Simple wrapper around a P2PPRequest making Runnable the finish() call.
+     */
+    private class RunnableRequest implements Runnable {
+
+        private final P2PPRequest request;
+
+        RunnableRequest(final P2PPRequest req) {
+            this.request = req;
+        }
+
+        @Override
+        public void run() {
+            this.request.finish();
+        }
+    }
+
+    /**
+     * Simple wrapper around an executor service to allows AsyncOperation listeners to be notified outside the
+     * I/O executors threads.
+     */
+    class RequestCompletionExecutor {
+
+        private final ExecutorService executor;
+
+        RequestCompletionExecutor() {
+            executor = new ThreadPoolExecutor(2, MAX_REQUEST_HANDLERS_THREADS, 120L, TimeUnit.SECONDS,
+                    new LinkedBlockingQueue<>());
+        }
+
+        /**
+         *
+         * @param req
+         */
+        void submitRequest(final P2PPRequest req) {
+            this.executor.submit(new RunnableRequest(req));
+        }
+
+        void close() {
+            if (!this.executor.isShutdown()) {
+                this.executor.shutdown();
+            }
+            if (!this.executor.isTerminated()) {
+                this.executor.shutdownNow();
+            }
+        }
+
+    }
+
 }

@@ -28,24 +28,26 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.meta.api.model.DataFile;
 
 /**
- * Just static accessor for data file read/write operation.
+ * Static accessor for data file read/write operation.
  *
- * Provides a bit of caching to avoid opening too many files unnecessarily.
- *
- * TODO remove this and instead think of a way to store calcutated info about a data file (pieces, hash, ...)
- * in the storage layer.
+ * Provides a bit of caching to avoid opening the same time many times unnecessarily.
  *
  * @author dyslesiq
  */
 public final class DataFileAccessors {
 
-    private final static int EXECUTOR_THREADS = 1;
+    private final static int MIN_EXECUTOR_THREADS = 1;
 
-    private final static ExecutorService filesExecutor = Executors.newFixedThreadPool(EXECUTOR_THREADS);
+    private final static int MAX_EXECUTOR_THREADS = 10;
+
+    private final static ExecutorService filesExecutor = new ThreadPoolExecutor(MIN_EXECUTOR_THREADS,
+            MAX_EXECUTOR_THREADS, 120L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
     private static Map<URI, DataFileAccessor> accessors = new ConcurrentHashMap<>();
 

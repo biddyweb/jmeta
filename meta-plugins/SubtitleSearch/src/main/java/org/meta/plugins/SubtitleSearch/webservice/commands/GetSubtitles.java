@@ -24,8 +24,8 @@
  */
 package org.meta.plugins.SubtitleSearch.webservice.commands;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import org.meta.api.common.MetHash;
@@ -130,16 +130,10 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
             successTextOutput.append("Hash: " + hash);
             Data data = results.get(hash);
             if (data != null) {
-                URI uri = null;
-                try {
-                    uri = new URI("file:/home/nico/Downloads/" + getFileName(data));
-                    DataFile destinationFile = factory.getDataFile(hash, uri, data.getSize());
-                    successTextOutput.append("Downloading to: " + uri);
-                    api.download(destinationFile, peers).addListener(this);
-                } catch (URISyntaxException ex) {
-                    logger.error("Invalid URI!");
-                    errorTextOutput.append("Invalid URI: " + uri);
-                }
+                Path downloadPath = Paths.get("", getFileName(data));
+                DataFile destinationFile = factory.getDataFile(hash, downloadPath.toUri(), data.getSize());
+                successTextOutput.append("Downloading to: " + downloadPath);
+                api.download(destinationFile, peers).addListener(this);
             } else {
                 successTextOutput.append("Unknown data! ");
             }

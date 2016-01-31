@@ -33,12 +33,15 @@ import org.meta.plugins.SubtitleSearch.webservice.commands.GetSubtitles;
 import org.meta.plugins.SubtitleSearch.webservice.commands.SearchSubtitles;
 
 /**
+ * <p>SubtitleSearchWSController class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SubtitleSearchWSController extends AbstractPluginWebServiceController {
 
     /**
+     * <p>Constructor for SubtitleSearchWSController.</p>
      *
      * @param pluginAPI plugin api object
      */
@@ -46,6 +49,7 @@ public class SubtitleSearchWSController extends AbstractPluginWebServiceControll
         super(pluginAPI);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(
             LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {

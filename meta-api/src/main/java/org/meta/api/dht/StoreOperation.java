@@ -31,6 +31,7 @@ import org.meta.api.common.MetHash;
  * An asynchronous DHT operation representing the process of pushing a hash in the DHT.
  *
  * @author nico
+ * @version $Id: $
  */
 public abstract class StoreOperation extends AsyncOperation {
 
@@ -40,6 +41,7 @@ public abstract class StoreOperation extends AsyncOperation {
     protected MetHash hash;
 
     /**
+     * <p>Getter for the field <code>hash</code>.</p>
      *
      * @return the hash this operation pushed
      */

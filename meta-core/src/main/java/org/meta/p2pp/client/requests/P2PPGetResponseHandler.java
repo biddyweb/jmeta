@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * The response handler for the Get request.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPGetResponseHandler extends P2PPResponseHandler {
 
@@ -45,6 +46,7 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
     private final int requestedLength;
 
     /**
+     * <p>Constructor for P2PPGetResponseHandler.</p>
      *
      * @param req the request
      * @param dataLength the request data length
@@ -54,6 +56,7 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
         this.requestedLength = dataLength;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean parse(final ByteBuffer buf) {
         buf.rewind();
@@ -68,6 +71,7 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
     }
 
     /**
+     * <p>Getter for the field <code>data</code>.</p>
      *
      * @return the fetched data
      */
@@ -76,6 +80,7 @@ public class P2PPGetResponseHandler extends P2PPResponseHandler {
     }
 
     /**
+     * <p>Getter for the field <code>pieceHash</code>.</p>
      *
      * @return the piece hash
      */

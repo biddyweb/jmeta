@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * Piece and block accessor for a DataFile.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class DataFileAccessor {
 
@@ -76,6 +77,7 @@ public class DataFileAccessor {
     private AsynchronousFileChannel writeChannel;
 
     /**
+     * <p>Constructor for DataFileAccessor.</p>
      *
      * @param file the data file to access
      */
@@ -289,6 +291,7 @@ public class DataFileAccessor {
     }
 
     /**
+     * <p>pieceSize</p>
      *
      * @param pieceIdx the piece index
      * @return the size of the given piece or zero if invalid
@@ -319,6 +322,7 @@ public class DataFileAccessor {
     }
 
     /**
+     * <p>blockCount</p>
      *
      * @param pieceIdx the piece index
      * @return the number of blocks for the given piece
@@ -337,6 +341,7 @@ public class DataFileAccessor {
     }
 
     /**
+     * <p>Getter for the field <code>pieceCount</code>.</p>
      *
      * @return the number of pieces for this file
      */
@@ -345,6 +350,7 @@ public class DataFileAccessor {
     }
 
     /**
+     * <p>Getter for the field <code>blockCount</code>.</p>
      *
      * @return the number of blocks for this file
      */

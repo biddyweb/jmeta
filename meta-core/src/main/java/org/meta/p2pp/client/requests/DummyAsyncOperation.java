@@ -27,15 +27,19 @@ package org.meta.p2pp.client.requests;
 import org.meta.api.common.AsyncOperation;
 
 /**
+ * <p>DummyAsyncOperation class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class DummyAsyncOperation extends AsyncOperation {
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         this.complete();

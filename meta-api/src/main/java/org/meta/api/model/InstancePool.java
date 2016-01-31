@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
  * of no use anymore.
  *
  * @author nico
- *
  * @param <T> The type of this instance pool.
+ * @version $Id: $
  */
 public class InstancePool<T extends Searchable> {
 
@@ -49,6 +49,7 @@ public class InstancePool<T extends Searchable> {
      * Creates an instance pool for the given Class.
      *
      * @param claz The Class.
+     * @param <T> a T object.
      */
     public InstancePool(final Class<T> claz) {
         clazz = claz;
@@ -70,6 +71,7 @@ public class InstancePool<T extends Searchable> {
     }
 
     /**
+     * <p>getInstance</p>
      *
      * @return An instance of the defined class.
      */

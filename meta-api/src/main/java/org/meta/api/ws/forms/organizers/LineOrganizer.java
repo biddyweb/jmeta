@@ -29,19 +29,22 @@ import org.meta.api.ws.forms.InterfaceOrganizer;
 /**
  * A line organizer is an organize that put his children side by side
  * in the interface.
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class LineOrganizer extends InterfaceOrganizer {
 
     /**
-     * 
+     * <p>Constructor for LineOrganizer.</p>
+     *
      * @param id Unique ID
      */
     public LineOrganizer(String id) {
         super(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "Line";

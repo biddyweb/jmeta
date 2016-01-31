@@ -32,7 +32,7 @@ import org.meta.api.common.MetHash;
  * Build a new Ask.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AMPAskBuilder extends AMPBuilder {
 

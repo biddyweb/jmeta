@@ -31,6 +31,7 @@ import org.meta.api.storage.Serializer;
  * Utility class to define and access common objects Serializer instances.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class Serializers {
 

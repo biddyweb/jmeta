@@ -25,17 +25,23 @@
 package org.meta.api.configuration;
 
 /**
+ * <p>WSConfiguration interface.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public interface WSConfiguration {
 
     /**
+     * <p>getNetworkConfig</p>
+     *
      * @return The network configuration for the Web part.
      */
     NetworkConfiguration getNetworkConfig();
 
     /**
+     * <p>setNetworkConfig</p>
+     *
      * @param networkConfig the network configuration to use.
      */
     void setNetworkConfig(NetworkConfiguration networkConfig);

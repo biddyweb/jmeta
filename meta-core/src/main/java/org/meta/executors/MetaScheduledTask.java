@@ -28,6 +28,7 @@ package org.meta.executors;
  * Abstract class representing a task that can be scheduled at fixed rate.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class MetaScheduledTask implements Runnable {
 
@@ -35,6 +36,7 @@ public abstract class MetaScheduledTask implements Runnable {
     private final long executionPeriod;
 
     /**
+     * <p>Constructor for MetaScheduledTask.</p>
      *
      * @param delay the number of seconds to wait before executing this task
      * @param period the number of seconds after which this task will execute again
@@ -45,6 +47,7 @@ public abstract class MetaScheduledTask implements Runnable {
     }
 
     /**
+     * <p>Getter for the field <code>executionDelay</code>.</p>
      *
      * @return the initial execution delay of this task
      */
@@ -53,6 +56,7 @@ public abstract class MetaScheduledTask implements Runnable {
     }
 
     /**
+     * <p>Getter for the field <code>executionPeriod</code>.</p>
      *
      * @return the period after which this task will execute again
      */

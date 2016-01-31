@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * This operation never fails but final results could be empty.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class CompositeSearchOperation extends SearchOperation {
 
@@ -55,7 +56,7 @@ public class CompositeSearchOperation extends SearchOperation {
     private final CompositeSearchListener listener;
 
     /**
-     *
+     * <p>Constructor for CompositeSearchOperation.</p>
      */
     public CompositeSearchOperation() {
         this.operations = new ArrayList<>();
@@ -63,6 +64,7 @@ public class CompositeSearchOperation extends SearchOperation {
     }
 
     /**
+     * <p>addSearchOperation</p>
      *
      * @param op the search operation to aggregate
      */

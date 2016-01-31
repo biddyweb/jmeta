@@ -39,10 +39,12 @@ import org.meta.api.common.MetHash;
  * //TODO add more convenience methods here
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface ModelFactory {
 
     /**
+     * <p>getData</p>
      *
      * @return an empty Data
      */
@@ -52,7 +54,6 @@ public interface ModelFactory {
      * Build a new Data with the given string as content.
      *
      * @param data a string containing what it pleases you
-     *
      * @return The fully-initialized Data
      */
     Data getData(final String data);
@@ -61,7 +62,6 @@ public interface ModelFactory {
      * Build a new Data with the given buffer as content.
      *
      * @param buffer the content of the data to create
-     *
      * @return The fully-initialized Data
      */
     Data getData(final ByteBuffer buffer);
@@ -74,7 +74,6 @@ public interface ModelFactory {
      * @param hash the hash
      * @param buffer the content of the data to create
      * @param size the real size of the data
-     *
      * @return The fully-initialized Data
      */
     Data getData(final MetHash hash, final ByteBuffer buffer, final int size);
@@ -117,7 +116,6 @@ public interface ModelFactory {
      * Build a SearchCriteria with given parameters.
      *
      * @param props the MetaProperties representing the metaData
-     *
      * @return The fully-initialized SearchCriteria.
      */
     SearchCriteria createCriteria(final Set<MetaData> props);
@@ -135,7 +133,6 @@ public interface ModelFactory {
      *
      * @param source search's source
      * @param metaData search's metaData
-     *
      * @return a brand new search
      */
     Search createSearch(final Searchable source, final SearchCriteria metaData);
@@ -146,7 +143,6 @@ public interface ModelFactory {
      * @param source search's source
      * @param metaData search's metaData
      * @param datas search's results
-     *
      * @return a brand new search
      */
     Search createSearch(final Searchable source, final SearchCriteria metaData, final List<Data> datas);
@@ -157,7 +153,6 @@ public interface ModelFactory {
      * @param source search's source
      * @param metaData search's metaData
      * @param datas search's results
-     *
      * @return a brand new search
      */
     Search createSearch(final Searchable source, final SearchCriteria metaData, Data... datas);

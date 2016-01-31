@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * Manages read/write and queuing for requests.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPClientRequestManager {
 
@@ -124,6 +125,7 @@ public class P2PPClientRequestManager {
     }
 
     /**
+     * <p>Getter for the field <code>socket</code>.</p>
      *
      * @return the manager socket
      */
@@ -132,6 +134,7 @@ public class P2PPClientRequestManager {
     }
 
     /**
+     * <p>isConnected</p>
      *
      * @return true if the socket is connected, false otherwise.
      */
@@ -140,6 +143,7 @@ public class P2PPClientRequestManager {
     }
 
     /**
+     * <p>isConnecting</p>
      *
      * @return true if currently trying to establish the connection
      */
@@ -334,6 +338,7 @@ public class P2PPClientRequestManager {
     }
 
     /**
+     * <p>getServerPeer</p>
      *
      * @return the server peer of this context
      */

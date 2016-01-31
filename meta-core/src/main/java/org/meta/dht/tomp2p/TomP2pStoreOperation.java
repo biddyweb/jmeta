@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * TODO do not always store to dht but only if needed (~ every hours) or if we changed identity.
  *
  * @author nico
+ * @version $Id: $
  */
 public class TomP2pStoreOperation extends StoreOperation {
 
@@ -63,6 +64,7 @@ public class TomP2pStoreOperation extends StoreOperation {
         this.tomp2pHash = storeHash;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeer().peerAddress().peerSocketAddress();
@@ -101,6 +103,7 @@ public class TomP2pStoreOperation extends StoreOperation {
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         this.notifyListeners();

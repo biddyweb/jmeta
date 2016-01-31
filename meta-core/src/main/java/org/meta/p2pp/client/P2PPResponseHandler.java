@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * Response handler (client-side) for a peer-to-peer protocol request.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class P2PPResponseHandler {
 
@@ -93,6 +94,7 @@ public abstract class P2PPResponseHandler {
     }
 
     /**
+     * <p>Getter for the field <code>request</code>.</p>
      *
      * @return The request
      */
@@ -101,6 +103,7 @@ public abstract class P2PPResponseHandler {
     }
 
     /**
+     * <p>Getter for the field <code>payloadBuffer</code>.</p>
      *
      * @return the data buffer used to store the protocol response data read from the server
      */

@@ -28,15 +28,17 @@ import org.meta.api.ws.forms.InterfaceField;
 
 
 /**
- * Simple text input, as extending InterfaceField, can have an optional default 
+ * Simple text input, as extending InterfaceField, can have an optional default
  * value.
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class TextInput extends InterfaceField {
 
     /**
-     * 
+     * <p>Constructor for TextInput.</p>
+     *
      * @param id    Unique ID
      * @param label label
      */
@@ -44,6 +46,7 @@ public class TextInput extends InterfaceField {
         super(id, label);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "TextInput";

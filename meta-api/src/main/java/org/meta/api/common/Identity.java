@@ -29,6 +29,7 @@ package org.meta.api.common;
  * Identity class, derived from MetHash, useful to represent a hash as an identity.
  *
  * @author nico
+ * @version $Id: $
  */
 public final class Identity extends MetHash {
 

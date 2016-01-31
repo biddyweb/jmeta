@@ -31,14 +31,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>P2PPKeepAliveHandler class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPKeepAliveHandler extends P2PPCommandHandler {
 
     private final Logger logger = LoggerFactory.getLogger(P2PPKeepAliveHandler.class);
 
     /**
+     * <p>Constructor for P2PPKeepAliveHandler.</p>
      *
      * @param p2ppServer the p2pp server
      */
@@ -46,6 +49,7 @@ public class P2PPKeepAliveHandler extends P2PPCommandHandler {
         super(p2ppServer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle(final P2PPServerRequestContext request) {
         logger.debug("handle keep alive");

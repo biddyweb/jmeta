@@ -37,6 +37,7 @@ import org.meta.api.common.MetaPeer;
  * Those method should be as efficient as possible.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class SerializationUtils {
 
@@ -186,7 +187,6 @@ public final class SerializationUtils {
      *
      * @param port The udp port
      * @param addr The ipv4/ipv6 address
-     *
      * @return the serialized ip/port couple
      */
     public static byte[] serializeAddress(final Short port, final InetAddress addr) {

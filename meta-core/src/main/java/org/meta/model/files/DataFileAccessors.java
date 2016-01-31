@@ -39,6 +39,7 @@ import org.meta.api.model.DataFile;
  * Provides a bit of caching to avoid opening the same time many times unnecessarily.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class DataFileAccessors {
 
@@ -68,6 +69,7 @@ public final class DataFileAccessors {
     }
 
     /**
+     * <p>Getter for the field <code>filesExecutor</code>.</p>
      *
      * @return the files executor service
      */

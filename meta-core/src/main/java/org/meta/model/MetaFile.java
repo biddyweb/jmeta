@@ -38,8 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>MetaFile class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class MetaFile extends DataFile {
 
@@ -113,7 +115,7 @@ public final class MetaFile extends DataFile {
      * The hash and the size will be the same than the given data.
      *
      * @param data the GenericData
-     * @throws URISyntaxException if invalid URI if found in given data
+     * @throws java.net.URISyntaxException if invalid URI if found in given data
      */
     public MetaFile(final Data data) throws URISyntaxException {
         this.hash = data.getHash();
@@ -145,24 +147,20 @@ public final class MetaFile extends DataFile {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetHash hash() {
         this.hash = MetamphetUtils.makeSHAHash(file);
         return hash;
     }
 
-    /**
-     * @return The File object pointing the file
-     */
+    /** {@inheritDoc} */
     @Override
     public File getFile() {
         return file;
     }
 
-    /**
-     * @param aFile the new file for this DataFile.
-     *
-     */
+    /** {@inheritDoc} */
     @Override
     public void setFile(final File aFile) {
         this.file = aFile;
@@ -171,11 +169,13 @@ public final class MetaFile extends DataFile {
         hash();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setURI(final URI uri) {
         setFile(new File(uri));
     }
 
+    /** {@inheritDoc} */
     @Override
     public URI getURI() {
         try {
@@ -185,6 +185,7 @@ public final class MetaFile extends DataFile {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] getBytes() {
         //Only return copies of the internal buffer.
@@ -194,6 +195,7 @@ public final class MetaFile extends DataFile {
         return bytes;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ByteBuffer getBuffer() {
         ByteBuffer roBuffer = this.buffer.asReadOnlyBuffer();
@@ -202,11 +204,13 @@ public final class MetaFile extends DataFile {
         return roBuffer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return SerializationUtils.decodeUTF8(this.getBuffer());
     }
 
+    /** {@inheritDoc} */
     @Override
     public DataType getType() {
         return META_FILE_TYPE;

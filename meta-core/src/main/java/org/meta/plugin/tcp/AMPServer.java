@@ -38,6 +38,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class listening to peer-to-peer connections over TCP/AMP.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class AMPServer extends Thread {
 
@@ -77,9 +80,7 @@ public class AMPServer extends Thread {
                 this.configuration.getServerThreads());
     }
 
-    /**
-     *
-     */
+    /** {@inheritDoc} */
     @Override
     public void run() {
         try {
@@ -121,7 +122,6 @@ public class AMPServer extends Thread {
      *
      * @param pluginName the plugin name
      * @param commandName the command Name
-     *
      * @return a command to execute if found, null otherwise
      */
     public PluginAMPCommand getCommand(final String pluginName, final String commandName) {

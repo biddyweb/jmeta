@@ -4,6 +4,7 @@ package org.meta.p2pp.client;
  * Simple lightweight class that provides flag-based states for I/O operations on sockets.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class SocketIOState {
 
@@ -30,6 +31,7 @@ public class SocketIOState {
     private volatile int state;
 
     /**
+     * <p>isConnecting</p>
      *
      * @return true if connecting, false otherwise
      */
@@ -38,6 +40,7 @@ public class SocketIOState {
     }
 
     /**
+     * <p>isConnected</p>
      *
      * @return true if connected, false otherwise
      */
@@ -46,6 +49,7 @@ public class SocketIOState {
     }
 
     /**
+     * <p>isReading</p>
      *
      * @return true if reading, false otherwise
      */
@@ -54,6 +58,7 @@ public class SocketIOState {
     }
 
     /**
+     * <p>isWriting</p>
      *
      * @return true if writing, false otherwise
      */
@@ -83,7 +88,6 @@ public class SocketIOState {
 
     /**
      * Set the CONNECTED flag.
-     *
      */
     public void connected() {
         state |= CONNECTED;
@@ -104,7 +108,6 @@ public class SocketIOState {
 
     /**
      * Set the READING flag.
-     *
      */
     public void reading() {
         state |= READING;
@@ -125,7 +128,6 @@ public class SocketIOState {
 
     /**
      * Set the WRITING flag.
-     *
      */
     public void writing() {
         state |= WRITING;

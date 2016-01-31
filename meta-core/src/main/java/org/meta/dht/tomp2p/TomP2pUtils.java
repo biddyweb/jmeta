@@ -35,6 +35,9 @@ import org.meta.api.common.MetaPeer;
  * General utility class for tomp2p-related entities.
  *
  * Mostly conversion methods.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class TomP2pUtils {
 
@@ -48,7 +51,6 @@ public final class TomP2pUtils {
      * Utility function to convert a MetHash to a Number160 used by TomP2p lib.
      *
      * @param hash The hash to convert.
-     *
      * @return The created Number160.
      */
     public static Number160 toNumber160(final MetHash hash) {

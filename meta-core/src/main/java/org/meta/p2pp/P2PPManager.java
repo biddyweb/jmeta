@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * manage the maximum connections/up and down bandwith, etc...
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPManager {
 
@@ -57,7 +58,7 @@ public class P2PPManager {
      *
      * @param conf the configuration
      * @param storage the model storage
-     * @throws P2PPException if the client creation failed
+     * @throws org.meta.p2pp.exceptions.P2PPException if the client creation failed
      */
     public P2PPManager(final P2PPConfiguration conf, final ModelStorage storage) throws P2PPException {
         this.configuration = conf;
@@ -69,13 +70,14 @@ public class P2PPManager {
     /**
      * Starts the server.
      *
-     * @throws P2PPException if the server failed to start
+     * @throws org.meta.p2pp.exceptions.P2PPException if the server failed to start
      */
     public void startServer() throws P2PPException {
         this.server.run();
     }
 
     /**
+     * <p>Getter for the field <code>client</code>.</p>
      *
      * @return the p2pp client
      */
@@ -84,6 +86,7 @@ public class P2PPManager {
     }
 
     /**
+     * <p>Getter for the field <code>server</code>.</p>
      *
      * @return the p2pp server
      */
@@ -92,6 +95,7 @@ public class P2PPManager {
     }
 
     /**
+     * <p>Getter for the field <code>modelStorage</code>.</p>
      *
      * @return the model storage for use by the client and the server.
      */

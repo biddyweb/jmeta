@@ -45,8 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>P2PPSearchHandler class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPSearchHandler extends P2PPCommandHandler {
 
@@ -88,6 +90,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     protected HashMap<String, String> metaDataFilters;
 
     /**
+     * <p>Constructor for P2PPSearchHandler.</p>
      *
      * @param p2ppServer the p2pp server
      */
@@ -96,6 +99,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         this.metaDataFilters = new HashMap<String, String>();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle(final P2PPServerRequestContext req) {
         this.request = req;
@@ -109,6 +113,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     }
 
     /**
+     * <p>parse</p>
      *
      * @return true on success, false otherwise
      */
@@ -132,6 +137,11 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
         return true;
     }
 
+    /**
+     * <p>extractMetaDataFilters</p>
+     *
+     * @param buf a {@link java.nio.ByteBuffer} object.
+     */
     protected void extractMetaDataFilters(final ByteBuffer buf) {
         short nbFilters = buf.getShort();
         logger.debug("Search request handler: nb Filters = " + nbFilters);
@@ -175,6 +185,7 @@ public class P2PPSearchHandler extends P2PPCommandHandler {
     }
 
     /**
+     * <p>prepareDataTypeResponse</p>
      *
      * @param data the data
      * @return the size in bytes to store the data type

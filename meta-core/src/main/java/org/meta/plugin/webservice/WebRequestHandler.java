@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Handle a request received from the web server.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class WebRequestHandler extends AbstractHandler {
 
@@ -52,6 +52,7 @@ public class WebRequestHandler extends AbstractHandler {
     private int nbCommands = 0;
 
     /**
+     * <p>Constructor for WebRequestHandler.</p>
      *
      * @param wsServer the parent web service reader
      */
@@ -60,6 +61,7 @@ public class WebRequestHandler extends AbstractHandler {
         instanceMap = new HashMap<>();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle(final String target,
             final Request base,

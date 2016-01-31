@@ -28,15 +28,17 @@ import org.meta.api.ws.forms.InterfaceField;
 
 
 /**
- * A simple date input, as extending InterfaceField, can have an optional 
+ * A simple date input, as extending InterfaceField, can have an optional
  * default value
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class DateInput extends InterfaceField {
 
     /**
-     * 
+     * <p>Constructor for DateInput.</p>
+     *
      * @param id    Unique ID
      * @param label label
      */
@@ -44,6 +46,7 @@ public class DateInput extends InterfaceField {
         super(id, label);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "DateInput";

@@ -30,6 +30,9 @@ import org.meta.api.configuration.WSConfiguration;
 
 /**
  * The web service configuration object.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class WSConfigurationImpl extends PropertiesConfiguration implements WSConfiguration {
 
@@ -80,6 +83,7 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
     }
 
     /**
+     * <p>Getter for the field <code>wsPort</code>.</p>
      *
      * @return the web service port
      */
@@ -88,23 +92,21 @@ public final class WSConfigurationImpl extends PropertiesConfiguration implement
     }
 
     /**
+     * <p>Setter for the field <code>wsPort</code>.</p>
+     *
      * @param port the new web service port
      */
     public void setWsPort(final Short port) {
         this.wsPort = port;
     }
 
-    /**
-     * @return The network configuration for the Web part.
-     */
+    /** {@inheritDoc} */
     @Override
     public NetworkConfiguration getNetworkConfig() {
         return networkConfig;
     }
 
-    /**
-     * @param nwConfig the network configuration to use.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setNetworkConfig(final NetworkConfiguration nwConfig) {
         this.networkConfig = (NetworkConfigurationImpl) nwConfig;

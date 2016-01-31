@@ -28,8 +28,10 @@ import java.nio.channels.AsynchronousSocketChannel;
 import org.meta.api.common.MetaPeer;
 
 /**
+ * <p>P2PPClientEventHandler interface.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface P2PPClientEventHandler {
 
@@ -158,12 +160,14 @@ public interface P2PPClientEventHandler {
     }
 
     /**
+     * <p>getServerPeer</p>
      *
      * @return the server peer
      */
     MetaPeer getServerPeer();
 
     /**
+     * <p>getSocket</p>
      *
      * @return the socket
      */
@@ -205,6 +209,7 @@ public interface P2PPClientEventHandler {
     ClientActionContext dataSent(final ClientActionContext ioContext);
 
     /**
+     * <p>error</p>
      *
      * @return the resulting action context
      */

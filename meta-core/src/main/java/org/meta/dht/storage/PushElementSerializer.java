@@ -36,11 +36,15 @@ import org.meta.utils.SerializationUtils;
  *
  * This serializer provides such ordering by putting {@link DHTPushElement#getNextPushTime()} first In
  * serialization order and then using a {@link LongComparator} in {@link CollectionStorage}.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class PushElementSerializer implements Serializer<DHTPushElement> {
 
     private static final int ELEMENT_SIZE = MetHash.BYTE_ARRAY_SIZE + (2 * Long.BYTES);
 
+    /** {@inheritDoc} */
     @Override
     public byte[] serialize(final DHTPushElement element) {
         byte[] data = new byte[ELEMENT_SIZE];
@@ -56,6 +60,7 @@ public class PushElementSerializer implements Serializer<DHTPushElement> {
         return data;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DHTPushElement deserialize(final byte[] data) {
         if (data == null || data.length != ELEMENT_SIZE) {

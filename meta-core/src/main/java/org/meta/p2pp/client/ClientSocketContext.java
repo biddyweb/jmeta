@@ -37,8 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>ClientSocketContext class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class ClientSocketContext implements P2PPClientEventHandler {
 
@@ -81,6 +83,7 @@ public class ClientSocketContext implements P2PPClientEventHandler {
     }
 
     /**
+     * <p>addRequest</p>
      *
      * @param req the request to add
      * @return the resulting I/O action
@@ -107,12 +110,14 @@ public class ClientSocketContext implements P2PPClientEventHandler {
         return ioContext.setAction(ClientAction.NONE);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized void connecting(final AsynchronousSocketChannel s) {
         this.socket = s;
         ioState.connecting();
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ClientActionContext connected(final ClientActionContext ioContext) {
         logger.info("CONNECTED");
@@ -135,6 +140,7 @@ public class ClientSocketContext implements P2PPClientEventHandler {
         return ioContext;
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ClientActionContext dataReceived(final ClientActionContext ioContext) {
         ByteBuffer buf = ioContext.getAttachment();
@@ -173,6 +179,7 @@ public class ClientSocketContext implements P2PPClientEventHandler {
         return getWritableBuffer(ioContext);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ClientActionContext dataSent(final ClientActionContext ioContext) {
         ByteBuffer buf = ioContext.getAttachment();
@@ -258,12 +265,14 @@ public class ClientSocketContext implements P2PPClientEventHandler {
         return context.setAction(ClientAction.ERROR);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ClientActionContext error() {
         //We might want (one day?) try to reconnect on error, or handle errors differently
         return new ClientActionContext(this).setAction(ClientAction.ERROR);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized void close() {
         try {
@@ -280,15 +289,13 @@ public class ClientSocketContext implements P2PPClientEventHandler {
         BufferManager.release(headerBuffer);
     }
 
-    /**
-     *
-     * @return the server peer
-     */
+    /** {@inheritDoc} */
     @Override
     public MetaPeer getServerPeer() {
         return this.serverPeer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AsynchronousSocketChannel getSocket() {
         return this.socket;

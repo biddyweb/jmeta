@@ -32,11 +32,15 @@ import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapGet;
 import org.meta.plugins.SimpleHashMap.webservicecommands.SimpleHashMapPut;
 
 /**
+ * <p>SimpleHashMapWebServiceControler class.</p>
  *
+ * @author nico
+ * @version $Id: $Id
  */
 public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceController {
 
     /**
+     * <p>Constructor for SimpleHashMapWebServiceControler.</p>
      *
      * @param pluginAPI plugin api object
      */
@@ -44,6 +48,7 @@ public class SimpleHashMapWebServiceControler extends AbstractPluginWebServiceCo
         super(pluginAPI);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(
             final LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {

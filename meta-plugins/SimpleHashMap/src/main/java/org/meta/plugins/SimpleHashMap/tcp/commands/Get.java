@@ -33,11 +33,14 @@ import org.meta.api.model.SearchCriteria;
 import org.meta.api.model.Searchable;
 
 /**
+ * <p>Get class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class Get extends PluginAMPCommand {
 
+    /** {@inheritDoc} */
     @Override
     public AMPAnswerBuilder execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();

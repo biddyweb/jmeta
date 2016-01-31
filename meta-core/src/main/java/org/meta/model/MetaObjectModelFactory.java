@@ -43,10 +43,14 @@ import org.meta.api.model.Searchable;
  * This factory provides convenient creation of model objects.
  *
  * It contains utility methods to create model objects and provides instance pools.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaObjectModelFactory implements ModelFactory {
 
     /**
+     * <p>getSearch</p>
      *
      * @return a fresh search from pool
      */
@@ -54,17 +58,20 @@ public class MetaObjectModelFactory implements ModelFactory {
         return new MetaSearch();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final MetaSearch createSearch(final Searchable source,
             final SearchCriteria criteria, final List<Data> datas) {
         return new MetaSearch(criteria, source, datas);
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaSearch createSearch(final Searchable source, final SearchCriteria criteria) {
         return new MetaSearch(criteria, source, null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaSearch createSearch(final Searchable source, final SearchCriteria criteria,
             final Data... datas) {
@@ -80,37 +87,44 @@ public class MetaObjectModelFactory implements ModelFactory {
         return search;
     }
 
+    /** {@inheritDoc} */
     @Override
     public final Data getData() {
         return new GenericData();
     }
 
+    /** {@inheritDoc} */
     @Override
     public final Data getData(final String data) {
         return new GenericData(data);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data getData(final ByteBuffer buffer) {
         return new GenericData(buffer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data getData(final MetHash hash, final ByteBuffer buffer, final int size) {
         return new GenericData(hash, buffer, size);
     }
 
+    /** {@inheritDoc} */
     @Override
 
     public DataFile getDataFile(final File file) {
         return new MetaFile(file);
     }
 
+    /** {@inheritDoc} */
     @Override
     public DataFile getDataFile(final URI uri) {
         return new MetaFile(uri);
     }
 
+    /** {@inheritDoc} */
     @Override
     public DataFile getDataFile(final Data data) {
         try {
@@ -120,12 +134,14 @@ public class MetaObjectModelFactory implements ModelFactory {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public DataFile getDataFile(final MetHash hash, final URI uri, final int size) {
         return new MetaFile(hash, uri, size);
     }
 
     /**
+     * <p>getCriteria</p>
      *
      * @return an empty SearchCriteria
      */
@@ -134,17 +150,16 @@ public class MetaObjectModelFactory implements ModelFactory {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Build a SearchCriteria with given parameters.
-     *
-     * @param props the MetaProperties representing the metaData
-     *
-     * @return The fully-initialized SearchCriteria.
      */
     @Override
     public final SearchCriteria createCriteria(final Set<MetaData> props) {
         return new SearchCriteria(props);
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchCriteria createCriteria(final MetaData... criteria) {
         SearchCriteria searchCriteria = new SearchCriteria();

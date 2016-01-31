@@ -39,6 +39,7 @@ import org.meta.api.model.Data;
  * peer-to-peer protocol and/or the local storage.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class SearchOperation extends AsyncOperation implements Iterable<Data> {
 
@@ -52,13 +53,14 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data> {
     private int nbResults;
 
     /**
-     *
+     * <p>Constructor for SearchOperation.</p>
      */
     public SearchOperation() {
         results = new HashMap<>();
     }
 
     /**
+     * <p>addResults</p>
      *
      * @param peer the peer that gave us the results
      * @param res the result list
@@ -71,6 +73,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data> {
     }
 
     /**
+     * <p>getPeers</p>
      *
      * @return the peers we searched from
      */
@@ -79,6 +82,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data> {
     }
 
     /**
+     * <p>getPeerResultsMap</p>
      *
      * @return the map associating peers and results
      */
@@ -87,6 +91,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data> {
     }
 
     /**
+     * <p>Getter for the field <code>nbResults</code>.</p>
      *
      * @return the total number of results
      */
@@ -94,6 +99,7 @@ public class SearchOperation extends AsyncOperation implements Iterable<Data> {
         return this.nbResults;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Iterator<Data> iterator() {
         //This need to be tested TODO

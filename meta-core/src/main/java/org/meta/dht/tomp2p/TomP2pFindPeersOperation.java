@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * Tomp2p implementation of the find peers for hash operation.
  *
  * @author nico
+ * @version $Id: $
  */
 public class TomP2pFindPeersOperation extends FindPeersOperation {
 
@@ -49,6 +50,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
     private final Number160 hash;
 
     /**
+     * <p>Constructor for TomP2pFindPeersOperation.</p>
      *
      * @param dhtNode the dht node.
      * @param queryHash the hash to find peers for
@@ -59,6 +61,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         this.peers = new ArrayList<>();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         FutureGet futureGet = this.dht.getPeerDHT().get(this.hash).all().start();
@@ -99,6 +102,7 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
     }

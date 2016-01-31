@@ -47,8 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>GetSubtitles class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class GetSubtitles extends AbstractWebService implements OperationListener<DownloadOperation> {
 
@@ -64,6 +66,7 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
     private String failure;
 
     /**
+     * <p>Constructor for GetSubtitles.</p>
      *
      * @param controller parent controller
      */
@@ -91,6 +94,7 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
         rootColumn.addChild(successTextOutput);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void executeCommand(final Map<String, String[]> map) {
         errorTextOutput.flush();
@@ -153,6 +157,7 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
         return name;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
     }
@@ -186,12 +191,14 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
 //            }
 //        }
 //    }
+    /** {@inheritDoc} */
     @Override
     public void failed(final DownloadOperation operation) {
         errorTextOutput.flush();
         errorTextOutput.append("Download failed! Error: " + operation.getFailureMessage());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void complete(final DownloadOperation operation) {
         successTextOutput.append("Download complete! See file: " + operation.getFile().getURI());

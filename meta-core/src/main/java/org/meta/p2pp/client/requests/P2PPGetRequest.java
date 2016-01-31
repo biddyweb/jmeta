@@ -37,6 +37,7 @@ import org.meta.p2pp.client.P2PPRequest;
  * Client-side request for the Get command.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPGetRequest extends P2PPRequest {
 
@@ -45,6 +46,7 @@ public class P2PPGetRequest extends P2PPRequest {
     private final GetOperation operation;
 
     /**
+     * <p>Constructor for P2PPGetRequest.</p>
      *
      * @param p2ppClient the peer-to-peer protocol client
      * @param hash the hash of the data to get
@@ -60,16 +62,19 @@ public class P2PPGetRequest extends P2PPRequest {
         this.responseHandler = new P2PPGetResponseHandler(this, length);
     }
 
+    /** {@inheritDoc} */
     @Override
     public P2PPGetResponseHandler getResponseHandler() {
         return this.responseHandler;
     }
 
+    /** {@inheritDoc} */
     @Override
     public GetOperation getOperation() {
         return this.operation;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean build(final char requestToken) {
         this.token = requestToken;
@@ -94,11 +99,13 @@ public class P2PPGetRequest extends P2PPRequest {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasResponse() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         BufferManager.release(buffer);
@@ -109,6 +116,7 @@ public class P2PPGetRequest extends P2PPRequest {
         this.operation.complete();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final String failedReason) {
         if (this.buffer != null) {
@@ -121,6 +129,7 @@ public class P2PPGetRequest extends P2PPRequest {
         this.operation.setFailed(failedReason);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final Throwable thrwbl) {
         if (this.buffer != null) {

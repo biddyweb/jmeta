@@ -38,6 +38,7 @@ import org.meta.utils.SerializationUtils;
  * Used by the {@link  MetaCacheStorage}.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class CacheBucket {
 
@@ -54,7 +55,6 @@ public class CacheBucket {
 
     /**
      * Creates an empty bucket.
-     *
      */
     public CacheBucket() {
     }
@@ -97,6 +97,7 @@ public class CacheBucket {
     }
 
     /**
+     * <p>contains</p>
      *
      * @param entry the entry to check for
      * @return true if this bucket contains the given entry, false otherwise
@@ -106,6 +107,7 @@ public class CacheBucket {
     }
 
     /**
+     * <p>addEntry</p>
      *
      * @param entry the new CacheEntry to add
      */
@@ -114,6 +116,7 @@ public class CacheBucket {
     }
 
     /**
+     * <p>removeEntry</p>
      *
      * @param entry the CacheEntry to remove
      */
@@ -122,6 +125,7 @@ public class CacheBucket {
     }
 
     /**
+     * <p>Getter for the field <code>keys</code>.</p>
      *
      * @return the set of keys
      */

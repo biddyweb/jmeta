@@ -30,6 +30,7 @@ package org.meta.p2pp;
  * Some of these constants should be moved to a P2PP configuration class.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class P2PPConstants {
 

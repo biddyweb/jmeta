@@ -32,10 +32,12 @@ import org.meta.api.ws.forms.InterfaceButton;
  * It has a unique Id (as ALL elements by the way) and a label.
  *
  * @author faquin
+ * @version $Id: $
  */
 public class SelfSubmitButton extends InterfaceButton {
 
     /**
+     * <p>Constructor for SelfSubmitButton.</p>
      *
      * @param id unique ID
      * @param label label
@@ -44,6 +46,7 @@ public class SelfSubmitButton extends InterfaceButton {
         super(id, label);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "selfSubmitButton";

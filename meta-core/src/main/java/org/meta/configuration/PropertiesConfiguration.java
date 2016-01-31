@@ -31,6 +31,7 @@ import org.meta.api.configuration.exceptions.InvalidConfigurationException;
  * Base class for configuration classes based on {@link Properties}.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class PropertiesConfiguration {
 
@@ -61,8 +62,9 @@ public abstract class PropertiesConfiguration {
     abstract void initFromProperties() throws InvalidConfigurationException;
 
     /**
-     * @param propKey The key in the property file to fetch.
+     * <p>getValue</p>
      *
+     * @param propKey The key in the property file to fetch.
      * @return the value associated wit the given property key or null
      */
     public final String getValue(final String propKey) {
@@ -73,9 +75,9 @@ public abstract class PropertiesConfiguration {
     }
 
     /**
+     * <p>getShort</p>
      *
      * @param propKey The key in the property file.
-     *
      * @return the short value or null if not found.
      */
     public final Short getShort(final String propKey) {
@@ -92,9 +94,9 @@ public abstract class PropertiesConfiguration {
     }
 
     /**
+     * <p>getInt</p>
      *
      * @param propKey The key in the property file.
-     *
      * @return the integer value or null if not found.
      */
     public final Integer getInt(final String propKey) {
@@ -111,9 +113,9 @@ public abstract class PropertiesConfiguration {
     }
 
     /**
+     * <p>getBoolean</p>
      *
      * @param propKey The key in the property file.
-     *
      * @return the boolean value or null if not found.
      */
     public final Boolean getBoolean(final String propKey) {

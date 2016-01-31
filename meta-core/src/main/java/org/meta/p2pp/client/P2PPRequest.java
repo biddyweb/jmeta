@@ -36,6 +36,7 @@ import org.meta.p2pp.P2PPConstants.P2PPCommand;
  * To be implemented by each command in the P2P protocol.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class P2PPRequest {
 
@@ -70,9 +71,11 @@ public abstract class P2PPRequest {
     protected MetaPeer peer;
 
     /**
+     * <p>Constructor for P2PPRequest.</p>
      *
      * @param id the request command id
      * @param p2ppClient the peer-to-peer protocol client
+     * @param serverPeer a {@link org.meta.api.common.MetaPeer} object.
      */
     protected P2PPRequest(final P2PPCommand id, final P2PPClient p2ppClient, final MetaPeer serverPeer) {
         this.status = ClientRequestStatus.CREATED;
@@ -82,6 +85,8 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>getResponseHandler</p>
+     *
      * @return the specific response handler for this request.
      *
      * Could be null, in which case the request won't wait for a response from the server.
@@ -89,6 +94,7 @@ public abstract class P2PPRequest {
     public abstract P2PPResponseHandler getResponseHandler();
 
     /**
+     * <p>getOperation</p>
      *
      * @return the asynchronous operation representing the outcome of this request.
      */
@@ -108,6 +114,7 @@ public abstract class P2PPRequest {
     public abstract boolean build(final char requestToken);
 
     /**
+     * <p>hasResponse</p>
      *
      * @return true if this request expect a response from the server, false otherwise
      */
@@ -121,19 +128,21 @@ public abstract class P2PPRequest {
     public abstract void finish();
 
     /**
+     * <p>setFailed</p>
      *
      * @param failedReason the reason why this request failed.
      */
     public abstract void setFailed(final String failedReason);
 
     /**
+     * <p>setFailed</p>
      *
      * @param thrwbl the reason why this request failed.
-     *
      */
     public abstract void setFailed(final Throwable thrwbl);
 
     /**
+     * <p>Getter for the field <code>commandId</code>.</p>
      *
      * @return the command id of this request
      */
@@ -142,6 +151,7 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>Getter for the field <code>buffer</code>.</p>
      *
      * @return the buffer representing the protocol data of this request. Callable only once build() has
      * succeeded
@@ -151,6 +161,7 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
      *
      * @return the current status of this request
      */
@@ -159,6 +170,7 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
      *
      * @param newStatus the new status of this request
      */
@@ -167,6 +179,7 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>Getter for the field <code>token</code>.</p>
      *
      * @return the unique token of this request
      */
@@ -175,6 +188,7 @@ public abstract class P2PPRequest {
     }
 
     /**
+     * <p>Getter for the field <code>client</code>.</p>
      *
      * @return the peer-to-peer protocol client
      */

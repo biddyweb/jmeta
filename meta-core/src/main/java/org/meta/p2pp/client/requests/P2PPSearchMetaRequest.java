@@ -38,8 +38,10 @@ import org.meta.p2pp.client.P2PPRequest;
 import org.meta.utils.SerializationUtils;
 
 /**
+ * <p>P2PPSearchMetaRequest class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPSearchMetaRequest extends P2PPRequest {
 
@@ -74,11 +76,13 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
         this.operation = new SearchOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public P2PPSearchResponseHandler getResponseHandler() {
         return this.responseHandler;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean build(final char requestToken) {
         this.token = requestToken;
@@ -141,6 +145,7 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         BufferManager.release(buffer);
@@ -149,6 +154,7 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
         this.operation.complete();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final String failedReason) {
         if (this.buffer != null) {
@@ -160,6 +166,7 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
         this.operation.setFailed(failedReason);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final Throwable thrwbl) {
         if (this.buffer != null) {
@@ -171,11 +178,13 @@ public class P2PPSearchMetaRequest extends P2PPRequest {
         this.operation.setFailed(thrwbl);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasResponse() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation getOperation() {
         return this.operation;

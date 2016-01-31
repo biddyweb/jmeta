@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
  * Build an AMP message.
  *
  * @author faquin
+ * @version $Id: $
  */
 public abstract class AMPBuilder {
 
@@ -136,6 +137,7 @@ public abstract class AMPBuilder {
     }
 
     /**
+     * <p>Getter for the field <code>message</code>.</p>
      *
      * @return an AMPMessage (ask or answer)
      */

@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JMeta controller. Instantiate all parent objects.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaController {
 
@@ -101,8 +104,9 @@ public class MetaController {
     }
 
     /**
+     * <p>initAndStartAll</p>
      *
-     * @throws MetaException if an error occur.
+     * @throws org.meta.api.common.exceptions.MetaException if an error occur.
      */
     public void initAndStartAll() throws MetaException {
         try {
@@ -209,6 +213,7 @@ public class MetaController {
     }
 
     /**
+     * <p>Getter for the field <code>model</code>.</p>
      *
      * @return the instance of the model
      */
@@ -217,6 +222,7 @@ public class MetaController {
     }
 
     /**
+     * <p>getWebServiceReader</p>
      *
      * @return the instance of the web service reader
      */
@@ -225,6 +231,7 @@ public class MetaController {
     }
 
     /**
+     * <p>Getter for the field <code>dht</code>.</p>
      *
      * @return the instance of the dht
      */
@@ -233,6 +240,7 @@ public class MetaController {
     }
 
     /**
+     * <p>getP2PPClient</p>
      *
      * @return the peer-to-peer protocol client accessor
      */
@@ -241,6 +249,7 @@ public class MetaController {
     }
 
     /**
+     * <p>Getter for the field <code>pluginAPI</code>.</p>
      *
      * @return the plugin API
      */
@@ -249,6 +258,7 @@ public class MetaController {
     }
 
     /**
+     * <p>Getter for the field <code>executor</code>.</p>
      *
      * @return The timed executor
      */

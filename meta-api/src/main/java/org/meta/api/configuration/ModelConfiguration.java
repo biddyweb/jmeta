@@ -25,30 +25,36 @@
 package org.meta.api.configuration;
 
 /**
+ * <p>ModelConfiguration interface.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public interface ModelConfiguration {
 
     /**
+     * <p>getDatabasePath</p>
      *
      * @return the database path.
      */
     String getDatabasePath();
 
     /**
+     * <p>getMaxSize</p>
      *
      * @return The database file max size.
      */
     Integer getMaxSize();
 
     /**
+     * <p>setDatabasePath</p>
      *
      * @param databasePath The new database path.
      */
     void setDatabasePath(String databasePath);
 
     /**
+     * <p>setMaxSize</p>
      *
      * @param maxSize The new database file max size.
      */

@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * The response handler for the {@link P2PPConstants.P2PPCommand.SEARCH} command.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPSearchResponseHandler extends P2PPResponseHandler {
 
@@ -51,6 +52,7 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
     protected Set<Data> results;
 
     /**
+     * <p>Constructor for P2PPSearchResponseHandler.</p>
      *
      * @param req the request
      */
@@ -74,6 +76,7 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
         return type;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean parse(final ByteBuffer buf) {
         buf.rewind();
@@ -105,6 +108,7 @@ public class P2PPSearchResponseHandler extends P2PPResponseHandler {
     }
 
     /**
+     * <p>Getter for the field <code>results</code>.</p>
      *
      * @return the extracted results, if any, otherwise null
      */

@@ -25,73 +25,92 @@
 package org.meta.api.configuration;
 
 /**
+ * <p>P2PPConfiguration interface.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public interface P2PPConfiguration {
 
     /**
+     * <p>getNetworkConfig</p>
+     *
      * @return The network configuration.
      */
     NetworkConfiguration getNetworkConfig();
 
     /**
+     * <p>getClientThreads</p>
+     *
      * @return the senderThPoolSize
      */
     Integer getClientThreads();
 
     /**
+     * <p>getServerThreads</p>
+     *
      * @return the serverThPoolSize
      */
     Integer getServerThreads();
 
     /**
+     * <p>getMaxConnections</p>
      *
      * @return the maximum number of connections
      */
     Integer getMaxConnections();
 
     /**
+     * <p>getMaxDownloadSpeed</p>
      *
      * @return the maximum download speed
      */
     Integer getMaxDownloadSpeed();
 
     /**
+     * <p>getMaxUploadSpeed</p>
      *
      * @return the maximum download speed
      */
     Integer getMaxUploadSpeed();
 
     /**
+     * <p>setNetworkConfig</p>
      *
      * @param networkConfig the underlying network configuration
      */
     void setNetworkConfig(NetworkConfiguration networkConfig);
 
     /**
+     * <p>setClientThreads</p>
+     *
      * @param poolSize the client threads number to set
      */
     void setClientThreads(Integer poolSize);
 
     /**
+     * <p>setServerThreads</p>
+     *
      * @param poolSize the server threads number to set
      */
     void setServerThreads(Integer poolSize);
 
     /**
+     * <p>setMaxConnections</p>
      *
      * @param maxConnections the maximum number of connections
      */
     void setMaxConnections(Integer maxConnections);
 
     /**
+     * <p>setMaxDownloadSpeed</p>
      *
      * @param maxSpeed the maximum download speed
      */
     void setMaxDownloadSpeed(Integer maxSpeed);
 
     /**
+     * <p>setMaxUploadSpeed</p>
      *
      * @param maxSpeed the maximum upload speed
      */

@@ -30,11 +30,14 @@ import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.PluginExemple.tcp.commands.ExempleCommand;
 
 /**
+ * <p>PluginExempleTcpControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class PluginExempleTcpControler extends PluginAMPController {
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands) {
         commands.put("example", ExempleCommand.class);

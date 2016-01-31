@@ -40,6 +40,7 @@ import org.meta.api.ws.forms.organizers.ColumnOrganizer;
  * You should build your interface in the default constructor, which is required
  *
  * @author faquin
+ * @version $Id: $
  */
 public abstract class AbstractWebService {
 
@@ -73,6 +74,7 @@ public abstract class AbstractWebService {
     }
 
     /**
+     * <p>setWebServiceControler</p>
      *
      * @param wsController give WebServiceControler
      */
@@ -81,6 +83,7 @@ public abstract class AbstractWebService {
     }
 
     /**
+     * <p>getInterface</p>
      *
      * @return an interface who will be translate as JSON.
      *
@@ -98,7 +101,6 @@ public abstract class AbstractWebService {
      *
      * @param map parameter map from jetty
      * @return the interface descriptor.
-     *
      */
     public final InterfaceDescriptor execute(final Map<String, String[]> map) {
         executeCommand(map);
@@ -124,7 +126,6 @@ public abstract class AbstractWebService {
      *
      * Remember that your operation is blocking the user interface, so, faster you send him a result, better
      * it is.
-     *
      */
     protected abstract void executeCommand(final Map<String, String[]> map);
 
@@ -149,7 +150,6 @@ public abstract class AbstractWebService {
      * method and add them into the output text object. - ...
      *
      * Remember that, for now (LSP version) this method will be called every 500ms.
-     *
      */
     protected abstract void applySmallUpdate();
 
@@ -161,6 +161,7 @@ public abstract class AbstractWebService {
     }
 
     /**
+     * <p>getParameters</p>
      *
      * @param name name of the parameter
      * @param map map from jetty
@@ -171,6 +172,7 @@ public abstract class AbstractWebService {
     }
 
     /**
+     * <p>getParameter</p>
      *
      * @param name name of the parameter array
      * @param map map from jetty

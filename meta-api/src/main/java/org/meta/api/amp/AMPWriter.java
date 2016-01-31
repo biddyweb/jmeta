@@ -29,8 +29,10 @@ import java.util.concurrent.Future;
 import org.meta.api.common.MetHash;
 
 /**
+ * <p>AMPWriter interface.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public interface AMPWriter {
 

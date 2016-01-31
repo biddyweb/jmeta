@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * It manages incoming requests and outgoing responses as queues.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPServerClientContext {
 
@@ -117,6 +118,8 @@ public class P2PPServerClientContext {
     }
 
     /**
+     * <p>Getter for the field <code>clientSocket</code>.</p>
+     *
      * @return the socket channel of this context
      */
     public AsynchronousSocketChannel getClientSocket() {
@@ -178,6 +181,7 @@ public class P2PPServerClientContext {
     }
 
     /**
+     * <p>getNextReadBuffer</p>
      *
      * @return the buffer to read
      */
@@ -221,6 +225,7 @@ public class P2PPServerClientContext {
     }
 
     /**
+     * <p>getNextWriteBuffer</p>
      *
      * @return the next buffer to write or null if none
      */
@@ -276,6 +281,7 @@ public class P2PPServerClientContext {
     }
 
     /**
+     * <p>getNextDispatchRequest</p>
      *
      * @return the next request to dispatch, or null if none
      */

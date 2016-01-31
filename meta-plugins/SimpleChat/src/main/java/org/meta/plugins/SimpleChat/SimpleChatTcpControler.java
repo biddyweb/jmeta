@@ -30,11 +30,14 @@ import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.SimpleChat.tcp.commands.GetLastMessage;
 
 /**
+ * <p>SimpleChatTcpControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleChatTcpControler extends PluginAMPController {
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands) {
         commands.put("getLastMessages", GetLastMessage.class);

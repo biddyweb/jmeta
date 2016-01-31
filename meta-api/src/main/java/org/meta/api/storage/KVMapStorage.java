@@ -31,22 +31,28 @@ package org.meta.api.storage;
  * @author dyslesiq
  * @param <K> the key type
  * @param <V> the value type
+ * @version $Id: $
  */
 public interface KVMapStorage<K, V> {
 
     /**
+     * <p>getKVStorage</p>
      *
      * @return the backing byte[] Key/Value storage
+     * @param <K> a K object.
+     * @param <V> a V object.
      */
     KVStorage getKVStorage();
 
     /**
+     * <p>getKeySerializer</p>
      *
      * @return the key type serializer
      */
     Serializer<K> getKeySerializer();
 
     /**
+     * <p>getValueSerializer</p>
      *
      * @return the value type serializer
      */

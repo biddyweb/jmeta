@@ -43,28 +43,33 @@ import org.meta.api.p2pp.PluginP2PPClient;
  * An implementation should be given to each plugin.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface MetAPI {
 
     /**
+     * <p>getModel</p>
      *
      * @return the meta object model
      */
     ModelStorage getModel();
 
     /**
+     * <p>getDHT</p>
      *
      * @return the meta DHT
      */
     MetaDHT getDHT();
 
     /**
+     * <p>getP2PPClient</p>
      *
      * @return the peer-to-peer protocol client accessor
      */
     PluginP2PPClient getP2PPClient();
 
     /**
+     * <p>getLocalResults</p>
      *
      * @param searchHash the hash of the search
      * @return the Set of results, might be empty
@@ -84,6 +89,7 @@ public interface MetAPI {
      * any.
      *
      * @param search the hash to search results for
+     * @param searchLocal true if including local results, false otherwise
      * @param searchLocal true if including local results, false otherwise
      * @param getData true to retrieve results data content, false if only retrieving hash
      * @param metaDataKeys the meta data keys to fetch for the results. Can be null.

@@ -33,6 +33,7 @@ import org.meta.api.model.Searchable;
  * TODO use {@link  AsyncOperation} instead ?
  *
  * @author faquin
+ * @version $Id: $
  */
 public interface AMPResponseCallback {
 

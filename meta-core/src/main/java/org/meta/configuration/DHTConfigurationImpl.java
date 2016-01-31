@@ -39,6 +39,8 @@ import org.meta.api.common.MetaPeer;
  *
  * Class holding general configuration entries for the DHT.
  *
+ * @author nico
+ * @version $Id: $
  */
 public final class DHTConfigurationImpl extends PropertiesConfiguration implements DHTConfiguration {
 
@@ -106,7 +108,7 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
      * Initializes the dht config from properties.
      *
      * @param properties the backend properties
-     * @throws InvalidConfigurationException if an invalid configuration entry is encountered
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid configuration entry is encountered
      */
     public DHTConfigurationImpl(final Properties properties) throws InvalidConfigurationException {
         super(properties);
@@ -116,6 +118,7 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void initFromProperties() throws InvalidConfigurationException {
         this.networkConfig.initFromProperties();
@@ -141,63 +144,61 @@ public final class DHTConfigurationImpl extends PropertiesConfiguration implemen
         }
     }
 
-    /**
-     *
-     * @return
-     */
+    /** {@inheritDoc} */
     @Override
     public Collection<MetaPeer> getKnownPeers() {
         return knownPeers;
     }
 
-    /**
-     *
-     * @param knwonPeers
-     */
+    /** {@inheritDoc} */
     @Override
     public void setKnwonPeers(final Collection<MetaPeer> knwonPeers) {
         this.knownPeers = knwonPeers;
     }
 
-    /**
-     *
-     * @return
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean isBootstrapBroadcast() {
         return bootstrapBroadcast;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setBootstrapBroadcast(final boolean broadcast) {
         this.bootstrapBroadcast = broadcast;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isDhtLocalOnly() {
         return dhtLocalOnly;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setDhtLocalOnly(final boolean localOnly) {
         this.dhtLocalOnly = localOnly;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Identity getIdentity() {
         return identity;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setIdentity(final Identity id) {
         this.identity = id;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NetworkConfiguration getNetworkConfig() {
         return networkConfig;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setNetworkConfig(final NetworkConfiguration nwConfig) {
         this.networkConfig = (NetworkConfigurationImpl) nwConfig;

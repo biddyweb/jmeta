@@ -30,8 +30,10 @@ import org.meta.api.plugin.MetAPI;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
+ * <p>SimpleHashMap class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleHashMap implements MetaPlugin {
 
@@ -43,23 +45,26 @@ public class SimpleHashMap implements MetaPlugin {
     private AbstractPluginWebServiceController wsController;
 
     /**
-     *
+     * <p>Constructor for SimpleHashMap.</p>
      */
     public SimpleHashMap() {
         //ampController = new SimpleHashMapTcpControler();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPluginAPI(final MetAPI api) {
         this.pluginAPI = api;
         this.wsController = new SimpleHashMapWebServiceControler(pluginAPI);
     }
 
+    /** {@inheritDoc} */
     @Override
     public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;

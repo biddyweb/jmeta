@@ -51,6 +51,8 @@ import org.meta.storage.serializers.Serializers;
  *
  * This class keeps references on hashs to push on the DHT and push them or discard them at regular intervals.
  *
+ * @author nico
+ * @version $Id: $
  */
 public class DHTPushManager extends MetaScheduledTask {
 
@@ -89,6 +91,7 @@ public class DHTPushManager extends MetaScheduledTask {
     private final CollectionStorage<DHTPushElement> sortedElements;
 
     /**
+     * <p>Constructor for DHTPushManager.</p>
      *
      * @param metaDht the dht
      * @param database the meta database
@@ -141,6 +144,7 @@ public class DHTPushManager extends MetaScheduledTask {
         return new DHTPushElement(MetHash.ZERO, System.currentTimeMillis(), 0);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void run() {
         synchronized (pushElements) {

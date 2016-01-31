@@ -32,16 +32,17 @@ import org.meta.api.ws.forms.InterfaceField;
 
 /**
  * A CheckBox list is a list of grouped {@link CheckBox}.
- * 
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class CheckBoxLists extends InterfaceField {
 
     private ArrayList<CheckBox> checkBoxes = null;
 
     /**
-     * 
+     * <p>Constructor for CheckBoxLists.</p>
+     *
      * @param id            Unique ID
      * @param label         label
      * @param checkBoxes    list of {@link CheckBox}s
@@ -51,6 +52,7 @@ public class CheckBoxLists extends InterfaceField {
         this.checkBoxes = checkBoxes;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mama's json and add the list of checboxes
@@ -63,6 +65,7 @@ public class CheckBoxLists extends InterfaceField {
         return checkBoxLists;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "checkBoxList";

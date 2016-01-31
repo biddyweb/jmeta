@@ -31,6 +31,8 @@ import org.meta.api.configuration.ModelConfiguration;
  *
  * Class holding general configuration entries for the Model.
  *
+ * @author nico
+ * @version $Id: $
  */
 public final class ModelConfigurationImpl extends PropertiesConfiguration implements ModelConfiguration {
 
@@ -88,36 +90,25 @@ public final class ModelConfigurationImpl extends PropertiesConfiguration implem
         }
     }
 
-    /**
-     *
-     * @return the database path.
-     */
+    /** {@inheritDoc} */
     @Override
     public String getDatabasePath() {
         return databasePath;
     }
 
-    /**
-     * @param dbPath The new database path.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setDatabasePath(final String dbPath) {
         this.databasePath = dbPath;
     }
 
-    /**
-     *
-     * @return The database file max size.
-     */
+    /** {@inheritDoc} */
     @Override
     public Integer getMaxSize() {
         return maxSize;
     }
 
-    /**
-     *
-     * @param dbMaxSize The new database file max size.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setMaxSize(final Integer dbMaxSize) {
         this.maxSize = dbMaxSize;

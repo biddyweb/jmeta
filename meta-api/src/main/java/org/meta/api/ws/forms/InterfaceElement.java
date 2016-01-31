@@ -28,15 +28,17 @@ import org.bson.BasicBSONObject;
 
 /**
  *  Is the super class of all Interface elements
- *  @author faquin
  *
+ *  @author faquin
+ * @version $Id: $
  */
 public abstract class InterfaceElement {
 
     private String     id = null;
 
     /**
-     * 
+     * <p>Constructor for InterfaceElement.</p>
+     *
      * @param id ID of the element, shall be unique in your interface
      */
     public InterfaceElement(String id){
@@ -44,7 +46,8 @@ public abstract class InterfaceElement {
     }
 
     /**
-     * 
+     * <p>toJson</p>
+     *
      * @return This as JSON
      */
     public BasicBSONObject toJson() {
@@ -56,13 +59,15 @@ public abstract class InterfaceElement {
     }
     
     /**
-     * 
+     * <p>getType</p>
+     *
      * @return the type of th element
      */
     protected abstract String getType();
 
     /**
-     * 
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the (unique ? ;-) ) ID
      */
     public String getId() {
@@ -71,6 +76,7 @@ public abstract class InterfaceElement {
 
     /**
      * May be used to change an element ID
+     *
      * @param id another unique ID
      */
     public void setId(String id) {

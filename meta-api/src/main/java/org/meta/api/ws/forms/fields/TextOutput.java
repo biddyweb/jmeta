@@ -30,20 +30,21 @@ import org.meta.api.ws.forms.InterfaceField;
 
 /**
  * A text outuput is a simple interfaceField who allow you to put raw data in it
- * 
- * Please, remember that, even if we give a web interface, we hobe 
- * that a curse interface will born one day, so please, do not put any HTML, 
- * JS, CSS, or other thing like that in it.
- * 
- * @author faquin
  *
+ * Please, remember that, even if we give a web interface, we hobe
+ * that a curse interface will born one day, so please, do not put any HTML,
+ * JS, CSS, or other thing like that in it.
+ *
+ * @author faquin
+ * @version $Id: $
  */
 public class TextOutput extends InterfaceField {
 
     StringBuilder buffer = null;
 
     /**
-     * 
+     * <p>Constructor for TextOutput.</p>
+     *
      * @param id    Unique ID
      * @param label Label
      */
@@ -54,6 +55,7 @@ public class TextOutput extends InterfaceField {
 
     /**
      * Append a message into the output, a line feed will be added after.
+     *
      * @param message a simple string message
      */
     public void append(String message){
@@ -69,7 +71,8 @@ public class TextOutput extends InterfaceField {
 
     /**
      * serialize as JSON
-     * @return 
+     *
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         //get mama's json append the string buffer
@@ -78,6 +81,7 @@ public class TextOutput extends InterfaceField {
         return o;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "TextOutput";

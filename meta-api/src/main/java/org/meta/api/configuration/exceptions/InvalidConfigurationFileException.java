@@ -28,10 +28,14 @@ import org.meta.api.common.exceptions.MetaException;
 
 /**
  * Exception thrown if an invalid or inexistent configuration file is encountered.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class InvalidConfigurationFileException extends MetaException {
 
     /**
+     * <p>Constructor for InvalidConfigurationFileException.</p>
      *
      * @param message the exception message
      */
@@ -40,6 +44,7 @@ public class InvalidConfigurationFileException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidConfigurationFileException.</p>
      *
      * @param t the initial exception
      */
@@ -48,6 +53,7 @@ public class InvalidConfigurationFileException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidConfigurationFileException.</p>
      *
      * @param message he exception message
      * @param t the initial exception

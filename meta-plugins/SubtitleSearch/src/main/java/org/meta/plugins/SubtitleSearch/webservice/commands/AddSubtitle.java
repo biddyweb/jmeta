@@ -44,8 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>AddSubtitle class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class AddSubtitle extends AbstractWebService {
 
@@ -61,6 +63,7 @@ public class AddSubtitle extends AbstractWebService {
     private Logger logger = LoggerFactory.getLogger(AddSubtitle.class);
 
     /**
+     * <p>Constructor for AddSubtitle.</p>
      *
      * @param controller the web service controller
      */
@@ -86,6 +89,7 @@ public class AddSubtitle extends AbstractWebService {
         initialDescriptor = new InterfaceDescriptor(rootColumn);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(final Map<String, String[]> map) {
         String srcString = getParameter(this.source.getId(), map);
@@ -148,6 +152,7 @@ public class AddSubtitle extends AbstractWebService {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
     }

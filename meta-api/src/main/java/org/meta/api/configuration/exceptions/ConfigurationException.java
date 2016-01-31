@@ -28,10 +28,14 @@ import org.meta.api.common.exceptions.MetaException;
 
 /**
  * Base exception for configuration classes.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class ConfigurationException extends MetaException {
 
     /**
+     * <p>Constructor for ConfigurationException.</p>
      *
      * @param message the exception message
      */
@@ -40,6 +44,7 @@ public class ConfigurationException extends MetaException {
     }
 
     /**
+     * <p>Constructor for ConfigurationException.</p>
      *
      * @param t the initial exception
      */
@@ -48,6 +53,7 @@ public class ConfigurationException extends MetaException {
     }
 
     /**
+     * <p>Constructor for ConfigurationException.</p>
      *
      * @param message the exception message
      * @param t the initial exception

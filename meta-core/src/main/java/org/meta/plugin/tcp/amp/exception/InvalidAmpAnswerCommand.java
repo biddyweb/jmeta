@@ -25,12 +25,15 @@
 package org.meta.plugin.tcp.amp.exception;
 
 /**
+ * <p>InvalidAmpAnswerCommand class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class InvalidAmpAnswerCommand extends InvalidAMPCommand {
 
     /**
+     * <p>Constructor for InvalidAmpAnswerCommand.</p>
      *
      * @param type the model type that triggered the error
      */

@@ -37,6 +37,7 @@ package org.meta.api.common;
  * If A != B, then hash(A) != hash(B).
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class HashIdentifiable {
 
@@ -46,6 +47,7 @@ public abstract class HashIdentifiable {
     protected MetHash hash;
 
     /**
+     * <p>Constructor for HashIdentifiable.</p>
      *
      * @param theHash the hash
      */
@@ -54,6 +56,7 @@ public abstract class HashIdentifiable {
     }
 
     /**
+     * <p>Getter for the field <code>hash</code>.</p>
      *
      * @return The hash
      */
@@ -62,6 +65,7 @@ public abstract class HashIdentifiable {
     }
 
     /**
+     * <p>Setter for the field <code>hash</code>.</p>
      *
      * @param metHash the hash
      */

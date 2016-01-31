@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * The web server part.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class MetaWebServer {
 
@@ -56,6 +56,7 @@ public class MetaWebServer {
     private final WSConfigurationImpl configuration;
 
     /**
+     * <p>Constructor for MetaWebServer.</p>
      *
      * @param config the web service configuration
      */
@@ -75,7 +76,7 @@ public class MetaWebServer {
     }
 
     /**
-     *
+     * <p>start</p>
      */
     //@Override
     public void start() {
@@ -123,6 +124,7 @@ public class MetaWebServer {
     }
 
     /**
+     * <p>getPluginListAsJson</p>
      *
      * @return a plugin list as JSON
      */

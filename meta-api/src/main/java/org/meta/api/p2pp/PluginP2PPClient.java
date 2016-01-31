@@ -35,6 +35,7 @@ import org.meta.api.plugin.SearchOperation;
  * Interface providing all peer-to-peer protocol commands to plugins.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface PluginP2PPClient {
 

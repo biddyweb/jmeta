@@ -30,6 +30,9 @@ import java.nio.ByteBuffer;
  * Class representing raw data with associated expiration timestamp.
  *
  * Used by the MetaCacheStorage.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class CacheEntry {
 
@@ -109,6 +112,8 @@ public class CacheEntry {
     }
 
     /**
+     * <p>hasExpired</p>
+     *
      * @return true if the entry has expired, false otherwise
      */
     public boolean hasExpired() {
@@ -116,6 +121,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>Getter for the field <code>data</code>.</p>
      *
      * @return the data of this entry (the raw application data with timeout value)
      */
@@ -124,6 +130,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>Getter for the field <code>timeout</code>.</p>
      *
      * @return the expiration timestamp of this entry
      */
@@ -132,6 +139,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>Getter for the field <code>applicationData</code>.</p>
      *
      * @return the raw application data (without timeout value)
      */
@@ -140,6 +148,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>Getter for the field <code>key</code>.</p>
      *
      * @return the data key
      */
@@ -148,6 +157,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>hasTimeout</p>
      *
      * @return true if this entry has a timeout information (ttl != 0)
      */
@@ -156,6 +166,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>previous</p>
      *
      * @return the previous item in the list
      */
@@ -164,6 +175,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>previous</p>
      *
      * @param prev the previous item in the list
      */
@@ -172,6 +184,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>next</p>
      *
      * @return the next item in the list
      */
@@ -180,6 +193,7 @@ public class CacheEntry {
     }
 
     /**
+     * <p>next</p>
      *
      * @param n the next item in the list
      */

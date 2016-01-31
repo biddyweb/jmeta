@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * glassfish server memory manager.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class BufferManager {
 
@@ -68,6 +69,7 @@ public final class BufferManager {
     }
 
     /**
+     * <p>release</p>
      *
      * @param buffer the buffer to release
      */

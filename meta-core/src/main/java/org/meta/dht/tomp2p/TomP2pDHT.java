@@ -68,6 +68,8 @@ import org.slf4j.LoggerFactory;
  * Uses the tomp2p library as a backend for DHT operations. It is a first implementation and will improve with
  * time.
  *
+ * @author nico
+ * @version $Id: $
  */
 public final class TomP2pDHT extends MetaDHT {
 
@@ -102,6 +104,8 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
+     * <p>Getter for the field <code>peerDHT</code>.</p>
+     *
      * @return The {@link net.tomp2p.dht.PeerDHT} representing our node.
      */
     public PeerDHT getPeerDHT() {
@@ -109,6 +113,7 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
+     * <p>Getter for the field <code>peer</code>.</p>
      *
      * @return The {@link net.tomp2p.p2p.Peer} representing our node.
      */
@@ -116,6 +121,7 @@ public final class TomP2pDHT extends MetaDHT {
         return peer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() throws IOException {
         this.startAndListen();
@@ -246,6 +252,7 @@ public final class TomP2pDHT extends MetaDHT {
                 ProtectionEnable.NONE, ProtectionMode.NO_MASTER);
     }
 
+    /** {@inheritDoc} */
     @Override
     public BootstrapOperation bootstrap() {
         Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnownPeers(),
@@ -254,6 +261,7 @@ public final class TomP2pDHT extends MetaDHT {
         return b;
     }
 
+    /** {@inheritDoc} */
     @Override
     public FindPeersOperation findPeers(final MetHash hash) {
         Number160 contentHash = TomP2pUtils.toNumber160(hash);
@@ -265,16 +273,19 @@ public final class TomP2pDHT extends MetaDHT {
         return operation;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void push(final MetHash hash, final long expirationDate) {
         pushManager.pushElement(hash, expirationDate);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void push(final MetHash hash) {
         push(hash, 0);
     }
 
+    /** {@inheritDoc} */
     @Override
     public StoreOperation doStore(final MetHash hash) {
         Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
@@ -284,6 +295,7 @@ public final class TomP2pDHT extends MetaDHT {
         return storeOperation;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         if (peer == null || peer.isShutdown()) {
@@ -314,6 +326,8 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
+     * <p>Setter for the field <code>pushManager</code>.</p>
+     *
      * @param dhtPushManager the pushManager to set
      */
     public void setPushManager(final DHTPushManager dhtPushManager) {

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * Oracle Berkeley java edition database implementation of {@link KVStorage}.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class BerkeleyKVStorage implements KVStorage {
 
@@ -57,6 +58,7 @@ public class BerkeleyKVStorage implements KVStorage {
     private Database db;
 
     /**
+     * <p>Constructor for BerkeleyKVStorage.</p>
      *
      * @param berkeleyEnv the berkeley db impl
      * @param dbName the name of the backing database
@@ -69,6 +71,7 @@ public class BerkeleyKVStorage implements KVStorage {
         env = this.db.getEnvironment();
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] get(final byte[] key) {
         DatabaseEntry dbKey = new DatabaseEntry(key);
@@ -82,6 +85,7 @@ public class BerkeleyKVStorage implements KVStorage {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean store(final MetaTx tx, final byte[] key, final byte[] value) {
         DatabaseEntry dbKey = new DatabaseEntry(key);
@@ -90,6 +94,7 @@ public class BerkeleyKVStorage implements KVStorage {
         return status == OperationStatus.SUCCESS;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean remove(final MetaTx tx, final byte[] key) {
         DatabaseEntry dbKey = new DatabaseEntry(key);
@@ -97,6 +102,7 @@ public class BerkeleyKVStorage implements KVStorage {
         return status == OperationStatus.SUCCESS || status == OperationStatus.NOTFOUND;
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] pop(final MetaTx tx, final byte[] key) {
         DatabaseEntry dbKey = new DatabaseEntry(key);
@@ -113,17 +119,20 @@ public class BerkeleyKVStorage implements KVStorage {
         return data.getData();
     }
 
+    /** {@inheritDoc} */
     @Override
     public long count() {
         return this.db.count();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaTx begin() {
         Transaction tx = env.beginTransaction(null, this.bDb.getTxConfig());
         return new BerkeleyTx(tx);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean commit(final MetaTx tx) {
         Transaction bTx = unwrapTx(tx);
@@ -138,6 +147,7 @@ public class BerkeleyKVStorage implements KVStorage {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean rollback(final MetaTx tx) {
         Transaction bTx = unwrapTx(tx);
@@ -152,6 +162,7 @@ public class BerkeleyKVStorage implements KVStorage {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         this.db.close();
@@ -171,6 +182,7 @@ public class BerkeleyKVStorage implements KVStorage {
         return bTx.getTx();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDatabaseName() {
         return this.db.getDatabaseName();

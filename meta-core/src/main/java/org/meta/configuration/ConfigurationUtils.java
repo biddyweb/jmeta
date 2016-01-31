@@ -42,6 +42,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * General utility class for configuration parsing.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class ConfigurationUtils {
 
@@ -59,7 +62,6 @@ public final class ConfigurationUtils {
      * Explode the given string using the ',' delimiter.
      *
      * @param value The input string to split.
-     *
      * @return The exploded parts.
      */
     public static String[] asList(final String value) {
@@ -106,9 +108,8 @@ public final class ConfigurationUtils {
      * Parse a list of network interface from a string.
      *
      * @param interfacesString The input string
-     *
      * @return The list of interfaces found in the string.
-     * @throws InvalidConfigurationException if an invalid interface is encountered.
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid interface is encountered.
      */
     public static Collection<String> interfacesFromString(final String interfacesString)
             throws InvalidConfigurationException {
@@ -137,9 +138,7 @@ public final class ConfigurationUtils {
      * Parse a list of network bindable addresses from a string.
      *
      * @param addressesString The input string
-     *
      * @return The list of addresses found in the string.
-     *
      * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid address or
      * hostname is encountered.
      */
@@ -159,11 +158,12 @@ public final class ConfigurationUtils {
     }
 
     /**
+     * <p>createProperties</p>
+     *
      * @param propertiesPath The path to create the properties from.
      * @return The created Properties object
-     *
-     * @throws FileNotFoundException If invalid path given
-     * @throws IOException If a file error occur
+     * @throws java.io.FileNotFoundException If invalid path given
+     * @throws java.io.IOException If a file error occur
      */
     public static Properties createProperties(final String propertiesPath)
             throws FileNotFoundException, IOException {

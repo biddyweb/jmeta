@@ -36,7 +36,8 @@ import java.util.Objects;
  * May also contain other information and operation related to a peer.
  *
  * @see {@link MetHash}
- *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaPeer {
 
@@ -81,7 +82,6 @@ public class MetaPeer {
      *
      * @param identity The peer id.
      * @param peerAddr the peer address
-     *
      */
     public MetaPeer(final Identity identity, final InetSocketAddress peerAddr) {
         this.id = identity;
@@ -100,6 +100,8 @@ public class MetaPeer {
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return the identity of this peer.
      */
     public final Identity getId() {
@@ -133,9 +135,7 @@ public class MetaPeer {
         this.peerAddress = addr;
     }
 
-    /**
-     * @return The string representation of this peer.
-     */
+    /** {@inheritDoc} */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
@@ -149,11 +149,7 @@ public class MetaPeer {
         return sb.toString();
     }
 
-    /**
-     *
-     * @param obj the object to check for equality
-     * @return true if equal, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
     public final boolean equals(final Object obj) {
         if (obj == null) {
@@ -170,6 +166,7 @@ public class MetaPeer {
                 && Objects.equals(this.peerAddress.getPort(), other.peerAddress.getPort());
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int hash = 7;

@@ -33,15 +33,11 @@ import org.meta.utils.SerializationUtils;
  * Used by storage layers to provide comparison for Long (i.e. timestamps sorted elements) on byte[] entries.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class LongComparator implements Comparator<byte[]>, Serializable {
 
-    /**
-     *
-     * @param left
-     * @param right
-     * @return
-     */
+    /** {@inheritDoc} */
     @Override
     public int compare(final byte[] left, final byte[] right) {
         if (left.length < Long.BYTES || right.length < Long.BYTES || left.length != right.length) {

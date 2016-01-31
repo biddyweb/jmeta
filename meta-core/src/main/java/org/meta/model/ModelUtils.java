@@ -7,7 +7,10 @@ import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
 
 /**
+ * <p>ModelUtils class.</p>
  *
+ * @author nico
+ * @version $Id: $
  */
 public class ModelUtils {
 

@@ -37,6 +37,7 @@ import org.meta.p2pp.client.P2PPResponseHandler;
  * This is the most simple implementation of a request.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPKeepAliveRequest extends P2PPRequest {
 
@@ -58,11 +59,13 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
         };
     }
 
+    /** {@inheritDoc} */
     @Override
     public P2PPResponseHandler getResponseHandler() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean build(final char buildToken) {
         this.token = buildToken;
@@ -72,29 +75,34 @@ public class P2PPKeepAliveRequest extends P2PPRequest {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasResponse() {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         BufferManager.release(buffer);
         operation.complete();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final String failedReason) {
         BufferManager.release(buffer);
         this.operation.setFailed(failedReason);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final Throwable thrwbl) {
         BufferManager.release(buffer);
         this.operation.setFailed(thrwbl);
     }
 
+    /** {@inheritDoc} */
     @Override
     public AsyncOperation getOperation() {
         return this.operation;

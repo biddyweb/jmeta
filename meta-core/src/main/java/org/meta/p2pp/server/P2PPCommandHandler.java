@@ -28,6 +28,7 @@ package org.meta.p2pp.server;
  * Base class to be implemented for each server-side command handler in the peer-to-peer protocol.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public abstract class P2PPCommandHandler {
 
@@ -37,7 +38,7 @@ public abstract class P2PPCommandHandler {
     protected final P2PPServer server;
 
     /**
-     *
+     * <p>Constructor for P2PPCommandHandler.</p>
      *
      * @param p2ppServer the server
      */

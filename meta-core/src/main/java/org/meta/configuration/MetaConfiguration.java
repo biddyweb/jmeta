@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 /**
  * The main configuration class, holding sub-configuration objects per components (p2pp, webservice, model,
  * dht).
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class MetaConfiguration {
 
@@ -98,8 +101,8 @@ public final class MetaConfiguration {
     /**
      * Initializes all configurations.
      *
-     * @throws InvalidConfigurationFileException if an invalid file was provided
-     * @throws InvalidConfigurationException if an invalid configuration entry was encountered
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationFileException if an invalid file was provided
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid configuration entry was encountered
      */
     public static void initConfiguration() throws
             InvalidConfigurationFileException, InvalidConfigurationException {
@@ -124,6 +127,8 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>getDHTConfiguration</p>
+     *
      * @return the DHT configuration object
      */
     public static DHTConfigurationImpl getDHTConfiguration() {
@@ -131,6 +136,8 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>getWSConfiguration</p>
+     *
      * @return The web service configuration object.
      */
     public static WSConfigurationImpl getWSConfiguration() {
@@ -138,6 +145,8 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Getter for the field <code>p2ppConfiguration</code>.</p>
+     *
      * @return The amp stack configuration object.
      */
     public static P2PPConfigurationImpl getP2ppConfiguration() {
@@ -145,6 +154,8 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Getter for the field <code>modelConfiguration</code>.</p>
+     *
      * @return The model configuration object.
      */
     public static ModelConfigurationImpl getModelConfiguration() {
@@ -152,6 +163,8 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Getter for the field <code>pluginsConfiguration</code>.</p>
+     *
      * @return The Plugins configuration object.
      */
     public static PluginConfigurationImpl getPluginsConfiguration() {
@@ -159,6 +172,7 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>dhtConfiguration</code>.</p>
      *
      * @param dhtConfig the dht configuration
      */
@@ -167,6 +181,7 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>setWSConfiguration</p>
      *
      * @param wSConfiguration the web service configuration
      */
@@ -175,6 +190,7 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>p2ppConfiguration</code>.</p>
      *
      * @param ampConfig the amp configuration
      */
@@ -183,6 +199,7 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>modelConfiguration</code>.</p>
      *
      * @param modelConfig the model configuration
      */
@@ -191,6 +208,7 @@ public final class MetaConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>pluginsConfiguration</code>.</p>
      *
      * @param pluginsConfig the plugins configuration
      */

@@ -30,8 +30,10 @@ import net.tomp2p.peers.Number640;
 import org.meta.api.storage.Serializer;
 
 /**
+ * <p>Number640Serializer class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class Number640Serializer implements Serializer<Number640>, Serializable {
 
@@ -54,6 +56,7 @@ public class Number640Serializer implements Serializer<Number640>, Serializable 
         nb.versionKey().toByteArray(dst, offset + (3 * Number160.BYTE_ARRAY_SIZE));
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] serialize(final Number640 nb) {
         byte[] data = new byte[Number640.BYTE_ARRAY_SIZE];
@@ -81,6 +84,7 @@ public class Number640Serializer implements Serializer<Number640>, Serializable 
         return new Number640(locationKey, domainKey, contentKey, versionKey);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Number640 deserialize(final byte[] data) {
         return deserialize(data, 0);

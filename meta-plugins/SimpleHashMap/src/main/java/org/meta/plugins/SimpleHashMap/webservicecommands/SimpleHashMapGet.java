@@ -45,8 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>SimpleHashMapGet class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleHashMapGet extends AbstractWebService implements OperationListener<SearchOperation> {
 
@@ -62,8 +64,9 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
     private Logger logger = LoggerFactory.getLogger(SimpleHashMapGet.class);
 
     /**
+     * <p>Constructor for SimpleHashMapGet.</p>
      *
-     * @param wsController
+     * @param wsController a {@link org.meta.api.ws.AbstractPluginWebServiceController} object.
      */
     public SimpleHashMapGet(final AbstractPluginWebServiceController wsController) {
         super(wsController);
@@ -76,6 +79,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
         api = wsController.getAPI();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(final Map<String, String[]> map) {
         output.flush();
@@ -102,11 +106,13 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
         redrawOutput();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final SearchOperation operation) {
         logger.debug("Operation failed!" + operation.getFailureMessage());
@@ -114,6 +120,7 @@ public class SimpleHashMapGet extends AbstractWebService implements OperationLis
         redrawOutput();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void complete(final SearchOperation operation) {
         logger.debug("Search Operation complete");

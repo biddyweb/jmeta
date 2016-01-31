@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * Asynchronous operation representing the read of a data block from a file.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class FileReadOperation extends AsyncOperation implements CompletionHandler<Integer, Void> {
 
@@ -46,6 +47,8 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
     private final ByteBuffer readData;
 
     /**
+     * <p>Constructor for FileReadOperation.</p>
+     *
      * @param offset the byte offset within the file
      * @param dataLength the data length to read
      */
@@ -56,6 +59,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
     }
 
     /**
+     * <p>getBuffer</p>
      *
      * @return the buffer holding read data
      */
@@ -64,6 +68,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
     }
 
     /**
+     * <p>Getter for the field <code>fileOffset</code>.</p>
      *
      * @return the file offset of the requested data
      */
@@ -72,6 +77,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
     }
 
     /**
+     * <p>Getter for the field <code>length</code>.</p>
      *
      * @return the requested length
      */
@@ -79,6 +85,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
         return length;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void completed(final Integer bytes, final Void a) {
         logger.debug("read file comleted, bytes = " + bytes);
@@ -93,6 +100,7 @@ public class FileReadOperation extends AsyncOperation implements CompletionHandl
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final Throwable thrwbl, final Void a) {
         this.setFailed(thrwbl);

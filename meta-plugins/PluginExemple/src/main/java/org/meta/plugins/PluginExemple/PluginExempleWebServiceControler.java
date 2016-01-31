@@ -32,12 +32,15 @@ import org.meta.plugins.PluginExemple.webservice.commands.ExempleWsCommand;
 import org.meta.plugins.PluginExemple.webservice.commands.SecondStateExempleWsCommand;
 
 /**
+ * <p>PluginExempleWebServiceControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class PluginExempleWebServiceControler extends AbstractPluginWebServiceController {
 
     /**
+     * <p>Constructor for PluginExempleWebServiceControler.</p>
      *
      * @param pluginAPI plugin api object
      */
@@ -45,6 +48,7 @@ public class PluginExempleWebServiceControler extends AbstractPluginWebServiceCo
         super(pluginAPI);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(
             LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {

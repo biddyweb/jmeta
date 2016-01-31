@@ -43,8 +43,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>AnswerSenderThread class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class AnswerSenderThread implements Runnable {
 
@@ -57,6 +59,7 @@ public class AnswerSenderThread implements Runnable {
     private AMPResponseCallback listener = null;
 
     /**
+     * <p>Constructor for AnswerSenderThread.</p>
      *
      * @param askBuilder Question
      * @param addr address to contact
@@ -80,7 +83,7 @@ public class AnswerSenderThread implements Runnable {
     }
 
     /**
-     *
+     * <p>run</p>
      */
     public void run() {
         try {

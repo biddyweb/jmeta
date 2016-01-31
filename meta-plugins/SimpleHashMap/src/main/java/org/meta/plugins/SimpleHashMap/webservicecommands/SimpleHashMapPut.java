@@ -46,8 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>SimpleHashMapPut class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleHashMapPut extends AbstractWebService {
 
@@ -59,8 +61,9 @@ public class SimpleHashMapPut extends AbstractWebService {
     private Logger logger = LoggerFactory.getLogger(SimpleHashMapPut.class);
 
     /**
+     * <p>Constructor for SimpleHashMapPut.</p>
      *
-     * @param wsController
+     * @param wsController a {@link org.meta.api.ws.AbstractPluginWebServiceController} object.
      */
     public SimpleHashMapPut(AbstractPluginWebServiceController wsController) {
         super(wsController);
@@ -76,6 +79,7 @@ public class SimpleHashMapPut extends AbstractWebService {
         api = wsController.getAPI();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(Map<String, String[]> map) {
         String id = getParameter("id", map);
@@ -119,11 +123,17 @@ public class SimpleHashMapPut extends AbstractWebService {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
     }
 
     //@Override
+    /**
+     * <p>callbackSuccess.</p>
+     *
+     * @param results a {@link java.util.ArrayList} object.
+     */
     public void callbackSuccess(ArrayList<Searchable> results) {
         output.flush();
         //Those results are incomplete

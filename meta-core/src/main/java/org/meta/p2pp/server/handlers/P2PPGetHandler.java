@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * The Get request handler for the P2PP server.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPGetHandler extends P2PPCommandHandler {
 
@@ -71,6 +72,7 @@ public class P2PPGetHandler extends P2PPCommandHandler {
     private ByteBuffer responseBuffer;
 
     /**
+     * <p>Constructor for P2PPGetHandler.</p>
      *
      * @param p2ppServer the p2ppServer
      */
@@ -78,6 +80,7 @@ public class P2PPGetHandler extends P2PPCommandHandler {
         super(p2ppServer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle(final P2PPServerRequestContext req) {
         this.request = req;

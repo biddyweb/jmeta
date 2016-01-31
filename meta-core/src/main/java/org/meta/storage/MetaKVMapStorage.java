@@ -39,8 +39,8 @@ import org.meta.api.storage.Serializer;
  *
  * @param <K> the key type
  * @param <V> the value type
- *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
 
@@ -49,10 +49,13 @@ public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
     private final Serializer<V> valueSerializer;
 
     /**
+     * <p>Constructor for MetaKVMapStorage.</p>
      *
      * @param kvStorage the backing key/value storage
      * @param kSerializer the key serializer
      * @param vSerializer the value serializer
+     * @param <K> a K object.
+     * @param <V> a V object.
      */
     public MetaKVMapStorage(final KVStorage kvStorage, final Serializer<K> kSerializer,
             final Serializer<V> vSerializer) {
@@ -61,21 +64,25 @@ public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
         this.valueSerializer = vSerializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public KVStorage getKVStorage() {
         return this.storage;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Serializer<K> getKeySerializer() {
         return keySerializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Serializer<V> getValueSerializer() {
         return valueSerializer;
     }
 
+    /** {@inheritDoc} */
     @Override
     public V get(final K key) {
         byte[] keyData = this.keySerializer.serialize(key);
@@ -89,6 +96,7 @@ public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
         return this.valueSerializer.deserialize(valueData);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean put(final MetaTx tx, final K key, final V value) {
         byte[] keyData = this.keySerializer.serialize(key);
@@ -103,6 +111,7 @@ public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
         return this.storage.store(tx, keyData, valueData);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean remove(final MetaTx tx, final K key) {
         byte[] keyData = this.keySerializer.serialize(key);
@@ -112,16 +121,19 @@ public class MetaKVMapStorage<K, V> implements KVMapStorage<K, V> {
         return this.storage.remove(tx, keyData);
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaTx begin() {
         return this.storage.begin();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean commit(final MetaTx tx) {
         return this.storage.commit(tx);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean rollback(final MetaTx tx) {
         return this.storage.rollback(tx);

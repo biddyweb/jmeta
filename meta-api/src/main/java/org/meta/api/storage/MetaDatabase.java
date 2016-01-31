@@ -39,6 +39,7 @@ import java.util.Comparator;
  * Records are not shared across different 'Storage Units' i.e different databases names.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface MetaDatabase {
 

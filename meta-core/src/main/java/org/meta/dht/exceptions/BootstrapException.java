@@ -25,12 +25,15 @@
 package org.meta.dht.exceptions;
 
 /**
+ * <p>BootstrapException class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class BootstrapException extends DHTException {
 
     /**
+     * <p>Constructor for BootstrapException.</p>
      *
      * @param message the exception message
      */
@@ -39,6 +42,7 @@ public class BootstrapException extends DHTException {
     }
 
     /**
+     * <p>Constructor for BootstrapException.</p>
      *
      * @param t the initial cause
      */
@@ -47,6 +51,7 @@ public class BootstrapException extends DHTException {
     }
 
     /**
+     * <p>Constructor for BootstrapException.</p>
      *
      * @param message the exception message
      * @param t the initial cause

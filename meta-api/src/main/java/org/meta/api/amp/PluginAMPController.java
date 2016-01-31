@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * You may use getInTheModel to retrieve information from the DB
  *
  * @author Thomas LAVOCAT
- *
+ * @version $Id: $
  */
 public abstract class PluginAMPController {
 
@@ -101,7 +101,6 @@ public abstract class PluginAMPController {
      * Instantiate (if found) a new Command.
      *
      * @param commandName name of the command
-     *
      * @return A command to execute
      */
     public final PluginAMPCommand getCommand(final String commandName) {

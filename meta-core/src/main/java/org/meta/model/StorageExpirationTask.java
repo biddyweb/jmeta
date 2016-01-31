@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * Also force synchronization of cache to storage.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class StorageExpirationTask extends MetaScheduledTask {
 
@@ -54,6 +55,7 @@ public class StorageExpirationTask extends MetaScheduledTask {
     private final MetaCache cache;
 
     /**
+     * <p>Constructor for StorageExpirationTask.</p>
      *
      * @param cacheStorage the cache storage
      */
@@ -62,6 +64,7 @@ public class StorageExpirationTask extends MetaScheduledTask {
         cache = cacheStorage;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void run() {
         logger.debug("Removing expired entries from cache...");

@@ -37,6 +37,8 @@ import org.meta.model.ModelUtils;
 /**
  * Completion handler that is registered by meta-core to check that results returned are consistent.
  *
+ * @author nico
+ * @version $Id: $
  */
 public class SearchResultIntegrityCheckerHook implements OperationListener<SearchOperation> {
 
@@ -45,6 +47,7 @@ public class SearchResultIntegrityCheckerHook implements OperationListener<Searc
     private Map<String, String> metaDataFilters;
 
     /**
+     * <p>Constructor for SearchResultIntegrityCheckerHook.</p>
      *
      * @param filters the meta-data filters that where given to the peer
      */
@@ -52,11 +55,13 @@ public class SearchResultIntegrityCheckerHook implements OperationListener<Searc
         this.metaDataFilters = filters;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final SearchOperation operation) {
         //nothing to do here
     }
 
+    /** {@inheritDoc} */
     @Override
     public void complete(final SearchOperation operation) {
         /*

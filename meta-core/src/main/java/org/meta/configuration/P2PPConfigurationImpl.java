@@ -32,6 +32,9 @@ import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**
  * Class holding general configuration entries for the p2p stack.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class P2PPConfigurationImpl extends PropertiesConfiguration
         implements P2PPConfiguration {
@@ -121,7 +124,7 @@ public final class P2PPConfigurationImpl extends PropertiesConfiguration
      * Initializes the P2P stack config from properties.
      *
      * @param properties The properties to take configuration from.
-     * @throws InvalidConfigurationException if an invalid configuration entry is encountered
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid configuration entry is encountered
      */
     public P2PPConfigurationImpl(final Properties properties) throws InvalidConfigurationException {
         super(properties);
@@ -162,80 +165,73 @@ public final class P2PPConfigurationImpl extends PropertiesConfiguration
         }
     }
 
-    /**
-     * @return the clientThreads
-     */
+    /** {@inheritDoc} */
     @Override
     public Integer getClientThreads() {
         return clientThreads;
     }
 
-    /**
-     * @param threadPoolSize the clientThreads to set
-     */
+    /** {@inheritDoc} */
     @Override
     public void setClientThreads(final Integer threadPoolSize) {
         this.clientThreads = threadPoolSize;
     }
 
-    /**
-     * @return the serverThreads
-     */
+    /** {@inheritDoc} */
     @Override
     public Integer getServerThreads() {
         return serverThreads;
     }
 
-    /**
-     * @param threadPoolSize the serverThreads to set
-     */
+    /** {@inheritDoc} */
     @Override
     public void setServerThreads(final Integer threadPoolSize) {
         this.serverThreads = threadPoolSize;
     }
 
-    /**
-     *
-     * @return The network configuration.
-     */
+    /** {@inheritDoc} */
     @Override
     public NetworkConfiguration getNetworkConfig() {
         return networkConfig;
     }
 
-    /**
-     * @param nwConfig The new network configuration.
-     */
+    /** {@inheritDoc} */
     @Override
     public void setNetworkConfig(final NetworkConfiguration nwConfig) {
         this.networkConfig = (NetworkConfigurationImpl) nwConfig;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Integer getMaxConnections() {
         return this.maxConnections;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Integer getMaxDownloadSpeed() {
         return this.maxDownloadSpeed;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Integer getMaxUploadSpeed() {
         return this.maxUploadSpeed;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setMaxConnections(final Integer maxConn) {
         this.maxConnections = maxConn;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setMaxDownloadSpeed(final Integer maxSpeed) {
         this.maxDownloadSpeed = maxSpeed;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setMaxUploadSpeed(final Integer maxSpeed) {
         this.maxUploadSpeed = maxSpeed;

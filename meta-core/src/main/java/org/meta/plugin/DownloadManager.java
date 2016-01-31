@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * For now a really naive approach is made to dispatch Get requests to peers, and should be enhanced.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class DownloadManager implements OperationListener<GetOperation> {
 
@@ -70,6 +71,7 @@ public class DownloadManager implements OperationListener<GetOperation> {
     private boolean[][] piecesField;
 
     /**
+     * <p>Constructor for DownloadManager.</p>
      *
      * @param p2pp the p2pp commands client
      * @param op the download operation
@@ -254,12 +256,14 @@ public class DownloadManager implements OperationListener<GetOperation> {
         //getPiece(pieceIndex);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final GetOperation operation) {
         logger.warn("Get block operation failed! Error: " + operation.getFailureMessage());
         blockFailed(operation.getPieceIndex(), operation.getByteOffset(), operation.getDataLength());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void complete(final GetOperation operation) {
         if (operation.getDataLength() != operation.getData().remaining()) {

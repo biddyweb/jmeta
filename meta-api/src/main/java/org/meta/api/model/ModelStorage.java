@@ -32,10 +32,12 @@ import org.meta.api.storage.KVStorage;
  * Base interface representing storage operations on meta model objects.
  *
  * @author nico
+ * @version $Id: $
  */
 public interface ModelStorage {
 
     /**
+     * <p>getFactory</p>
      *
      * @return The model factory.
      */
@@ -47,6 +49,7 @@ public interface ModelStorage {
     void close();
 
     /**
+     * <p>get</p>
      *
      * @param hash of something you want to find in the db
      * @return A searchable object, or null if not found.
@@ -54,6 +57,7 @@ public interface ModelStorage {
     Searchable get(MetHash hash);
 
     /**
+     * <p>getData</p>
      *
      * @param hash the hash of a data
      * @return a Data object or null if the hash does not exists
@@ -61,6 +65,7 @@ public interface ModelStorage {
     Data getData(MetHash hash);
 
     /**
+     * <p>getDataFile</p>
      *
      * @param hash the hash of a data file
      * @return a DataFile object or null if the hash does not exists or if the hash does not point to a
@@ -69,6 +74,7 @@ public interface ModelStorage {
     DataFile getDataFile(MetHash hash);
 
     /**
+     * <p>getSearch</p>
      *
      * @param hash the hash of a search
      * @return a search pointed by his hash. Return null if not found or if the hash is not pointed a
@@ -77,6 +83,7 @@ public interface ModelStorage {
     Search getSearch(MetHash hash);
 
     /**
+     * <p>getSearchable</p>
      *
      * @param hash the hash of a searchable
      * @return the MetaSearch linked to the hash or null if not found
@@ -105,7 +112,6 @@ public interface ModelStorage {
      * All children of given object are also created/updated.
      *
      * @param searchable The object to create / update
-     *
      * @return true on success, false otherwise
      */
     boolean set(Searchable searchable);
@@ -119,12 +125,13 @@ public interface ModelStorage {
      *
      * @param searchable The object to create / update
      * @param timeout the timeout value in ms
-     *
      * @return true on success, false otherwise
      */
     boolean set(Searchable searchable, long timeout);
 
     /**
+     * <p>getStorage</p>
+     *
      * @return the backing storage used by this model.
      */
     KVStorage getStorage();

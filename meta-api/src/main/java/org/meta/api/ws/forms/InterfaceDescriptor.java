@@ -29,14 +29,16 @@ import org.bson.BasicBSONObject;
 /**
  * Describe a simple interface to discuss with the web service
  * Need an Interface organizer to exist
- * 
+ *
  * @author faquin
+ * @version $Id: $
  */
 public class InterfaceDescriptor {
 
     private InterfaceOrganizer root = null;
 
     /**
+     * <p>Constructor for InterfaceDescriptor.</p>
      *
      * @param root the interface root
      */
@@ -45,8 +47,9 @@ public class InterfaceDescriptor {
     }
 
     /**
+     * <p>toJson</p>
      *
-     * @return
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         return root.toJson();
@@ -54,6 +57,7 @@ public class InterfaceDescriptor {
 
     /**
      * Set the root of the interface
+     *
      * @param root the InterfaceOrganizer to the root Interface
      */
     public void setRoot(InterfaceOrganizer root) {

@@ -32,6 +32,7 @@ import org.meta.api.common.MetHash;
  * Asynchronous operation representing the write of a data block from a file.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class PieceHashOperation extends AsyncOperation {
 
@@ -40,6 +41,7 @@ public class PieceHashOperation extends AsyncOperation {
     private MetHash pieceHash;
 
     /**
+     * <p>Constructor for PieceHashOperation.</p>
      *
      * @param pieceIdx the piece index
      */
@@ -48,6 +50,7 @@ public class PieceHashOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>pieceIndex</code>.</p>
      *
      * @return the piece index
      */
@@ -56,6 +59,7 @@ public class PieceHashOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>pieceHash</code>.</p>
      *
      * @return the piece hash
      */
@@ -64,6 +68,7 @@ public class PieceHashOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Setter for the field <code>pieceHash</code>.</p>
      *
      * @param hash the piece hash
      */

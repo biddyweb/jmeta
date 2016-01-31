@@ -32,15 +32,17 @@ import org.meta.api.ws.forms.InterfaceField;
 /**
  * Correspond to a Select liste between optional elements
  * Contains a list of {@link Select}
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class SelectList extends InterfaceField {
 
     private ArrayList<Select> selectList = null;
 
     /**
-     * 
+     * <p>Constructor for SelectList.</p>
+     *
      * @param id        Unique ID
      * @param label     Label
      * @param selects   a list of {@link Select}
@@ -50,6 +52,7 @@ public class SelectList extends InterfaceField {
         this.selectList = selects;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mamas JSON and add the children
@@ -62,6 +65,7 @@ public class SelectList extends InterfaceField {
         return selectList;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "selectList";

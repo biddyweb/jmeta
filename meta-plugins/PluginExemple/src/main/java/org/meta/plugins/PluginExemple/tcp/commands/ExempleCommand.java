@@ -32,11 +32,14 @@ import org.meta.api.common.MetHash;
 import org.meta.api.model.Searchable;
 
 /**
+ * <p>ExempleCommand class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class ExempleCommand extends PluginAMPCommand {
 
+    /** {@inheritDoc} */
     @Override
     public AMPBuilder execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();

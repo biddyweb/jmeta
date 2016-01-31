@@ -34,8 +34,9 @@ import java.util.Collection;
  * An asynchronous DHT operation representing the bootstrap process.
  *
  * The implementation details is let to the extending class.
- * 
+ *
  * @author nico
+ * @version $Id: $
  */
 public abstract class BootstrapOperation extends AsyncOperation {
 
@@ -52,6 +53,8 @@ public abstract class BootstrapOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>bootstrapTo</code>.</p>
+     *
      * @return The list of peers we actually bootstraped to.
      */
     public Collection<MetaPeer> getBootstrapTo() {

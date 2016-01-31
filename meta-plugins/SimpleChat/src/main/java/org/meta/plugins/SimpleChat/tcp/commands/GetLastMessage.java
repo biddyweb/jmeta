@@ -32,11 +32,14 @@ import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 
 /**
+ * <p>GetLastMessage class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class GetLastMessage extends PluginAMPCommand {
 
+    /** {@inheritDoc} */
     @Override
     public AMPAnswerBuilder execute(String answer, MetHash hash) {
         ArrayList<Searchable> datas = new ArrayList<Searchable>();

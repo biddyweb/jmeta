@@ -29,11 +29,11 @@ import org.bson.BasicBSONObject;
 /**
  * A button is a special element that is not a field.
  * used to give to the user where to send the interface execution.
- * 
- * Has a label
- * 
- * @author faquin
  *
+ * Has a label
+ *
+ * @author faquin
+ * @version $Id: $
  */
 public abstract class InterfaceButton extends InterfaceElement {
 
@@ -43,9 +43,10 @@ public abstract class InterfaceButton extends InterfaceElement {
     protected String label = "";
 
     /**
+     * <p>Constructor for InterfaceButton.</p>
      *
-     * @param id
-     * @param label
+     * @param id a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
      */
     public InterfaceButton(String id, String label) {
         super(id);
@@ -54,6 +55,7 @@ public abstract class InterfaceButton extends InterfaceElement {
     
     /**
      * Change the label of the button
+     *
      * @param label the new label, will be set to an empty string if null
      */
     public void setLabel(String label){
@@ -64,7 +66,8 @@ public abstract class InterfaceButton extends InterfaceElement {
     
     /**
      * Render as simple json.
-     * @return 
+     *
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         //get parent json and add attributes

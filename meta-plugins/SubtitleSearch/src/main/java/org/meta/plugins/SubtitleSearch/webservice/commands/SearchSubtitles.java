@@ -53,8 +53,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>SearchSubtitles class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SearchSubtitles extends AbstractWebService implements OperationListener<SearchOperation> {
 
@@ -73,6 +75,7 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
     private final Set<String> subtitleMetaKeys;
 
     /**
+     * <p>Constructor for SearchSubtitles.</p>
      *
      * @param controller the parent web service controller
      */
@@ -101,6 +104,7 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
         subtitleMetaKeys.add("name");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(final Map<String, String[]> map) {
         //initiate state
@@ -145,16 +149,19 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
         submitToMe.setLabel("Make a new search");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final SearchOperation operation) {
         logger.info("Search operation failed!");
         failure = operation.getFailureMessage();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void complete(final SearchOperation operation) {
         logger.info("Search complete! nb results: " + operation.getNbResults());

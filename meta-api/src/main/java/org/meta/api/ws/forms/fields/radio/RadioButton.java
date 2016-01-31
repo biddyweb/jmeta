@@ -30,8 +30,9 @@ import org.meta.api.ws.forms.InterfaceField;
 /**
  * A Radio button.
  * Can exist outside a {@link RadioList}
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class RadioButton extends InterfaceField{
 
@@ -39,7 +40,8 @@ public class RadioButton extends InterfaceField{
     private boolean selected = false; 
 
     /**
-     * 
+     * <p>Constructor for RadioButton.</p>
+     *
      * @param id    unique ID
      * @param label label
      */
@@ -48,7 +50,8 @@ public class RadioButton extends InterfaceField{
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>selected</code>.</p>
+     *
      * @param selected true if selected
      */
     public void setSelected(boolean selected){
@@ -56,11 +59,13 @@ public class RadioButton extends InterfaceField{
     }
 
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "radioButton";
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mama's json and add selected value

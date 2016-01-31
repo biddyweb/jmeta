@@ -28,10 +28,11 @@ import org.meta.api.storage.Serializer;
 import org.meta.api.model.Searchable;
 
 /**
+ * <p>BsonSerializer interface.</p>
  *
  * @param <T> the searchable to serialize
- *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface BsonSerializer<T extends Searchable> extends Serializer<T> {
 
@@ -86,13 +87,16 @@ public interface BsonSerializer<T extends Searchable> extends Serializer<T> {
     String METADATA_VALUE_KEY = "value";
 
     /**
+     * <p>fromJson</p>
      *
      * @param json the json string
      * @return the created object from json, or null if unable to process
+     * @param <T> a T object.
      */
     T fromJson(final String json);
 
     /**
+     * <p>toJson</p>
      *
      * @param object the object to serialize to json
      * @return the json string, or null if unable to process

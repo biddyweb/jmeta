@@ -27,8 +27,8 @@ package org.meta.storage.comparators;
 /**
  * Provides utility access to common comparator instances.
  *
- *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class Comparators {
 

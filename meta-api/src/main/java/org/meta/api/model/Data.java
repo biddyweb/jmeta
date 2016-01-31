@@ -33,6 +33,7 @@ import org.meta.api.common.MetHash;
  * Contains a size, a type and a list of associated meta-data.
  *
  * @author Thomas LAVOCAT
+ * @version $Id: $
  */
 public abstract class Data extends Searchable {
 
@@ -74,6 +75,7 @@ public abstract class Data extends Searchable {
     }
 
     /**
+     * <p>Getter for the field <code>metaDataMap</code>.</p>
      *
      * @return the metaDataMap of the Data
      */
@@ -82,6 +84,7 @@ public abstract class Data extends Searchable {
     }
 
     /**
+     * <p>getMetaData</p>
      *
      * @param key the key of the meta data to retrieve
      * @return the meta data object for the given key, if any, or null
@@ -118,6 +121,7 @@ public abstract class Data extends Searchable {
 //        this.metaDataMap.addAll(properties);
 //    }
     /**
+     * <p>Getter for the field <code>size</code>.</p>
      *
      * @return the size of this data
      */
@@ -126,6 +130,7 @@ public abstract class Data extends Searchable {
     }
 
     /**
+     * <p>Setter for the field <code>size</code>.</p>
      *
      * @param dataSize the size of this data
      */
@@ -134,6 +139,7 @@ public abstract class Data extends Searchable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
      *
      * @return The type of this data object
      */
@@ -142,6 +148,7 @@ public abstract class Data extends Searchable {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
      *
      * @param dataType The type of this data object
      */
@@ -166,14 +173,14 @@ public abstract class Data extends Searchable {
     public abstract ByteBuffer getBuffer();
 
     /**
+     * {@inheritDoc}
+     *
      * Convert the underlying data to a String.
      *
      * Internal data will be decoded from UTF-8.
      *
      * If underlying data does not contains a valid UTF-8 sequence, the content of the returned string is
      * undefined.
-     *
-     * @return the created String
      */
     @Override
     public abstract String toString();

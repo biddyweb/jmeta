@@ -46,8 +46,10 @@ import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
 
 /**
+ * <p>SecondStateExempleWsCommand class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SecondStateExempleWsCommand extends AbstractWebService {
 
@@ -73,8 +75,9 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
     private DateInput birthDate;
 
     /**
+     * <p>Constructor for SecondStateExempleWsCommand.</p>
      *
-     * @param controler
+     * @param controler a {@link org.meta.api.ws.AbstractPluginWebServiceController} object.
      */
     public SecondStateExempleWsCommand(AbstractPluginWebServiceController controler) {
         super(controler);
@@ -135,6 +138,7 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         rootColumn.addChild(output);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(Map<String, String[]> map) {
         output.flush();
@@ -170,6 +174,7 @@ public class SecondStateExempleWsCommand extends AbstractWebService {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
         nbRefresh++;

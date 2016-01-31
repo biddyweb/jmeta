@@ -28,10 +28,14 @@ import org.meta.api.common.exceptions.MetaException;
 
 /**
  * Exception thrown if an invalid configuration is encountered.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class InvalidConfigurationException extends MetaException {
 
     /**
+     * <p>Constructor for InvalidConfigurationException.</p>
      *
      * @param message the exception message
      */
@@ -40,6 +44,7 @@ public class InvalidConfigurationException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidConfigurationException.</p>
      *
      * @param t the initial exception
      */
@@ -48,6 +53,7 @@ public class InvalidConfigurationException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidConfigurationException.</p>
      *
      * @param message the exception message
      * @param t the initial exception

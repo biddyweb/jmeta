@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * checker to come).
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class TomP2pStorage implements Storage {
 
@@ -85,6 +86,8 @@ public class TomP2pStorage implements Storage {
     private final CollectionStorage<TimeoutEntry> sortedTimeout;
 
     /**
+     * <p>Constructor for TomP2pStorage.</p>
+     *
      * @param dataBase the database to get storage facilities from
      */
     public TomP2pStorage(final MetaDatabase dataBase) {
@@ -95,6 +98,7 @@ public class TomP2pStorage implements Storage {
         this.sortedTimeout = this.db.getCollection(EXPIRATION_NAME, timeoutSerializer, Comparators.LONG);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data put(final Number640 key, final Data value) {
         logger.info("PUT " + key + ":" + value);
@@ -130,16 +134,19 @@ public class TomP2pStorage implements Storage {
         return d;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data get(final Number640 key) {
         return checkExpiration(key);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean contains(final Number640 key) {
         return get(key) != null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int contains(final Number640 from, final Number640 to) {
         int count = 0;
@@ -153,6 +160,7 @@ public class TomP2pStorage implements Storage {
         return count;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data remove(final Number640 key, final boolean returnData) {
         Data data = null;
@@ -163,6 +171,7 @@ public class TomP2pStorage implements Storage {
         return data;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NavigableMap<Number640, Data> remove(final Number640 from, final Number640 to) {
         NavigableMap<Number640, Data> res = new TreeMap<>();
@@ -178,6 +187,7 @@ public class TomP2pStorage implements Storage {
         return res;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NavigableMap<Number640, Data> subMap(final Number640 from, final Number640 to, final int limit,
             final boolean ascending) {
@@ -200,6 +210,7 @@ public class TomP2pStorage implements Storage {
         return subMap;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NavigableMap<Number640, Data> map() {
         throw new UnsupportedOperationException("MAP SHOULD NEVER BE CALLED!");
@@ -207,21 +218,25 @@ public class TomP2pStorage implements Storage {
         //in memory. Apparently Tomp2p never uses it too...
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         logger.debug("CLOSE");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void addTimeout(final Number640 key, final long expiration) {
         this.sortedTimeout.add(new TimeoutEntry(key, expiration));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void removeTimeout(final Number640 key) {
         //We don't support removing expiration. We do it implicitely with subMapTimeout() and remove()
     }
 
+    /** {@inheritDoc} */
     @Override
     public Collection<Number640> subMapTimeout(final long to) {
         TimeoutEntry toEntry = new TimeoutEntry(Number640.ZERO, to);
@@ -234,46 +249,55 @@ public class TomP2pStorage implements Storage {
         return expiredKeys;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int storageCheckIntervalMillis() {
         return 10000;//MAX_TTL; //Check every hour TODO this should match the global parameter of DHT entries TTL
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean protectDomain(final Number320 key, final PublicKey publicKey) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isDomainProtectedByOthers(final Number320 key, final PublicKey publicKey) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean protectEntry(final Number480 key, final PublicKey publicKey) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isEntryProtectedByOthers(final Number480 key, final PublicKey publicKey) {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Number160 findPeerIDsForResponsibleContent(final Number160 locationKey) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Collection<Number160> findContentForResponsiblePeerID(final Number160 peerID) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean updateResponsibilities(final Number160 locationKey, final Number160 peerId) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void removeResponsibility(final Number160 locationKey) {
         throw new UnsupportedOperationException();

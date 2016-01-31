@@ -61,10 +61,12 @@ import org.meta.api.common.MetHash;
  * If you really need to update your object, you can use the method UpdateFromNetwork in ModelFactory class
  *
  * @author Thomas LAVOCAT
+ * @version $Id: $
  */
 public abstract class Search extends Searchable {
 
     /**
+     * <p>Constructor for Search.</p>
      *
      * @param hash the hash
      */
@@ -87,12 +89,14 @@ public abstract class Search extends Searchable {
     public abstract void addResults(final Collection<Data> results);
 
     /**
+     * <p>getResults</p>
      *
      * @return a collection of every results for this search
      */
     public abstract Collection<Data> getResults();
 
     /**
+     * <p>getSource</p>
      *
      * @return the source
      */
@@ -106,6 +110,7 @@ public abstract class Search extends Searchable {
     public abstract void setSource(final Searchable src);
 
     /**
+     * <p>getCriteria</p>
      *
      * @return return the search criteria
      */
@@ -119,11 +124,14 @@ public abstract class Search extends Searchable {
     public abstract void setCriteria(final SearchCriteria metData);
 
     /**
+     * <p>addCriteria</p>
+     *
      * @param criteria the criteria list to add to this search
      */
     public abstract void addCriteria(final Collection<MetaData> criteria);
 
     /**
+     * <p>addCriterion</p>
      *
      * @param criterion the criterion to be added to the search criteria
      */

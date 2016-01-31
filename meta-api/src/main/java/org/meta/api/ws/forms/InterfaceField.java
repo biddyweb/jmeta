@@ -29,14 +29,14 @@ import org.bson.BasicBSONObject;
 /**
  * A field represent an Input or an Ouptut for the interface.
  * By the way it is the super class of all inpu and output elements.
- * 
+ *
  * Extends Interface element and add two extra informations :
  * - label (for human purposes)
  * - value (default value, or gotten value thru command execution)
  * - description (for human purposes)
- * 
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public abstract class InterfaceField extends InterfaceElement {
 
@@ -57,6 +57,7 @@ public abstract class InterfaceField extends InterfaceElement {
 
     /**
      * Build this field with values and id
+     *
      * @param id            unique ID
      * @param label         label of the element (for human purposes)
      * @param description   description of the element
@@ -69,6 +70,7 @@ public abstract class InterfaceField extends InterfaceElement {
     
     /**
      * Build this field with values and id
+     *
      * @param id    unique ID
      * @param label label of the element (for human purposes)
      */
@@ -79,6 +81,7 @@ public abstract class InterfaceField extends InterfaceElement {
 
     /**
      * Change the value of the element
+     *
      * @param value the new value, if null, set to an empty string
      */
     public void setValue(String value){
@@ -89,6 +92,7 @@ public abstract class InterfaceField extends InterfaceElement {
 
     /**
      * Change the description of the element
+     *
      * @param description the new description, if null, set to an empty string
      */
     public void setDescription(String description){
@@ -99,7 +103,8 @@ public abstract class InterfaceField extends InterfaceElement {
 
     /**
      * Render as simple json.
-     * @return 
+     *
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         //get parent json and add attributes

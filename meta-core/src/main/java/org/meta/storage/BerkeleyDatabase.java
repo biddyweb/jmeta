@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * Oracle Berkeley java edition database implementation of MetaDatabase.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class BerkeleyDatabase implements MetaDatabase {
 
@@ -67,9 +68,10 @@ public class BerkeleyDatabase implements MetaDatabase {
     private final Map<String, Database> databases;
 
     /**
+     * <p>Constructor for BerkeleyDatabase.</p>
      *
      * @param config the Model configuration
-     * @throws StorageException if an error occurred
+     * @throws org.meta.storage.exceptions.StorageException if an error occurred
      */
     public BerkeleyDatabase(final ModelConfiguration config) throws StorageException {
         this.configuration = config;
@@ -144,33 +146,39 @@ public class BerkeleyDatabase implements MetaDatabase {
         return db;
     }
 
+    /** {@inheritDoc} */
     @Override
     public KVStorage getKVStorage(final String name) {
         return new BerkeleyKVStorage(this, name, null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public KVStorage getKVStorage(final String name, final Comparator<byte[]> comparator) {
         return new BerkeleyKVStorage(this, name, comparator);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> CollectionStorage<T> getCollection(final String name, final Serializer<T> serializer) {
         return getCollection(name, serializer, null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> CollectionStorage<T> getCollection(final String name, final Serializer<T> serializer,
             final Comparator<byte[]> comparator) {
         return new BerkeleyCollectionStorage<>(this, name, serializer, comparator);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <K, V> KVMapStorage<K, V> getKVMapStorage(final String name, final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer) {
         return getKVMapStorage(name, keySerializer, valueSerializer, null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <K, V> KVMapStorage<K, V> getKVMapStorage(final String name, final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer, final Comparator<byte[]> comparator) {
@@ -178,6 +186,7 @@ public class BerkeleyDatabase implements MetaDatabase {
         return new MetaKVMapStorage<>(backingStore, keySerializer, valueSerializer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         try {

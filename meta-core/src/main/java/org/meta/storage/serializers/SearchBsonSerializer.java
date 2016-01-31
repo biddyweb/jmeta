@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Bson de/serializer for a Search.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class SearchBsonSerializer implements BsonSerializer<MetaSearch> {
 
@@ -79,16 +80,19 @@ public class SearchBsonSerializer implements BsonSerializer<MetaSearch> {
         return bsonObject;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaSearch fromJson(final String json) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toJson(final MetaSearch object) {
         return getBson(object).toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] serialize(final MetaSearch object) {
         return BSON.encode(getBson(object));
@@ -146,6 +150,7 @@ public class SearchBsonSerializer implements BsonSerializer<MetaSearch> {
         return search;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaSearch deserialize(final byte[] data) {
         BSONObject obj = BSON.decode(data);

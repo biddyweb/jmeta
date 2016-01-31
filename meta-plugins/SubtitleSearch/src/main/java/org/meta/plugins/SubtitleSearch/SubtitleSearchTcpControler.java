@@ -31,11 +31,14 @@ import org.meta.plugins.SubtitleSearch.tcp.commands.GetSubtitleCommand;
 import org.meta.plugins.SubtitleSearch.tcp.commands.SearchSubtitleCommand;
 
 /**
+ * <p>SubtitleSearchTcpControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SubtitleSearchTcpControler extends PluginAMPController {
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands) {
         commands.put("SearchSubtitleCommand",   SearchSubtitleCommand.class);

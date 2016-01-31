@@ -29,7 +29,10 @@ import org.meta.api.common.MetHash;
 import org.meta.api.configuration.DHTConfiguration;
 
 /**
+ * <p>Abstract MetaDHT class.</p>
+ *
  * @author nico
+ * @version $Id: $
  */
 public abstract class MetaDHT {
 
@@ -68,8 +71,9 @@ public abstract class MetaDHT {
     public abstract BootstrapOperation bootstrap();
 
     /**
-     * @param hash The hash to find peers for.
+     * <p>findPeers</p>
      *
+     * @param hash The hash to find peers for.
      * @return The asynchronous {@link FindPeersOperation} representing the outcome of the operation.
      */
     public abstract FindPeersOperation findPeers(MetHash hash);
@@ -80,7 +84,6 @@ public abstract class MetaDHT {
      * The hash will be valid only one hour.
      *
      * @param hash The hash to store on the DHT
-     *
      * @return The asynchronous {@link StoreOperation} representing the outcome of the operation.
      */
     public abstract StoreOperation doStore(MetHash hash);
@@ -117,6 +120,8 @@ public abstract class MetaDHT {
     }
 
     /**
+     * <p>Getter for the field <code>configuration</code>.</p>
+     *
      * @return The Configuration used by this DHT instance.
      */
     public final DHTConfiguration getConfiguration() {

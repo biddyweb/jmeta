@@ -31,6 +31,9 @@ import java.nio.ByteBuffer;
  * be used throughout the application.
  *
  * Copied and adapted from TomP2P's {@link Number160}.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetHash implements Comparable<MetHash> {
 
@@ -108,8 +111,7 @@ public class MetHash implements Comparable<MetHash> {
      *
      * @param ints The value to copy to the backing array. Since this class stores 160bit numbers, the array
      * needs to be of size 5 or smaller.
-     *
-     * @throws IllegalArgumentException if the array is invalid.
+     * @throws java.lang.IllegalArgumentException if the array is invalid.
      */
     public MetHash(final int... ints) throws IllegalArgumentException {
         if (ints.length > INT_ARRAY_SIZE) {
@@ -203,7 +205,6 @@ public class MetHash implements Comparable<MetHash> {
      *
      * @param me The byte array to fill.
      * @param offset The offset in the byte array.
-     *
      * @return the last index written in the array.
      */
     public final int toByteArray(final byte[] me, final int offset) {
@@ -217,6 +218,7 @@ public class MetHash implements Comparable<MetHash> {
     }
 
     /**
+     * <p>toByteBuffer</p>
      *
      * @param buf the buffer to fill
      */
@@ -237,9 +239,9 @@ public class MetHash implements Comparable<MetHash> {
     }
 
     /**
-     * The string representation of a hash. Shows the content in a human readable manner.
+     * {@inheritDoc}
      *
-     * @return the string representation.
+     * The string representation of a hash. Shows the content in a human readable manner.
      */
     @Override
     public final String toString() {
@@ -268,12 +270,9 @@ public class MetHash implements Comparable<MetHash> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Comparison with the given hash.
-     *
-     * @param metHash the hash to compare to.
-     *
-     * @return < 0 if this is considered less than metHash, > 0 if considered greater, or 0 if they are
-     * equals.
      */
     @Override
     public final int compareTo(final MetHash metHash) {
@@ -289,12 +288,7 @@ public class MetHash implements Comparable<MetHash> {
         return 0;
     }
 
-    /**
-     *
-     * @param obj The object to compare.
-     *
-     * @return true if they are strictly equals, false otherwise.
-     */
+    /** {@inheritDoc} */
     @Override
     public final boolean equals(final Object obj) {
         if (obj == this) {
@@ -312,10 +306,7 @@ public class MetHash implements Comparable<MetHash> {
         return true;
     }
 
-    /**
-     *
-     * @return The int hashcode if this hash.
-     */
+    /** {@inheritDoc} */
     @Override
     public final int hashCode() {
         int hashCode = 0;

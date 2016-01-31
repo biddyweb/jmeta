@@ -32,20 +32,27 @@ import org.meta.api.common.MetaPeer;
  * Interface for DHT configuration entries.
  *
  * @author nico
+ * @version $Id: $
  */
 public interface DHTConfiguration {
 
     /**
+     * <p>getIdentity</p>
+     *
      * @return The configured {@link Identity}.
      */
     Identity getIdentity();
 
     /**
+     * <p>getKnownPeers</p>
+     *
      * @return A Collection of known peers.
      */
     Collection<MetaPeer> getKnownPeers();
 
     /**
+     * <p>getNetworkConfig</p>
+     *
      * @return The {@link NetworkConfiguration} for the DHT.
      */
     NetworkConfiguration getNetworkConfig();
@@ -58,32 +65,42 @@ public interface DHTConfiguration {
     boolean isBootstrapBroadcast();
 
     /**
+     * <p>isDhtLocalOnly</p>
+     *
      * @return true if the DHT must deal only witch link-local addresses, false otherwise.
      */
     boolean isDhtLocalOnly();
 
     /**
+     * <p>setBootstrapBroadcast</p>
+     *
      * @param bootstrapBroadcast boolean
      */
     void setBootstrapBroadcast(boolean bootstrapBroadcast);
 
     /**
+     * <p>setDhtLocalOnly</p>
+     *
      * @param dhtLocalOnly the new value for local-only dht mode.
      */
     void setDhtLocalOnly(boolean dhtLocalOnly);
 
     /**
+     * <p>setIdentity</p>
      *
      * @param identity the identity used by our peer on the DHT.
      */
     void setIdentity(Identity identity);
 
     /**
+     * <p>setKnwonPeers</p>
+     *
      * @param knwonPeers a collection of known peers.
      */
     void setKnwonPeers(Collection<MetaPeer> knwonPeers);
 
     /**
+     * <p>setNetworkConfig</p>
      *
      * @param networkConfig the backend network configuration for the DHT.
      */

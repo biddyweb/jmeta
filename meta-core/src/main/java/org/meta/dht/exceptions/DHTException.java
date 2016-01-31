@@ -28,10 +28,14 @@ import org.meta.api.common.exceptions.MetaException;
 
 /**
  * The base DHT exception.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class DHTException extends MetaException {
 
     /**
+     * <p>Constructor for DHTException.</p>
      *
      * @param message the exception message
      */
@@ -40,6 +44,7 @@ public class DHTException extends MetaException {
     }
 
     /**
+     * <p>Constructor for DHTException.</p>
      *
      * @param t the initial cause
      */
@@ -48,6 +53,7 @@ public class DHTException extends MetaException {
     }
 
     /**
+     * <p>Constructor for DHTException.</p>
      *
      * @param message the exception message
      * @param t the initial cause

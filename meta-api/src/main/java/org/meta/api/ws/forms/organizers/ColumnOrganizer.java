@@ -31,20 +31,23 @@ package org.meta.api.ws.forms.organizers;
 import org.meta.api.ws.forms.InterfaceOrganizer;
 
 /**
+ * <p>ColumnOrganizer class.</p>
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class ColumnOrganizer extends InterfaceOrganizer {
 
     /**
-     * 
+     * <p>Constructor for ColumnOrganizer.</p>
+     *
      * @param id Unique ID
      */
     public ColumnOrganizer(String id) {
         super(id);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "Column";

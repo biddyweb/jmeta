@@ -28,7 +28,10 @@ import java.util.Properties;
 import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**
+ * <p>PluginConfigurationImpl class.</p>
+ *
  * @author nico
+ * @version $Id: $
  */
 public final class PluginConfigurationImpl extends PropertiesConfiguration {
 
@@ -51,8 +54,10 @@ public final class PluginConfigurationImpl extends PropertiesConfiguration {
     private String[] excludes = null;
 
     /**
+     * <p>Constructor for PluginConfigurationImpl.</p>
+     *
      * @param properties the properties to init from.
-     * @throws InvalidConfigurationException if an invalid configuration entry is encountered.
+     * @throws org.meta.api.configuration.exceptions.InvalidConfigurationException if an invalid configuration entry is encountered.
      */
     public PluginConfigurationImpl(final Properties properties) throws InvalidConfigurationException {
         super(properties);
@@ -74,6 +79,8 @@ public final class PluginConfigurationImpl extends PropertiesConfiguration {
     }
 
     /**
+     * <p>Getter for the field <code>loadDirectory</code>.</p>
+     *
      * @return the plugins load directory
      */
     public String getLoadDirectory() {
@@ -81,6 +88,8 @@ public final class PluginConfigurationImpl extends PropertiesConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>loadDirectory</code>.</p>
+     *
      * @param loadDir the new plugins loading directory.
      */
     public void setLoadDirectory(final String loadDir) {
@@ -88,6 +97,7 @@ public final class PluginConfigurationImpl extends PropertiesConfiguration {
     }
 
     /**
+     * <p>Getter for the field <code>excludes</code>.</p>
      *
      * @return the list of plugin names to exclude from loading.
      */
@@ -96,6 +106,8 @@ public final class PluginConfigurationImpl extends PropertiesConfiguration {
     }
 
     /**
+     * <p>Setter for the field <code>excludes</code>.</p>
+     *
      * @param excludedPlugins the new plugin names to exclude from loading.
      */
     public void setExcludes(final String[] excludedPlugins) {

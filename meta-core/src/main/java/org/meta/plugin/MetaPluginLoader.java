@@ -48,6 +48,9 @@ import org.slf4j.LoggerFactory;
  *
  * Takes a directory from the configuration and tries to load plugins from all jars found. TODO add exclude
  * property.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaPluginLoader {
 
@@ -126,7 +129,7 @@ public class MetaPluginLoader {
      *
      * To install a plugin, refer to the documentation inside conf/plugin.conf.
      *
-     * @throws PluginLoadException if an error occured while loading plugins
+     * @throws org.meta.plugin.exceptions.PluginLoadException if an error occured while loading plugins
      */
     public void loadPlugins() throws PluginLoadException {
         Collection<URL> jarsUrls = null;
@@ -190,6 +193,8 @@ public class MetaPluginLoader {
     }
 
     /**
+     * <p>Getter for the field <code>plugins</code>.</p>
+     *
      * @return the list of loaded plugins.
      */
     public Collection<MetaPlugin> getPlugins() {

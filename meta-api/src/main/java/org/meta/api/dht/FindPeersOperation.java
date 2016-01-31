@@ -36,6 +36,7 @@ import java.util.Collection;
  * The implementation details is let to the extending class.
  *
  * @author nico
+ * @version $Id: $
  */
 public abstract class FindPeersOperation extends AsyncOperation {
 
@@ -45,6 +46,8 @@ public abstract class FindPeersOperation extends AsyncOperation {
     protected Collection<MetaPeer> peers;
 
     /**
+     * <p>Getter for the field <code>peers</code>.</p>
+     *
      * @return The peers found.
      */
     public Collection<MetaPeer> getPeers() {

@@ -36,8 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>ServerSocketContext class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class ServerSocketContext implements P2PPServerEventHandler {
 
@@ -55,19 +57,21 @@ public class ServerSocketContext implements P2PPServerEventHandler {
     private final ByteBuffer headerBuffer;
 
     /**
-     *
+     * <p>Constructor for ServerSocketContext.</p>
      */
     public ServerSocketContext() {
         sendQueue = new LinkedList<>();
         this.headerBuffer = BufferManager.aquireDirectBuffer(P2PPConstants.REQUEST_HEADER_SIZE);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ServerActionContext accepted(final AsynchronousSocketChannel sock) {
         this.socket = sock;
         return getWritableBuffer(new ServerActionContext(this));
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ServerActionContext dataReceived(final ServerActionContext context) {
         ByteBuffer buf = context.getAttachment();
@@ -104,6 +108,7 @@ public class ServerSocketContext implements P2PPServerEventHandler {
         return getWritableBuffer(context);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ServerActionContext dataSent(final ServerActionContext context) {
         logger.info("Data sent");
@@ -125,6 +130,7 @@ public class ServerSocketContext implements P2PPServerEventHandler {
         return getSendableBuffer(context);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ServerActionContext handlerComplete(final ServerActionContext context) {
         if (context.getAction() == ServerEventAction.ERROR) {
@@ -191,11 +197,13 @@ public class ServerSocketContext implements P2PPServerEventHandler {
         return context.setAction(ServerEventAction.ERROR).setAttachment(null);
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized ServerActionContext error() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public synchronized void close() {
         try {
@@ -205,6 +213,7 @@ public class ServerSocketContext implements P2PPServerEventHandler {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public AsynchronousSocketChannel getSocket() {
         return this.socket;

@@ -30,8 +30,10 @@ import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
+ * <p>SubtitleSearch class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SubtitleSearch implements MetaPlugin {
 
@@ -43,23 +45,26 @@ public class SubtitleSearch implements MetaPlugin {
     private AbstractPluginWebServiceController wsController;
 
     /**
-     *
+     * <p>Constructor for SubtitleSearch.</p>
      */
     public SubtitleSearch() {
         //ampController = new PluginSubtitleSearchTcpControler();
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return PLUGIN_NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setPluginAPI(final MetAPI api) {
         this.metApi = api;

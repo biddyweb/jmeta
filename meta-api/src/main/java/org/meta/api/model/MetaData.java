@@ -39,6 +39,7 @@ import java.util.Objects;
  * It implements Comparable to be ordered by key:value in a TreeSet or other sorted collections.
  *
  * @author Thomas LAVOCAT
+ * @version $Id: $
  */
 public final class MetaData implements Comparable<MetaData>, Entry<String, String> {
 
@@ -57,6 +58,8 @@ public final class MetaData implements Comparable<MetaData>, Entry<String, Strin
     }
 
     /**
+     * <p>Constructor for MetaData.</p>
+     *
      * @param k the key of the property
      * @param val the value of the property
      */
@@ -75,26 +78,28 @@ public final class MetaData implements Comparable<MetaData>, Entry<String, Strin
         this.value = other.value;
     }
 
-    /**
-     * @return the key
-     */
+    /** {@inheritDoc} */
     @Override
     public String getKey() {
         return key;
     }
 
     /**
+     * <p>Setter for the field <code>key</code>.</p>
+     *
      * @param k the key to set
      */
     public void setKey(final String k) {
         this.key = k;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getValue() {
         return value;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String setValue(final String val) {
         String oldVal = this.value;
@@ -103,6 +108,7 @@ public final class MetaData implements Comparable<MetaData>, Entry<String, Strin
         return oldVal;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(final MetaData o) {
         //compare to another property
@@ -114,6 +120,7 @@ public final class MetaData implements Comparable<MetaData>, Entry<String, Strin
         return value.compareTo(o.value);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int keyHash = (key == null ? 0 : key.hashCode());
@@ -121,6 +128,7 @@ public final class MetaData implements Comparable<MetaData>, Entry<String, Strin
         return keyHash ^ valueHash;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

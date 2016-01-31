@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
  * :D
  *
  * Class holding static Utility methods for hash and SHA1.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class MetamphetUtils {
 
@@ -54,9 +57,7 @@ public final class MetamphetUtils {
     /**
      * Computes a {@link MetHash} for the given file.
      *
-     *
      * @param file The file to hash.
-     *
      * @return the hash of the file, or the ZERO value of a MetHash if an error occurs.
      */
     public static MetHash makeSHAHash(final File file) {
@@ -89,7 +90,6 @@ public final class MetamphetUtils {
      * Computes a {@link MetHash} for the given file.
      *
      * @param strInput The string to hash.
-     *
      * @return the hash of the file, or the ZERO value of a MetHash if an error occurs.
      */
     public static MetHash makeSHAHash(final String strInput) {
@@ -101,7 +101,6 @@ public final class MetamphetUtils {
      * Computes a {@link MetHash} for the given byte buffer.
      *
      * @param buffer The buffer to hash.
-     *
      * @return the hash of the buffer, or the ZERO value of a MetHash if an error occurs.
      */
     public static MetHash makeSHAHash(final ByteBuffer buffer) {
@@ -120,7 +119,6 @@ public final class MetamphetUtils {
      * Computes a {@link MetHash} for the given byte array.
      *
      * @param buffer The array to hash.
-     *
      * @return the hash of the byte array, or the ZERO value of a MetHash if an error occurs.
      */
     public static MetHash makeSHAHash(final byte[] buffer) {
@@ -133,7 +131,6 @@ public final class MetamphetUtils {
      * @param buffer The array to hash.
      * @param offset The offset in buffer.
      * @param length The length of the portion to be hashed inside buffer.
-     *
      * @return the hash of the byte array, or the ZERO value of a MetHash if an error occurs.
      */
     public static MetHash makeSHAHash(final byte[] buffer, final int offset, final int length) {
@@ -160,7 +157,6 @@ public final class MetamphetUtils {
      *
      * @param hash The hash to check.
      * @param bloc The block to hash and check.
-     *
      * @return true if the bloc's hash matches the given expected hash, false otherwise.
      */
     public static boolean checkHash(final String hash, final byte[] bloc) {

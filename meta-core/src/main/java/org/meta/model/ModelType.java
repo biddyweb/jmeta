@@ -29,6 +29,8 @@ import org.meta.api.model.Data;
 /**
  * Utility class for model object types.
  *
+ * @author nico
+ * @version $Id: $
  */
 public enum ModelType {
 
@@ -52,6 +54,7 @@ public enum ModelType {
     }
 
     /**
+     * <p>getTypeClass</p>
      *
      * @return the {@link Class} for this type.
      */
@@ -60,6 +63,7 @@ public enum ModelType {
     }
 
     /**
+     * <p>fromClass</p>
      *
      * @param claz the {@link Class} to get type for.
      * @return the associated type, or null if unknown.

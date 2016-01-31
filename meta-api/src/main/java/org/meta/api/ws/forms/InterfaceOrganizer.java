@@ -31,18 +31,19 @@ import org.bson.types.BasicBSONList;
 /**
  *  Is the super class of all organizer.
  *  Has a list of children
- *  
- *  Is able to ask his children to serialize as JSON
- *  
- *  @author faquin
  *
+ *  Is able to ask his children to serialize as JSON
+ *
+ *  @author faquin
+ * @version $Id: $
  */
 public abstract class InterfaceOrganizer extends InterfaceElement{
 
     private ArrayList<InterfaceElement> childs = null;
 
     /**
-     * 
+     * <p>Constructor for InterfaceOrganizer.</p>
+     *
      * @param id    Id of the column, better if unique.
      */
     public InterfaceOrganizer(String id) {
@@ -52,7 +53,8 @@ public abstract class InterfaceOrganizer extends InterfaceElement{
 
     /**
      * Return this as JSON, containing his children
-     * @return 
+     *
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         //get parent json, and add it all children's json
@@ -66,13 +68,16 @@ public abstract class InterfaceOrganizer extends InterfaceElement{
     }
 
     /**
+     * <p>getType</p>
+     *
      * @return Interface type
      */
     protected abstract String getType();
 
     /**
      * Add a child to the interface
-     * @param child
+     *
+     * @param child a {@link org.meta.api.ws.forms.InterfaceElement} object.
      */
     public void addChild(InterfaceElement child){
         childs.add(child);
@@ -80,6 +85,7 @@ public abstract class InterfaceOrganizer extends InterfaceElement{
     
     /**
      * Does what arrayList.remove does
+     *
      * @param child a child element to remove
      * @return true if the element was found in the list
      */

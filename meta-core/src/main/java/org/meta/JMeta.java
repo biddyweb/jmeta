@@ -36,6 +36,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Just the main class.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public final class JMeta {
 
@@ -45,7 +48,10 @@ public final class JMeta {
     }
 
     /**
+     * <p>main</p>
+     *
      * @param args Do we really need to describe this?
+     * @throws org.meta.api.common.exceptions.MetaException if any.
      */
     public static void main(final String[] args) throws MetaException {
         try {

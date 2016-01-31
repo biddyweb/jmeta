@@ -27,8 +27,10 @@ package org.meta.plugin.tcp.amp.exception;
 import org.meta.api.common.exceptions.MetaException;
 
 /**
+ * <p>InvalidAMPCommand class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class InvalidAMPCommand extends MetaException {
 
@@ -38,6 +40,7 @@ public class InvalidAMPCommand extends MetaException {
     private static final long serialVersionUID = 1L;
 
     /**
+     * <p>Constructor for InvalidAMPCommand.</p>
      *
      * @param message the exception message
      */

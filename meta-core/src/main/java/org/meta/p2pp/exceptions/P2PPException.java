@@ -11,10 +11,12 @@ import org.meta.api.common.exceptions.MetaException;
  * Base exception for Peer-to-Peer Protocol errors.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPException extends MetaException {
 
     /**
+     * <p>Constructor for P2PPException.</p>
      *
      * @param message the exception message
      */
@@ -23,6 +25,7 @@ public class P2PPException extends MetaException {
     }
 
     /**
+     * <p>Constructor for P2PPException.</p>
      *
      * @param t the initial throwable
      */
@@ -31,6 +34,7 @@ public class P2PPException extends MetaException {
     }
 
     /**
+     * <p>Constructor for P2PPException.</p>
      *
      * @param message the exception message
      * @param t the initial throwable

@@ -47,6 +47,9 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * The {@link ModelStorage} implementation using low-level {@link KVStorage} as underlying storage.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaModelStorage implements ModelStorage {
 
@@ -68,7 +71,7 @@ public class MetaModelStorage implements ModelStorage {
     /**
      * Instantiate a new model with the given backing storage unit.
      *
-     * @param storageDb the storage unit to use
+     * @param database a {@link org.meta.api.storage.MetaDatabase} object.
      */
     public MetaModelStorage(final MetaDatabase database) {
         this.storage = database.getKVStorage(MODEL_DB_NAME);
@@ -78,6 +81,8 @@ public class MetaModelStorage implements ModelStorage {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Close the model and do some clean-up.
      */
     @Override
@@ -85,24 +90,19 @@ public class MetaModelStorage implements ModelStorage {
         storage.close();
     }
 
-    /**
-     * @return The model factory.
-     */
+    /** {@inheritDoc} */
     @Override
     public MetaObjectModelFactory getFactory() {
         return this.factory;
     }
 
-    /**
-     *
-     * @param hash of something you want to find in the db
-     * @return A searchable object, or null if not found.
-     */
+    /** {@inheritDoc} */
     @Override
     public Searchable get(final MetHash hash) {
         return load(hash.toByteArray());
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaSearch getSearch(final MetHash hash) {
         Searchable s = load(hash.toByteArray());
@@ -113,6 +113,7 @@ public class MetaModelStorage implements ModelStorage {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public GenericData getData(final MetHash hash) {
         Searchable s = load(hash.toByteArray());
@@ -124,11 +125,9 @@ public class MetaModelStorage implements ModelStorage {
     }
 
     /**
-     * Utility function to retrieve a DataFile.
+     * {@inheritDoc}
      *
-     * @param hash the hash of a data file
-     * @return a DataFile object or null if the hash does not exists or if the hash does not point to a
-     * DataFile.
+     * Utility function to retrieve a DataFile.
      */
     @Override
     public DataFile getDataFile(final MetHash hash) {
@@ -141,6 +140,7 @@ public class MetaModelStorage implements ModelStorage {
         return this.factory.getDataFile(data);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Searchable getSearchable(final MetHash hash) {
         return load(hash.toByteArray());
@@ -201,18 +201,17 @@ public class MetaModelStorage implements ModelStorage {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Creates or updates a searchable object in database. All children of given object are also
      * created/updated.
-     *
-     * @param searchable The object to create / update
-     *
-     * @return true on success, false otherwise
      */
     @Override
     public boolean set(final Searchable searchable) {
         return set(searchable, 0L);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean set(final Searchable searchable, final long timeout) {
         //Unused timeout for now...
@@ -307,10 +306,9 @@ public class MetaModelStorage implements ModelStorage {
     }
 
     /**
-     * Delete an object in DB.
+     * {@inheritDoc}
      *
-     * @param searchable the object to remove from db
-     * @return true on success, false otherwise
+     * Delete an object in DB.
      */
     @Override
     public boolean remove(final Searchable searchable) {
@@ -318,10 +316,9 @@ public class MetaModelStorage implements ModelStorage {
     }
 
     /**
-     * Delete an object in DB.
+     * {@inheritDoc}
      *
-     * @param hash The hash to remove from db
-     * @return true on success, false otherwise
+     * Delete an object in DB.
      */
     @Override
     public boolean remove(final MetHash hash) {
@@ -332,6 +329,7 @@ public class MetaModelStorage implements ModelStorage {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public KVStorage getStorage() {
         return storage;

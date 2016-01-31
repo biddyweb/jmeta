@@ -26,10 +26,14 @@ package org.meta.api.common.exceptions;
 
 /**
  * The base exception class for JMeta.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class MetaException extends Exception {
 
     /**
+     * <p>Constructor for MetaException.</p>
      *
      * @param message the exception message
      */
@@ -38,6 +42,7 @@ public class MetaException extends Exception {
     }
 
     /**
+     * <p>Constructor for MetaException.</p>
      *
      * @param t the initial throwable
      */
@@ -46,6 +51,7 @@ public class MetaException extends Exception {
     }
 
     /**
+     * <p>Constructor for MetaException.</p>
      *
      * @param message the exception message
      * @param t the initial throwable

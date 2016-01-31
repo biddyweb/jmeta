@@ -28,61 +28,79 @@ import java.net.InetAddress;
 import java.util.Collection;
 
 /**
+ * <p>NetworkConfiguration interface.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public interface NetworkConfiguration {
 
     /**
+     * <p>getAddresses</p>
+     *
      * @return the list of network addresses to bind to
      */
     Collection<InetAddress> getAddresses();
 
     /**
+     * <p>getInterfaces</p>
      *
      * @return the list of network interfaces to bind to
      */
     Collection<String> getInterfaces();
 
     /**
+     * <p>getPort</p>
      *
      * @return the network port to bind to
      */
     Short getPort();
 
     /**
+     * <p>setAddresses</p>
      *
      * @param addresses the list of network addresses to bind to
      */
     void setAddresses(Collection<InetAddress> addresses);
 
     /**
+     * <p>setInterfaces</p>
+     *
      * @param interfaces the list of network interfaces to bind to
      */
     void setInterfaces(Collection<String> interfaces);
 
     /**
+     * <p>setPort</p>
      *
      * @param port the network port to bind to
      */
     void setPort(Short port);
 
     /**
+     * <p>ipV6</p>
+     *
      * @return true enabling ipV6, false otherwise.
      */
     boolean ipV6();
 
     /**
+     * <p>setIpV6</p>
+     *
      * @param ipV6 the new ipV6 value.
      */
     void setIpV6(boolean ipV6);
 
     /**
+     * <p>ipV4</p>
+     *
      * @return true enabling ipV6, false otherwise.
      */
     boolean ipV4();
 
     /**
+     * <p>setIpV4</p>
+     *
      * @param ipV4 the new ipV4 value.
      */
     void setIpV4(boolean ipV4);

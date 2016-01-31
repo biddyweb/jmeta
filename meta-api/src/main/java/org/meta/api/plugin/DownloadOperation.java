@@ -32,12 +32,14 @@ import org.meta.api.model.DataFile;
  * peer-to-peer protocol.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class DownloadOperation extends AsyncOperation {
 
     private final DataFile file;
 
     /**
+     * <p>Constructor for DownloadOperation.</p>
      *
      * @param dataFile the data file to download
      */
@@ -46,6 +48,7 @@ public class DownloadOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>file</code>.</p>
      *
      * @return the downloaded {@link DataFile}
      */

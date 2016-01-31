@@ -36,7 +36,7 @@ import org.meta.plugin.tcp.amp.exception.InvalidAmpAnswerCommand;
  * Parse an AMP answer.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AMPAnswerParser extends AMPParser {
 
@@ -46,15 +46,17 @@ public class AMPAnswerParser extends AMPParser {
     private ArrayList<Searchable> datas;
 
     /**
+     * <p>Constructor for AMPAnswerParser.</p>
      *
      * @param bs the data
      * @param factory the model factory
-     * @throws InvalidAMPCommand if an invalid value is encountered in the data
+     * @throws org.meta.plugin.tcp.amp.exception.InvalidAMPCommand if an invalid value is encountered in the data
      */
     public AMPAnswerParser(final byte[] bs, final MetaObjectModelFactory factory) throws InvalidAMPCommand {
         super(bs, factory);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void useContent(final LinkedHashMap<String, byte[]> content) throws InvalidAmpAnswerCommand {
         answer = new String(content.get("_answer"));
@@ -133,6 +135,7 @@ public class AMPAnswerParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>answer</code>.</p>
      *
      * @return The answer code
      */
@@ -141,6 +144,7 @@ public class AMPAnswerParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>datas</code>.</p>
      *
      * @return return the list of extracted datas
      */

@@ -38,6 +38,7 @@ import org.meta.api.common.MetamphetUtils;
  * This class extends Searchable.
  *
  * @author Thomas LAVOCAT
+ * @version $Id: $
  */
 public final class SearchCriteria extends Searchable {
 
@@ -100,6 +101,7 @@ public final class SearchCriteria extends Searchable {
     }
 
     /**
+     * <p>getCriteria</p>
      *
      * @return the Set of {@link MetaData} of this SearchCriteria
      */
@@ -118,6 +120,8 @@ public final class SearchCriteria extends Searchable {
     }
 
     /**
+     * <p>addCriteria</p>
+     *
      * @param props the criteria Set to be added
      */
     public void addCriteria(final Collection<MetaData> props) {
@@ -126,6 +130,7 @@ public final class SearchCriteria extends Searchable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetHash getHash() {
         if (this.needRehash) {
@@ -134,6 +139,7 @@ public final class SearchCriteria extends Searchable {
         return this.hash;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetHash hash() {
         if (!this.needRehash) {

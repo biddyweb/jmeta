@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * Parse an AMP message.
  *
  * @author faquin
+ * @version $Id: $
  */
 public abstract class AMPParser {
 
@@ -47,10 +48,11 @@ public abstract class AMPParser {
     protected MetaObjectModelFactory factory = null;
 
     /**
+     * <p>Constructor for AMPParser.</p>
      *
      * @param bs the data
      * @param modelFactory the model factory
-     * @throws InvalidAMPCommand if the data contains invalid values
+     * @throws org.meta.plugin.tcp.amp.exception.InvalidAMPCommand if the data contains invalid values
      */
     public AMPParser(final byte[] bs, final MetaObjectModelFactory modelFactory) throws InvalidAMPCommand {
         this.factory = modelFactory;
@@ -58,9 +60,10 @@ public abstract class AMPParser {
     }
 
     /**
+     * <p>Constructor for AMPParser.</p>
      *
      * @param bs the data
-     * @throws InvalidAMPCommand if the data contains invalid values
+     * @throws org.meta.plugin.tcp.amp.exception.InvalidAMPCommand if the data contains invalid values
      */
     public AMPParser(final byte[] bs) throws InvalidAMPCommand {
         parse(bs);
@@ -120,8 +123,7 @@ public abstract class AMPParser {
      * use this content to rebuild what you want.
      *
      * @param content an LinkedhashMap containing key value where key is the name of what the value represent
-     *
-     * @throws InvalidAMPCommand if something invalid was encountered
+     * @throws org.meta.plugin.tcp.amp.exception.InvalidAMPCommand if something invalid was encountered
      */
     protected abstract void useContent(LinkedHashMap<String, byte[]> content) throws InvalidAMPCommand;
 

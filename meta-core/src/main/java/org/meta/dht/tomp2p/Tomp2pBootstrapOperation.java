@@ -42,7 +42,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>Tomp2pBootstrapOperation class.</p>
+ *
  * @author nico
+ * @version $Id: $
  */
 public class Tomp2pBootstrapOperation extends BootstrapOperation {
 
@@ -71,6 +74,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         this.localPeers = NetworkUtils.getLocalPeers(peers);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         if (!broadcast && (knownPeers == null || knownPeers.isEmpty())) {
@@ -96,6 +100,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public final void finish() {
         if (this.bootstrapListener != null) {

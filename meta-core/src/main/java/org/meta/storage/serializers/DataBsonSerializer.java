@@ -41,15 +41,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>DataBsonSerializer class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class DataBsonSerializer implements BsonSerializer<Data> {
 
     private final Logger logger = LoggerFactory.getLogger(DataBsonSerializer.class);
 
     /**
-     *
+     * <p>Constructor for DataBsonSerializer.</p>
      */
     public DataBsonSerializer() {
     }
@@ -75,16 +77,19 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
         return bsonObject;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data fromJson(final String json) {
         throw new AbstractMethodError();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toJson(final Data object) {
         return getBson(object).toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] serialize(final Data obj) {
         return BSON.encode(getBson(obj));
@@ -119,6 +124,7 @@ public class DataBsonSerializer implements BsonSerializer<Data> {
         return data;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data deserialize(final byte[] bsonData) {
         BSONObject obj = BSON.decode(bsonData);

@@ -32,13 +32,14 @@ import org.meta.api.ws.forms.InterfaceField;
  * {@link SelectList}
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class Select extends InterfaceField {
 
     private boolean selected = false;
 
     /**
+     * <p>Constructor for Select.</p>
      *
      * @param id Unique ID
      * @param label Label
@@ -48,6 +49,7 @@ public class Select extends InterfaceField {
     }
 
     /**
+     * <p>Setter for the field <code>selected</code>.</p>
      *
      * @param selected true if you want this to be selected by default
      */
@@ -55,11 +57,13 @@ public class Select extends InterfaceField {
         this.selected = selected;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "select";
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mama's json and add the option selected or not

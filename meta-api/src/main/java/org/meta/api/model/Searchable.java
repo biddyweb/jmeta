@@ -31,10 +31,12 @@ import org.meta.api.common.MetHash;
  * Interface representing the ability for an object to be used as a source for a search.
  *
  * @author faquin
+ * @version $Id: $
  */
 public abstract class Searchable extends HashIdentifiable {
 
     /**
+     * <p>Constructor for Searchable.</p>
      *
      * @param hash the hash of the searchable
      */

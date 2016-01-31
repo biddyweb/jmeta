@@ -39,7 +39,7 @@ import org.meta.plugin.tcp.amp.AMPAskBuilder;
  * Used to contact a peer using AMP protocol.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AMPWriterImpl implements AMPWriter {
 
@@ -53,6 +53,8 @@ public class AMPWriterImpl implements AMPWriter {
     private final P2PPConfiguration configuration;
 
     /**
+     * <p>Constructor for AMPWriterImpl.</p>
+     *
      * @param config the amp configuration
      * @param modelFactory the model factory
      */
@@ -64,6 +66,8 @@ public class AMPWriterImpl implements AMPWriter {
     }
 
     /**
+     * <p>Setter for the field <code>factory</code>.</p>
+     *
      * @param modelFactory the model factory
      */
     public void setFactory(final MetaObjectModelFactory modelFactory) {
@@ -71,15 +75,9 @@ public class AMPWriterImpl implements AMPWriter {
     }
 
     /**
-     * Ask a question to the given address, with the given parameters.
+     * {@inheritDoc}
      *
-     * @param adress who do we call ?
-     * @param port on which port do we call ?
-     * @param plugin which plugin is concerned ?
-     * @param command what command to we ask him to execute ?
-     * @param hash on which hash ?
-     * @param listenner after getting result, who is getting the callback ?
-     * @return the sender thread for join purposes
+     * Ask a question to the given address, with the given parameters.
      */
     @Override
     public Future<?> askTo(final InetAddress adress,

@@ -37,9 +37,11 @@ import org.meta.utils.SerializationUtils;
  * All other properties from the Data are ignored. Meta doesn't need them.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class TomP2pDataSerializer implements Serializer<Data> {
 
+    /** {@inheritDoc} */
     @Override
     public byte[] serialize(final Data data) {
         byte[] buf = new byte[data.length() + Long.BYTES];
@@ -55,6 +57,7 @@ public class TomP2pDataSerializer implements Serializer<Data> {
         return buf;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data deserialize(final byte[] buf) {
         long expirationMilis = SerializationUtils.bytesToLong(buf);

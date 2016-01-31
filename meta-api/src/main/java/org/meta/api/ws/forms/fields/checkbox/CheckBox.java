@@ -30,15 +30,17 @@ import org.meta.api.ws.forms.InterfaceField;
 /**
  * A Check box .
  * Can exist outside a {@link CheckBoxLists}
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class CheckBox extends InterfaceField{
     
     private boolean checked = false; 
 
     /**
-     * 
+     * <p>Constructor for CheckBox.</p>
+     *
      * @param id    unique ID
      * @param label label
      */
@@ -47,18 +49,21 @@ public class CheckBox extends InterfaceField{
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>checked</code>.</p>
+     *
      * @param checked true if checked
      */
     public void setChecked(boolean checked){
         this.checked = checked;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "checkBox";
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mama's json an add checked value

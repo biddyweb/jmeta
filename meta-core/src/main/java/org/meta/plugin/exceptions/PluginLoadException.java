@@ -27,12 +27,16 @@ package org.meta.plugin.exceptions;
 import org.meta.api.common.exceptions.MetaException;
 
 /**
+ * <p>PluginLoadException class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class PluginLoadException extends MetaException {
 
     /**
+     * <p>Constructor for PluginLoadException.</p>
+     *
      * @param message the exception message
      * @param t the initial cause
      */
@@ -41,6 +45,8 @@ public class PluginLoadException extends MetaException {
     }
 
     /**
+     * <p>Constructor for PluginLoadException.</p>
+     *
      * @param message the exception message
      */
     public PluginLoadException(final String message) {
@@ -48,6 +54,8 @@ public class PluginLoadException extends MetaException {
     }
 
     /**
+     * <p>Constructor for PluginLoadException.</p>
+     *
      * @param t the initial cause
      */
     public PluginLoadException(final Throwable t) {

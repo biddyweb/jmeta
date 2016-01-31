@@ -33,7 +33,7 @@ import org.meta.plugin.tcp.amp.exception.InvalidAMPCommand;
  * Parse an AMP ask.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AMPAskParser extends AMPParser {
 
@@ -48,12 +48,13 @@ public class AMPAskParser extends AMPParser {
      * Call parent.
      *
      * @param bs the data to parse
-     * @throws InvalidAMPCommand if invalid values are encountered in the data
+     * @throws org.meta.plugin.tcp.amp.exception.InvalidAMPCommand if invalid values are encountered in the data
      */
     public AMPAskParser(final byte[] bs) throws InvalidAMPCommand {
         super(bs);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void useContent(final LinkedHashMap<String, byte[]> content) throws InvalidAMPAskCommand {
         if (content.get("_ask") != null) {
@@ -92,6 +93,7 @@ public class AMPAskParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>ask</code>.</p>
      *
      * @return ask number
      */
@@ -100,6 +102,7 @@ public class AMPAskParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>command</code>.</p>
      *
      * @return command name
      */
@@ -108,6 +111,7 @@ public class AMPAskParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>hash</code>.</p>
      *
      * @return hash value
      */
@@ -116,6 +120,7 @@ public class AMPAskParser extends AMPParser {
     }
 
     /**
+     * <p>Getter for the field <code>plugin</code>.</p>
      *
      * @return plugin name
      */

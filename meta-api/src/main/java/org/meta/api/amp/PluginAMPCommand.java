@@ -30,7 +30,7 @@ import org.meta.api.common.MetHash;
  * Define how need to work a tcp command in a plugin.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public abstract class PluginAMPCommand {
 
@@ -40,7 +40,7 @@ public abstract class PluginAMPCommand {
     protected PluginAMPController myTCPControler = null;
 
     /**
-     *
+     * <p>Constructor for PluginAMPCommand.</p>
      */
     public PluginAMPCommand() {
     }

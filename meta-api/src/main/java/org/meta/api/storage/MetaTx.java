@@ -30,6 +30,7 @@ package org.meta.api.storage;
  * Every database implementation that supports transactions should implement this interface.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface MetaTx {
 

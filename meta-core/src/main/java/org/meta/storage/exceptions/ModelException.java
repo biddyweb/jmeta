@@ -26,10 +26,14 @@ package org.meta.storage.exceptions;
 
 /**
  * The base exception for meta object model operations.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class ModelException extends StorageException {
 
     /**
+     * <p>Constructor for ModelException.</p>
      *
      * @param message the exception message
      */
@@ -38,6 +42,7 @@ public class ModelException extends StorageException {
     }
 
     /**
+     * <p>Constructor for ModelException.</p>
      *
      * @param t the initial cause
      */
@@ -46,6 +51,7 @@ public class ModelException extends StorageException {
     }
 
     /**
+     * <p>Constructor for ModelException.</p>
      *
      * @param message the exception message
      * @param t the initial cause

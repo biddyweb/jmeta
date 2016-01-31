@@ -42,8 +42,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>P2PPSearchMetaHandler class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPSearchMetaHandler extends P2PPSearchHandler {
 
@@ -56,6 +58,7 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     protected Map<Data, Queue<ByteBuffer>> mdValues;
 
     /**
+     * <p>Constructor for P2PPSearchMetaHandler.</p>
      *
      * @param p2ppServer the p2pp server
      */
@@ -63,6 +66,7 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
         super(p2ppServer);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handle(final P2PPServerRequestContext req) {
         this.request = req;
@@ -76,6 +80,7 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     }
 
     /**
+     * <p>extractMetaKeys</p>
      *
      * @param buf the buffer from which to extract meta-data
      */
@@ -97,6 +102,7 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean parse() {
         ByteBuffer buf = request.getDataBuffer();
@@ -121,6 +127,7 @@ public class P2PPSearchMetaHandler extends P2PPSearchHandler {
     }
 
     /**
+     * <p>prepareMetaDataResponse</p>
      *
      * @param data the data
      * @return the size in bytes used to store requested meta data for the given data

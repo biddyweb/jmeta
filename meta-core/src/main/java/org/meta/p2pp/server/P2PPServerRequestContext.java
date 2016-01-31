@@ -40,6 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  * Initial parsing of the request header is also done before dispatching to the actual handler based on the
  * request command identifier.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class P2PPServerRequestContext {
 
@@ -73,14 +76,14 @@ public class P2PPServerRequestContext {
     private ByteBuffer responseBuffer;
 
     /**
-     *
+     * <p>Constructor for P2PPServerRequestContext.</p>
      */
     public P2PPServerRequestContext() {
         this.status = ServerRequestStatus.CREATED;
     }
 
     /**
-     *
+     * <p>close</p>
      */
     public void close() {
         if (this.requestBuffer != null) {
@@ -157,6 +160,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>hasPayload</p>
      *
      * @return true if the request has a data payload (request content), false otherwise
      */
@@ -165,6 +169,8 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>hasResponse</p>
+     *
      * @return true if the request has an associated response ready to be sent, false otherwise
      */
     public boolean hasResponse() {
@@ -172,6 +178,8 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>getDataBuffer</p>
+     *
      * @return a ByteBuffer large enough to contain the request data
      */
     public ByteBuffer getDataBuffer() {
@@ -179,6 +187,8 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Getter for the field <code>responseBuffer</code>.</p>
+     *
      * @return the response buffer
      */
     public ByteBuffer getResponseBuffer() {
@@ -186,6 +196,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Setter for the field <code>responseBuffer</code>.</p>
      *
      * @param buf the response buffer
      */
@@ -194,6 +205,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Getter for the field <code>token</code>.</p>
      *
      * @return the token of this request
      */
@@ -202,6 +214,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>getId</p>
      *
      * @return the command identifier of this request
      */
@@ -210,6 +223,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Getter for the field <code>requestDataSize</code>.</p>
      *
      * @return the size of this request content
      */
@@ -218,6 +232,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Getter for the field <code>status</code>.</p>
      *
      * @return the current status of this request
      */
@@ -226,6 +241,7 @@ public class P2PPServerRequestContext {
     }
 
     /**
+     * <p>Setter for the field <code>status</code>.</p>
      *
      * @param reqStatus the new status of this request
      */

@@ -27,12 +27,15 @@ package org.meta.plugin.exceptions;
 import org.meta.api.common.exceptions.MetaException;
 
 /**
+ * <p>InvalidPluginException class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class InvalidPluginException extends MetaException {
 
     /**
+     * <p>Constructor for InvalidPluginException.</p>
      *
      * @param message the exception message
      * @param t the initial cause
@@ -42,6 +45,7 @@ public class InvalidPluginException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidPluginException.</p>
      *
      * @param message the exception message
      */
@@ -50,6 +54,7 @@ public class InvalidPluginException extends MetaException {
     }
 
     /**
+     * <p>Constructor for InvalidPluginException.</p>
      *
      * @param t the initial cause
      */

@@ -33,6 +33,7 @@ import org.meta.api.common.MetHash;
  * peer-to-peer protocol.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class GetOperation extends AsyncOperation {
 
@@ -49,6 +50,7 @@ public class GetOperation extends AsyncOperation {
     private ByteBuffer data;
 
     /**
+     * <p>Constructor for GetOperation.</p>
      *
      * @param hash the target data hash
      * @param pieceIdx the piece index
@@ -62,12 +64,14 @@ public class GetOperation extends AsyncOperation {
         this.dataLength = length;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         this.complete();
     }
 
     /**
+     * <p>Getter for the field <code>pieceIndex</code>.</p>
      *
      * @return the piece index
      */
@@ -76,6 +80,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>byteOffset</code>.</p>
      *
      * @return the byte offset within the piece
      */
@@ -84,6 +89,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>data</code>.</p>
      *
      * @return the block data
      */
@@ -92,6 +98,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Setter for the field <code>data</code>.</p>
      *
      * @param blockData the block data
      */
@@ -100,6 +107,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>pieceHash</code>.</p>
      *
      * @return the piece hash
      */
@@ -108,6 +116,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Setter for the field <code>pieceHash</code>.</p>
      *
      * @param hash the piece hash
      */
@@ -116,6 +125,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>targetDataHash</code>.</p>
      *
      * @return the target data hash
      */
@@ -124,6 +134,7 @@ public class GetOperation extends AsyncOperation {
     }
 
     /**
+     * <p>Getter for the field <code>dataLength</code>.</p>
      *
      * @return the requested data length
      */

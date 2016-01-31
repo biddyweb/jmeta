@@ -39,10 +39,12 @@ package org.meta.api.storage;
  * allows to control the volume of data that would be written to disk on commit().
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface KVStorage {
 
     /**
+     * <p>getDatabaseName</p>
      *
      * @return the name of the database this CollectionStorage is bond to
      */
@@ -52,7 +54,6 @@ public interface KVStorage {
      * Retrieves the value associated to the given key in the backing database.
      *
      * @param key the key to get
-     *
      * @return data associated to the key or null if not found.
      */
     byte[] get(final byte[] key);
@@ -91,6 +92,7 @@ public interface KVStorage {
     byte[] pop(final MetaTx tx, final byte[] key);
 
     /**
+     * <p>count</p>
      *
      * @return the number of entries stored in this storage. Can be a very costly operation!
      */

@@ -31,6 +31,7 @@ import java.util.Objects;
  * Class representing the type of a {@link Data}.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class DataType implements Comparable<DataType> {
 
@@ -45,20 +46,19 @@ public class DataType implements Comparable<DataType> {
         this.type = dataType;
     }
 
-    /**
-     *
-     * @return the type as a string
-     */
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return type;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Objects.hashCode(this.type);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -74,6 +74,7 @@ public class DataType implements Comparable<DataType> {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int compareTo(final DataType t) {
         return this.type.compareTo(t.type);

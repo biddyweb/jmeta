@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * There is an overhead in the backing storage of 8 bytes per entry for the TTL value.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class MetaCacheStorage implements MetaCache {
 
@@ -242,6 +243,8 @@ public class MetaCacheStorage implements MetaCache {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * To be consistent, expiration of entries should also happen passively on data retrieval.
      */
     @Override
@@ -267,11 +270,13 @@ public class MetaCacheStorage implements MetaCache {
 //        }
 //        return values;
 //    }
+    /** {@inheritDoc} */
     @Override
     public boolean store(final MetaTx tx, final byte[] key, final byte[] value) {
         return this.store(key, value, CacheEntry.ZERO_TIMEOUT);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean store(final byte[] key, final byte[] value, final long ttl) {
         CacheEntry entry = new CacheEntry(key, value, ttl);
@@ -293,6 +298,7 @@ public class MetaCacheStorage implements MetaCache {
 //        }
 //        return keys.length;
 //    }
+    /** {@inheritDoc} */
     @Override
     public boolean remove(final MetaTx tx, final byte[] key) {
         CacheEntry entry = this.getEntry(key);
@@ -303,6 +309,7 @@ public class MetaCacheStorage implements MetaCache {
         return this.removeEntry(entry, true);
     }
 
+    /** {@inheritDoc} */
     @Override
     public byte[] pop(final MetaTx tx, final byte[] key) {
         CacheEntry entry = this.getEntry(key);
@@ -314,21 +321,25 @@ public class MetaCacheStorage implements MetaCache {
         return entry.getApplicationData();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaTx begin() {
         return this.storage.begin();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean commit(final MetaTx tx) {
         return this.storage.commit(tx);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean rollback(final MetaTx tx) {
         return this.storage.rollback(tx);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void close() {
         this.flushToStorage();
@@ -336,6 +347,7 @@ public class MetaCacheStorage implements MetaCache {
         this.storage.close();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void removeExpiredEntries() {
         synchronized (lock) {
@@ -351,6 +363,7 @@ public class MetaCacheStorage implements MetaCache {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void flushToStorage() {
         synchronized (lock) {
@@ -368,6 +381,7 @@ public class MetaCacheStorage implements MetaCache {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void clear() {
         synchronized (lock) {
@@ -379,20 +393,31 @@ public class MetaCacheStorage implements MetaCache {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public long count() {
         return this.storage.count();
     }
 
+    /** {@inheritDoc} */
     @Override
     public KVStorage getStorage() {
         return this.storage;
     }
 
+    /**
+     * <p>getCollection</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param serializer a {@link org.meta.api.storage.Serializer} object.
+     * @param <T> a T object.
+     * @return a {@link org.meta.api.storage.CollectionStorage} object.
+     */
     public <T> CollectionStorage<T> getCollection(String name, Serializer<T> serializer) {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDatabaseName() {
         return null;

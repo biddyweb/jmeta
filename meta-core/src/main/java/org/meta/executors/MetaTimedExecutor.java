@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * Executor task manager to allow recurrent operations to be executed on meta components.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class MetaTimedExecutor {
 
@@ -51,6 +52,7 @@ public class MetaTimedExecutor {
     }
 
     /**
+     * <p>addTask</p>
      *
      * @param task the task to schedule
      */

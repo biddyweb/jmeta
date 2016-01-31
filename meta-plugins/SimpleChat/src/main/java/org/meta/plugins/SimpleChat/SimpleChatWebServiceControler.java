@@ -31,12 +31,15 @@ import org.meta.api.ws.AbstractWebService;
 import org.meta.plugins.SimpleChat.webservice.commands.Chat;
 
 /**
+ * <p>SimpleChatWebServiceControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleChatWebServiceControler extends AbstractPluginWebServiceController {
 
     /**
+     * <p>Constructor for SimpleChatWebServiceControler.</p>
      *
      * @param pluginAPI plugin api object
      */
@@ -44,6 +47,7 @@ public class SimpleChatWebServiceControler extends AbstractPluginWebServiceContr
         super(pluginAPI);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(
             LinkedHashMap<String, Class<? extends AbstractWebService>> commands) {

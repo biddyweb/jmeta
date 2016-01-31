@@ -30,10 +30,13 @@ import org.meta.api.ws.AbstractPluginWebServiceController;
  * Plugin interface to be implemented by plugins for META.
  *
  * @author nico
+ * @version $Id: $
  */
 public interface MetaPlugin {
 
     /**
+     * <p>getName</p>
+     *
      * @return The name of the plugin.
      */
     String getName();

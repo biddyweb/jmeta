@@ -30,25 +30,26 @@ import org.meta.api.ws.forms.InterfaceButton;
 /**
  * A submitTo button is a button who will say to the interface :
  * "send your filled form to an other command of the same plugin"
- * 
+ *
  * That way you are able to create many commands that chained together.
- * 
+ *
  * Your commands are always independent, and may be executed separately.
  * Chained them is just a big plus for end user experience.
- * 
+ *
  * after clicking on submit from this button, the interface will execute the
  * pointed command calling :
  * execute/PluginName/destinationCommand?parameters
- * 
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class SubmitToButton extends InterfaceButton{
 
     private String destination     = null;
 
     /**
-     * 
+     * <p>Constructor for SubmitToButton.</p>
+     *
      * @param id            unique ID
      * @param label         label
      * @param destination   command name to execute
@@ -58,6 +59,7 @@ public class SubmitToButton extends InterfaceButton{
         this.destination = destination;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "submitToButton";
@@ -65,7 +67,8 @@ public class SubmitToButton extends InterfaceButton{
 
     /**
      * Serialize as JSON
-     * @return 
+     *
+     * @return a {@link org.bson.BasicBSONObject} object.
      */
     public BasicBSONObject toJson() {
         BasicBSONObject o = super.toJson();

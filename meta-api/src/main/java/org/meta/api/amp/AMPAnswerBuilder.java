@@ -31,11 +31,12 @@ import org.meta.api.model.Searchable;
  * Create a new AmpAnswerFactory to create an answer.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AMPAnswerBuilder extends AMPBuilder {
 
     /**
+     * <p>Constructor for AMPAnswerBuilder.</p>
      *
      * @param answer the same number as the ask
      * @param datas the Searchable objects to send back

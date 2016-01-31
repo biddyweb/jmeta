@@ -31,6 +31,7 @@ import java.util.Collection;
  * Base interface representing a stateful asynchronous operation.
  *
  * @author nico
+ * @version $Id: $
  */
 public abstract class AsyncOperation {
 
@@ -141,7 +142,6 @@ public abstract class AsyncOperation {
      * listener immediately.
      *
      * @param listener The listener to add to the list.
-     *
      * @return The AsyncOperation for convenience.
      */
     public final AsyncOperation addListener(final OperationListener<? extends AsyncOperation> listener) {
@@ -234,6 +234,8 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>hasFinished</p>
+     *
      * @return true if the operation completed (even if it failed), false otherwise.
      */
     public final boolean hasFinished() {
@@ -244,6 +246,8 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>isSuccess</p>
+     *
      * @return true if operation succeeded, false if there was an error or a false response.
      */
     public final boolean isSuccess() {
@@ -253,6 +257,8 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>isFailure</p>
+     *
      * @return true if operation failed, false otherwise.
      */
     public final boolean isFailure() {
@@ -262,6 +268,8 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>canceled</p>
+     *
      * @return true if the operation was canceled, false otherwise.
      */
     public final boolean canceled() {
@@ -280,6 +288,8 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>getFailureMessage</p>
+     *
      * @return The string representation of the failure of this operation.
      */
     public final String getFailureMessage() {
@@ -294,6 +304,7 @@ public abstract class AsyncOperation {
     }
 
     /**
+     * <p>notifyListeners</p>
      *
      * @param clearListeners true if listeners are cleared after being notifier, false to keep them
      */

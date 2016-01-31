@@ -5,11 +5,14 @@ import java.util.Comparator;
 import net.tomp2p.peers.Number640;
 
 /**
+ * <p>Number640Comparator class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class Number640Comparator implements Comparator<byte[]>, Serializable {
 
+    /** {@inheritDoc} */
     @Override
     public int compare(final byte[] t, final byte[] t1) {
         Number640 left = Number640Serializer.INSTANCE.deserialize(t);

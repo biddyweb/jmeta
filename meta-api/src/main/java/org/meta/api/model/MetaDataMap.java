@@ -39,6 +39,7 @@ import java.util.Set;
  * enough to ignore that).
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
 
@@ -55,6 +56,8 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
 
     /**
      * Default constructor.
+     *
+     * @param metaDatas a {@link java.util.Collection} object.
      */
     public MetaDataMap(final Collection<MetaData> metaDatas) {
         this.set = new HashSet<>(INITIAL_CAPACITY);
@@ -63,16 +66,15 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
 
     /**
      * Copy constructor.
+     *
+     * @param map a {@link org.meta.api.model.MetaDataMap} object.
      */
     public MetaDataMap(final MetaDataMap map) {
         this.set = new HashSet<>(INITIAL_CAPACITY);
         this.set.addAll(map.set);
     }
 
-    /**
-     *
-     * @return the entry set of MetaData
-     */
+    /** {@inheritDoc} */
     @Override
     public Set<MetaData> entrySet() {
         return set;
@@ -129,6 +131,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
     }
 
     /**
+     * <p>put</p>
      *
      * @param key the key of the meta data
      * @param value the meta data value
@@ -148,6 +151,7 @@ public class MetaDataMap extends AbstractMap implements Iterable<MetaData> {
         return this.set.addAll(metaDataList);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Iterator<MetaData> iterator() {
         return this.set.iterator();

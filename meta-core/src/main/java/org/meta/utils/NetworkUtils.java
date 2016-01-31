@@ -41,6 +41,7 @@ import org.meta.api.configuration.NetworkConfiguration;
  * Utility class for miscellaneous network functions.
  *
  * @author nico
+ * @version $Id: $
  */
 public final class NetworkUtils {
 
@@ -95,8 +96,9 @@ public final class NetworkUtils {
     }
 
     /**
-     * @param addr the address to check
+     * <p>isPublicAddress</p>
      *
+     * @param addr the address to check
      * @return true if the address is publicly routable, false otherwise.
      */
     public static boolean isPublicAddress(final InetAddress addr) {
@@ -106,6 +108,7 @@ public final class NetworkUtils {
     }
 
     /**
+     * <p>isLocalNetworkAddress</p>
      *
      * @param addr The address to check.
      * @return true of the address is routable within the local network, false otherwise.
@@ -120,7 +123,6 @@ public final class NetworkUtils {
      *
      * @param ifaceName The interface name
      * @param ipV4 true if searching ipV4 address, false if searching ipV6.
-     *
      * @return The IntetAddress or null if not found.
      */
     public static InetAddress getInterfaceAddress(final String ifaceName, final boolean ipV4) {
@@ -145,7 +147,6 @@ public final class NetworkUtils {
      * @param ifaceName The interface name
      * @param ipV4 true if searching ipV4 address, false otherwise
      * @param ipV6 true if searching ipV6 address, false otherwise
-     *
      * @return The List of addresses. Might be empty.
      */
     public static Collection<InetAddress> getInterfaceAddresses(final String ifaceName, final boolean ipV4,
@@ -198,7 +199,6 @@ public final class NetworkUtils {
      * Get the subset of peers that have local addresses.
      *
      * @param peers The initial list of peers.
-     *
      * @return The list of peers found to have local addresses.
      */
     public static Collection<MetaPeer> getLocalPeers(final Collection<MetaPeer> peers) {
@@ -217,7 +217,6 @@ public final class NetworkUtils {
      * Get the subset of peers that have public addresses.
      *
      * @param peers The initial list of peers.
-     *
      * @return The list of peers found to have public addresses.
      */
     public static Collection<MetaPeer> getPublicPeers(final Collection<MetaPeer> peers) {

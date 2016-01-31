@@ -36,18 +36,21 @@ import java.util.SortedSet;
  * shared with {@link KVStorage} bond to the same database.
  *
  * @param <T> The type of this collection elements
- *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface CollectionStorage<T> extends SortedSet<T> {
 
     /**
+     * <p>getDatabaseName</p>
      *
      * @return the name of the database this CollectionStorage is bond to
+     * @param <T> a T object.
      */
     String getDatabaseName();
 
     /**
+     * <p>getSerializer</p>
      *
      * @return the serializer used by this CollectionStorage
      */

@@ -33,6 +33,7 @@ import org.meta.api.common.AsyncOperation;
  * Asynchronous operation representing the write of a data block from a file.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class FileWriteOperation extends AsyncOperation implements CompletionHandler<Integer, Void> {
 
@@ -41,10 +42,11 @@ public class FileWriteOperation extends AsyncOperation implements CompletionHand
     final ByteBuffer buffer;
 
     /**
+     * <p>Constructor for FileWriteOperation.</p>
      *
      * @param pieceIdx the piece index
-     * @param offset
-     * @param buf
+     * @param offset a int.
+     * @param buf a {@link java.nio.ByteBuffer} object.
      */
     public FileWriteOperation(final int pieceIdx, final int offset, final ByteBuffer buf) {
         this.pieceIndex = pieceIdx;
@@ -52,11 +54,13 @@ public class FileWriteOperation extends AsyncOperation implements CompletionHand
         this.buffer = buf;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void completed(final Integer v, final Void a) {
         this.complete();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void failed(final Throwable thrwbl, final Void a) {
         this.setFailed(thrwbl);

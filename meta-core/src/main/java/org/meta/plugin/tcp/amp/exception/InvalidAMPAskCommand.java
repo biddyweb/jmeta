@@ -25,8 +25,10 @@
 package org.meta.plugin.tcp.amp.exception;
 
 /**
+ * <p>InvalidAMPAskCommand class.</p>
  *
  * @author nico
+ * @version $Id: $
  */
 public class InvalidAMPAskCommand extends InvalidAMPCommand {
 
@@ -36,6 +38,7 @@ public class InvalidAMPAskCommand extends InvalidAMPCommand {
     private static final long serialVersionUID = 1L;
 
     /**
+     * <p>Constructor for InvalidAMPAskCommand.</p>
      *
      * @param ask the amp ask
      * @param plugin the plugin name

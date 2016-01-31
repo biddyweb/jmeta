@@ -30,11 +30,14 @@ import org.meta.api.amp.PluginAMPController;
 import org.meta.plugins.SimpleHashMap.tcp.commands.Get;
 
 /**
+ * <p>SimpleHashMapTcpControler class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class SimpleHashMapTcpControler extends PluginAMPController {
 
+    /** {@inheritDoc} */
     @Override
     protected void registercommands(HashMap<String, Class<? extends PluginAMPCommand>> commands) {
         commands.put("getCommand", Get.class);

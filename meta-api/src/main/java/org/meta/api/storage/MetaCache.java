@@ -5,10 +5,12 @@ package org.meta.api.storage;
  * Interface describing memory cache functionalities over KVStorage.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface MetaCache extends KVStorage {
 
     /**
+     * <p>getStorage</p>
      *
      * @return the backing storage used by this cache
      */

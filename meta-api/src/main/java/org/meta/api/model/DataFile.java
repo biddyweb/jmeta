@@ -32,6 +32,7 @@ import org.meta.api.common.MetHash;
  * File implementation of a Data. Point to a File on the local hard drive.
  *
  * @author Thomas LAVOCAT
+ * @version $Id: $
  */
 public abstract class DataFile extends Data {
 
@@ -48,6 +49,7 @@ public abstract class DataFile extends Data {
     }
 
     /**
+     * <p>Getter for the field <code>file</code>.</p>
      *
      * @return the file instance managed by this AbstractDataFile, or null if not set
      */

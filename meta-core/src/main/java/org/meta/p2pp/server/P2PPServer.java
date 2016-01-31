@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * Meta peer-to-peer protocol server.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, P2PPServer> {
 
@@ -167,7 +168,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     /**
      * Starts the server.
      *
-     * @throws P2PPException if the server failed to start
+     * @throws org.meta.p2pp.exceptions.P2PPException if the server failed to start
      */
     public void run() throws P2PPException {
         try {
@@ -233,10 +234,9 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
-     * Success completion handler for accept().
+     * {@inheritDoc}
      *
-     * @param socket the newly accepted socket channel
-     * @param a should be == to 'this' here but we are our own completion handler
+     * Success completion handler for accept().
      */
     @Override
     public void completed(final AsynchronousSocketChannel socket, final P2PPServer a) {
@@ -247,10 +247,9 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
-     * Failure completion handler for accept().
+     * {@inheritDoc}
      *
-     * @param thrwbl the error
-     * @param a == null
+     * Failure completion handler for accept().
      */
     @Override
     public void failed(final Throwable thrwbl, final P2PPServer a) {
@@ -380,6 +379,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
+     * <p>getStorage</p>
      *
      * @return the model object storage for use by handlers
      */

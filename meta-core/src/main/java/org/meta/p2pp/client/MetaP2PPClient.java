@@ -43,12 +43,14 @@ import org.meta.p2pp.client.requests.P2PPSearchRequest;
  * Implementation of the P2PP client commands accessor.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class MetaP2PPClient implements PluginP2PPClient {
 
     private final P2PPClient client;
 
     /**
+     * <p>Constructor for MetaP2PPClient.</p>
      *
      * @param p2ppClient the peer-to-peer protocol client
      */
@@ -56,6 +58,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
         this.client = p2ppClient;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AsyncOperation keepAlive(final MetaPeer peer) {
         P2PPKeepAliveRequest req = new P2PPKeepAliveRequest();
@@ -64,12 +67,14 @@ public class MetaP2PPClient implements PluginP2PPClient {
         return req.getOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters,
             final MetHash hash) {
         return search(peer, metaDataFilters, new MetHash[]{hash});
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters,
             final MetHash... hashes) {
@@ -78,12 +83,14 @@ public class MetaP2PPClient implements PluginP2PPClient {
         return req.getOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation searchMeta(final MetaPeer peer,
             final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash) {
         return searchMeta(peer, metaDataFilters, metaDataKeys, new MetHash[]{hash});
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation searchMeta(final MetaPeer peer,
             final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash... hashes) {
@@ -93,6 +100,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
         return req.getOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation searchGet(final MetaPeer peer,
             final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash) {
@@ -102,6 +110,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
         return req.getOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters,
             final Set<String> metaDataKeys,
@@ -112,6 +121,7 @@ public class MetaP2PPClient implements PluginP2PPClient {
         return req.getOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public GetOperation get(final MetaPeer peer, final MetHash hash, final int pieceIndex,
             final int byteOffset, final int length) {

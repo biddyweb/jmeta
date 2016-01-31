@@ -31,16 +31,17 @@ import org.meta.api.ws.forms.InterfaceField;
 
 /**
  * A radioList is a list of grouped radio buttons.
- * 
- * @author faquin
  *
+ * @author faquin
+ * @version $Id: $
  */
 public class RadioList extends InterfaceField {
 
     private ArrayList<RadioButton> buttons = null;
 
     /**
-     * 
+     * <p>Constructor for RadioList.</p>
+     *
      * @param id        Unique ID
      * @param label     Label
      */
@@ -50,7 +51,8 @@ public class RadioList extends InterfaceField {
     }
     
     /**
-     * 
+     * <p>Constructor for RadioList.</p>
+     *
      * @param id        Unique ID
      * @param label     Label
      * @param radios    list of {@link RadioButton}
@@ -60,6 +62,7 @@ public class RadioList extends InterfaceField {
         this.buttons = radios;
     }
 
+    /** {@inheritDoc} */
     @Override
     public BasicBSONObject toJson() {
         //get mama's json and add the list of radio button
@@ -72,13 +75,15 @@ public class RadioList extends InterfaceField {
         return radioList;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getType() {
         return "radioList";
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>buttons</code>.</p>
+     *
      * @param buttons give a new lists of buttons
      */
     public void setButtons(ArrayList<RadioButton> buttons){

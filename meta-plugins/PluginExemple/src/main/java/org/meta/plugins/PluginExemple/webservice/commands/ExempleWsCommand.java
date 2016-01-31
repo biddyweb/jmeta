@@ -34,8 +34,10 @@ import org.meta.api.ws.forms.submit.SelfSubmitButton;
 import org.meta.api.ws.forms.submit.SubmitToButton;
 
 /**
+ * <p>ExempleWsCommand class.</p>
  *
  * @author nico
+ * @version $Id: $Id
  */
 public class ExempleWsCommand extends AbstractWebService {
 
@@ -44,8 +46,9 @@ public class ExempleWsCommand extends AbstractWebService {
     private DateInput birthDate = null;
 
     /**
+     * <p>Constructor for ExempleWsCommand.</p>
      *
-     * @param controler
+     * @param controler a {@link org.meta.api.ws.AbstractPluginWebServiceController} object.
      */
     public ExempleWsCommand(AbstractPluginWebServiceController controler) {
         super(controler);
@@ -63,6 +66,7 @@ public class ExempleWsCommand extends AbstractWebService {
         rootColumn.addChild(output);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void executeCommand(Map<String, String[]> map) {
         output.flush();
@@ -74,6 +78,7 @@ public class ExempleWsCommand extends AbstractWebService {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void applySmallUpdate() {
         nbRefresh++;

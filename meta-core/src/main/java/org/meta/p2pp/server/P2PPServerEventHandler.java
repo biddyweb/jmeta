@@ -27,8 +27,10 @@ package org.meta.p2pp.server;
 import java.nio.channels.AsynchronousSocketChannel;
 
 /**
+ * <p>P2PPServerEventHandler interface.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public interface P2PPServerEventHandler {
 
@@ -149,6 +151,7 @@ public interface P2PPServerEventHandler {
     }
 
     /**
+     * <p>getSocket</p>
      *
      * @return the socket
      */
@@ -191,6 +194,7 @@ public interface P2PPServerEventHandler {
     ServerActionContext handlerComplete(final ServerActionContext context);
 
     /**
+     * <p>error</p>
      *
      * @return the resulting action context
      */

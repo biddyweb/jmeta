@@ -33,6 +33,9 @@ import org.meta.api.configuration.exceptions.InvalidConfigurationException;
 
 /**
  * Class representing networking configuration parameters such as a port, listen interfaces or addresses.
+ *
+ * @author nico
+ * @version $Id: $
  */
 public class NetworkConfigurationImpl extends PropertiesConfiguration implements NetworkConfiguration {
 
@@ -141,82 +144,61 @@ public class NetworkConfigurationImpl extends PropertiesConfiguration implements
         }
     }
 
-    /**
-     * @return the list of interfaces to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final Collection<String> getInterfaces() {
         return interfaces;
     }
 
-    /**
-     * @param ifaces the interfaces to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setInterfaces(final Collection<String> ifaces) {
         this.interfaces = ifaces;
     }
 
-    /**
-     * @return the list of addresses to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final Collection<InetAddress> getAddresses() {
         return addresses;
     }
 
-    /**
-     *
-     * @param addrs the new list of addresses to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setAddresses(final Collection<InetAddress> addrs) {
         this.addresses = addrs;
     }
 
-    /**
-     * @return the port to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final Short getPort() {
         return port;
     }
 
-    /**
-     * @param nwPort the new port to bind to.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setPort(final Short nwPort) {
         this.port = nwPort;
     }
 
-    /**
-     * @return true enabling ipV6, false otherwise.
-     */
+    /** {@inheritDoc} */
     @Override
     public final boolean ipV6() {
         return ipV6;
     }
 
-    /**
-     * @param ipv6 the new ipV6 value.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setIpV6(final boolean ipv6) {
         this.ipV6 = ipv6;
     }
 
-    /**
-     * @return true enabling ipV6, false otherwise.
-     */
+    /** {@inheritDoc} */
     @Override
     public final boolean ipV4() {
         return ipV4;
     }
 
-    /**
-     * @param ipv4 the new ipV4 value.
-     */
+    /** {@inheritDoc} */
     @Override
     public final void setIpV4(final boolean ipv4) {
         this.ipV4 = ipv4;

@@ -38,8 +38,10 @@ import org.meta.p2pp.client.P2PPRequest;
 import org.meta.utils.SerializationUtils;
 
 /**
+ * <p>P2PPSearchGetRequest class.</p>
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPSearchGetRequest extends P2PPRequest {
 
@@ -60,6 +62,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
      * @param filters the meta-data filters
      * @param metaDataKeys the meta data keys to get for each results. Can be null or empty.
      * @param hashes the hashes to search for
+     * @param peer a {@link org.meta.api.common.MetaPeer} object.
      */
     public P2PPSearchGetRequest(final P2PPClient p2ppClient,
             final Map<String, String> filters, final Set<String> metaDataKeys,
@@ -73,11 +76,13 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.operation = new SearchOperation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public P2PPSearchGetResponseHandler getResponseHandler() {
         return this.responseHandler;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean build(final char requestToken) {
         this.token = requestToken;
@@ -140,6 +145,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void finish() {
         BufferManager.release(buffer);
@@ -148,6 +154,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.operation.complete();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final String failedReason) {
         if (this.buffer != null) {
@@ -159,6 +166,7 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.operation.setFailed(failedReason);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setFailed(final Throwable thrwbl) {
         if (this.buffer != null) {
@@ -170,11 +178,13 @@ public class P2PPSearchGetRequest extends P2PPRequest {
         this.operation.setFailed(thrwbl);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean hasResponse() {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation getOperation() {
         return this.operation;

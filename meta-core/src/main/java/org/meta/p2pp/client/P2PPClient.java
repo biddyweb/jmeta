@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * The client for the peer-to-peer protocol.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public class P2PPClient {
 
@@ -80,7 +81,7 @@ public class P2PPClient {
      *
      * @param p2ppManager the manager
      * @param conf the configuration
-     * @throws P2PPException if the channel group creation failed
+     * @throws org.meta.p2pp.exceptions.P2PPException if the channel group creation failed
      */
     public P2PPClient(final P2PPManager p2ppManager, final P2PPConfiguration conf) throws P2PPException {
         this.manager = p2ppManager;
@@ -141,7 +142,6 @@ public class P2PPClient {
      *
      * @param peer the peer to send to request to
      * @param req the request to send to the server peer
-     *
      */
     public void submitRequest(final MetaPeer peer, final P2PPRequest req) {
         ClientSocketContext c;
@@ -267,6 +267,7 @@ public class P2PPClient {
     }
 
     /**
+     * <p>getModelFactory</p>
      *
      * @return the model factory for use by the client response handlers
      */

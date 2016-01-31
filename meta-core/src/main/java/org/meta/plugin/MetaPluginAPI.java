@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * Every operation a plugin needs to execute should appear here.
  *
  * @author dyslesiq
+ * @version $Id: $
  */
 public final class MetaPluginAPI implements MetAPI {
 
@@ -61,6 +62,7 @@ public final class MetaPluginAPI implements MetAPI {
     private final MetaController metaController;
 
     /**
+     * <p>Constructor for MetaPluginAPI.</p>
      *
      * @param controller the meta controller
      */
@@ -68,21 +70,25 @@ public final class MetaPluginAPI implements MetAPI {
         this.metaController = controller;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ModelStorage getModel() {
         return this.metaController.getModel();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaDHT getDHT() {
         return this.metaController.getDht();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MetaP2PPClient getP2PPClient() {
         return this.metaController.getP2PPClient();
     }
 
+    /** {@inheritDoc} */
     @Override
     public SearchOperation search(final MetHash searchHash, final boolean searchLocal, final boolean getData,
             final Set<String> metaDataKeys, final Map<String, String> metaDataFilters) {
@@ -134,6 +140,7 @@ public final class MetaPluginAPI implements MetAPI {
         return op;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DownloadOperation download(final DataFile destination) {
         DownloadOperation d = new DownloadOperation(destination);
@@ -161,6 +168,7 @@ public final class MetaPluginAPI implements MetAPI {
         return d;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DownloadOperation download(final DataFile destination, final Collection<MetaPeer> peers) {
         DownloadOperation d = new DownloadOperation(destination);
@@ -170,6 +178,8 @@ public final class MetaPluginAPI implements MetAPI {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Get results from the local database.
      *
      * The given hash is interpreted as a search.
@@ -177,9 +187,6 @@ public final class MetaPluginAPI implements MetAPI {
      * If not a search, or inexistent in database, an empty set of results is returned.
      *
      * TODO why copy the results instead of returning them directly ?
-     *
-     * @param searchHash the hash of the search
-     * @return the results for the given search
      */
     @Override
     public Set<Data> getLocalResults(final MetHash searchHash) {
@@ -192,6 +199,7 @@ public final class MetaPluginAPI implements MetAPI {
         return results;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Data consolidateData(final Data data) {
         Data resultDB = getModel().getData(data.getHash());
@@ -204,6 +212,7 @@ public final class MetaPluginAPI implements MetAPI {
         return data;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Search consolidateSearch(final Search newSearch) {
         //try to get the same from model
@@ -216,6 +225,7 @@ public final class MetaPluginAPI implements MetAPI {
         return searchDB;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean storePush(final Searchable searchable) {
         boolean status = getModel().set(searchable);

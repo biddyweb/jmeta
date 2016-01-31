@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * This thread only listen to AMP Command.
  *
  * @author faquin
- *
+ * @version $Id: $
  */
 public class AskHandlerThread implements Runnable {
 
@@ -59,9 +59,7 @@ public class AskHandlerThread implements Runnable {
         this.client = pClient;
     }
 
-    /**
-     *
-     */
+    /** {@inheritDoc} */
     @Override
     public final void run() {
         InputStream inputStream = null;

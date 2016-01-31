@@ -29,6 +29,8 @@ import org.meta.api.common.MetHash;
 /**
  * An element holding simple information about a hash pushed over the DHT.
  *
+ * @author nico
+ * @version $Id: $
  */
 public class DHTPushElement {
 
@@ -37,6 +39,7 @@ public class DHTPushElement {
     private long expiration = 0;
 
     /**
+     * <p>Constructor for DHTPushElement.</p>
      *
      * @param hash the hash to push
      * @param nextPush the next time to push
@@ -50,6 +53,8 @@ public class DHTPushElement {
     }
 
     /**
+     * <p>Getter for the field <code>nextPushTime</code>.</p>
+     *
      * @return the next time the hash needs to be pushed
      */
     public long getNextPushTime() {
@@ -57,6 +62,8 @@ public class DHTPushElement {
     }
 
     /**
+     * <p>Getter for the field <code>expiration</code>.</p>
+     *
      * @return the expiration timestamp of this element
      */
     public long getExpiration() {
@@ -64,6 +71,8 @@ public class DHTPushElement {
     }
 
     /**
+     * <p>getHash</p>
+     *
      * @return the hash to push
      */
     public MetHash getHash() {
@@ -71,6 +80,7 @@ public class DHTPushElement {
     }
 
     /**
+     * <p>Setter for the field <code>nextPushTime</code>.</p>
      *
      * @param nextPush the next time the hash needs to be pushed
      */
@@ -79,6 +89,7 @@ public class DHTPushElement {
     }
 
     /**
+     * <p>Setter for the field <code>expiration</code>.</p>
      *
      * @param exp expiration timestamp
      */

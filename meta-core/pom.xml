@@ -40,7 +40,6 @@
 	    <appendAssemblyId>false</appendAssemblyId>
 	    <classifier>jar</classifier>
 	    <outputDirectory>${project.parent.basedir}/bin</outputDirectory>
-            <!-- <argLine>-Djava.library.path=${project.parent.basedir}/nativelib</argLine> -->
             <archive>
               <manifest>
                 <mainClass>org.meta.JMeta</mainClass>
@@ -59,30 +58,6 @@
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.7</version>
-          <configuration>
-            <detectOfflineLinks/>
-            <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-            <!--
-                use this line or use the variable GRAPHVIZ_HOME
-                <docletPath>/path/to/UmlGraph.jar</docletPath>
-            -->
-            <docletArtifact>
-              <groupId>org.umlgraph</groupId>
-              <artifactId>umlgraph</artifactId>
-              <version>5.6.6</version>
-            </docletArtifact>
-            <useStandardDocletOptions>true</useStandardDocletOptions>
-            <additionalparam>
-              -Xdoclint:none -inferrel -inferdep -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
-              -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
-              -enumerations -enumconstants -views -useimports -inferdep
-            </additionalparam>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -114,7 +89,6 @@
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>meta-api</artifactId>
       <version>${project.parent.version}</version>
-      <scope>compile</scope>
       <type>jar</type>
     </dependency>
     <dependency>

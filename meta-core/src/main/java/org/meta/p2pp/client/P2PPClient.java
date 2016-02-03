@@ -301,9 +301,9 @@ public class P2PPClient {
         @Override
         public void completed(final Integer bytes, final ClientActionContext ioContext) {
             logger.debug("P2PPClientReadHandler: received " + bytes + " bytes");
-            if (bytes <= 0) {
+            if (bytes < 0) {
                 P2PPClient.this.handleError(null, ioContext);
-            } else if (bytes >= 0) {
+            } else {
                 dispatchActions(ioContext.getEventHandler().dataReceived(ioContext));
             }
         }

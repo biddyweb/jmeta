@@ -349,7 +349,7 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
             if (bytes == -1) {
                 P2PPServer.this.handleSocketError(context);
             } else {
-                logger.info("P2PPServerReadHandler: wrote " + bytes + " bytes");
+                logger.info("P2PPServerWriteHandler: wrote " + bytes + " bytes");
                 P2PPServer.this.dispatchActions(context.getHandler().dataSent(context));
             }
         }
@@ -379,7 +379,8 @@ public class P2PPServer implements CompletionHandler<AsynchronousSocketChannel, 
     }
 
     /**
-     * <p>getStorage</p>
+     * <p>
+     * getStorage</p>
      *
      * @return the model object storage for use by handlers
      */

@@ -218,7 +218,7 @@ public final class TomP2pDHT extends MetaDHT {
         Bindings bindings = configureBindings();
         peerBuilder.portsExternal(udpPort);
         peerBuilder.ports(udpPort);
-        peerBuilder.udpPortForwarding(udpPort);
+        //peerBuilder.udpPortForwarding(udpPort);
         peerBuilder.enableBroadcast(false).enableMaintenance(false).enableQuitRPC(false);
         peerBuilder.channelServerConfiguration(getServerConfig(bindings, udpPort));
         peerBuilder.channelClientConfiguration(getClientConfig(bindings));

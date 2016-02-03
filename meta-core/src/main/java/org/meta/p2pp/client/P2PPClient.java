@@ -185,9 +185,9 @@ public class P2PPClient {
                         this.handleError(null, actionContext);
                         break;
                     case NONE:
-                        logger.info("dispatchActions: nothing to do");
                         break;
                     case COMPLETE_REQUEST:
+                        logger.info("Executing finished request handler");
                         this.operationExecutor.submitRequest(actionContext.getAttachment());
                         break;
                     default:
@@ -259,7 +259,7 @@ public class P2PPClient {
         //Try to reconnect on server disconnection or not ?
         //Needs discussion.
         //Maybe a dead peer is a dead peer and should not be contacted after a certain timeout (30minutes?)
-        logger.warn("Socket error for server peer: " + ioContext.getEventHandler().getServerPeer());
+        logger.warn("Error for server peer: " + ioContext.getEventHandler().getServerPeer());
         if (t != null) {
             logger.warn("Error in P2PP Client:", t);
         }
@@ -267,7 +267,8 @@ public class P2PPClient {
     }
 
     /**
-     * <p>getModelFactory</p>
+     * <p>
+     * getModelFactory.</p>
      *
      * @return the model factory for use by the client response handlers
      */
@@ -299,7 +300,7 @@ public class P2PPClient {
 
         @Override
         public void completed(final Integer bytes, final ClientActionContext ioContext) {
-            logger.debug("Read bytes:" + bytes);
+            logger.debug("P2PPClientReadHandler: received " + bytes + " bytes");
             if (bytes <= 0) {
                 P2PPClient.this.handleError(null, ioContext);
             } else if (bytes >= 0) {
@@ -325,7 +326,7 @@ public class P2PPClient {
 
         @Override
         public void completed(final Integer bytes, final ClientActionContext ioContext) {
-            logger.debug("Wrote bytes:" + bytes);
+            logger.debug("P2PPClientWriteHandler Wrote bytes: " + bytes);
             if (bytes <= 0) {
                 P2PPClient.this.handleError(null, ioContext);
             } else if (bytes >= 0) {

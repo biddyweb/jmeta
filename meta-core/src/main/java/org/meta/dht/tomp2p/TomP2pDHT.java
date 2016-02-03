@@ -30,6 +30,8 @@ import java.util.Collection;
 import net.tomp2p.connection.Bindings;
 import net.tomp2p.connection.ChannelClientConfiguration;
 import net.tomp2p.connection.ChannelServerConfiguration;
+import net.tomp2p.connection.PeerConnection;
+import net.tomp2p.connection.PeerException;
 import net.tomp2p.connection.Ports;
 import net.tomp2p.connection.StandardProtocolFamily;
 import net.tomp2p.dht.PeerBuilderDHT;
@@ -45,6 +47,8 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.peers.PeerMapChangeListener;
 import net.tomp2p.peers.PeerStatistic;
+import net.tomp2p.peers.PeerStatusListener;
+import net.tomp2p.peers.RTT;
 import org.meta.api.common.Identity;
 import org.meta.api.common.MetHash;
 import org.meta.api.common.MetamphetUtils;
@@ -104,7 +108,8 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     * <p>Getter for the field <code>peerDHT</code>.</p>
+     * <p>
+     * Getter for the field <code>peerDHT</code>.</p>
      *
      * @return The {@link net.tomp2p.dht.PeerDHT} representing our node.
      */
@@ -113,7 +118,8 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     * <p>Getter for the field <code>peer</code>.</p>
+     * <p>
+     * Getter for the field <code>peer</code>.</p>
      *
      * @return The {@link net.tomp2p.p2p.Peer} representing our node.
      */
@@ -121,7 +127,9 @@ public final class TomP2pDHT extends MetaDHT {
         return peer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() throws IOException {
         this.startAndListen();
@@ -137,7 +145,6 @@ public final class TomP2pDHT extends MetaDHT {
     private Bindings configureBindings() {
         NetworkConfiguration nwConfig = this.configuration.getNetworkConfig();
         Bindings b = new Bindings();
-        b.clear();
 
         if (nwConfig.ipV4()) {
             b.addProtocol(StandardProtocolFamily.INET);
@@ -145,10 +152,16 @@ public final class TomP2pDHT extends MetaDHT {
         if (nwConfig.ipV6()) {
             b.addProtocol(StandardProtocolFamily.INET6);
         }
+        for (String iface : nwConfig.getInterfaces()) {
+            b.addInterface(iface);
+        }
         Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
-        if (configAddresses.isEmpty()) {
+        if (configAddresses.isEmpty() && nwConfig.getInterfaces().isEmpty()) {
+            logger.info("DHT: listen ANY");
             b.setListenAny(true);
         } else {
+            logger.info("DHT: listen specific addresses/interfaces");
+            b.setListenAny(false);
             for (InetAddress addr : configAddresses) {
                 logger.info("CONFIGURE BINDING DHT: ADDING BINDING TO ADDR: " + addr);
                 b.addAddress(addr);
@@ -164,6 +177,7 @@ public final class TomP2pDHT extends MetaDHT {
         ChannelServerConfiguration serverConfig = new ChannelServerConfiguration();
         serverConfig.ports(new Ports(port, port));
         serverConfig.forceTCP(false).forceUDP(true);
+        serverConfig.maxTCPIncomingConnections(0);
         serverConfig.pipelineFilter(new PeerBuilder.DefaultPipelineFilter());
         serverConfig.bindings(bindings);
         return serverConfig;
@@ -177,8 +191,8 @@ public final class TomP2pDHT extends MetaDHT {
 
         clientConfig.bindings(bindings);
         clientConfig.pipelineFilter(new PeerBuilder.DefaultPipelineFilter());
-        clientConfig.maxPermitsPermanentTCP(250);
-        clientConfig.maxPermitsTCP(250);
+        clientConfig.maxPermitsPermanentTCP(0);
+        clientConfig.maxPermitsTCP(0);
         clientConfig.maxPermitsUDP(250);
         return clientConfig;
     }
@@ -203,47 +217,46 @@ public final class TomP2pDHT extends MetaDHT {
         int udpPort = this.configuration.getNetworkConfig().getPort();
         Bindings bindings = configureBindings();
         peerBuilder.portsExternal(udpPort);
+        peerBuilder.ports(udpPort);
+        peerBuilder.udpPortForwarding(udpPort);
         peerBuilder.enableBroadcast(false).enableMaintenance(false).enableQuitRPC(false);
         peerBuilder.channelServerConfiguration(getServerConfig(bindings, udpPort));
         peerBuilder.channelClientConfiguration(getClientConfig(bindings));
-
         this.peer = peerBuilder.start();
-//        this.peer.connectionBean().dispatcher().peerBean().addPeerStatusListener(new PeerStatusListener() {
-//
-//            @Override
-//            public boolean peerFailed(PeerAddress remotePeer, PeerException exception) {
-//logger.debug("Peer status listener, peer failed. Remote peer = " + remotePeer, exception);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean peerFound(PeerAddress remotePeer, PeerAddress referrer,
-//                    PeerConnection peerConnection, RTT roundTripTime) {
-//                logger.debug("Peer status listener, peer FOUND. Remote peer = "
-//                        + remotePeer + " referrer = " + referrer);
-//                return true;
-//            }
-//        });
 
         this.peer.peerBean().peerMap().addPeerMapChangeListener(new PeerMapChangeListener() {
             @Override
             public void peerInserted(final PeerAddress peerAddress, final boolean verified) {
-                logger.info("peerInserted: " + peerAddress + " verifid ? " + verified);
+                logger.debug("PeerMapChangeListener peerInserted: " + peerAddress + " verifid ? " + verified);
             }
 
             @Override
             public void peerRemoved(final PeerAddress peerAddress, final PeerStatistic storedPeerAddress) {
-                logger.info("peerRemoved: " + peerAddress);
+                logger.debug("PeerMapChangeListener peerRemoved: " + peerAddress);
             }
 
             @Override
             public void peerUpdated(final PeerAddress peerAddress, final PeerStatistic storedPeerAddress) {
-                logger.info("peerUpdated: " + peerAddress);
+                logger.debug("PeerMapChangeListener peerUpdated: " + peerAddress);
+            }
+        });
+        this.peer.peerBean().addPeerStatusListener(new PeerStatusListener() {
+            @Override
+            public boolean peerFailed(PeerAddress remotePeer, PeerException exception) {
+                logger.debug("PeerStatusListener peer failed: " + remotePeer + ". Exception: " + exception);
+                return false;
+            }
+
+            @Override
+            public boolean peerFound(PeerAddress remotePeer, PeerAddress referrer,
+                    PeerConnection peerConnection, RTT roundTripTime) {
+                logger.debug("PeerStatusListener peerFound: " + remotePeer + ". referrer: " + referrer);
+                return false;
             }
         });
         logger.info("Initial DHT address = " + this.peer.peerAddress());
-        PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
 
+        PeerBuilderDHT peerBuilderDHT = new PeerBuilderDHT(peer);
         //Use our custom storage.
         peerBuilderDHT.storage(tomP2pStorage);
         this.peerDHT = peerBuilderDHT.start();
@@ -252,7 +265,9 @@ public final class TomP2pDHT extends MetaDHT {
                 ProtectionEnable.NONE, ProtectionMode.NO_MASTER);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BootstrapOperation bootstrap() {
         Tomp2pBootstrapOperation b = new Tomp2pBootstrapOperation(this, this.configuration.getKnownPeers(),
@@ -261,31 +276,39 @@ public final class TomP2pDHT extends MetaDHT {
         return b;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FindPeersOperation findPeers(final MetHash hash) {
         Number160 contentHash = TomP2pUtils.toNumber160(hash);
         TomP2pFindPeersOperation operation = new TomP2pFindPeersOperation(this, contentHash);
 
-        //TODO instead of always launching a find peers operation, first check if nwe need it.
-        //We could return local results directly.
+        //TODO instead of always launching a find peers operation, first check if we need it.
+        //We could return local results directly if they are recent enough.
         operation.start();
         return operation;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void push(final MetHash hash, final long expirationDate) {
         pushManager.pushElement(hash, expirationDate);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void push(final MetHash hash) {
         push(hash, 0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StoreOperation doStore(final MetHash hash) {
         Number160 tomp2pHash = TomP2pUtils.toNumber160(hash);
@@ -295,7 +318,9 @@ public final class TomP2pDHT extends MetaDHT {
         return storeOperation;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         if (peer == null || peer.isShutdown()) {
@@ -326,7 +351,8 @@ public final class TomP2pDHT extends MetaDHT {
     }
 
     /**
-     * <p>Setter for the field <code>pushManager</code>.</p>
+     * <p>
+     * Setter for the field <code>pushManager</code>.</p>
      *
      * @param dhtPushManager the pushManager to set
      */

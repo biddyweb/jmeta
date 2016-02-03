@@ -64,7 +64,9 @@ public class TomP2pStoreOperation extends StoreOperation {
         this.tomp2pHash = storeHash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
         PeerSocketAddress peerAddr = this.dht.getPeer().peerAddress().peerSocketAddress();
@@ -81,6 +83,8 @@ public class TomP2pStoreOperation extends StoreOperation {
 
         logger.debug("Tomp2p Data hash :" + toAdd.hash());
         logger.debug("Data expiration timestamp = " + toAdd.expirationMillis());
+        addBuilder.forceTCP(false);
+        addBuilder.forceUDP(true);
         addBuilder.data(toAdd).start().addListener(new BaseFutureListener<FuturePut>() {
 
             @Override
@@ -103,7 +107,9 @@ public class TomP2pStoreOperation extends StoreOperation {
         });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void finish() {
         this.notifyListeners();

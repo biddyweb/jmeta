@@ -27,6 +27,7 @@ package org.meta.dht.tomp2p;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.tomp2p.dht.FutureGet;
+import net.tomp2p.dht.GetBuilder;
 import net.tomp2p.futures.BaseFutureListener;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
@@ -50,7 +51,8 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
     private final Number160 hash;
 
     /**
-     * <p>Constructor for TomP2pFindPeersOperation.</p>
+     * <p>
+     * Constructor for TomP2pFindPeersOperation.</p>
      *
      * @param dhtNode the dht node.
      * @param queryHash the hash to find peers for
@@ -61,10 +63,14 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         this.peers = new ArrayList<>();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
-        FutureGet futureGet = this.dht.getPeerDHT().get(this.hash).all().start();
+        GetBuilder getBuilder = this.dht.getPeerDHT().get(this.hash).all();
+        getBuilder.forceUDP(true).forceTCP(false);
+        FutureGet futureGet = getBuilder.start();
         futureGet.addListener(new BaseFutureListener<FutureGet>() {
 
             @Override
@@ -102,7 +108,9 @@ public class TomP2pFindPeersOperation extends FindPeersOperation {
         });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void finish() {
     }

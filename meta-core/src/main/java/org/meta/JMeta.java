@@ -78,7 +78,7 @@ public final class JMeta {
         } catch (PluginLoadException ex) {
             logger.error("Failed to load plugins!", ex);
         }
-        logger.info("JMeta started!");
+        logger.info("JMeta started.");
     }
 }
 

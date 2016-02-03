@@ -27,22 +27,32 @@ package org.meta.dht.tomp2p;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import net.tomp2p.connection.ConnectionConfiguration;
+import net.tomp2p.connection.DefaultConnectionConfiguration;
+import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.BaseFutureListener;
-import net.tomp2p.futures.FutureAnnounce;
 import net.tomp2p.futures.FutureBootstrap;
+import net.tomp2p.futures.FutureChannelCreator;
 import net.tomp2p.futures.FutureDiscover;
-import net.tomp2p.p2p.builder.AnnounceBuilder;
-import net.tomp2p.p2p.builder.DiscoverBuilder;
+import net.tomp2p.futures.FutureDone;
+import net.tomp2p.futures.FuturePing;
+import net.tomp2p.futures.FutureRouting;
+import net.tomp2p.futures.FutureWrappedBootstrap;
+import net.tomp2p.p2p.RoutingConfiguration;
+import net.tomp2p.p2p.builder.RoutingBuilder;
+import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.utils.Pair;
+import net.tomp2p.utils.Utils;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.dht.BootstrapOperation;
-import org.meta.configuration.DHTConfigurationImpl;
 import org.meta.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Tomp2pBootstrapOperation class.</p>
+ * <p>
+ * Tomp2pBootstrapOperation class.</p>
  *
  * @author nico
  * @version $Id: $
@@ -74,7 +84,9 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         this.localPeers = NetworkUtils.getLocalPeers(peers);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() {
         if (!broadcast && (knownPeers == null || knownPeers.isEmpty())) {
@@ -88,6 +100,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
                 this.knownPeers.size(), this.dht.getPeer().peerAddress().inetAddress());
         this.bootstrapListener = new Tomp2pFutureBootstrapListener(
                 broadcast ? this.knownPeers.size() + 1 : this.knownPeers.size());
+        //this.bootstrapListener = new Tomp2pFutureBootstrapListener(1);
         this.setState(OperationState.WAITING);
 
         if (dht.getConfiguration().isDhtLocalOnly()) {
@@ -100,7 +113,9 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final void finish() {
         if (this.bootstrapListener != null) {
@@ -130,12 +145,12 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
      * The actual bootstrap starts here.
      */
     private void startBootstrap() {
-        if (broadcast) {
-            logger.debug("Broadcasting to find peers.");
-            AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
-            FutureAnnounce announce = announceBuilder.port(DHTConfigurationImpl.DEFAULT_DHT_PORT).start();
-            announce.addListener(this.bootstrapListener);
-        }
+//        if (broadcast) {
+//            logger.debug("Broadcasting to find peers.");
+//            AnnounceBuilder announceBuilder = new AnnounceBuilder(this.dht.getPeerDHT().peer());
+//            FutureAnnounce announce = announceBuilder.port(DHTConfigurationImpl.DEFAULT_DHT_PORT).start();
+//            announce.addListener(this.bootstrapListener);
+//        }
         Collection<MetaPeer> bootstrapPeers;
         if (this.dht.getConfiguration().isDhtLocalOnly()) {
             bootstrapPeers = localPeers;
@@ -147,13 +162,103 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             this.finish();
             return;
         }
+//        Collection<PeerAddress> bootstrapTo = new ArrayList<>(bootstrapPeers.size());
+//        for (MetaPeer peer : bootstrapPeers) {
+//            PeerAddress bootstrapPeer = new PeerAddress(Number160.ZERO, peer.getSocketAddr());
+//            bootstrapTo.add(bootstrapPeer);
+//        }
         for (MetaPeer peer : bootstrapPeers) {
             //Start the bootstrap operation on 'peer'
             logger.debug("Bootstraping to peer : " + peer);
-            this.dht.getPeerDHT().peer().bootstrap().inetAddress(peer.getSocketAddr().getAddress())
-                    .ports(peer.getSocketAddr().getPort())
-                    .start().addListener(this.bootstrapListener);
+            bootstrapPing(new PeerAddress(Number160.ZERO, peer.getSocketAddr()))
+                    .addListener(bootstrapListener);
+//            this.dht.getPeer().bootstrap().inetAddress(peer.getSocketAddr().getAddress())
+//                    .ports(peer.getSocketAddr().getPort())
+//                    .start().addListener(this.bootstrapListener);
         }
+    }
+
+    /**
+     * Starts by pinging the given peer to update its identity.
+     *
+     * Once complete, starts the actual bootstrap to the peer.
+     *
+     * @param address
+     * @return
+     */
+    private FutureWrappedBootstrap<FutureBootstrap> bootstrapPing(final PeerAddress address) {
+        final FutureWrappedBootstrap<FutureBootstrap> result = new FutureWrappedBootstrap<>();
+        final FuturePing futurePing = this.dht.getPeer().ping().peerAddress(address).tcpPing(false).start();
+        futurePing.addListener(new BaseFutureAdapter<FuturePing>() {
+            @Override
+            public void operationComplete(final FuturePing future) throws Exception {
+                if (future.isSuccess()) {
+                    Collection<PeerAddress> tomp2pBootstrapPeers = new ArrayList<>(1);
+                    tomp2pBootstrapPeers.add(future.remotePeer());
+                    result.bootstrapTo(tomp2pBootstrapPeers);
+                    result.waitFor(bootstrap(tomp2pBootstrapPeers));
+                } else {
+                    result.failed("Could not reach anyone with bootstrap");
+                }
+            }
+        });
+        return result;
+    }
+
+    /**
+     * Called by bootstrapPing() on success. The given collection contains only the pinged peer.
+     *
+     * This is where the actual bootstrap occurs for this single peer.
+     *
+     * @param bootstrapPeers
+     * @return
+     */
+    private FutureBootstrap bootstrap(final Collection<PeerAddress> bootstrapPeers) {
+        final FutureWrappedBootstrap<FutureDone<Pair<FutureRouting, FutureRouting>>> result
+                = new FutureWrappedBootstrap<>();
+
+        RoutingConfiguration routingConf = getBootstrapRoutingConf();
+        FutureChannelCreator fcc = this.dht.getPeer().connectionBean().reservation()
+                .create(routingConf.parallel(), 0);
+        Utils.addReleaseListener(fcc, result);
+        result.bootstrapTo(bootstrapPeers);
+        fcc.addListener(new BaseFutureAdapter<FutureChannelCreator>() {
+            @Override
+            public void operationComplete(final FutureChannelCreator futureChannelCreator) throws Exception {
+                if (futureChannelCreator.isSuccess()) {
+                    RoutingBuilder routingBuilder = createBuilder(routingConf, false);
+                    FutureDone<Pair<FutureRouting, FutureRouting>> futureBootstrap = dht.getPeer()
+                            .distributedRouting().bootstrap(bootstrapPeers, routingBuilder,
+                                    futureChannelCreator.channelCreator());
+                    result.waitFor(futureBootstrap);
+                } else {
+                    result.failed(futureChannelCreator);
+                }
+            }
+        });
+        return result;
+    }
+
+    /**
+     *
+     * @param routingConfiguration
+     * @param forceRoutingOnlyToSelf
+     * @return
+     */
+    static RoutingBuilder createBuilder(final RoutingConfiguration routingConfiguration,
+            final boolean forceRoutingOnlyToSelf) {
+        RoutingBuilder routingBuilder = new RoutingBuilder();
+        routingBuilder.parallel(routingConfiguration.parallel());
+        routingBuilder.setMaxNoNewInfo(routingConfiguration.maxNoNewInfoDiff());
+        routingBuilder.maxDirectHits(Integer.MAX_VALUE);
+        routingBuilder.maxFailures(routingConfiguration.maxFailures());
+        routingBuilder.maxSuccess(routingConfiguration.maxSuccess());
+        routingBuilder.forceRoutingOnlyToSelf(forceRoutingOnlyToSelf);
+        return routingBuilder;
+    }
+
+    static RoutingConfiguration getBootstrapRoutingConf() {
+        return new RoutingConfiguration(8, 10, 2);
     }
 
     /**
@@ -165,12 +270,35 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
             this.finish();
         }
         for (MetaPeer peer : publicPeers) {
-            DiscoverBuilder db = this.dht.getPeer().discover();
-            //db.discoverTimeoutSec(100);
-            //db.setExpectManualForwarding(true);
-            db.inetAddress(peer.getSocketAddr().getAddress()).ports(peer.getSocketAddr().getPort());
-            db.start().addListener(this.discoverListener);
+            //DiscoverBuilder db = this.dht.getPeer().discover();
+//            db.inetAddress(peer.getSocketAddr().getAddress()).ports(peer.getSocketAddr().getPort());
+//            db.start().addListener(this.discoverListener);
+            logger.info("Starting discovery with distant peer: " + peer);
+            discoverUdp(peer).addListener(discoverListener);
         }
+    }
+
+    /**
+     *
+     * @return the async FutureDiscover operation
+     */
+    private FutureDiscover discoverUdp(final MetaPeer remotePeer) {
+        ConnectionConfiguration connConfig = new DefaultConnectionConfiguration();
+        FutureChannelCreator fcc = this.dht.getPeer().connectionBean().reservation().create(1, 0);
+        FutureDiscover futureDiscover = new FutureDiscover();
+        Utils.addReleaseListener(fcc, futureDiscover);
+        fcc.addListener(new BaseFutureAdapter<FutureChannelCreator>() {
+            @Override
+            public void operationComplete(final FutureChannelCreator future) throws Exception {
+                if (future.isSuccess()) {
+                    PeerAddress peerAddr = new PeerAddress(Number160.ZERO, remotePeer.getSocketAddr());
+                    dht.getPeer().pingRPC().pingUDPDiscover(peerAddr, future.channelCreator(), connConfig);
+                } else {
+                    futureDiscover.failed(future);
+                }
+            }
+        });
+        return futureDiscover;
     }
 
     /**
@@ -192,18 +320,18 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         Tomp2pFutureDiscoverListener(final int operations, final InetAddress peerAddr) {
             this.nbOperations = operations;
             this.origAddress = peerAddr;
-            logger.debug("Discovery listener with original peer address :" + peerAddr);
+            logger.info("Discovery listener with original peer address :" + peerAddr);
         }
 
         @Override
         public void operationComplete(final FutureDiscover future) throws Exception {
-            //We don't rely on isSuccess or isFailed here because the tomp2p Discovery is a bit broken...
             --nbOperations;
             PeerAddress peerAddr = future.peerAddress();
             if (peerAddr != null && !peerAddr.inetAddress().equals(origAddress)) {
                 //We guess it is an operation success.
                 discoveryDone = true;
-                logger.debug("Discovery reported our peer address ?:" + future.peerAddress().inetAddress());
+                logger.info("Discovery reported our peer peerAddress ?:" + future.peerAddress().inetAddress());
+                logger.info("Discovery reported our peer externalAddress ?:" + future.externalAddress());
                 Tomp2pBootstrapOperation.this.startBootstrap();
             } else if (peerAddr == null || peerAddr.inetAddress().equals(origAddress)) {
                 //To operation has failed.
@@ -249,6 +377,7 @@ public class Tomp2pBootstrapOperation extends BootstrapOperation {
         public void operationComplete(final FutureBootstrap future) throws Exception {
             synchronized (this) { //We might be called from multiple threads.
                 this.operations.add(future);
+                logger.info("Bootstraped to peer = " + future.bootstrapTo().iterator().next());
                 if (this.operations.size() == this.nbOperations) {
                     Tomp2pBootstrapOperation.this.finish();
                 }

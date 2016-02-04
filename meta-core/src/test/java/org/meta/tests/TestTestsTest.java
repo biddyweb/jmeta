@@ -23,6 +23,7 @@ import org.meta.model.MetaFile;
 import org.meta.model.files.DataFileAccessor;
 import org.meta.model.files.DataFileAccessors;
 import org.meta.model.files.FileWriteOperation;
+import org.meta.p2pp.client.SocketIOState;
 import org.meta.storage.BerkeleyKVStorage;
 import org.meta.storage.exceptions.StorageException;
 import org.meta.storage.serializers.Serializers;
@@ -117,7 +118,7 @@ public class TestTestsTest extends MetaBaseTests {
         logger.info("AFTER CLEAR Map[bcde] == " + map.get("bcde"));
     }
 
-    @Test
+    //@Test
     public void number640ComparatorTest() {
         TomP2pStorage p2pStorage = new TomP2pStorage(db);
 
@@ -129,6 +130,34 @@ public class TestTestsTest extends MetaBaseTests {
         logger.info("GET: " + p2pStorage.get(key));
         p2pStorage.put(key, d);
         logger.info("GET: " + p2pStorage.get(key));
+    }
+
+    @Test
+    public void IoStateTest() {
+        SocketIOState ioState = new SocketIOState();
+
+        Assert.assertFalse(ioState.isConnecting());
+        Assert.assertFalse(ioState.isConnected());
+        Assert.assertFalse(ioState.isReading());
+        Assert.assertFalse(ioState.isWriting());
+
+        ioState.connecting();
+        Assert.assertTrue(ioState.isConnecting());
+        ioState.connected();
+        Assert.assertTrue(ioState.isConnected());
+        ioState.reading();
+        Assert.assertTrue(ioState.isReading());
+        ioState.writing();
+        Assert.assertTrue(ioState.isWriting());
+
+        ioState.writing(false);
+        Assert.assertFalse(ioState.isWriting());
+        ioState.reading(false);
+        Assert.assertFalse(ioState.isReading());
+        ioState.connecting(false);
+        Assert.assertFalse(ioState.isConnecting());
+        ioState.connected(false);
+        Assert.assertFalse(ioState.isConnecting());
     }
 
 }

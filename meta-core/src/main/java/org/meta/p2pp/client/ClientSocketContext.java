@@ -200,7 +200,7 @@ public class ClientSocketContext implements P2PPClientEventHandler {
     public synchronized ClientActionContext dataSent(final ClientActionContext ioContext) {
         ByteBuffer buf = ioContext.getAttachment();
         if (buf.hasRemaining()) {
-            //We sen data but not all of it, WRITE again
+            //We sent data but not all of it, WRITE again
             return ioContext;
         }
         ioState.writing(false);
@@ -238,16 +238,14 @@ public class ClientSocketContext implements P2PPClientEventHandler {
      *
      * Updates the given context action and buffer according to the state.
      *
-     * If there is no valid sendable buffer, context results in an error
-     *
      * @param context
      * @return the updated I/O action context
      */
     private ClientActionContext getSendableBuffer(final ClientActionContext context) {
-        P2PPRequest req = this.sendQueue.peek();
-        if (req == null) {
+        if (this.sendQueue.isEmpty()) {
             return context.setAction(ClientAction.NONE);
         }
+        P2PPRequest req = this.sendQueue.peek();
         if (req.getStatus() != ClientRequestStatus.CREATED) {
             //We can only get sendable buffer from a not-yet-built request
             return context.setAction(ClientAction.ERROR);

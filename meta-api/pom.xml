@@ -68,7 +68,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
+        <version>2.10.3</version>
         <configuration>
           <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
           <!--
@@ -82,7 +82,8 @@
           </docletArtifact>
           <useStandardDocletOptions>true</useStandardDocletOptions>
           <additionalparam>
-            -Xdoclint:none -inferrel -inferdep -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
+            -Xdoclint:none -inferrel -inferdep -inferdepvis package -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
+	    -collpackages java.util.*
             -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
             -enumerations -enumconstants -views -useimports
           </additionalparam>

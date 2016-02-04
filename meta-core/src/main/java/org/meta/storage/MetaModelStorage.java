@@ -90,19 +90,25 @@ public class MetaModelStorage implements ModelStorage {
         storage.close();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetaObjectModelFactory getFactory() {
         return this.factory;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Searchable get(final MetHash hash) {
         return load(hash.toByteArray());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetaSearch getSearch(final MetHash hash) {
         Searchable s = load(hash.toByteArray());
@@ -113,7 +119,9 @@ public class MetaModelStorage implements ModelStorage {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public GenericData getData(final MetHash hash) {
         Searchable s = load(hash.toByteArray());
@@ -140,7 +148,9 @@ public class MetaModelStorage implements ModelStorage {
         return this.factory.getDataFile(data);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Searchable getSearchable(final MetHash hash) {
         return load(hash.toByteArray());
@@ -211,7 +221,9 @@ public class MetaModelStorage implements ModelStorage {
         return set(searchable, 0L);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean set(final Searchable searchable, final long timeout) {
         //Unused timeout for now...
@@ -322,14 +334,12 @@ public class MetaModelStorage implements ModelStorage {
      */
     @Override
     public boolean remove(final MetHash hash) {
-        MetaTx tx = this.storage.begin();
-        if (this.storage.remove(tx, hash.toByteArray())) {
-            return this.storage.commit(tx);
-        }
-        return false;
+        return this.storage.remove(null, hash.toByteArray());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public KVStorage getStorage() {
         return storage;

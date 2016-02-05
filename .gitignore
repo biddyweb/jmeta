@@ -1,13 +1,12 @@
-bin
+/bin
 .classpath
 .project
 .settings
-db
-3rdparty
+/db
 nb-configuration.xml
-nativelib
+/nativelib
 *~
-docs
+/docs
 *.swp
 /plugins
 **/*target

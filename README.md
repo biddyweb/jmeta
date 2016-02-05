@@ -32,7 +32,7 @@ Dependencies required: Java 8 (openjdk 1.8) and maven.
 You also need to have a valid internet connection.
 
 Get the last sources:
-`# git clone https://gitlab.ouahpiti.info/meta/jmeta.git`
+`# git -c http.sslVerify=false clone https://gitlab.ouahpiti.info/meta/jmeta.git`
 
 Change to the cloned directory:
 `# cd jmeta`

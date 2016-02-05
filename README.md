@@ -38,13 +38,13 @@ Change to the cloned directory:
 `# cd jmeta`
 
 Launch the provided build script to start building: 
-`# ./mvnbuild.sh`
+`# ./tools/mvnbuild.sh`
 
 The first run will be long as maven needs to download all dependencies.
 
 The executable standalone jar is generated in the 'bin' directory.
 
 To launch Jmeta:
-Either use the provided launch script: `# ./run.sh`
+Either use the provided launch script: `# ./tools/run.sh`
 
 Or manually with your own options: `# java -jar ./bin/meta-core-0.1.jar`

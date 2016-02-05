@@ -152,12 +152,12 @@ public final class TomP2pDHT extends MetaDHT {
         if (nwConfig.ipV6()) {
             b.addProtocol(StandardProtocolFamily.INET6);
         }
-        for (String iface : nwConfig.getInterfaces()) {
+        Collection<String> configInterfaces = NetworkUtils.getConfigInterfaces(nwConfig);
+        Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
+        for (String iface : configInterfaces) {
             b.addInterface(iface);
         }
-        Collection<InetAddress> configAddresses = NetworkUtils.getConfigAddresses(nwConfig);
-        if (configAddresses.isEmpty() && nwConfig.getInterfaces().isEmpty()) {
-            logger.info("DHT: listen ANY");
+        if (configAddresses.isEmpty() && configInterfaces.isEmpty()) {
             b.setListenAny(true);
         } else {
             logger.info("DHT: listen specific addresses/interfaces");

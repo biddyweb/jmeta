@@ -63,8 +63,7 @@ public abstract class BaseDHTTests extends MetaBaseTests {
         dhtConfig.getNetworkConfig().setIpV6(false);
         dhtConfig.getNetworkConfig().setIpV4(true);
         dhtConfig.getNetworkConfig().setPort(port);
-        //dhtConfig.getNetworkConfig().setInterfaces(Collections.singletonList(NetworkUtils.getLoopbackInterfaceName()));
-        dhtConfig.getNetworkConfig().setAddresses(Collections.singletonList(NetworkUtils.getLoopbackAddress()));
+        dhtConfig.getNetworkConfig().setInterfaces(Collections.singletonList(NetworkUtils.getLoopbackInterfaceName()));
         dhtConfig.setKnwonPeers(peers);
         dhtConfig.setBootstrapBroadcast(broadcast);
         dhtConfig.setDhtLocalOnly(localOnly);

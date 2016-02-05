@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import org.meta.api.common.MetaPeer;
 import org.meta.api.configuration.NetworkConfiguration;
 
@@ -96,7 +97,8 @@ public final class NetworkUtils {
     }
 
     /**
-     * <p>isPublicAddress</p>
+     * <p>
+     * isPublicAddress</p>
      *
      * @param addr the address to check
      * @return true if the address is publicly routable, false otherwise.
@@ -108,7 +110,8 @@ public final class NetworkUtils {
     }
 
     /**
-     * <p>isLocalNetworkAddress</p>
+     * <p>
+     * isLocalNetworkAddress</p>
      *
      * @param addr The address to check.
      * @return true of the address is routable within the local network, false otherwise.
@@ -171,16 +174,17 @@ public final class NetworkUtils {
      * Get all addresses found by reading the network configuration.
      *
      * @param nwConfig The network configuration.
-     * @return The list of found addresses.
+     * @return The list of unique found addresses.
      */
     public static Collection<InetAddress> getConfigAddresses(final NetworkConfiguration nwConfig) {
-        Collection<InetAddress> addresses = new ArrayList();
+        Collection<InetAddress> addresses = new HashSet<>();
 
         if (nwConfig.getAddresses() != null) {
             for (InetAddress addr : nwConfig.getAddresses()) {
                 if (nwConfig.ipV4() && addr instanceof Inet4Address) {
                     addresses.add(addr);
-                } else if (nwConfig.ipV6() && addr instanceof Inet6Address) {
+                }
+                if (nwConfig.ipV6() && addr instanceof Inet6Address) {
                     addresses.add(addr);
                 }
             }
@@ -193,6 +197,47 @@ public final class NetworkUtils {
             }
         }
         return addresses;
+    }
+
+    /**
+     * Get all interfaces found by reading the network configuration.
+     *
+     * Interfaces explicitely added to the configuration are included.
+     *
+     * Interfaces to which configuration addresses are referring are also included.
+     *
+     * @param nwConfig The network configuration.
+     * @return the list of unique found interfaces
+     */
+    public static Collection<String> getConfigInterfaces(final NetworkConfiguration nwConfig) {
+        Collection<String> ifs = new HashSet<>();
+        ifs.addAll(nwConfig.getInterfaces());
+        try {
+            Collection<InetAddress> configAddresses = nwConfig.getAddresses();
+            if (configAddresses == null) {
+                return ifs;
+            }
+            Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+
+            while (e.hasMoreElements()) {
+                NetworkInterface netIf = e.nextElement();
+                if (netIf != null && !ifs.contains(netIf.getName())) {
+                    Enumeration<InetAddress> addrs = netIf.getInetAddresses();
+                    boolean interfaceIncluded = false;
+                    for (InetAddress confAddr : configAddresses) {
+                        while (!interfaceIncluded && addrs.hasMoreElements()) {
+                            if (confAddr.equals(addrs.nextElement())) {
+                                ifs.add(netIf.getName());
+                                interfaceIncluded = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+        }
+        return ifs;
     }
 
     /**

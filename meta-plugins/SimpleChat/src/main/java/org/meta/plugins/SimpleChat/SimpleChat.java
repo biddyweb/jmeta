@@ -29,7 +29,8 @@ import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
- * <p>SimpleChat class.</p>
+ * <p>
+ * SimpleChat class.</p>
  *
  * @author nico
  * @version $Id: $Id
@@ -41,35 +42,37 @@ public class SimpleChat implements MetaPlugin {
      */
     public static final String NAME = "SimpleChat";
 
-    //private PluginAMPController ampController;
     private AbstractPluginWebServiceController wsController;
 
     /**
-     * <p>Constructor for SimpleChat.</p>
+     * <p>
+     * Constructor for SimpleChat.</p>
      */
     public SimpleChat() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return NAME;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPluginAPI(final MetAPI api) {
         wsController = new SimpleChatWebServiceControler(api);
     }
 
-//    @Override
-//    public PluginAMPController getAMPController() {
-//        return ampController;
-//    }
 }

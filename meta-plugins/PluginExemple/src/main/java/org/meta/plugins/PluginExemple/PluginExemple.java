@@ -29,7 +29,8 @@ import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
- * <p>PluginExemple class.</p>
+ * <p>
+ * PluginExample class.</p>
  *
  * @author nico
  * @version $Id: $Id
@@ -39,41 +40,42 @@ public class PluginExemple implements MetaPlugin {
     /**
      *
      */
-    public static String NAME = "PluginExample";
+    public static final String NAME = "PluginExample";
 
     private MetAPI pluginAPI;
 
     private AbstractPluginWebServiceController wsController;
 
-    //private PluginAMPController ampController;
     /**
-     * <p>Constructor for PluginExemple.</p>
+     * <p>
+     * Constructor for PluginExemple.</p>
      */
     public PluginExemple() {
-        //ampController = new PluginExempleTcpControler();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return NAME;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPluginAPI(final MetAPI api) {
         this.pluginAPI = api;
         wsController = new PluginExempleWebServiceControler(api);
     }
 
-    //    @Override
-//    public PluginAMPController getAMPController() {
-//        return ampController;
-//    }
 }

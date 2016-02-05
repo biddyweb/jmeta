@@ -28,11 +28,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.meta.api.common.OperationListener;
-import org.meta.api.dht.StoreOperation;
 import org.meta.api.model.Data;
 import org.meta.api.model.MetaData;
 import org.meta.api.model.ModelFactory;
@@ -50,7 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Chat class.</p>
+ * <p>
+ * Chat class.</p>
  *
  * @author nico
  * @version $Id: $Id
@@ -75,7 +74,8 @@ public class Chat extends AbstractWebService implements OperationListener<Search
     private final MetAPI api;
 
     /**
-     * <p>Constructor for Chat.</p>
+     * <p>
+     * Constructor for Chat.</p>
      *
      * @param controller the ws controller
      */
@@ -106,7 +106,9 @@ public class Chat extends AbstractWebService implements OperationListener<Search
         chat = modelFactory.createCriteria(props);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void executeCommand(Map<String, String[]> map) {
         String channel = getParameter(path.getId(), map);
@@ -146,7 +148,9 @@ public class Chat extends AbstractWebService implements OperationListener<Search
         redrawOutput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void failed(final SearchOperation operation) {
         logger.warn("Search operation failed");
@@ -154,7 +158,9 @@ public class Chat extends AbstractWebService implements OperationListener<Search
         redrawOutput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void complete(final SearchOperation operation) {
         for (Iterator<Data> i = operation.iterator(); i.hasNext();) {
@@ -169,7 +175,9 @@ public class Chat extends AbstractWebService implements OperationListener<Search
         redrawOutput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void applySmallUpdate() {
         if (channelSearch != null) {

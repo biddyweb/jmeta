@@ -24,13 +24,13 @@
  */
 package org.meta.plugins.SubtitleSearch;
 
-import org.meta.api.amp.PluginAMPController;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.MetaPlugin;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 
 /**
- * <p>SubtitleSearch class.</p>
+ * <p>
+ * SubtitleSearch class.</p>
  *
  * @author nico
  * @version $Id: $Id
@@ -41,38 +41,39 @@ public class SubtitleSearch implements MetaPlugin {
 
     private MetAPI metApi;
 
-    private PluginAMPController ampController;
     private AbstractPluginWebServiceController wsController;
 
     /**
-     * <p>Constructor for SubtitleSearch.</p>
+     * <p>
+     * Constructor for SubtitleSearch.</p>
      */
     public SubtitleSearch() {
-        //ampController = new PluginSubtitleSearchTcpControler();
 
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return PLUGIN_NAME;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AbstractPluginWebServiceController getWebServiceController() {
         return wsController;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPluginAPI(final MetAPI api) {
         this.metApi = api;
         wsController = new SubtitleSearchWSController(api);
     }
 
-//      @Override
-//    public PluginAMPController getAMPController() {
-//        return ampController;
-//    }
 }

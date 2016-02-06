@@ -40,9 +40,6 @@ import org.meta.api.plugin.MetAPI;
  *
  * Basically, this class offer generic treatment to serve interfaces and handle specific plugin operations.
  *
- * You may extends registerCommands which allows you to tell the {@link WebServiceReader} that you may have
- * something to execute.
- *
  * @author Thomas LAVOCAT
  * @version $Id: $
  */
@@ -69,7 +66,8 @@ public abstract class AbstractPluginWebServiceController {
     protected String pluginName = null;
 
     /**
-     * <p>Constructor for AbstractPluginWebServiceController.</p>
+     * <p>
+     * Constructor for AbstractPluginWebServiceController.</p>
      *
      * @param pluginAPI the meta plugin api
      */
@@ -99,7 +97,8 @@ public abstract class AbstractPluginWebServiceController {
             LinkedHashMap<String, Class<? extends AbstractWebService>> commands);
 
     /**
-     * <p>getCommand</p>
+     * <p>
+     * getCommand</p>
      *
      * @param command name of the command
      * @return the className of the command pointed by the given param
@@ -128,7 +127,8 @@ public abstract class AbstractPluginWebServiceController {
     }
 
     /**
-     * <p>getAPI</p>
+     * <p>
+     * getAPI</p>
      *
      * @return the plugin api
      */
@@ -137,7 +137,8 @@ public abstract class AbstractPluginWebServiceController {
     }
 
     /**
-     * <p>Getter for the field <code>context</code>.</p>
+     * <p>
+     * Getter for the field <code>context</code>.</p>
      *
      * @return The WS controller context. FOR TESTS!.
      */

@@ -33,7 +33,7 @@ import org.meta.api.model.MetaDataMap;
 import org.meta.p2pp.client.P2PPRequest;
 
 /**
- * The response handler for the {@link P2PPConstants.P2PPCommand.SEARCH_GET} command.
+ * The response handler for the {@link org.meta.p2pp.P2PPConstants.P2PPCommand#SEARCH_GET} command.
  *
  * @author dyslesiq
  * @version $Id: $
@@ -41,7 +41,8 @@ import org.meta.p2pp.client.P2PPRequest;
 public class P2PPSearchGetResponseHandler extends P2PPSearchMetaResponseHandler {
 
     /**
-     * <p>Constructor for P2PPSearchGetResponseHandler.</p>
+     * <p>
+     * Constructor for P2PPSearchGetResponseHandler.</p>
      *
      * @param req the request
      */
@@ -64,7 +65,9 @@ public class P2PPSearchGetResponseHandler extends P2PPSearchMetaResponseHandler 
         return dataBuffer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean parse(final ByteBuffer buf) {
         buf.rewind();

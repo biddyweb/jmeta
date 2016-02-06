@@ -38,7 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>MetaFile class.</p>
+ * <p>
+ * MetaFile class.</p>
  *
  * @author dyslesiq
  * @version $Id: $
@@ -52,7 +53,7 @@ public final class MetaFile extends DataFile {
     private ByteBuffer buffer;
 
     /**
-     * Creates an empty MetaFile, its hash will be {@link MetHash.ZERO}.
+     * Creates an empty MetaFile, its hash will be {@link MetHash#ZERO}.
      */
     protected MetaFile() {
     }
@@ -147,20 +148,26 @@ public final class MetaFile extends DataFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash hash() {
         this.hash = MetamphetUtils.makeSHAHash(file);
         return hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File getFile() {
         return file;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFile(final File aFile) {
         this.file = aFile;
@@ -169,13 +176,17 @@ public final class MetaFile extends DataFile {
         hash();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setURI(final URI uri) {
         setFile(new File(uri));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URI getURI() {
         try {
@@ -185,7 +196,9 @@ public final class MetaFile extends DataFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytes() {
         //Only return copies of the internal buffer.
@@ -195,7 +208,9 @@ public final class MetaFile extends DataFile {
         return bytes;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ByteBuffer getBuffer() {
         ByteBuffer roBuffer = this.buffer.asReadOnlyBuffer();
@@ -204,13 +219,17 @@ public final class MetaFile extends DataFile {
         return roBuffer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return SerializationUtils.decodeUTF8(this.getBuffer());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataType getType() {
         return META_FILE_TYPE;

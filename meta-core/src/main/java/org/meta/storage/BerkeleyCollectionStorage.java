@@ -63,13 +63,13 @@ public class BerkeleyCollectionStorage<T> implements CollectionStorage<T> {
     private final Serializer<T> serializer;
 
     /**
-     * <p>Constructor for BerkeleyCollectionStorage.</p>
+     * <p>
+     * Constructor for BerkeleyCollectionStorage.</p>
      *
      * @param env the backing Berkeley's database
      * @param dbName the db name
      * @param s the serializer
      * @param comparator the comparator
-     * @param <T> a T object.
      */
     public BerkeleyCollectionStorage(final BerkeleyDatabase env, final String dbName, final Serializer<T> s,
             final Comparator<byte[]> comparator) {
@@ -81,19 +81,25 @@ public class BerkeleyCollectionStorage<T> implements CollectionStorage<T> {
         trans = CurrentTransaction.getInstance(this.db.getEnvironment());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getDatabaseName() {
         return this.db.getDatabaseName();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Serializer<T> getSerializer() {
         return this.serializer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetaTx begin() {
         Transaction tx = trans.getTransaction();
@@ -104,130 +110,172 @@ public class BerkeleyCollectionStorage<T> implements CollectionStorage<T> {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean commit(final MetaTx tx) {
         trans.commitTransaction();
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean rollback(final MetaTx tx) {
         trans.abortTransaction();
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Comparator<? super T> comparator() {
         //Berkley does not support comparators :(
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SortedSet<T> subSet(final T fromElement, final T toElement) {
         return this.set.subSet(fromElement, toElement);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SortedSet<T> headSet(final T toElement) {
         return this.set.headSet(toElement);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SortedSet<T> tailSet(final T fromElement) {
         return this.set.tailSet(fromElement);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public T first() {
         return this.set.first();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public T last() {
         return this.set.last();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int size() {
         return this.set.size();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEmpty() {
         return this.set.isEmpty();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean contains(final Object o) {
         return this.set.contains(o);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterator<T> iterator() {
         return this.set.iterator();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object[] toArray() {
         return this.set.toArray();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T[] toArray(final T[] arg0) {
         return this.set.toArray(arg0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean add(final T e) {
         return this.set.add(e);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean remove(final Object o) {
         return this.set.remove(o);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsAll(final Collection<?> c) {
         return this.set.containsAll(c);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean addAll(final Collection<? extends T> c) {
         return this.set.addAll(c);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean retainAll(final Collection<?> c) {
         return this.set.retainAll(c);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removeAll(final Collection<?> c) {
         return this.set.removeAll(c);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clear() {
         this.set.clear();

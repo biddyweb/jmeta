@@ -24,11 +24,12 @@
  */
 package org.meta.storage.serializers;
 
-import org.meta.api.storage.Serializer;
 import org.meta.api.model.Searchable;
+import org.meta.api.storage.Serializer;
 
 /**
- * <p>BsonSerializer interface.</p>
+ * <p>
+ * BsonSerializer interface.</p>
  *
  * @param <T> the searchable to serialize
  * @author dyslesiq
@@ -87,16 +88,17 @@ public interface BsonSerializer<T extends Searchable> extends Serializer<T> {
     String METADATA_VALUE_KEY = "value";
 
     /**
-     * <p>fromJson</p>
+     * <p>
+     * fromJson</p>
      *
      * @param json the json string
      * @return the created object from json, or null if unable to process
-     * @param <T> a T object.
      */
     T fromJson(final String json);
 
     /**
-     * <p>toJson</p>
+     * <p>
+     * toJson</p>
      *
      * @param object the object to serialize to json
      * @return the json string, or null if unable to process

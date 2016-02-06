@@ -82,11 +82,15 @@
           </docletArtifact>
           <useStandardDocletOptions>true</useStandardDocletOptions>
           <additionalparam>
-            -Xdoclint:none -inferrel -inferdep -inferdepvis package -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
-	    -collpackages java.util.*
-            -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
+            -Xdoclint:none -version -inferrel -inferdep -inferdepvis package -quiet -hide org.meta.plugins.* -hide org.bson.* -hide java.* -hide org.slf4j.* -hide org.eclipse.* -postfixpackage
+	    -collpackages java.util.* -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
             -enumerations -enumconstants -views -useimports
           </additionalparam>
+	  <links>
+	    <link>
+	      https://docs.oracle.com/javase/8/docs/api/
+	    </link>
+	  </links>
         </configuration>
       </plugin>
     </plugins>

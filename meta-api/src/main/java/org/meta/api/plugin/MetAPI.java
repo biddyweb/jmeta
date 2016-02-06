@@ -48,28 +48,32 @@ import org.meta.api.p2pp.PluginP2PPClient;
 public interface MetAPI {
 
     /**
-     * <p>getModel</p>
+     * <p>
+     * getModel</p>
      *
      * @return the meta object model
      */
     ModelStorage getModel();
 
     /**
-     * <p>getDHT</p>
+     * <p>
+     * getDHT</p>
      *
      * @return the meta DHT
      */
     MetaDHT getDHT();
 
     /**
-     * <p>getP2PPClient</p>
+     * <p>
+     * getP2PPClient</p>
      *
      * @return the peer-to-peer protocol client accessor
      */
     PluginP2PPClient getP2PPClient();
 
     /**
-     * <p>getLocalResults</p>
+     * <p>
+     * getLocalResults</p>
      *
      * @param searchHash the hash of the search
      * @return the Set of results, might be empty
@@ -90,11 +94,10 @@ public interface MetAPI {
      *
      * @param search the hash to search results for
      * @param searchLocal true if including local results, false otherwise
-     * @param searchLocal true if including local results, false otherwise
      * @param getData true to retrieve results data content, false if only retrieving hash
      * @param metaDataKeys the meta data keys to fetch for the results. Can be null.
-     * @param metaDataFilters the meta data keys and values the Data should respect.
-     *                        only the matchings datas will be received.
+     * @param metaDataFilters the meta data keys and values the Data should respect. only the matchings datas
+     * will be received.
      * @return the asynchronous operation of the search
      */
     SearchOperation search(final MetHash search, final boolean searchLocal, final boolean getData,

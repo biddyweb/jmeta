@@ -65,7 +65,8 @@ public interface PluginP2PPClient {
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters, final MetHash... hashes);
+    SearchOperation search(final MetaPeer peer, final Map<String, String> metaDataFilters,
+            final MetHash... hashes);
 
     /**
      * Search results for the given hash with associated meta-data.
@@ -76,7 +77,8 @@ public interface PluginP2PPClient {
      * @param hash the hash to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash);
+    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters,
+            final Set<String> metaDataKeys, final MetHash hash);
 
     /**
      * Search results for the given hashes with associated meta-data.
@@ -87,7 +89,8 @@ public interface PluginP2PPClient {
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys,
+    SearchOperation searchMeta(final MetaPeer peer, final Map<String, String> metaDataFilters,
+            final Set<String> metaDataKeys,
             final MetHash... hashes);
 
     /**
@@ -99,7 +102,8 @@ public interface PluginP2PPClient {
      * @param hash the hash to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash hash);
+    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters,
+            final Set<String> metaDataKeys, final MetHash hash);
 
     /**
      * Search results for the given hashes with associated meta-data and data.
@@ -110,13 +114,14 @@ public interface PluginP2PPClient {
      * @param hashes the hashes to search results for
      * @return the search operation representing the outcome of the asynchronous search
      */
-    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters, final Set<String> metaDataKeys, final MetHash... hashes);
+    SearchOperation searchGet(final MetaPeer peer, final Map<String, String> metaDataFilters,
+            final Set<String> metaDataKeys, final MetHash... hashes);
 
     /**
-     * Get a block of data for the given {@link Data} hash.
+     * Get a block of data for the given {@link org.meta.api.model.Data} hash.
      *
      * @param peer the peer to send the request to
-     * @param hash the hash of the {@link Data} to get the block from.
+     * @param hash the hash of the {@link org.meta.api.model.Data} to get the block from.
      * @param pieceIndex the piece index of the Data to fetch
      * @param byteOffset the byte offset within the piece of the block to fetch
      * @param length the length of the block to fetch.

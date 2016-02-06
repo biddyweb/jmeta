@@ -36,23 +36,24 @@ package org.meta.api.storage;
 public interface KVMapStorage<K, V> {
 
     /**
-     * <p>getKVStorage</p>
+     * <p>
+     * getKVStorage.</p>
      *
      * @return the backing byte[] Key/Value storage
-     * @param <K> a K object.
-     * @param <V> a V object.
      */
     KVStorage getKVStorage();
 
     /**
-     * <p>getKeySerializer</p>
+     * <p>
+     * getKeySerializer.</p>
      *
      * @return the key type serializer
      */
     Serializer<K> getKeySerializer();
 
     /**
-     * <p>getValueSerializer</p>
+     * <p>
+     * getValueSerializer.</p>
      *
      * @return the value type serializer
      */
@@ -90,10 +91,10 @@ public interface KVMapStorage<K, V> {
     /**
      * Begins a transaction.
      *
-     * Once a transaction is opened, it MUST be closed either by calling {@link commit()} or
-     * {@link rollback()}, otherwise the behavior of following transactions is undefined.
+     * Once a transaction is opened, it MUST be closed either by calling {@link #commit(MetaTx)} or
+     * {@link #rollback(MetaTx)}, otherwise the behavior of following transactions is undefined.
      *
-     * Calling {@link begin()} twice without closing the transaction first will result in a RuntimeException.
+     * Calling {@link #begin()} twice without closing the transaction first will result in a RuntimeException.
      *
      * @return true if the transaction was created successfully, false otherwise
      */

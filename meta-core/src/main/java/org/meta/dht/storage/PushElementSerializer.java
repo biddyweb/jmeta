@@ -30,12 +30,13 @@ import org.meta.dht.DHTPushElement;
 import org.meta.utils.SerializationUtils;
 
 /**
- * Serializer for the DHT push element used by {@link DHTPushManager} storage components.
+ * Serializer for the DHT push element used by {@link org.meta.dht.DHTPushManager} storage components.
  *
  * The DHTPushManager algorithm rely on the ordering of elements (lower timestamps first).
  *
  * This serializer provides such ordering by putting {@link DHTPushElement#getNextPushTime()} first In
- * serialization order and then using a {@link LongComparator} in {@link CollectionStorage}.
+ * serialization order and then using a {@link org.meta.storage.comparators.LongComparator} in
+ * {@link org.meta.api.storage.CollectionStorage}.
  *
  * @author nico
  * @version $Id: $
@@ -44,7 +45,9 @@ public class PushElementSerializer implements Serializer<DHTPushElement> {
 
     private static final int ELEMENT_SIZE = MetHash.BYTE_ARRAY_SIZE + (2 * Long.BYTES);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] serialize(final DHTPushElement element) {
         byte[] data = new byte[ELEMENT_SIZE];
@@ -60,7 +63,9 @@ public class PushElementSerializer implements Serializer<DHTPushElement> {
         return data;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DHTPushElement deserialize(final byte[] data) {
         if (data == null || data.length != ELEMENT_SIZE) {

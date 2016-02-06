@@ -39,7 +39,6 @@ public interface OperationListener<T extends AsyncOperation> {
      * Method called if the listened operation failed.
      *
      * @param operation The operation that failed.
-     * @param <T> a T object.
      */
     void failed(T operation);
 

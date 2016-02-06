@@ -42,14 +42,15 @@ public abstract class DataFile extends Data {
     protected File file = null;
 
     /**
-     * Default constructor with hash = {@link MetHash.ZERO}.
+     * Default constructor with hash = {@link MetHash#ZERO}.
      */
     public DataFile() {
         super(MetHash.ZERO);
     }
 
     /**
-     * <p>Getter for the field <code>file</code>.</p>
+     * <p>
+     * Getter for the field <code>file</code>.</p>
      *
      * @return the file instance managed by this AbstractDataFile, or null if not set
      */

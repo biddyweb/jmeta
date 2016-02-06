@@ -49,7 +49,6 @@ public class InstancePool<T extends Searchable> {
      * Creates an instance pool for the given Class.
      *
      * @param claz The Class.
-     * @param <T> a T object.
      */
     public InstancePool(final Class<T> claz) {
         clazz = claz;
@@ -71,7 +70,8 @@ public class InstancePool<T extends Searchable> {
     }
 
     /**
-     * <p>getInstance</p>
+     * <p>
+     * getInstance</p>
      *
      * @return An instance of the defined class.
      */

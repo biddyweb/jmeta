@@ -35,7 +35,8 @@ import org.meta.api.model.SearchCriteria;
 import org.meta.api.model.Searchable;
 
 /**
- * <p>MetaSearch class.</p>
+ * <p>
+ * MetaSearch class.</p>
  *
  * @author dyslesiq
  * @version $Id: $
@@ -56,7 +57,7 @@ public final class MetaSearch extends Search {
     /**
      * Creates an empty Search.
      *
-     * Its hash will be set to {@link MetHash.ZERO}.
+     * Its hash will be set to {@link MetHash#ZERO}.
      */
     public MetaSearch() {
         super(MetHash.ZERO);
@@ -106,7 +107,9 @@ public final class MetaSearch extends Search {
         this.addResults(res);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash getHash() {
         if (this.needRehash) {
@@ -115,7 +118,9 @@ public final class MetaSearch extends Search {
         return this.hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash hash() {
         if (!needRehash) {
@@ -131,19 +136,25 @@ public final class MetaSearch extends Search {
         return hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Searchable getSource() {
         return source;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Data> getResults() {
         return results.values();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addResults(final Collection<Data> res) {
         if (this.results == null) {
@@ -158,7 +169,9 @@ public final class MetaSearch extends Search {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addResult(final Data data) {
         if (results == null) {
@@ -167,34 +180,44 @@ public final class MetaSearch extends Search {
         this.results.put(data.getHash(), data);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSource(final Searchable src) {
         this.source = src;
         this.needRehash = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SearchCriteria getCriteria() {
         return criteria;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setCriteria(final SearchCriteria metData) {
         this.criteria = metData;
         this.needRehash = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addCriteria(final Collection<MetaData> criterionList) {
         this.criteria.addCriteria(criterionList);
         this.needRehash = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addCriterion(final MetaData criterion) {
         this.criteria.addCriterion(criterion);

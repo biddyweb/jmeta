@@ -42,15 +42,16 @@ import java.util.SortedSet;
 public interface CollectionStorage<T> extends SortedSet<T> {
 
     /**
-     * <p>getDatabaseName</p>
+     * <p>
+     * getDatabaseName</p>
      *
      * @return the name of the database this CollectionStorage is bond to
-     * @param <T> a T object.
      */
     String getDatabaseName();
 
     /**
-     * <p>getSerializer</p>
+     * <p>
+     * getSerializer</p>
      *
      * @return the serializer used by this CollectionStorage
      */
@@ -59,10 +60,11 @@ public interface CollectionStorage<T> extends SortedSet<T> {
     /**
      * Begins a transaction.
      *
-     * Once a transaction is opened, it MUST be closed either by calling {@link commit()} or
-     * {@link rollback()}, otherwise the behavior of following transactions is undefined.
+     * Once a transaction is opened, it MUST be closed either by calling
+     * {@link CollectionStorage#commit(MetaTx)} or {@link CollectionStorage#rollback(MetaTx)}, otherwise the
+     * behavior of following transactions is undefined.
      *
-     * Calling {@link begin()} twice without closing the transaction first will result in a RuntimeException.
+     * Calling {@link #begin()} twice without closing the transaction first will result in a RuntimeException.
      *
      * @return true if the transaction was created successfully, false otherwise
      */

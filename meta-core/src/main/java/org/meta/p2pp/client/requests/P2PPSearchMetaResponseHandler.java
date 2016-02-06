@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The response handler for the {@link P2PPConstants.P2PPCommand.SEARCH_META} command.
+ * The response handler for the {@link org.meta.p2pp.P2PPConstants.P2PPCommand#SEARCH_META} command.
  *
  * @author dyslesiq
  * @version $Id: $
@@ -47,7 +47,8 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
     private final Logger logger = LoggerFactory.getLogger(P2PPSearchMetaResponseHandler.class);
 
     /**
-     * <p>Constructor for P2PPSearchMetaResponseHandler.</p>
+     * <p>
+     * Constructor for P2PPSearchMetaResponseHandler.</p>
      *
      * @param req the request
      */
@@ -55,7 +56,9 @@ public class P2PPSearchMetaResponseHandler extends P2PPSearchResponseHandler {
         super(req);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean parse(final ByteBuffer buf) {
         buf.rewind();

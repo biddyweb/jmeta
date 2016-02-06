@@ -55,14 +55,15 @@ public class GenericData extends Data {
     protected ByteBuffer buffer;
 
     /**
-     * Empty data. Hash will be {@link MetHash.ZERO}.
+     * Empty data. Hash will be {@link MetHash#ZERO}.
      */
     protected GenericData() {
         super(MetHash.ZERO);
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param hash the hash
      */
@@ -71,7 +72,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param buf byteBuffer to be copied as internal buffer. The given buffer's position remains unchanged.
      */
@@ -83,7 +85,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param data content to be copied as internal buffer
      */
@@ -96,7 +99,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param string the string to be added as UTF-8 encoded buffer
      */
@@ -108,7 +112,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param hash the hash of this buffer
      * @param string the string to be added as UTF-8 encoded buffer
@@ -120,7 +125,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param hash the hash of this buffer
      * @param data content to be copied as internal buffer
@@ -133,7 +139,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param hash the hash of this buffer
      * @param buf byteBuffer to be used as internal buffer.
@@ -145,7 +152,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>Constructor for GenericData.</p>
+     * <p>
+     * Constructor for GenericData.</p>
      *
      * @param hash the hash of this buffer
      * @param buf byteBuffer to be used as internal buffer.
@@ -158,7 +166,8 @@ public class GenericData extends Data {
     }
 
     /**
-     * <p>setString</p>
+     * <p>
+     * setString</p>
      *
      * @param str the buffer content as a string
      */
@@ -168,7 +177,9 @@ public class GenericData extends Data {
         needRehash = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash hash() {
         if (needRehash) {
@@ -177,7 +188,9 @@ public class GenericData extends Data {
         return hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash getHash() {
         if (needRehash) {
@@ -186,7 +199,9 @@ public class GenericData extends Data {
         return this.hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytes() {
         //Only return copies of the internal buffer.
@@ -196,7 +211,9 @@ public class GenericData extends Data {
         return bytes;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ByteBuffer getBuffer() {
         ByteBuffer roBuffer = this.buffer.asReadOnlyBuffer();
@@ -205,13 +222,17 @@ public class GenericData extends Data {
         return roBuffer;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return SerializationUtils.decodeUTF8(this.getBuffer());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataType getType() {
         return GENERIC_DATA_TYPE;

@@ -30,7 +30,7 @@ import java.nio.ByteBuffer;
  * Class representing a Hash (either a model object's hash, or a piece of data's hash, or anything really), to
  * be used throughout the application.
  *
- * Copied and adapted from TomP2P's {@link Number160}.
+ * Copied and adapted from TomP2P's Number160.
  *
  * @author nico
  * @version $Id: $
@@ -218,7 +218,8 @@ public class MetHash implements Comparable<MetHash> {
     }
 
     /**
-     * <p>toByteBuffer</p>
+     * <p>
+     * toByteBuffer</p>
      *
      * @param buf the buffer to fill
      */
@@ -288,7 +289,9 @@ public class MetHash implements Comparable<MetHash> {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final boolean equals(final Object obj) {
         if (obj == this) {
@@ -306,7 +309,9 @@ public class MetHash implements Comparable<MetHash> {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final int hashCode() {
         int hashCode = 0;

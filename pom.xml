@@ -144,6 +144,11 @@
               -nodefontsize 9 -nodefontpackagesize 7 -attributes -types -visibility -operations -constructors
               -enumerations -enumconstants -views -useimports
             </additionalparam>
+	    <links>
+	      <link>
+		https://docs.oracle.com/javase/8/docs/api/
+	      </link>
+	    </links>
           </configuration>
 	</plugin>
       </plugins>

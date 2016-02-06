@@ -51,7 +51,7 @@ public final class SearchCriteria extends Searchable {
     /**
      * Creates an empty SearchCriteria.
      *
-     * Its hash will be {@link MetHash.ZERO} until a criterion is added.
+     * Its hash will be {@link MetHash#ZERO} until a criterion is added.
      */
     public SearchCriteria() {
         super(MetHash.ZERO);
@@ -101,7 +101,8 @@ public final class SearchCriteria extends Searchable {
     }
 
     /**
-     * <p>getCriteria</p>
+     * <p>
+     * getCriteria</p>
      *
      * @return the Set of {@link MetaData} of this SearchCriteria
      */
@@ -120,7 +121,8 @@ public final class SearchCriteria extends Searchable {
     }
 
     /**
-     * <p>addCriteria</p>
+     * <p>
+     * addCriteria</p>
      *
      * @param props the criteria Set to be added
      */
@@ -130,7 +132,9 @@ public final class SearchCriteria extends Searchable {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash getHash() {
         if (this.needRehash) {
@@ -139,7 +143,9 @@ public final class SearchCriteria extends Searchable {
         return this.hash;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MetHash hash() {
         if (!this.needRehash) {

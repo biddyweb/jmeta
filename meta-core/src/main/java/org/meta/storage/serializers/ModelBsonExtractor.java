@@ -56,7 +56,6 @@ public class ModelBsonExtractor {
      *
      * @param data the serialized data
      * @param dataSerializer the data de/serializer
-     * @param dataSerializer the data de/serializer
      * @param searchSerializer the search de/serializer
      */
     public ModelBsonExtractor(final byte[] data, final DataBsonSerializer dataSerializer,
@@ -68,7 +67,8 @@ public class ModelBsonExtractor {
     }
 
     /**
-     * <p>Getter for the field <code>type</code>.</p>
+     * <p>
+     * Getter for the field <code>type</code>.</p>
      *
      * @return the type model object extracted from serialized data
      */
@@ -80,7 +80,8 @@ public class ModelBsonExtractor {
     }
 
     /**
-     * <p>getSearch</p>
+     * <p>
+     * getSearch</p>
      *
      * @return the extracted Search, or null if the bson element is of the wrong type
      */
@@ -93,7 +94,8 @@ public class ModelBsonExtractor {
     }
 
     /**
-     * <p>getData</p>
+     * <p>
+     * getData</p>
      *
      * @return the extracted GenericData, or null if the bson element is of the wrong type
      */
@@ -106,7 +108,8 @@ public class ModelBsonExtractor {
     }
 
     /**
-     * <p>getSearchResultsHash</p>
+     * <p>
+     * getSearchResultsHash</p>
      *
      * @return the result list of the search, only if the bson element is a search, otherwise returns null
      */
@@ -118,7 +121,8 @@ public class ModelBsonExtractor {
     }
 
     /**
-     * <p>getSearchSourceHash</p>
+     * <p>
+     * getSearchSourceHash</p>
      *
      * @return the hash of the source, only if the bson element is a search, otherwise returns null
      */

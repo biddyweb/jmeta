@@ -36,16 +36,17 @@ package org.meta.api.storage;
 public interface Serializer<T> {
 
     /**
-     * <p>serialize</p>
+     * <p>
+     * serialize.</p>
      *
      * @param object the model object to serialize
      * @return the serialized object as a byte[] or null if unable to process
-     * @param <T> a T object.
      */
     byte[] serialize(final T object);
 
     /**
-     * <p>deserialize</p>
+     * <p>
+     * deserialize.</p>
      *
      * @param data the byte[] to de-serialize.
      * @return the extracted type, or null if unable to process

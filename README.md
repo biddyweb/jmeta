@@ -13,7 +13,7 @@ JMeta is released under the terms of the AGPL v3 License.
 
 JMeta is at a very early stage of development and is under heavy changes.  
 But we always need testers, reviewers and hackers to enhance the project and report bugs.  
-If you feel excited about the project, please see [How to contribute](contribute)  
+If you feel excited about the project, please see [How to contribute](https://gitlab.ouahpiti.info/meta/jmeta/wikis/contribute)  
 See the also the [developers documentation](https://gitlab.ouahpiti.info/meta/jmeta/wikis/dev/developers)
 
 You have an interesting application idea to build upon JMeta ?  

@@ -41,6 +41,7 @@ import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
+import org.meta.api.storage.CollectionStorage;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.fields.TextInput;
@@ -65,11 +66,13 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
     private TextOutput initialTextOutput = null;
     private ModelFactory factory = null;
     private MetAPI api;
+    private CollectionStorage<MetHash> movieListStorage;
     private TextInput path = null;
     private Map<MetHash, Data> results = null;
     private SelfSubmitButton submitToMe = null;
     private SubmitToButton getSubtitleButton = null;
     private RadioList resultsOutput = null;
+    private TextOutput testTextOutput = null;
     private String failure = null;
 
     private final Set<String> subtitleMetaKeys;
@@ -83,6 +86,7 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
         super(controller);
         this.api = controller.getAPI();
         factory = this.api.getModel().getFactory();
+        this.movieListStorage = this.api.getDatabase().getCollection("subtitlesMovies");
 
         //Path to the movie
         path = new TextInput("path", "Path to the movie");
@@ -93,9 +97,13 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
         //had a linked button on himself
         rootColumn.addChild(submitToMe);
 
-        //tex output
+        //text output
         initialTextOutput = new TextOutput("initialStateOutput", "callback :");
         rootColumn.addChild(initialTextOutput);
+
+        //text output
+        testTextOutput = new TextOutput("testTextOutput", "test");
+        rootColumn.addChild(testTextOutput);
 
         results = new HashMap<>();
 
@@ -125,7 +133,6 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
             //Only go further if the file exist
             File file = new File(paramPath);
             if (file.exists()) {
-
                 //instanciate a new SearchCriteria st:<choosen language>
                 SearchCriteria metaData = factory.createCriteria(new MetaData("st", "fr"));
 
@@ -207,6 +214,11 @@ public class SearchSubtitles extends AbstractWebService implements OperationList
             buttons.add(new RadioButton(data.getHash().toString(), description));
         }
         resultsOutput.setButtons(buttons);
+        testTextOutput.flush();
+        testTextOutput.append("Managed Movies hashes: <br />");
+        for (MetHash movieHash : this.movieListStorage) {
+            testTextOutput.append(movieHash.toString() + "<br />");
+        }
     }
 
     /**

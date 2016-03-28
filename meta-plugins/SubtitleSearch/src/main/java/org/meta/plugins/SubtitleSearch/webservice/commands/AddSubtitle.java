@@ -27,6 +27,7 @@ package org.meta.plugins.SubtitleSearch.webservice.commands;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
+import org.meta.api.common.MetHash;
 import org.meta.api.model.Data;
 import org.meta.api.model.DataFile;
 import org.meta.api.model.MetaData;
@@ -34,6 +35,7 @@ import org.meta.api.model.ModelFactory;
 import org.meta.api.model.Search;
 import org.meta.api.model.SearchCriteria;
 import org.meta.api.plugin.MetAPI;
+import org.meta.api.storage.CollectionStorage;
 import org.meta.api.ws.AbstractPluginWebServiceController;
 import org.meta.api.ws.AbstractWebService;
 import org.meta.api.ws.forms.InterfaceDescriptor;
@@ -55,6 +57,7 @@ public class AddSubtitle extends AbstractWebService {
     private TextOutput output = null;
     private ModelFactory factory = null;
     private MetAPI api;
+    private CollectionStorage<MetHash> movieListStorage;
     private ArrayList<Data> results = null;
     private TextInput source = null;
     private TextInput result = null;
@@ -71,6 +74,7 @@ public class AddSubtitle extends AbstractWebService {
         super(controller);
         this.api = controller.getAPI();
         factory = this.api.getModel().getFactory();
+        this.movieListStorage = this.api.getDatabase().getCollection("subtitlesMovies");
 
         results = new ArrayList<>();
         source = new TextInput("path", "Path to the movie");
@@ -149,6 +153,8 @@ public class AddSubtitle extends AbstractWebService {
         } else {
             output.flush();
             output.append("Subtitle registered successfully.");
+            //Track the movie
+            this.movieListStorage.add(src.getHash());
         }
     }
 

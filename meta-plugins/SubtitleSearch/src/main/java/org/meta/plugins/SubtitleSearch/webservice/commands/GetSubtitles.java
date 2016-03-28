@@ -85,11 +85,11 @@ public class GetSubtitles extends AbstractWebService implements OperationListene
         //had a linked button on himself
         rootColumn.addChild(submitToMe);
 
-        //tex output
+        //text output
         errorTextOutput = new TextOutput("errorOutput", "Errors");
         rootColumn.addChild(errorTextOutput);
 
-        //tex output
+        //text output
         successTextOutput = new TextOutput("successOutput", "Success");
         rootColumn.addChild(successTextOutput);
     }

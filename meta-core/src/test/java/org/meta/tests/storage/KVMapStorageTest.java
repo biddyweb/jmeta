@@ -37,7 +37,7 @@ import org.meta.api.storage.KVMapStorage;
 import org.meta.api.storage.MetaDatabase;
 import org.meta.api.storage.MetaTx;
 import org.meta.storage.exceptions.StorageException;
-import org.meta.storage.serializers.Serializers;
+import org.meta.api.storage.Serializers;
 import org.meta.tests.MetaBaseTests;
 
 /**
@@ -66,7 +66,6 @@ public class KVMapStorageTest extends MetaBaseTests {
     @AfterClass
     public static void tearDown() {
         db.close();
-
     }
 
     @Test
@@ -129,5 +128,4 @@ public class KVMapStorageTest extends MetaBaseTests {
         Assert.assertTrue(storage.put(null, hash, newVal));
         Assert.assertEquals(newVal, storage.get(hash));
     }
-
 }

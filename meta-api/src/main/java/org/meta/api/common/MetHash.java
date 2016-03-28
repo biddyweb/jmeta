@@ -24,6 +24,7 @@
  */
 package org.meta.api.common;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
@@ -35,7 +36,7 @@ import java.nio.ByteBuffer;
  * @author nico
  * @version $Id: $
  */
-public class MetHash implements Comparable<MetHash> {
+public class MetHash implements Comparable<MetHash>, Serializable {
 
     /**
      * This key has *always* 160 bit. Do not change.

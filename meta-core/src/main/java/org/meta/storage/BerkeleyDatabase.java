@@ -34,6 +34,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.EnvironmentFailureException;
 import com.sleepycat.je.TransactionConfig;
 import java.io.File;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,8 @@ import org.meta.api.storage.KVMapStorage;
 import org.meta.api.storage.KVStorage;
 import org.meta.api.storage.MetaDatabase;
 import org.meta.api.storage.Serializer;
+import org.meta.api.storage.Serializers;
+import org.meta.api.storage.Serializers.ObjectSerializer;
 import org.meta.storage.exceptions.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,6 +161,14 @@ public class BerkeleyDatabase implements MetaDatabase {
         return new BerkeleyKVStorage(this, name, comparator);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends Serializable> CollectionStorage<T> getCollection(final String name) {
+        return getCollection(name, new ObjectSerializer<T>(), null);
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T> CollectionStorage<T> getCollection(final String name, final Serializer<T> serializer) {
@@ -183,6 +194,17 @@ public class BerkeleyDatabase implements MetaDatabase {
     public <K, V> KVMapStorage<K, V> getKVMapStorage(final String name, final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer, final Comparator<byte[]> comparator) {
         KVStorage backingStore = getKVStorage(name, comparator);
+        return new MetaKVMapStorage<>(backingStore, keySerializer, valueSerializer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <K extends Serializable, V extends Serializable> KVMapStorage<K, V> getMapStorage(final String name) {
+        KVStorage backingStore = getKVStorage(name);
+        ObjectSerializer<K> keySerializer = new Serializers.ObjectSerializer<>();
+        ObjectSerializer<V> valueSerializer = new Serializers.ObjectSerializer<>();
         return new MetaKVMapStorage<>(backingStore, keySerializer, valueSerializer);
     }
 

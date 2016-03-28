@@ -36,6 +36,7 @@ import org.meta.api.model.ModelStorage;
 import org.meta.api.model.Search;
 import org.meta.api.model.Searchable;
 import org.meta.api.p2pp.PluginP2PPClient;
+import org.meta.api.storage.MetaDatabase;
 
 /**
  * Interface representing all operations and objects provided by Meta to a plugin.
@@ -54,6 +55,12 @@ public interface MetAPI {
      * @return the meta object model
      */
     ModelStorage getModel();
+
+    /**
+     *
+     * @return the main Database object.
+     */
+    MetaDatabase getDatabase();
 
     /**
      * <p>

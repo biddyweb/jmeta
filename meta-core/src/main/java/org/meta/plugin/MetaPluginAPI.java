@@ -41,6 +41,7 @@ import org.meta.api.model.Searchable;
 import org.meta.api.plugin.DownloadOperation;
 import org.meta.api.plugin.MetAPI;
 import org.meta.api.plugin.SearchOperation;
+import org.meta.api.storage.MetaDatabase;
 import org.meta.controller.MetaController;
 import org.meta.hooks.search.SearchResultIntegrityCheckerHook;
 import org.meta.p2pp.client.MetaP2PPClient;
@@ -74,6 +75,11 @@ public final class MetaPluginAPI implements MetAPI {
     @Override
     public ModelStorage getModel() {
         return this.metaController.getModel();
+    }
+
+    @Override
+    public MetaDatabase getDatabase() {
+        return this.metaController.getDatabase();
     }
 
     /** {@inheritDoc} */
@@ -232,5 +238,4 @@ public final class MetaPluginAPI implements MetAPI {
         getDHT().push(searchable.getHash());
         return status;
     }
-
 }

@@ -26,7 +26,7 @@ import org.meta.model.files.FileWriteOperation;
 import org.meta.p2pp.client.SocketIOState;
 import org.meta.storage.BerkeleyKVStorage;
 import org.meta.storage.exceptions.StorageException;
-import org.meta.storage.serializers.Serializers;
+import org.meta.api.storage.Serializers;
 import static org.meta.tests.MetaBaseTests.getDatabase;
 import org.meta.tests.storage.CollectionStorageTest;
 import org.meta.utils.SerializationUtils;

@@ -44,7 +44,7 @@ import org.meta.api.storage.Serializer;
 import org.meta.dht.storage.PushElementSerializer;
 import org.meta.executors.MetaScheduledTask;
 import org.meta.storage.comparators.Comparators;
-import org.meta.storage.serializers.Serializers;
+import org.meta.api.storage.Serializers;
 
 /**
  * The DHT push manager.

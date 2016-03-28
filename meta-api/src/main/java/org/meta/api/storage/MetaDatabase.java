@@ -24,6 +24,7 @@
  */
 package org.meta.api.storage;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -98,6 +99,39 @@ public interface MetaDatabase {
      */
     <K, V> KVMapStorage<K, V> getKVMapStorage(final String name, final Serializer<K> keySerializer,
             final Serializer<V> valueSerializer, final Comparator<byte[]> comparator);
+
+    /**
+     * Get or creates a simplified {@link KVMapStorage}.
+     *
+     * This storage operations will be directly reflected on the associated underlying database of the given name.
+     *
+     * The returned {@link KVMapStorage} will use java serialization mechanism instead of a custom one.
+     *
+     * This allows simplified access to a storage for simple, resource-light plugin operations.
+     *
+     * @param <K> key type
+     * @param <V> value type
+     * @param name the name of the database this storage is bond to
+     * @return the KVMapStorage initialized with given parameters
+     */
+    <K extends Serializable, V extends Serializable> KVMapStorage<K, V> getMapStorage(final String name);
+
+    /**
+     * Get or creates a storage-linked {@link java.util.SortedSet}.
+     *
+     * This collection operations will be directly reflected on the associated underlying database of the given name.
+     *
+     * Although it implements {@link java.util.SortedSet}, the ordering of elements is not guaranteed.
+     *
+     * The returned {@link CollectionStorage} will use java serialization mechanism instead of a custom one.
+     *
+     * This allows simplified access to a storage for simple, resource-light plugin operations.
+     *
+     * @param <T> the type of elements
+     * @param name the name of the database this collection is bond to
+     * @return the CollectionStorage initialized with given parameters
+     */
+    <T extends Serializable> CollectionStorage<T> getCollection(final String name);
 
     /**
      * Get or creates a storage-linked {@link java.util.SortedSet}.

@@ -42,7 +42,6 @@ import org.meta.p2pp.exceptions.P2PPException;
 import org.meta.plugin.MetaPluginAPI;
 import org.meta.plugin.webservice.MetaWebServer;
 import org.meta.storage.BerkeleyDatabase;
-import org.meta.storage.BerkeleyKVStorage;
 import org.meta.storage.MetaModelStorage;
 import org.meta.storage.exceptions.ModelException;
 import org.meta.storage.exceptions.StorageException;
@@ -65,9 +64,6 @@ public class MetaController {
 
     private MetaDatabase db;
 
-    private BerkeleyKVStorage backendStorage;
-
-    //private MetaCache cacheStorage;
     private MetaModelStorage model;
 
     private MetaWebServer wsReader;
@@ -210,6 +206,14 @@ public class MetaController {
             this.model.close();
         }
         logger.debug("All components stopped.");
+    }
+
+    /**
+     *
+     * @return the MetaDatabase object.
+     */
+    public MetaDatabase getDatabase() {
+        return this.db;
     }
 
     /**

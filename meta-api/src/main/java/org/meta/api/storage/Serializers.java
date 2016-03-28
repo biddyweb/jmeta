@@ -22,10 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.meta.storage.serializers;
+package org.meta.api.storage;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import org.meta.api.common.MetHash;
-import org.meta.api.storage.Serializer;
 
 /**
  * Utility class to define and access common objects Serializer instances.
@@ -52,6 +59,7 @@ public class Serializers {
 
         @Override
         public byte[] serialize(final String object) {
+            //TODO check UTF-8 encoding
 //            ByteBuffer buf = SerializationUtils.encodeUTF8(object);
 //
 //            if (buf.hasArray()) {
@@ -69,7 +77,6 @@ public class Serializers {
             return new String(data);
             //return SerializationUtils.decodeUTF8(ByteBuffer.wrap(data));
         }
-
     }
 
     /**
@@ -89,7 +96,37 @@ public class Serializers {
             }
             return new MetHash(data);
         }
+    }
+
+    /**
+     * Generic serializer using Java Serialization mechanism.
+     *
+     * @param <T> Class extending Serializable
+     */
+    public static class ObjectSerializer<T extends Serializable> implements Serializer<T> {
+
+        @Override
+        public byte[] serialize(final T object) {
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutput out = new ObjectOutputStream(bos)) {
+                out.writeObject(object);
+                return bos.toByteArray();
+            } catch (IOException ex) {
+                return null;
+            }
+        }
+
+        @Override
+        public T deserialize(final byte[] data) {
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
+                    ObjectInput in = new ObjectInputStream(bis)) {
+                return (T) in.readObject();
+            } catch (final IOException | ClassNotFoundException ex) {
+                return null;
+            }
+        }
 
     }
+
 
 }
